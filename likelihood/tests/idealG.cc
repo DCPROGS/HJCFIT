@@ -27,25 +27,25 @@ TEST_F(IdealGTest, set){
   Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
     diff = (Q - idealg.get_Q()).array().abs();
   EXPECT_TRUE((diff < 1e-8).all());
-// EXPECT_EQ(idealg.get_nopen(), 2);
-//
-// { t_rmatrix qq(5, 3);
-//   EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
-// { t_rmatrix qq(3, 5);
-//   EXPECT_THROW(idealg.set(qq, 2) errors::Domain); }
-// EXPECT_THROW(idealg.set(Q, 6), errors::Domain); 
-// EXPECT_THROW(idealg.set(Q, -1), errors::Domain); 
-//
-// // Tests row constraints.
-// for(size_t i(0); i < Q.rows(); ++i)
-//   EXPECT_DOUBLE_EQ(std::abs(idealg.get_Q().row(i).sum()), 0e0);
-//
-// // Test that row constraints always works.
-// { t_rmatrix qq(Q);
-//   qq(1, 1) = 5e5;
-//   idealg.set(qq, 2);
-//   Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
-//     diff = (Q - idealg.get_Q()).array().abs();
-//   EXPECT_TRUE((diff < 1e-8).all());
-// }
+  EXPECT_EQ(idealg.get_nopen(), 2);
+
+  { t_rmatrix qq(5, 3);
+    EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
+  { t_rmatrix qq(3, 5);
+    EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
+  EXPECT_THROW(idealg.set(Q, 6), errors::Domain); 
+  EXPECT_THROW(idealg.set(Q, -1), errors::Domain); 
+ 
+  // Tests row constraints.
+  for(size_t i(0); i < Q.rows(); ++i)
+    EXPECT_DOUBLE_EQ(std::abs(idealg.get_Q().row(i).sum()), 0e0);
+ 
+  // Test that row constraints always works.
+  { t_rmatrix qq(Q);
+    qq(1, 1) = 5e5;
+    idealg.set(qq, 2);
+    Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
+      diff = (Q - idealg.get_Q()).array().abs();
+    EXPECT_TRUE((diff < 1e-8).all());
+  }
 }
