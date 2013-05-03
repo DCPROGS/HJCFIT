@@ -12,11 +12,18 @@ enable_language(CXX)
 
 option(tests       "Enable testing."       on)
 
+configure_file (
+ "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
+ "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
+)
 
 find_package(eigen)
+include_directories(${eigen_INCLUDE_DIR})
+include_directories(${PROJECT_BINARY_DIR})
 
 if(tests) 
   find_package(GTest)
   enable_testing()
-  add_subdirectory(tests)
 endif(tests)
+
+add_subdirectory(likelihood)

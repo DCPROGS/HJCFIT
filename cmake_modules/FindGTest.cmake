@@ -13,17 +13,22 @@ ExternalProject_Add(
     LOG_CONFIGURE ON
     LOG_BUILD ON)
 
-function(cxx_test name source)
+macro(cxx_test name source)
   add_executable(test_${name} ${source})
 
+  get_target_property(THISTEST_INCLUDE test_${name} INCLUDE_DIRECTORIES)
   ExternalProject_Get_Property(googletest source_dir)
-  set_target_properties(test_${name} PROPERTIES INCLUDE_DIRECTORIES "${source_dir}/include")
+  set_target_properties(test_${name} PROPERTIES INCLUDE_DIRECTORIES
+                        "${THISTEST_INCLUDE};${source_dir}/include") 
 
   ExternalProject_Get_Property(googletest binary_dir)
   target_link_libraries(test_${name} ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest.a)
   target_link_libraries(test_${name} ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main.a)
 
   add_dependencies(test_${name} googletest)
+  if(NOT "${ARGN}" STREQUAL "")
+    target_link_libraries(test_${name} ${ARGN})
+  endif(NOT "${ARGN}" STREQUAL "")
 
   add_test(test_${name} test_${name} --gtest_output=xml:test_${name}.xml)
-endfunction()
+endmacro()

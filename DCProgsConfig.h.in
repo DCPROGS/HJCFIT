@@ -1,0 +1,23 @@
+#ifndef DCPROGS_CONFIG_H
+#define DCPROGS_CONFIG_H
+#include <Eigen/Dense>
+
+//! \define Whether to use throw or noexcept.
+//! \details Would be better if we could make this a CMake detected feature.
+#define DC_NOEXCEPT throw()
+
+namespace DCProgs {
+  //! Types of reals across DCProgs.
+  typedef double t_real;
+  //! Types of integers across DCProgs.
+  typedef int t_int;
+  //! Types of real matrices across DCProgs.
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
+  //! Types of initial state vectors across DCProgs.
+  typedef Eigen::Matrix<t_real, 1, ::Eigen::Dynamic> t_initvec;
+  //! Types of final state vectors across DCProgs.
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, 1> t_finivec;
+  //! Types of partition vectors across DCProgs.
+  typedef Eigen::Matrix<bool, ::Eigen::Dynamic, 1> t_partition;
+}
+#endif

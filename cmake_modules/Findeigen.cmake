@@ -9,7 +9,6 @@ find_path(eigen_INCLUDE_DIR
   Eigen/Geometry
   Eigen/Cholesky
   PATHS
-  $ENV{eigen_INCLUDE_DIR}
   ${INCLUDE_INSTALL_DIR}
   PATH_SUFFIXES
   eigen3 eigen2 eigen
