@@ -3,7 +3,7 @@
 
 #include <DCProgsConfig.h>
 
-#include <type_traits>
+#include <unsupported/Eigen/MatrixFunctions>
 
 #include "state_matrix.h"
 #include "errors.h"
@@ -33,14 +33,15 @@ namespace DCProgs {
       t_int const & get_nopen() const { return this->nopen; }
 
       //! Open to open transitions.
-      t_rmatrix af(t_real _t0) const -> decltype( matrix.topLeftCorner(nopen, nopen) ) 
-//       { return matrix.topLeftCorner(nopen, nopen); }
-//     //! Open to shut transitions.
-//     t_rmatrix af(t_real) const;
-//     //! Shut to open transitions.
-//     t_rmatrix fa(t_real) const;
-//     //! Shut to shut transitions.
-//     t_rmatrix ff(t_real) const;
+      auto aa(t_real t) const -> decltype( t_rmatrix::Zero(3, 3) ) { return std::move(t_rmatrix::Zero(3, 3)); }
+      //! Shut to open transitions.
+      auto fa(t_real t) const -> decltype( (t*StateMatrix::ff()).exp()*StateMatrix::fa() )
+        { return (t*StateMatrix::ff()).exp()*StateMatrix::fa(); }
+      //! Open to shut transitions.
+      auto af(t_real t) const -> decltype( (t*StateMatrix::aa()).exp()*StateMatrix::af() )
+        { return (t*StateMatrix::aa()).exp()*StateMatrix::af(); }
+      //! Shut to shut transitions.
+      auto ff(t_real t) const -> decltype( t_rmatrix::Zero(3, 3) ) { return t_rmatrix::Zero(3, 3); }
   };
 }
 

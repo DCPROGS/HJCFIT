@@ -3,6 +3,17 @@
 #include "../idealG.h"
 using namespace DCProgs;
 
+// Checks some assumption about eigen matrix types.
+static_assert( std::is_move_constructible<IdealG>::value,
+               "IdealG is not move constructible." );  
+static_assert( not std::is_trivially_move_constructible<IdealG>::value,
+               "IdealG is trivially move constructible." );  
+static_assert( std::is_move_assignable<IdealG>::value, 
+               "IdealG is not move assignable." );  
+static_assert( not std::is_trivially_move_assignable<IdealG>::value, 
+               "IdealG is trivially move assignable." );  
+
+
 // Sets up test with parameters from CH82, 1e-7 nM.
 class IdealGTest : public ::testing::Test {
   
@@ -22,10 +33,9 @@ class IdealGTest : public ::testing::Test {
     t_rmatrix Q;
 };
 
-TEST_F(IdealGTest, set){
+TEST_F(IdealGTest, initialize){
   idealg.set(Q, 2);
-  Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
-    diff = (Q - idealg.get_Q()).array().abs();
+  Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic> diff = (Q - idealg.get_Q()).array().abs();
   EXPECT_TRUE((diff < 1e-8).all());
   EXPECT_EQ(idealg.get_nopen(), 2);
 
@@ -47,5 +57,33 @@ TEST_F(IdealGTest, set){
     Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
       diff = (Q - idealg.get_Q()).array().abs();
     EXPECT_TRUE((diff < 1e-8).all());
+  }
+}
+
+TEST_F(IdealGTest, blocks){
+  StateMatrix states(Q, 2);
+  idealg.set(Q, 2);
+  EXPECT_TRUE((idealg.aa(0).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.aa(1).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.ff(0).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.ff(1).array().abs() < 1e-8).all());
+
+  // This test pretty much ensures that we are dealing with an exponential
+  // At least over 10 integers. 
+  { t_rmatrix exponential = states.aa().exp();
+    t_rmatrix current = states.af();
+    for(size_t i(0); i < 21; ++i, current = exponential * current) {
+      Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
+        diff = (idealg.af(t_real(i)) - current).array().abs();
+      EXPECT_TRUE((diff < 1e-8).all()); 
+    }
+  }
+  { t_rmatrix exponential = states.ff().exp();
+    t_rmatrix current = states.fa();
+    for(size_t i(0); i < 21; ++i, current = exponential * current) {
+      Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
+        diff = (idealg.fa(t_real(i)) - current).array().abs();
+      EXPECT_TRUE((diff < 1e-8).all()); 
+    }
   }
 }
