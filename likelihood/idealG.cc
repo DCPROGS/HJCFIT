@@ -4,9 +4,9 @@ namespace DCProgs {
   void IdealG::set(t_rmatrix const &_Q, t_int const &_nopen) {
   
     if(_Q.rows() != _Q.cols()) throw errors::Domain("Transition matrix is not square.");
-    if(_Q.rows() < _nopen)
-      throw errors::Domain("Number of open-states greater than size of Q matrix.");
-    if(_nopen < 0) throw errors::Domain("Negative number of open states.");
+    if(_nopen > _Q.rows() - 1)
+      throw errors::Domain("There should be at least one shut state.");
+    if(_nopen < 1) throw errors::Domain("There should be at least one open state.");
     this->matrix = _Q;
     // Enforces row constraints.
     for(size_t i(0); i < _Q.rows(); ++i) 

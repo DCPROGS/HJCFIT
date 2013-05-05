@@ -22,11 +22,12 @@ namespace DCProgs {
       //! Destructor 
       virtual ~IdealG() {}; 
   
-  
       //! \brief Sets Q matrix and the number of open states.
       //! \details Enforces \f[Q{ii} = -\sum_{j\neqi} Q{ij}]\f.
       //!          It is expected that open states are in the top-most corner.
       void set(t_rmatrix const &Q, t_int const &_nopen);
+      //! Sets state matrix on which to act.
+      void set(StateMatrix const &_in) { set(_in.matrix, _in.nopen); }
       //! Gets Q matrix. 
       t_rmatrix const & get_Q() const { return this->matrix; }
       //! Gets the number of open states
