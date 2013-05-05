@@ -2,10 +2,6 @@
 #define DCPROGS_CONFIG_H
 #include <Eigen/Dense>
 
-//! \define Whether to use throw or noexcept.
-//! \details Would be better if we could make this a CMake detected feature.
-#define DC_NOEXCEPT throw()
-
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;

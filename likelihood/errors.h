@@ -14,8 +14,17 @@ namespace DCProgs {
     //! Input size error
     class Domain : public Root, virtual public std::domain_error {
       public:
-        explicit Domain(char const *_message) DC_NOEXCEPT : Root(), std::domain_error(_message) {};
-        virtual char const* what() const DC_NOEXCEPT { return this->std::domain_error::what(); }
+        explicit Domain(char const *_message) noexcept : Root(), std::domain_error(_message) {};
+        explicit Domain(std::string const &_message) noexcept : Root(), std::domain_error(_message) {};
+        virtual char const* what() const noexcept { return this->std::domain_error::what(); }
+    };
+    //! Matrix is not invertible
+    class NotInvertible : public Domain {
+      public:
+        explicit NotInvertible   (char const *_message) noexcept
+                               : Domain(_message), std::domain_error(_message) {};
+        explicit NotInvertible   (std::string const &_message) noexcept 
+                               : Domain(_message), std::domain_error(_message) {};
     };
   }
 }
