@@ -47,11 +47,19 @@ TEST_P(Exponentiation, fa){
 
 TEST_P(Exponentiation, aa){
   idealg.set(GetParam());
+  EXPECT_EQ(idealg.laplace_aa(0).rows(), idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_aa(0).cols(), idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_aa(1).rows(), idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_aa(1).cols(), idealg.get_nopen());
   EXPECT_TRUE((idealg.aa(0).array().abs() < 1e-8).all());
   EXPECT_TRUE((idealg.aa(1).array().abs() < 1e-8).all());
 }
 TEST_P(Exponentiation, ff){
   idealg.set(GetParam());
+  EXPECT_EQ(idealg.laplace_ff(0).rows(), idealg.get_Q().rows() - idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_ff(0).cols(), idealg.get_Q().rows() - idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_ff(1).rows(), idealg.get_Q().rows() - idealg.get_nopen());
+  EXPECT_EQ(idealg.laplace_ff(1).cols(), idealg.get_Q().rows() - idealg.get_nopen());
   EXPECT_TRUE((idealg.ff(0).array().abs() < 1e-8).all());
   EXPECT_TRUE((idealg.ff(1).array().abs() < 1e-8).all());
 }
