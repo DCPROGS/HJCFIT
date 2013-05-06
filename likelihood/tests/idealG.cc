@@ -87,3 +87,32 @@ TEST_F(IdealGTest, blocks){
     }
   }
 }
+
+TEST_F(IdealGTest, laplacians) {
+
+  idealg.set(Q, 2);
+  EXPECT_TRUE((idealg.laplace_aa(0).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.laplace_aa(1).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.laplace_ff(0).array().abs() < 1e-8).all());
+  EXPECT_TRUE((idealg.laplace_ff(1).array().abs() < 1e-8).all());
+
+  t_rmatrix af0(2, 3);
+  af0 << 0.98362802881467, 0.01637197118533,  0., 
+         0.00130975769483, 0.99869024230517,  0.;
+  EXPECT_TRUE(((idealg.laplace_af(0) - af0).array().abs() < 1e-8).all());
+  t_rmatrix af1(2, 3);
+  af1 << 0.98330558371655, 0.01633397979596, 0.,
+         0.00130671838368, 0.99669944714923, 0.;
+  EXPECT_TRUE(((idealg.laplace_af(1) - af1).array().abs() < 1e-8).all());
+
+  t_rmatrix fa0(3, 2);
+  fa0 << 0.27536231884058, 0.7246376811594,
+         0.05797101449275, 0.94202898550724,
+         0.27536231884058, 0.7246376811594;
+  EXPECT_TRUE(((idealg.laplace_fa(0) - fa0).array().abs() < 1e-8).all());
+  t_rmatrix fa1(3, 2);
+  fa1 << 0.063213144351,  0.16634162505001,
+         0.013307330004,  0.8244495816115,
+         0.057466494865,  0.15121965913637;
+  EXPECT_TRUE(((idealg.laplace_fa(1) - fa1).array().abs() < 1e-8).all());
+}

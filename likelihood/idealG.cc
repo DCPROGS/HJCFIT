@@ -25,7 +25,7 @@ namespace DCProgs {
   t_rmatrix IdealG::laplace_af(t_real s) const {
     t_rmatrix const Qaa( StateMatrix::aa() );
     t_rmatrix const Qaf( StateMatrix::af() );
-    t_rmatrix const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
+    auto const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
     return pivotLU.inverse() * Qaf;

@@ -5,6 +5,8 @@
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;
+  //! Complex real type
+  typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.
   typedef int t_int;
   //! Types of real matrices across DCProgs.
@@ -13,5 +15,11 @@ namespace DCProgs {
   typedef Eigen::Matrix<t_real, 1, ::Eigen::Dynamic> t_initvec;
   //! Types of final state vectors across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, 1> t_finivec;
+  //! Type for a vector. 
+  typedef t_finivec t_rvector;
+  //! Type of complex matrices.
+  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
+  //! Type of complex vectors.
+  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
 }
 #endif
