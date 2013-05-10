@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "equilibrium.h"
-#include "idealg.h"
+#include "idealG.h"
 
 namespace DCProgs {
 
@@ -22,7 +22,7 @@ namespace DCProgs {
         t_rvector b(n+1);
         b.topRows(n) = t_rvector::Zero(n);
         b(n) = 1;
-        return {matrix, b};
+        return std::make_tuple(matrix, b);
       } 
   
     // Should work for both IdealG and MissedEventsG.

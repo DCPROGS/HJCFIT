@@ -1,19 +1,9 @@
 #include <iostream>
+#include <type_traits>
 #include <gtest/gtest.h>
 #include "../idealG.h"
 #include "../equilibrium.h"
 using namespace DCProgs;
-
-// Checks some assumption about eigen matrix types.
-static_assert( std::is_move_constructible<IdealG>::value,
-               "IdealG is not move constructible." );  
-static_assert( not std::is_trivially_move_constructible<IdealG>::value,
-               "IdealG is trivially move constructible." );  
-static_assert( std::is_move_assignable<IdealG>::value, 
-               "IdealG is not move assignable." );  
-static_assert( not std::is_trivially_move_assignable<IdealG>::value, 
-               "IdealG is trivially move assignable." );  
-
 
 // Sets up test with parameters from CH82, 1e-7 nM.
 class EquilibriumTest : public ::testing::Test {

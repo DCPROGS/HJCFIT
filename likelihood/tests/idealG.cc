@@ -3,16 +3,17 @@
 #include "../idealG.h"
 using namespace DCProgs;
 
-// Checks some assumption about eigen matrix types.
-static_assert( std::is_move_constructible<IdealG>::value,
-               "IdealG is not move constructible." );  
-static_assert( not std::is_trivially_move_constructible<IdealG>::value,
-               "IdealG is trivially move constructible." );  
-static_assert( std::is_move_assignable<IdealG>::value, 
-               "IdealG is not move assignable." );  
-static_assert( not std::is_trivially_move_assignable<IdealG>::value, 
-               "IdealG is trivially move assignable." );  
-
+#ifdef HAS_CXX11_TYPETRAITS
+  // Checks some assumption about eigen matrix types.
+  static_assert( std::is_move_constructible<IdealG>::value,
+  	       "IdealG is not move constructible." );  
+  static_assert( not std::is_trivially_move_constructible<IdealG>::value,
+  	       "IdealG is trivially move constructible." );  
+  static_assert( std::is_move_assignable<IdealG>::value, 
+  	       "IdealG is not move assignable." );  
+  static_assert( not std::is_trivially_move_assignable<IdealG>::value, 
+  	       "IdealG is trivially move assignable." );  
+#endif
 
 // Sets up test with parameters from CH82, 1e-7 nM.
 class IdealGTest : public ::testing::Test {

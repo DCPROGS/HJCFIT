@@ -24,6 +24,7 @@ namespace DCProgs {
         virtual char const * what() const noexcept {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
+        virtual ~Mass() noexcept {};
       private:
         std::string message_;
     };

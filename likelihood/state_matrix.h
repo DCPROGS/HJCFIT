@@ -26,16 +26,16 @@ namespace DCProgs {
                   : matrix(_c), nopen(_nopen) {}
   
     //! Open to open transitions.
-    auto aa() const -> decltype( matrix.topLeftCorner(nopen, nopen) ) 
+    Eigen::Block<t_rmatrix const> aa() const 
       { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
-    auto af() const -> decltype( matrix.topRightCorner(nopen, nopen) ) 
+    Eigen::Block<t_rmatrix const> af() const 
       { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
     //! Shut to open transitions.
-    auto fa() const -> decltype( matrix.bottomLeftCorner(nopen, nopen) ) 
+    Eigen::Block<t_rmatrix const> fa() const 
       { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
     //! Shut to shut transitions.
-    auto ff() const -> decltype( matrix.bottomRightCorner(nopen, nopen) ) 
+    Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
 
     //! \brief Computes eigenvalues and eigenvectors

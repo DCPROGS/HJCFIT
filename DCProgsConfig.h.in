@@ -2,6 +2,7 @@
 #define DCPROGS_CONFIG_H
 #include <Eigen/Dense>
 
+#cmakedefine HAS_CXX11_TYPETRAITS
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;

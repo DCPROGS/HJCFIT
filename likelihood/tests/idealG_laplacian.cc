@@ -147,8 +147,8 @@ t_rmatrix random_matrix() {
   typedef std::uniform_real_distribution<t_real> t_rdist;
   typedef std::uniform_int_distribution<t_int> t_idist;
   t_rdist __rnumbers{randreal[0], randreal[1]};
-  t_idist __matsize{matsizes[0], matsizes[1]};
-  t_idist __isnotzero{zeros[0], zeros[1]};
+  t_idist __matsize{int(matsizes[0]), int(matsizes[1])};
+  t_idist __isnotzero{int(zeros[0]), int(zeros[1])};
 
   auto matsize = [&] { return __matsize(rng()); };
   auto isnotzero = [&] { return __isnotzero(rng()) < zeros[2]; };

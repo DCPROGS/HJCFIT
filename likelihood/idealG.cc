@@ -18,10 +18,6 @@ namespace DCProgs {
     this->nopen = _nopen;
   }
 
-  t_rmatrix IdealG::ff(t_real t) const {
-    long const N{this->matrix.rows() - this->nopen};
-    return t_rmatrix::Zero(N, N);
-  }
   t_rmatrix IdealG::laplace_af(t_real s) const {
     t_rmatrix const Qaa( StateMatrix::aa() );
     t_rmatrix const Qaf( StateMatrix::af() );

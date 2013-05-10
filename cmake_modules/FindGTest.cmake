@@ -13,17 +13,22 @@ ExternalProject_Add(
     LOG_CONFIGURE ON
     LOG_BUILD ON)
 
+find_package(Threads)
+
 macro(cxx_test name source)
   add_executable(test_${name} ${source})
 
-  get_target_property(THISTEST_INCLUDE test_${name} INCLUDE_DIRECTORIES)
   ExternalProject_Get_Property(googletest source_dir)
-  set_target_properties(test_${name} PROPERTIES INCLUDE_DIRECTORIES
-                        "${THISTEST_INCLUDE};${source_dir}/include") 
+  include_directories(${source_dir}/include)
+  # Better, but only works on CMake 2.8.6?
+  # get_target_property(THISTEST_INCLUDE test_${name} INCLUDE_DIRECTORIES)
+  # set_target_properties(test_${name} PROPERTIES INCLUDE_DIRECTORIES
+  #                       "${source_dir}/include;${THISTEST_INCLUDE}") 
 
   ExternalProject_Get_Property(googletest binary_dir)
   target_link_libraries(test_${name} ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest.a)
   target_link_libraries(test_${name} ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest_main.a)
+  target_link_libraries(test_${name} ${CMAKE_THREAD_LIBS_INIT})
 
   add_dependencies(test_${name} googletest)
   if(NOT "${ARGN}" STREQUAL "")
