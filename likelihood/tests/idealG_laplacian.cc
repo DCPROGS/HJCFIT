@@ -57,24 +57,6 @@ TEST_P(Laplacian, af) {
   }
 }
 
-TEST_P(Laplacian, af_eigenvalues) {
-  idealg.set(GetParam());
-  t_rmatrix const aa = GetParam().aa();
-  t_rmatrix const af = GetParam().af();
-  Eigen::EigenSolver<t_rmatrix> solver(aa);
-  t_rmatrix const id = t_rmatrix::Identity(aa.rows(), aa.rows()); 
-  size_t const N = aa.rows();
-  for(size_t i(0); i < N; ++i) {
-    std::complex<t_real> const s = solver.eigenvalues()(i);
-    if(std::abs(std::imag(s)) > 1e-12) continue;
-    t_rmatrix const factor = std::real(s) * id - aa;
-    Eigen::FullPivLU<t_rmatrix> pivotLU(factor);
-    // Eigenvalues may not be accurate enough, and hence the matrix is actually invertible.
-    if(pivotLU.isInvertible()) continue;
-    EXPECT_THROW(idealg.laplace_af(std::real(s)), errors::NotInvertible);
-  }
-}
-
 TEST_P(Laplacian, fa) {
   idealg.set(GetParam());
   typedef std::uniform_real_distribution<t_real> t_rdist;
@@ -98,24 +80,6 @@ TEST_P(Laplacian, fa) {
     Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
       diff = ((s*id - ff) * laplace - fa).array().abs();
     EXPECT_TRUE((diff < 1e-8).all()); 
-  }
-}
-
-TEST_P(Laplacian, fa_eigenvalues) {
-  idealg.set(GetParam());
-  t_rmatrix const ff = GetParam().ff();
-  t_rmatrix const fa = GetParam().fa();
-  Eigen::EigenSolver<t_rmatrix> solver(ff);
-  t_rmatrix const id = t_rmatrix::Identity(ff.rows(), ff.rows()); 
-  size_t const N = ff.rows();
-  for(size_t i(0); i < N; ++i) {
-    std::complex<t_real> const s = solver.eigenvalues()(i);
-    if(std::abs(std::imag(s)) > 1e-12) continue;
-    t_rmatrix const factor = std::real(s) * id - ff;
-    Eigen::FullPivLU<t_rmatrix> pivotLU(factor);
-    // Eigenvalues may not be accurate enough, and hence the matrix is actually invertible.
-    if(pivotLU.isInvertible()) continue;
-    EXPECT_THROW(idealg.laplace_fa(std::real(s)), errors::NotInvertible);
   }
 }
 

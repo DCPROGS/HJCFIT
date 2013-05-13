@@ -20,17 +20,16 @@ namespace DCProgs {
 
   t_rmatrix IdealG::laplace_af(t_real s) const {
     t_rmatrix const Qaa( StateMatrix::aa() );
-    t_rmatrix const Qaf( StateMatrix::af() );
     auto const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
-    return pivotLU.inverse() * Qaf;
+    return pivotLU.inverse() * StateMatrix::af();
   }
   t_rmatrix IdealG::laplace_fa(t_real s) const {
     t_rmatrix const Qff( StateMatrix::ff() );
-    t_rmatrix const Qfa( StateMatrix::fa() );
-    Eigen::FullPivLU<t_rmatrix> pivotLU(s * t_rmatrix::Identity(Qff.rows(), Qff.rows()) - Qff);
+    auto const stuff = s * t_rmatrix::Identity(Qff.rows(), Qff.rows()) - Qff;
+    Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
-    return pivotLU.inverse() * Qfa;
+    return pivotLU.inverse() * StateMatrix::fa();
   }
 }
