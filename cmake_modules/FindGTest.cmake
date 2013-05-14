@@ -5,7 +5,12 @@ ExternalProject_Add(
     TIMEOUT 10
     # Force separate output paths for debug and release builds to allow easy
     # identification of correct lib in subsequent TARGET_LINK_LIBRARIES commands
-    CMAKE_ARGS -DBUILD_SHARED_LIBS=OFF
+    CMAKE_ARGS 
+      -DBUILD_SHARED_LIBS=OFF
+      -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+      -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+      -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+      -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
     # Disable install step
     INSTALL_COMMAND ""
     # Wrap download, configure and build steps in a script to log output
