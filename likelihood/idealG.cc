@@ -10,7 +10,7 @@ namespace DCProgs {
     if(_nopen < 1) throw errors::Domain("There should be at least one open state.");
     this->matrix = _Q;
     // Enforces row constraints.
-    for(size_t i(0); i < _Q.rows(); ++i) 
+    for(t_int i(0); i < _Q.rows(); ++i) 
     {
       this->matrix(i, i) = 0;
       this->matrix(i, i) = -this->matrix.row(i).sum();

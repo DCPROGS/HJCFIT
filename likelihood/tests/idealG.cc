@@ -48,7 +48,7 @@ TEST_F(IdealGTest, initialize){
   EXPECT_THROW(idealg.set(Q, -1), errors::Domain); 
  
   // Tests row constraints.
-  for(size_t i(0); i < Q.rows(); ++i)
+  for(t_int i(0); i < Q.rows(); ++i)
     EXPECT_DOUBLE_EQ(std::abs(idealg.get_Q().row(i).sum()), 0e0);
  
   // Test that row constraints always works.
@@ -117,3 +117,9 @@ TEST_F(IdealGTest, laplacians) {
          0.057466494865,  0.15121965913637;
   EXPECT_TRUE(((idealg.laplace_fa(1) - fa1).array().abs() < 1e-8).all());
 }
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+

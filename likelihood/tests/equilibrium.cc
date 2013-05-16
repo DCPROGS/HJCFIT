@@ -35,3 +35,9 @@ TEST_F(EquilibriumTest, initial_states){
   EXPECT_NEAR(phiF(1), 1 - 10./135., 1e-10);
   EXPECT_NEAR(phiF(2), 0e0, 1e-10);
 }
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+

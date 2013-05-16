@@ -12,7 +12,7 @@ std::mt19937& rng() {
 // Max exponential time is 5*t (t=1)
 size_t const nexponents = 5;
 // Random matrix have zero if n in [zeros[0], zeros[1][ is > zeros[2]
-size_t const zeros[3] = {0, 5, 2}; 
+t_int const zeros[3] = {0, 5, 2}; 
 // Min max size of random matrices.
 size_t const matsizes[2] = {2, 10};
 // Min max numbers in random matrices.
@@ -34,7 +34,7 @@ class Laplacian
 TEST_P(Laplacian, af) {
   idealg.set(GetParam());
   typedef std::uniform_real_distribution<t_real> t_rdist;
-  t_rdist __rnumbers{randreal[0], randreal[1]};
+  t_rdist __rnumbers(randreal[0], randreal[1]);
   auto rnumbers = [&] { return __rnumbers(rng()); };
 
   t_rmatrix const aa = GetParam().aa();
@@ -42,7 +42,7 @@ TEST_P(Laplacian, af) {
   t_int const nrows = aa.rows();
   t_rmatrix const id = t_rmatrix::Identity(nrows, nrows); 
   for(size_t i(0); i < nscales; ++i) {
-    t_real const s{rnumbers()}; 
+    t_real const s(rnumbers()); 
     t_rmatrix const factor = s * id - aa;
     t_rmatrix laplace;
     try { laplace = idealg.laplace_af(s); }
@@ -60,7 +60,7 @@ TEST_P(Laplacian, af) {
 TEST_P(Laplacian, fa) {
   idealg.set(GetParam());
   typedef std::uniform_real_distribution<t_real> t_rdist;
-  t_rdist __rnumbers{randreal[0], randreal[1]};
+  t_rdist __rnumbers(randreal[0], randreal[1]);
   auto rnumbers = [&] { return __rnumbers(rng()); };
 
   t_rmatrix const ff = GetParam().ff();
@@ -68,7 +68,7 @@ TEST_P(Laplacian, fa) {
   t_int const nrows = ff.rows();
   t_rmatrix const id = t_rmatrix::Identity(nrows, nrows); 
   for(size_t i(0); i < nscales; ++i) {
-    t_real const s{rnumbers()}; 
+    t_real const s(rnumbers()); 
     t_rmatrix const factor = s * id - ff;
     t_rmatrix laplace;
     try { laplace = idealg.laplace_fa(s); }
@@ -110,9 +110,9 @@ void add_data(std::vector<StateMatrix> &_container, t_rmatrix const &_matrix) {
 t_rmatrix random_matrix() {
   typedef std::uniform_real_distribution<t_real> t_rdist;
   typedef std::uniform_int_distribution<t_int> t_idist;
-  t_rdist __rnumbers{randreal[0], randreal[1]};
-  t_idist __matsize{int(matsizes[0]), int(matsizes[1])};
-  t_idist __isnotzero{int(zeros[0]), int(zeros[1])};
+  t_rdist __rnumbers(randreal[0], randreal[1]);
+  t_idist __matsize(matsizes[0], matsizes[1]);
+  t_idist __isnotzero(zeros[0], zeros[1]);
 
   auto matsize = [&] { return __matsize(rng()); };
   auto isnotzero = [&] { return __isnotzero(rng()) < zeros[2]; };
@@ -120,8 +120,8 @@ t_rmatrix random_matrix() {
 
   t_int N = matsize();
   t_rmatrix Q(N, N);
-  for(size_t i(0); i < N; ++i) {
-    for(size_t j(0); j < N; ++j) 
+  for(t_int i(0); i < N; ++i) {
+    for(t_int j(0); j < N; ++j) 
       Q(i, j) = rnumbers();
     Q(i, i) = 0e0;
     Q(i, i) = -Q.row(i).sum();
@@ -147,3 +147,9 @@ std::shared_ptr<std::vector<StateMatrix>> create_container() {
 
 std::shared_ptr<std::vector<StateMatrix>> testcases = create_container();
 INSTANTIATE_TEST_CASE_P(IdealG, Laplacian, ::testing::ValuesIn(*testcases));
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+

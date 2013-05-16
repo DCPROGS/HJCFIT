@@ -12,6 +12,6 @@ namespace DCProgs {
   //!          \f$M$\f is for open states \f$\mathcal{G}_{AF}(s=0) \mathcal{G}_{FA}(s=0)\f$. The
   //!          problem is solved using Eigen's linear least-square utility, adding an extra row to
   //!          the matrix to impose the second condition.
-  t_initvec equilibrium(IdealG const &, bool _open = true);
+  t_initvec MSWINDOBE equilibrium(IdealG const &, bool _open = true);
 }
 #endif 

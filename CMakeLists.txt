@@ -9,9 +9,18 @@ SET_DIRECTORY_PROPERTIES(PROPERTIES EP_PREFIX ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 enable_language(CXX)
-# GCC specifics
+
 option(tests       "Enable testing."       on)
 
+if(MSVC) 
+  set(MSWINDOBE TRUE)
+  add_definitions(/EHsc)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10")
+endif(MSVC)
+
+if(NOT HAS_CXX11_NOEXCEPT)
+  set(noexcept TRUE)
+endif()
 configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
