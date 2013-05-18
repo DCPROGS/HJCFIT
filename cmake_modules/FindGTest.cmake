@@ -1,11 +1,5 @@
-# Add gtest
-ExternalProject_Add(
-    googletest
-    SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk/
-    TIMEOUT 10
-    # Force separate output paths for debug and release builds to allow easy
-    # identification of correct lib in subsequent TARGET_LINK_LIBRARIES commands
-    CMAKE_ARGS 
+# CMake arguments for gtest.
+set(GTEST_CMAKE_ARGS 
       -DBUILD_SHARED_LIBS=OFF
       -Dgtest_force_shared_crt=ON
       -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
@@ -15,7 +9,22 @@ ExternalProject_Add(
       -DCMAKE_CXX_FLAGS_DEBUG=${CMAKE_CXX_FLAGS_DEBUG}
       -DCMAKE_CXX_FLAGS_RELWITHDEBINFO=${CMAKE_CXX_FLAGS_RELWIDTHDEBINFO}
       -DCMAKE_CXX_FLAGS_RELEASE=${CMAKE_CXX_FLAGS_RELEASE}
-      -DCMAKE_CXX_FLAGS_MINSIZEREL=${CMAKE_CXX_FLAGS_MINSIZEREL}
+      -DCMAKE_CXX_FLAGS_MINSIZEREL=${CMAKE_CXX_FLAGS_MINSIZEREL})
+if(MINGW)
+  list(APPEND GTEST_CMAKE_ARGS -Dgtest_disable_pthreads=ON)
+else(MINGW)
+  find_package(Threads)
+endif(MINGW)
+
+
+# Add gtest
+ExternalProject_Add(
+    googletest
+    SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk/
+    TIMEOUT 10
+    # Force separate output paths for debug and release builds to allow easy
+    # identification of correct lib in subsequent TARGET_LINK_LIBRARIES commands
+    CMAKE_ARGS ${GTEST_CMAKE_ARGS}
     # Disable install step
     INSTALL_COMMAND ""
     # Wrap download, configure and build steps in a script to log output
@@ -23,7 +32,7 @@ ExternalProject_Add(
     LOG_CONFIGURE ON
     LOG_BUILD ON)
 
-find_package(Threads)
+  add_definitions(-DGTEST_LANG_CXX11)
 
 macro(cxx_test name source)
 
@@ -39,9 +48,11 @@ macro(cxx_test name source)
   if(MSVC)
     target_link_libraries(test_${name} ${binary_dir}/${CMAKE_CFG_INTDIR}/gtest.lib)
   else(MSVC)
-    target_link_libraries(test_${name} ${binary_dir}/${CMAKE_FIND_LIBRARY_PREFIXES}gtest.a)
+    target_link_libraries(test_${name} ${binary_dir}/libgtest.a)
   endif(MSVC)
-  target_link_libraries(test_${name} ${CMAKE_THREAD_LIBS_INIT})
+  if(CMAKE_THREAD_LIBS_INIT)
+    target_link_libraries(test_${name} ${CMAKE_THREAD_LIBS_INIT})
+  endif(CMAKE_THREAD_LIBS_INIT)
 
   add_dependencies(test_${name} googletest)
   if(NOT "${ARGN}" STREQUAL "")

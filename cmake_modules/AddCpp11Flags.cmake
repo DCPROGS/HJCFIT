@@ -1,0 +1,30 @@
+include(CheckCXXCompilerFlag)
+
+check_cxx_compiler_flag(-std=c++11 has_std_cpp11)
+check_cxx_compiler_flag(-std=c++0x has_std_cpp0x)
+if(MINGW) 
+  check_cxx_compiler_flag(-std=gnu++11 has_std_gnupp11)
+  check_cxx_compiler_flag(-std=gnu++0x has_std_gnupp0x)
+endif(MINGW)
+if(has_std_gnupp11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+elseif(has_std_gnupp0x)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++0x")
+elseif(has_std_cpp11) 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif(has_std_cpp0x)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+endif(has_std_gnupp11)
+
+check_cxx_compiler_flag(-stdlib=libc++ has_stdlib_libcpp)
+if(has_stdlib_libcpp)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
+endif(has_stdlib_libcpp)
+
+if(MSVC) 
+  set(MSWINDOBE TRUE)
+  add_definitions(/EHsc)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10")
+endif(MSVC)
+
+
