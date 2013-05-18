@@ -20,6 +20,7 @@ endif(MINGW)
 # Add gtest
 ExternalProject_Add(
     googletest
+    PREFIX ${EXTERNAL_ROOT}
     SVN_REPOSITORY http://googletest.googlecode.com/svn/trunk/
     TIMEOUT 10
     # Force separate output paths for debug and release builds to allow easy

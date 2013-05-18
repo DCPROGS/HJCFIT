@@ -6,7 +6,7 @@ option(tests       "Enable testing."       on)
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
 # Set default ExternalProject root directory
-SET_DIRECTORY_PROPERTIES(PROPERTIES EP_PREFIX ${CMAKE_BINARY_DIR}/external)
+set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 

@@ -10,6 +10,7 @@ endif(MSVC)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
+add_dependencies(likelihood eigen)
 
 # Test subdirectory.
 add_subdirectory(tests)
