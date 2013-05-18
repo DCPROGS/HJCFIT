@@ -7,10 +7,13 @@ using namespace DCProgs;
   // Checks some assumption about eigen matrix types.
   static_assert( std::is_move_constructible<IdealG>::value,
   	       "IdealG is not move constructible." );  
-  static_assert( not std::is_trivially_move_constructible<IdealG>::value,
-  	       "IdealG is trivially move constructible." );  
   static_assert( std::is_move_assignable<IdealG>::value, 
   	       "IdealG is not move assignable." );  
+#endif
+
+#ifdef HAS_CXX11_TRIVIALTYPETRAITS
+  static_assert( not std::is_trivially_move_constructible<IdealG>::value,
+  	       "IdealG is trivially move constructible." );  
   static_assert( not std::is_trivially_move_assignable<IdealG>::value, 
   	       "IdealG is trivially move assignable." );  
 #endif

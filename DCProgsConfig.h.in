@@ -5,6 +5,7 @@
 #include <Eigen/Dense>
 
 #cmakedefine HAS_CXX11_TYPETRAITS
+#cmakedefine HAS_CXX11_TRIVIALTYPETRAITS
 #cmakedefine noexcept throw()
 #cmakedefine MSWINDOBE __declspec(dllimport)
 #if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)

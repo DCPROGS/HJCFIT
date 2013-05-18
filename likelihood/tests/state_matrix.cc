@@ -9,20 +9,22 @@ using namespace DCProgs;
   // Checks some assumption about eigen matrix types.
   static_assert( std::is_move_constructible<t_rmatrix>::value,
   	       "t_rmatrix is not move constructible." );  
-  static_assert( not std::is_trivially_move_constructible<t_rmatrix>::value,
-  	       "t_rmatrix is trivially move constructible." );  
   static_assert( std::is_move_assignable<t_rmatrix>::value, 
   	       "t_rmatrix is not move assignable." );  
-  static_assert( not std::is_trivially_move_assignable<t_rmatrix>::value, 
-  	       "t_rmatrix is trivially move assignable." );  
   
   // Checks some assumption about StateMatrix type.
   static_assert( std::is_move_constructible<StateMatrix>::value,
   	       "StateMatrix is not move constructible." );  
-  static_assert( not std::is_trivially_move_constructible<StateMatrix>::value,
-  	       "StateMatrix is trivially move constructible." );  
   static_assert( std::is_move_assignable<StateMatrix>::value, 
   	       "StateMatrix is not move assignable." );  
+#endif
+#ifdef HAS_CXX11_TRIVIALTYPETRAITS
+  static_assert( not std::is_trivially_move_constructible<t_rmatrix>::value,
+  	       "t_rmatrix is trivially move constructible." );  
+  static_assert( not std::is_trivially_move_assignable<t_rmatrix>::value, 
+  	       "t_rmatrix is trivially move assignable." );  
+  static_assert( not std::is_trivially_move_constructible<StateMatrix>::value,
+  	       "StateMatrix is trivially move constructible." );  
   static_assert( not std::is_trivially_move_assignable<StateMatrix>::value, 
   	       "StateMatrix is trivially move assignable." );  
 #endif
