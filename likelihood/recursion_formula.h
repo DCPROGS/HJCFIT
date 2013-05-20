@@ -7,9 +7,9 @@ namespace DCProgs {
 
   namespace details {
     template<class T, class T_ZERO> 
-      typename T::t_element general(T _C, t_int _i, t_int _m, t_int _l, T_ZERO const &_zero);
+      typename T::t_element general(T & _C, t_int _i, t_int _m, t_int _l, T_ZERO const &_zero);
     template<class T, class T_ZERO> 
-      typename T::t_element lzero(T _C, t_int _i, t_int _m, T_ZERO const &_zero);
+      typename T::t_element lzero(T & _C, t_int _i, t_int _m, T_ZERO const &_zero);
   }
 
   //! \brief Obtains _C[_i, _m, _l] if prior terms are known.
@@ -26,7 +26,7 @@ namespace DCProgs {
   //!        typedef t_element;
   //!
   //!        //! Returns (prior) element in recursion
-  //!        t_something operator()(t_int _i, t_int _j, t_int _m);
+  //!        t_element operator()(t_int _i, t_int _j, t_int _m);
   //!        //! \brief Returns D objects, e.g. \f$A_{iAF}e^{Q_{FF}\tau}Q_{FA}\f$.
   //!        auto getD(t_int _i) const;
   //!        //! Returns specific eigenvalue of \f$Q\f$.
@@ -42,7 +42,7 @@ namespace DCProgs {
   //! \param _l: An integer
   //! \parma _zero: A functor used to initialise intermediate objects.
   template<class T, class T_ZERO> 
-    typename T::t_element recursion_formula( T _C, t_int _i, t_int _m, t_int _l,
+    typename T::t_element recursion_formula( T & _C, t_int _i, t_int _m, t_int _l,
                                              T_ZERO const &_zero ) {
       
       // first, deal with _m == 0 and _l == 0 case.
@@ -58,7 +58,7 @@ namespace DCProgs {
   namespace details {
 
     template<class T, class T_ZERO> 
-      typename T::t_element lzero(T _C, t_int _i, t_int _m, T_ZERO const &_zero) {
+      typename T::t_element lzero(T & _C, t_int _i, t_int _m, T_ZERO const &_zero) {
 
         auto result = _zero();
         auto Di = _C.getD(_i);
@@ -83,7 +83,7 @@ namespace DCProgs {
       }
 
     template<class T, class T_ZERO> 
-      typename T::t_element general(T _C, t_int _i, t_int _m, t_int _l, T_ZERO const &_zero) {
+      typename T::t_element general(T & _C, t_int _i, t_int _m, t_int _l, T_ZERO const &_zero) {
 
         typename T::t_element result(_C.getD(_i) * _C(_i, _m-1, _l-1) / t_real(_l));
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
