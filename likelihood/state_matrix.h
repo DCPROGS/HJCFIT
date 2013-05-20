@@ -10,14 +10,14 @@ namespace DCProgs {
 
   //! \brief State matrix that can  be partitioned into open/shut states.
   //! \details In practice, this is a two tuple with some helper functions to get corners.
-  struct StateMatrix {
-
-
+  struct MSWINDOBE StateMatrix {
+ 
+ 
     //! Number of open states.
     t_int nopen; 
     //! The matrix itself.
     t_rmatrix matrix; 
-
+ 
     //! Constructor
     StateMatrix() : matrix(0,0), nopen(0) {}
     //! Constructor
@@ -37,7 +37,7 @@ namespace DCProgs {
     //! Shut to shut transitions.
     Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
-
+ 
     //! \brief Computes eigenvalues and eigenvectors
     //! \details Solves the *transpose* eigenproblem \f$\phi = \phi\cdot\mathcal{Q}\f$.
     std::tuple<t_cvector, t_cmatrix> eigenstuff() {

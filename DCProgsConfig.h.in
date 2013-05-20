@@ -1,8 +1,21 @@
 #ifndef DCPROGS_CONFIG_H
 #define DCPROGS_CONFIG_H
+
+#include <iso646.h>
 #include <Eigen/Dense>
 
 #cmakedefine HAS_CXX11_TYPETRAITS
+#cmakedefine HAS_CXX11_TRIVIALTYPETRAITS
+#cmakedefine noexcept throw()
+#cmakedefine MSWINDOBE __declspec(dllimport)
+#if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
+# undef MSWINDOBE
+# define MSWINDOBE __declspec(dllexport)
+#endif
+#ifndef MSWINDOBE 
+# define MSWINDOBE
+#endif
+
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;

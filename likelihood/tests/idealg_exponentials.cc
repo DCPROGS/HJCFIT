@@ -8,7 +8,7 @@ using namespace DCProgs;
 // Max exponential time is 5*t (t=1)
 size_t const nexponents = 5;
 // Random matrix have zero if n in [zeros[0], zeros[1][ is > zeros[2]
-size_t const zeros[3] = {0, 5, 2}; 
+t_int const zeros[3] = {0, 5, 2}; 
 // Min max size of random matrices.
 size_t const matsizes[2] = {2, 10};
 // Min max numbers in random matrices.
@@ -67,14 +67,14 @@ TEST_P(Exponentiation, ff){
 
 void add_data(std::vector<StateMatrix> &_container, t_rmatrix const &_matrix) {
   for(int i(1); i < _matrix.rows()-1; ++i)
-    _container.push_back(StateMatrix(_matrix, i));
+  { _container.emplace_back(_matrix, i); break; }
 }
 template<class T> t_rmatrix random_matrix(T && _rng) {
   typedef std::uniform_real_distribution<t_real> t_rdist;
   typedef std::uniform_int_distribution<t_int> t_idist;
-  t_rdist __rnumbers{randreal[0], randreal[1]};
-  t_idist __matsize{int(matsizes[0]), int(matsizes[1])};
-  t_idist __isnotzero{int(zeros[0]), int(zeros[1])};
+  t_rdist __rnumbers(randreal[0], randreal[1]);
+  t_idist __matsize(matsizes[0], matsizes[1]);
+  t_idist __isnotzero(zeros[0], zeros[1]);
 
   auto matsize = [&] { return __matsize(_rng); };
   auto isnotzero = [&] { return __isnotzero(_rng) < zeros[2]; };
@@ -82,8 +82,8 @@ template<class T> t_rmatrix random_matrix(T && _rng) {
 
   t_int N = matsize();
   t_rmatrix Q(N, N);
-  for(size_t i(0); i < N; ++i) {
-    for(size_t j(0); j < N; ++j) 
+  for(t_int i(0); i < N; ++i) {
+    for(t_int j(0); j < N; ++j) 
       Q(i, j) = rnumbers();
     Q(i, i) = 0e0;
     Q(i, i) = -Q.row(i).sum();
@@ -93,7 +93,7 @@ template<class T> t_rmatrix random_matrix(T && _rng) {
 
 std::shared_ptr<std::vector<StateMatrix>> create_container() {
 
-  std::shared_ptr<std::vector<StateMatrix>> result(new std::vector<StateMatrix>);
+  std::shared_ptr<std::vector<StateMatrix>> result(new std::vector<StateMatrix>());
 
   t_rmatrix Q(5, 5);
   Q <<  -3050,        50,  3000,      0,    0,
@@ -110,3 +110,10 @@ std::shared_ptr<std::vector<StateMatrix>> create_container() {
 
 std::shared_ptr<std::vector<StateMatrix>> testcases = create_container();
 INSTANTIATE_TEST_CASE_P(IdealG, Exponentiation, ::testing::ValuesIn(*testcases));
+
+
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
+

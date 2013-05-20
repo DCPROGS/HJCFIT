@@ -16,7 +16,7 @@ namespace DCProgs {
   //! \brief Ideal transition matrix of open and shut intervals
   //! \details Given a transition matrix $Q$ it is possible to figure out the evolution of any given
   //! system. 
-  class IdealG : protected StateMatrix {
+  class MSWINDOBE IdealG : protected StateMatrix {
 
     //! Just trying to figure out a complex return type...
     typedef decltype( (t_real(0) * std::declval<const StateMatrix>().ff()).exp()
@@ -54,8 +54,8 @@ namespace DCProgs {
       t_Zero aa(t_real t) const 
         { return std::move(t_rmatrix::Zero(nopen, nopen)); }
       //! Shut to shut transitions.
-      t_rmatrix ff(t_real t) const { 
-        long const n{this->matrix.rows() - this->nopen};
+      t_Zero ff(t_real t) const { 
+        long const n(this->matrix.rows() - this->nopen);
         return t_rmatrix::Zero(n, n);
       }
       //! Shut to open transitions.
@@ -70,7 +70,7 @@ namespace DCProgs {
         { return t_rmatrix::Zero(nopen, nopen); }
       //! Laplace transform of shut to shut transitions.
       t_Zero laplace_ff(t_real s) const {
-        long const N{this->matrix.rows() - this->nopen};
+        long const N(this->matrix.rows() - this->nopen);
         return t_rmatrix::Zero(N, N);
       }
       //! Laplace transform of shut to open transitions.
