@@ -7,5 +7,6 @@ if(tests)
   cxx_test(equilibrium equilibrium.cc likelihood)
   cxx_test(time_filter time_filter.cc likelihood)
   cxx_test(asymptotes asymptotes.cc likelihood)
+  cxx_test(recursion recursion_formula.cc likelihood)
 
 endif(tests)
