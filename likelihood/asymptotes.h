@@ -44,31 +44,5 @@ namespace DCProgs {
       t_rmatrix ff_eigenvectors;
   };
 
-
-  //! \brief Computes H(s) with no frills
-  //! \details This is meant to go in some interface later on. Just not sure what it should look
-  //!          like just yet. The equation is 
-  //!          \f\[Q_{AA}+ Q_{AF} \left[\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\right]Q_{FA}\f\].
-  //! \param[in] _Qaa: The "aa" partition of the transition matrix
-  //! \param[in] _Qaf: The "af" partition of the transition matrix
-  //! \param[in] _eigenvalues_ff: The eigenvalues of the "ff" partition of the transition matrix
-  //! \param[in] _trans_ff: The transform to diagonalise the "ff" partition of the transition matrix
-  //! \param[in] _invtrans_ff: The inverse transform to diagonalise the "ff" partition of the
-  //!                          transition matrix. We should have
-  //!                          \f$Q_{FF} = T \cdot \mathrm{diagm}(\epsilon) \cdot T^{-1}\f$.
-  //! \param[in] _Qfa: The "fa" partition of the transition matrix
-  //! \param[in] _s: the value for which to compute H(s).
-  //! \param[in] _tau: critical time.
-  //! \param[in] _zero: Value below which a value is considered == 0. Used when evaluating integral.
-  t_rmatrix compute_H(t_rmatrix const &_Qaa, 
-                      t_rmatrix const &_Qaf,
-                      t_rvector const &_eigenvalues_ff,
-                      t_rmatrix const &_trans_ff,
-                      t_rmatrix const &_invtrans_ff,
-                      t_rmatrix const &_Qfa,
-                      t_real const _s,
-                      t_real const _tau, 
-                      t_real const _zero = 1e-12);
-
 }
 #endif 
