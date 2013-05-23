@@ -15,6 +15,12 @@
 #ifndef MSWINDOBE 
 # define MSWINDOBE
 #endif
+#cmakedefine DCPROGS_NPY_LONG_DOUBLE
+#cmakedefine DCPROGS_NPY_BOOL
+#cmakedefine DCPROGS_NPY_ARRAY
+#cmakedefine DCPROGS_NPY_ENABLEFLAGS
+#cmakedefine NUMPY_VERSION_MAJOR @NUMPY_VERSION_MAJOR@
+#cmakedefine NUMPY_VERSION_MINOR @NUMPY_VERSION_MINOR@
 
 namespace DCProgs {
   //! Types of reals across DCProgs.

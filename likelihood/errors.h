@@ -44,6 +44,21 @@ namespace DCProgs {
         NotInvertible   (std::string const &_message) noexcept 
                       : Domain(_message), std::domain_error(_message) {};
     };
+
+    //! Exception thrown in python module when converting to C types.
+    class WrongPythonType : public Root {
+      public:
+        WrongPythonType(std::string const &_message) noexcept : Root() {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try { return message_.c_str(); } catch(...) { return ""; }
+        }
+        virtual ~WrongPythonType() noexcept {};
+      private:
+        std::string message_;
+    };
   }
 }
 #endif

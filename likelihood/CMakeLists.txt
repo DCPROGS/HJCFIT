@@ -14,3 +14,4 @@ add_dependencies(likelihood eigen)
 
 # Test subdirectory.
 add_subdirectory(tests)
+add_subdirectory(python)
