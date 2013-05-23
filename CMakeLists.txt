@@ -29,6 +29,21 @@ if(pythonBindings)
   include(${SWIG_USE_FILE})
   find_package(PythonLibs REQUIRED)
   find_package(numpy REQUIRED) 
+  if(NOT PYINSTALL_DIR)
+    execute_process( 
+      COMMAND ${PYTHON_EXECUTABLE} -c "from distutils.sysconfig import get_python_lib; print get_python_lib()"
+      OUTPUT_VARIABLE PYINSTALL_DIR
+    )
+    if(PYINSTALL_DIR )
+      string (STRIP ${PYINSTALL_DIR} PYINSTALL_DIR)
+      set(PYINSTALL_DIR ${PYINSTALL_DIR} CACHE STRING "Version of the Python interpreter.")
+    else()
+      set( PYINSTALL_DIR lib/python${PYTHON_VERSION}/site-packages/ 
+           CACHE PATH "Python modules will be installed here." )
+    endif(PYINSTALL_DIR)
+    mark_as_advanced(PYINSTALL_DIR)
+    MESSAGE(STATUS "[Python] installation directory: ${PYINSTALL_DIR}")
+  endif(NOT PYINSTALL_DIR)
 endif(pythonBindings)
 
 if(NOT HAS_CXX11_NOEXCEPT)
@@ -38,5 +53,7 @@ configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
 )
+
+
 
 add_subdirectory(likelihood)
