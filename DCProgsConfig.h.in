@@ -15,6 +15,8 @@
 #ifndef MSWINDOBE 
 # define MSWINDOBE
 #endif
+
+#cmakedefine DCPROGS_PYTHON_BINDINGS
 #cmakedefine DCPROGS_NPY_LONG_DOUBLE
 #cmakedefine DCPROGS_NPY_BOOL
 #cmakedefine DCPROGS_NPY_ARRAY

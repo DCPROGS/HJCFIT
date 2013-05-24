@@ -52,7 +52,7 @@ namespace DCProgs {
     
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL)
+      PyObject* wrap_to_numpy_(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL)
       {
         typedef type<typename Eigen::DenseBase<T_DERIVED>::Scalar> t_ScalarType;
         npy_intp dims[2] = { _in.rows(), _in.cols() };
@@ -96,9 +96,23 @@ namespace DCProgs {
             for(int j(0); j < _in.cols(); ++j)
               *((typename t_ScalarType::np_type*) PyArray_GETPTR2(result, i, j)) = _in(i, j);
         }
-        if(PyArray_FLAGS(result) & NPY_ARRAY_WRITEABLE)
-          PyArray_CLEARFLAGS(result, NPY_ARRAY_WRITEABLE);
         return (PyObject*)result;
+      }
+
+
+    //! Convert/wrap a matrix to numpy.
+    template<class T_DERIVED>
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &&_in, PyObject *_parent = NULL) {
+        PyObject* const result = wrap_to_numpy_(_in, _parent);
+        PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
+        return result;
+      }
+    //! Convert/wrap a matrix to numpy.
+    template<class T_DERIVED>
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &_in, PyObject *_parent = NULL) {
+        PyObject* const result = wrap_to_numpy_(_in, _parent);
+        PyArray_ENABLEFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
+        return result;
       }
 
     namespace { namespace details {
@@ -119,8 +133,8 @@ namespace DCProgs {
                                      (t_int)(ndim == 2 ? strides[1]: strides[0] * dims[0]) };
             
             t_Map result( (T*)PyArray_DATA(_in), realdims[0], realdims[1], 
-                          t_Stride( realstrides[0] * sizeof(char) / sizeof(T),
-                                    realstrides[1] * sizeof(char) / sizeof(T) ) );
+                          t_Stride( realstrides[1] * sizeof(char) / sizeof(T),
+                                    realstrides[0] * sizeof(char) / sizeof(T) ) );
             return result;
          }
     }}
@@ -132,7 +146,7 @@ namespace DCProgs {
     //! \return An eigen object which is a copy of the numpy input.
     DCProgs::t_rmatrix map_to_rmatrix(PyArrayObject *_in) {
        if(not PyArray_Check(_in))
-         throw DCProgs::errors::WrongPythonType("Expected a numpy array as input.");
+         throw DCProgs::errors::PythonTypeError("Expected a numpy array as input.");
        int const type = PyArray_TYPE(_in);
 #      ifdef DCPROGS_MACRO
 #        error DCPROGS_MACRO is already defined.
@@ -153,7 +167,7 @@ namespace DCProgs {
        else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
        else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
 #      undef DCPROGS_MACRO
-       throw DCProgs::errors::WrongPythonType("Unexpect numpy array type");
+       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
        return t_rmatrix();
     }
 

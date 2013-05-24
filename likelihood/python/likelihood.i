@@ -33,8 +33,12 @@
 # error DCPROGS_CATCH already defined.
 #endif 
 #define DCPROGS_CATCH                                                      \
-    catch (DCProgs::errors::WrongPythonType &_e) {                         \
+    catch (DCProgs::errors::PythonTypeError &_e) {                         \
       PyErr_SetString(PyExc_TypeError, _e.what());                         \
+      SWIG_fail;                                                           \
+    }                                                                      \
+    catch (DCProgs::errors::PythonValueError &_e) {                        \
+      PyErr_SetString(PyExc_ValueError, _e.what());                        \
       SWIG_fail;                                                           \
     } catch(...) {                                                         \
       PyErr_SetString(PyExc_RuntimeError, "Caught unknown exception.");    \
@@ -73,8 +77,14 @@ namespace DCProgs {
 
     %extend {
       StateMatrix(PyObject *_in, int _nopen) {
-        if(not PyArray_Check(_in)) throw DCProgs::errors::WrongPythonType("Expected a numpy array on input.");
+        if(_nopen < 0)
+          throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
+        if(not PyArray_Check(_in))
+          throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
         DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_in);
+        if(_nopen > std::max(matrix.rows(), matrix.cols()) )
+          throw DCProgs::errors::PythonValueError(
+                  "Number of open states cannot be larger than the number states.");
         return new DCProgs::StateMatrix(std::move(matrix), _nopen);
       }
 

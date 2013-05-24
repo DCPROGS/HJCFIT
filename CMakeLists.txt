@@ -44,6 +44,8 @@ if(pythonBindings)
     mark_as_advanced(PYINSTALL_DIR)
     MESSAGE(STATUS "[Python] installation directory: ${PYINSTALL_DIR}")
   endif(NOT PYINSTALL_DIR)
+
+  set(DCPROGS_PYTHON_BINDINGS True)
 endif(pythonBindings)
 
 if(NOT HAS_CXX11_NOEXCEPT)
