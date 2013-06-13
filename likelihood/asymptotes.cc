@@ -8,7 +8,7 @@
 namespace DCProgs {
 
   // Only the God of linkers knows why we need this declaration twice.
-  constexpr t_real DeterminantEq :: ZERO;
+  constexpr t_real DeterminantEq :: ZERO = 1e-12;
 
   DeterminantEq :: DeterminantEq   (StateMatrix const & _matrix, t_real _tau, bool _doopen)
                                  : tau_(_tau), matrix_(_matrix), ff_eigenvalues_(),
@@ -57,7 +57,7 @@ namespace DCProgs {
            matrix_.af() * ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_ * matrix_.fa(); 
   }
 
-  std::ostream& operator<<(std::ostream& _stream, DeterminantEq const & _self) {
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const & _self) {
     
     return _stream << "Determinant equation:\n"
                    << "=====================\n\n" 

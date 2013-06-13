@@ -16,6 +16,8 @@
 # define MSWINDOBE
 #endif
 
+#cmakedefine constexpr
+
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;

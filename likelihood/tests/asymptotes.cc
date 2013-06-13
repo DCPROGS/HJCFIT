@@ -150,7 +150,7 @@ TEST_F(DeterminantEqTest, s_derivative_from_H) {
   for(t_real tau: taus) {
 
     auto approx = [&determinant, &tau](t_real _s) { return determinant.H(_s, tau); };
-    auto exact = [&determinant, &tau](t_real _s) { 
+    auto exact = [&determinant, &tau](t_real _s) -> t_rmatrix { 
       t_rmatrix const result = determinant.s_derivative(_s, tau); 
       return result - t_rmatrix::Identity(result.rows(), result.cols());
     };

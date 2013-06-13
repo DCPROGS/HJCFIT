@@ -10,13 +10,13 @@ namespace DCProgs {
   class DeterminantEq;
 
   //! Dumps Determinantal equation to stream
-  std::ostream& operator<<(std::ostream&, DeterminantEq const &);
+  MSWINDOBE std::ostream& operator<<(std::ostream&, DeterminantEq const &);
 
   //! A functor to compute asymptotic missed event G.
   //! \detail The whole implementation is done w.r.t. to AF transitions. 
   //!         However, in practice, this is sufficient to compute FA transitions as well, by messing
   //!         with the input matrix.
-  class DeterminantEq {
+  class MSWINDOBE DeterminantEq {
     
     friend std::ostream& operator<<(std::ostream&, DeterminantEq const &);
 
@@ -95,7 +95,7 @@ namespace DCProgs {
       //! The inverse eigenvectors of the ff matrix. Computed once.
       t_rmatrix ff_eigenvectors_inv_;
       //! Hard coded static constant zero.
-      constexpr static t_real ZERO = 1e-12;
+      constexpr static t_real ZERO;
   };
 
 }
