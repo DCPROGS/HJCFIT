@@ -27,32 +27,63 @@ namespace DCProgs {
       //! \param[in] _tau: Missed event resolution.
       //! \param[in] _doopen: Whether to do AF or FA.
       DeterminantEq(StateMatrix const & _matrix, t_real _tau, bool _doopen=true);
+      //! Copy constructor
+      DeterminantEq   (DeterminantEq const & _c)
+                    : tau_(_c.tau_), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
+                      ff_eigenvectors_(_c.ff_eigenvectors_), 
+                      ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
 
       //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
+      //! \param[in] _s: Value of the laplacian scale.
       inline t_rmatrix H(t_real _s) const {
         return matrix_.aa() + matrix_.af() * this->integral_(_s) * matrix_.fa();
       }
+      //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
+      //! \param[in] _s: Value of the laplacian scale.
+      //! \param[in] _tau: Value of tau for duration of call.
+      inline t_rmatrix H(t_real _s, t_real _tau) const {
+        return DeterminantEq(*this, _tau).H(_s);
+      }
 
       //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
+      //! \param[in] _s: Value of the laplacian scale.
       inline t_real operator()(t_real _s) const { 
         return (_s * this->id_() - H(_s)).determinant();
       }
+      //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
+      //! \param[in] _s: Value of the laplacian scale.
+      //! \param[in] _tau: Value of tau for duration of call.
+      inline t_real operator()(t_real _s, t_real _tau) const { 
+        return (_s * this->id_() - H(_s, _tau)).determinant();
+      }
       //! Derivative along _s
       t_rmatrix s_derivative(t_real _s) const;
+      //! Derivative along _s
+      inline t_rmatrix s_derivative(t_real _s, t_real _tau) const {
+        return DeterminantEq(*this, _tau).s_derivative(_s);
+      }
 
       //! Get resolution
       t_real get_tau() const { return tau_; }
       //! Set resolution
       void set_tau(t_real const &_tau) { tau_ = _tau; }
 
-    public:
+    protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
       t_rmatrix integral_(t_real _s) const;
       //! Just the identity, just to write shorter code.
       inline auto id_() const ->decltype(t_rmatrix::Identity(1, 1)) 
         { return t_rmatrix::Identity(matrix_.nopen, matrix_.nopen); }
 
-    public:
+
+    private:
+      //! Copy constructor for changing tau in constant functions.
+      DeterminantEq   (DeterminantEq const & _c, t_real _tau)
+                    : tau_(_tau), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
+                      ff_eigenvectors_(_c.ff_eigenvectors_), 
+                      ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
+
+    protected:
       //! Time below which events are missed
       t_real tau_;
       //! The transition state matrix on which to act.
