@@ -6,6 +6,7 @@
 
 #cmakedefine HAS_CXX11_TYPETRAITS
 #cmakedefine HAS_CXX11_TRIVIALTYPETRAITS
+#cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine noexcept throw()
 #cmakedefine MSWINDOBE __declspec(dllimport)
 #if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
@@ -15,8 +16,6 @@
 #ifndef MSWINDOBE 
 # define MSWINDOBE
 #endif
-
-#cmakedefine constexpr
 
 namespace DCProgs {
   //! Types of reals across DCProgs.

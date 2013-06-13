@@ -94,8 +94,13 @@ namespace DCProgs {
       t_rmatrix ff_eigenvectors_;
       //! The inverse eigenvectors of the ff matrix. Computed once.
       t_rmatrix ff_eigenvectors_inv_;
-      //! Hard coded static constant zero.
-      constexpr static t_real ZERO;
+#     ifdef HAS_CXX11_CONSTEXPR
+        //! Hard coded static constant zero.
+        constexpr static t_real ZERO = 1e-12;
+#     else
+        //! Hard coded static constant zero.
+        const static t_real ZERO;
+#     endif
   };
 
 }

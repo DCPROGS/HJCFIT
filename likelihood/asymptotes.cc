@@ -7,8 +7,13 @@
 
 namespace DCProgs {
 
-  // Only the God of linkers knows why we need this declaration twice.
-  constexpr t_real DeterminantEq :: ZERO = 1e-12;
+# ifdef HAS_CXX11_CONSTEXPR
+    // Only the God of linkers knows why we need this declaration twice.
+    constexpr t_real DeterminantEq :: ZERO;
+# else
+    // Only the God of linkers knows why we need this declaration twice.
+    const t_real DeterminantEq :: ZERO = 1e-12;
+# endif
 
   DeterminantEq :: DeterminantEq   (StateMatrix const & _matrix, t_real _tau, bool _doopen)
                                  : tau_(_tau), matrix_(_matrix), ff_eigenvalues_(),
