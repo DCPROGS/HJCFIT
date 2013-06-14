@@ -89,7 +89,7 @@ TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero_check_derivative) {
   EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
 }
 
-// Test non-zero critical tau using numerical and enalytical derivatives.
+// Test non-zero critical tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, from_tau_derivative) {
 
   StateMatrix const states(Q, 2);
@@ -113,7 +113,7 @@ TEST_F(DeterminantEqTest, from_tau_derivative) {
   }
 }
 
-// Test s derivatives for non-zero critical tau using numerical and enalytical derivatives.
+// Test s derivatives for non-zero critical tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 
   StateMatrix const states(Q, 2);

@@ -23,7 +23,7 @@ namespace DCProgs {
     public:
       //! Constructor. 
       //! \param[in] _matrix: The transition state matrix for which to compute
-      //!                     \f$^eG_{AF}(t\righarrow\infty)\f$
+      //!                     \f$^eG_{AF}(t\rightarrow\infty)\f$
       //! \param[in] _tau: Missed event resolution.
       //! \param[in] _doopen: Whether to do AF or FA.
       DeterminantEq(StateMatrix const & _matrix, t_real _tau, bool _doopen=true);
