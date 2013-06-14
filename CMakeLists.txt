@@ -36,7 +36,7 @@ if(pythonBindings)
     )
     if(PYINSTALL_DIR )
       string (STRIP ${PYINSTALL_DIR} PYINSTALL_DIR)
-      set(PYINSTALL_DIR ${PYINSTALL_DIR} CACHE STRING "Version of the Python interpreter.")
+      set(PYINSTALL_DIR ${PYINSTALL_DIR} CACHE PATH "Version of the Python interpreter.")
     else()
       set( PYINSTALL_DIR lib/python${PYTHON_VERSION}/site-packages/ 
            CACHE PATH "Python modules will be installed here." )
