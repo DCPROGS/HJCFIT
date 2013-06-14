@@ -17,6 +17,10 @@ include(${CMAKE_MODULE_PATH}/CheckCXX11Features.cmake)
 if(NOT HAS_CXX11_NOEXCEPT)
   set(noexcept TRUE)
 endif()
+if(NOT HAS_CXX11_NOEXCEPT)
+  set(constexpr TRUE)
+endif()
+
 configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"

@@ -12,5 +12,6 @@ if(tests)
   cxx_test(idealG_laplacian idealG_laplacian.cc likelihood)
   cxx_test(equilibrium equilibrium.cc likelihood)
   cxx_test(time_filter time_filter.cc likelihood)
+  cxx_test(asymptotes asymptotes.cc likelihood)
 
 endif(tests)

@@ -1,5 +1,5 @@
 add_library(likelihood SHARED state_matrix.h errors.h idealG.h idealG.cc 
-            equilibrium.h equilibrium.cc time_filter.h time_filter.cc)
+            equilibrium.h equilibrium.cc time_filter.h time_filter.cc asymptotes.h asymptotes.cc)
 
 # Windows + Visual studio specifics.
 if(MSVC)
