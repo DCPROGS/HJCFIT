@@ -1,4 +1,5 @@
-add_library(likelihood SHARED state_matrix.h errors.h idealG.h idealG.cc equilibrium.h equilibrium.cc)
+add_library(likelihood SHARED state_matrix.h errors.h idealG.h idealG.cc equilibrium.h equilibrium.cc
+                              asymptotes.h asymptotes.cc )
 
 # Windows + Visual studio specifics.
 if(MSVC)

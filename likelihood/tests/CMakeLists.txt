@@ -11,5 +11,6 @@ if(tests)
   cxx_test(idealG_exponentials idealg_exponentials.cc likelihood)
   cxx_test(idealG_laplacian idealG_laplacian.cc likelihood)
   cxx_test(equilibrium equilibrium.cc likelihood)
+  cxx_test(asymptotes asymptotes.cc likelihood)
 
 endif(tests)

@@ -26,6 +26,15 @@ namespace DCProgs {
                   : matrix(_c), nopen(_nopen) {}
   
     //! Open to open transitions.
+    Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
+    //! Open to shut transitions.
+    Eigen::Block<t_rmatrix> af() { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
+    //! Shut to open transitions.
+    Eigen::Block<t_rmatrix> fa() { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
+    //! Shut to shut transitions.
+    Eigen::Block<t_rmatrix> ff() 
+      { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
+    //! Open to open transitions.
     Eigen::Block<t_rmatrix const> aa() const 
       { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
