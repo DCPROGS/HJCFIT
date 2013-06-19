@@ -115,20 +115,20 @@ if(WIN32)
   find_library(NUMPY_LIBRARIES npymath
     PATHS
     ${numpy_search_path}
-    ${PYINSTALL_DIR}
+    ${PYTHON_PKG_DIR}
     PATH_SUFFIXES
     numpy/core/lib
     NO_DEFAULT_PATH
   )
   if(NOT NUMPY_LIBRARIES)
-    message(FATAL_ERROR "[Numpy] Could not find ${NUMPY_LIBRARIES} ${PYINSTALL_DIR}/numpy/lib")
+    message(FATAL_ERROR "[Numpy] Could not find ${NUMPY_LIBRARIES} ${PYTHON_PKG_DIR}/numpy/lib")
   endif(NOT NUMPY_LIBRARIES)
 else(WIN32)
   macro(find_numpy_component library numpylibout)
     find_library (${numpylibout} ${library}
       PATHS
       ${numpy_search_path}
-      ${PYINSTALL_DIR}
+      ${PYTHON_PKG_DIR}
       PATH_SUFFIXES
       python
       core
@@ -137,7 +137,7 @@ else(WIN32)
       NO_DEFAULT_PATH
     )
     if(NOT ${numpylibout})
-      message(FATAL_ERROR "[Numpy] Could not find ${library} ${PYINSTALL_DIR}/numpy/lib")
+      message(FATAL_ERROR "[Numpy] Could not find ${library} ${PYTHON_PKG_DIR}/numpy/lib")
     endif(NOT ${numpylibout})
     get_filename_component (${numpylibout} ${${numpylibout}}/${library} ABSOLUTE)
   endmacro(find_numpy_component)

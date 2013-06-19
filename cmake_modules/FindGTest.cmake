@@ -60,6 +60,6 @@ macro(cxx_test name source)
     target_link_libraries(test_${name} ${ARGN})
   endif(NOT "${ARGN}" STREQUAL "")
 
-  add_test(test_${name} ${EXECUTABLE_OUTPUT_PATH}/test_${name}
+  add_test(cxx_${name} ${EXECUTABLE_OUTPUT_PATH}/test_${name}
               --gtest_output=xml:${CMAKE_BINARY_DIR}/test-results/test_${name}.xml)
 endmacro()
