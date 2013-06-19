@@ -16,5 +16,7 @@ endif(pythonBindings)
 if(pythonBindings AND tests)
 
   feature_test(state_matrix features/state_matrix.feature)
+  
+  set(PATH_STRING "${TEST_INSTALL_DIRECTORY}/lib;$ENV{PATH}")
 
 endif(pythonBindings AND tests)

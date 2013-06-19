@@ -78,17 +78,29 @@ if(tests AND pythonBindings)
     mark_as_advanced(TEST_INSTALL_DIRECTORY)
   endif(NOT DEFINED TEST_INSTALL_DIRECTORY)
 
-  file(TO_NATIVE_PATH ${TEST_INSTALL_DIRECTORY} TESTNATDIR)
   file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake
        "set(CTEST_CUSTOM_PRE_TEST \"\\\"${CMAKE_COMMAND}\\\""
-             "  -DCMAKE_INSTALL_PREFIX=${TESTNATDIR}"
-             "  -P \\\"${CMAKE_BINARY_DIR}/cmake_install.cmake\\\"\")\n" )
-  unset(TESTNATDIR)
+             "  -DCMAKE_INSTALL_PREFIX=${TEST_INSTALL_DIRECTORY}"
+             "  -P \\\"${CMAKE_BINARY_DIR}/cmake_install.cmake\\\"\")\n")
 
   # A macro to run tests via behave.
   function(feature_test name filename)
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${TEST_INSTALL_DIRECTORY}/${CMAKE_PYINSTALL_PREFIX}/..
-             COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -q --summary ${ARGN})
+             COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -q ${ARGN})
+    if(MSVC) 
+      set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
+      set(PATH_STRING "${TEST_INSTALL_DIRECTORY}/lib;$ENV{PATH}")
+      STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
+      STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
+      set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
+                           "PATH=${PATH_STRING}")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+      set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
+                           "DYLD_LIBRARY_PATH=${TESTNATDIR}/lib:$ENV{DYLD_LIBRARY_PATH}")
+    elseif(UNIX)
+      set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
+                           "LD_LIBRARY_PATH=${TESTNATDIR}/lib:$ENV{LD_LIBRARY_PATH}")
+    endif(MSVC)
   endfunction(feature_test)
 endif(tests AND pythonBindings)
