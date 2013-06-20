@@ -3,6 +3,21 @@
 find_package(PythonLibs REQUIRED)
 find_package(PythonInterp REQUIRED)
 
+if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
+  execute_process( 
+    COMMAND ${PYTHON_EXECUTABLE} -c "import sys; print(\"%i.%i\" % sys.version_info[:2])"
+    OUTPUT_VARIABLE PYTHON_VERSION
+  )
+  if( PYTHON_VERSION )
+    string (STRIP ${PYTHON_VERSION} PYTHON_VERSION)
+    set(PYTHON_VERSION ${PYTHON_VERSION} CACHE STRING "Version of the Python interpreter.")
+    mark_as_advanced(PYTHON_VERSION)
+    MESSAGE(STATUS "[Python] Version: ${PYTHON_VERSION}")
+  else( PYTHON_VERSION )
+    MESSAGE(STATUS "Could not determine python version.")
+  endif( PYTHON_VERSION )
+endif(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
+
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
@@ -78,10 +93,7 @@ if(tests AND pythonBindings)
     mark_as_advanced(TEST_INSTALL_DIRECTORY)
   endif(NOT DEFINED TEST_INSTALL_DIRECTORY)
 
-  file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake
-       "set(CTEST_CUSTOM_PRE_TEST \"\\\"${CMAKE_COMMAND}\\\""
-             "  -DCMAKE_INSTALL_PREFIX=${TEST_INSTALL_DIRECTORY}"
-             "  -P \\\"${CMAKE_BINARY_DIR}/cmake_install.cmake\\\"\")\n")
+  include(${CMAKE_MODULE_PATH}/CTestCustomPreWorkAround.cmake)
 
   # A macro to run tests via behave.
   function(feature_test name filename)
@@ -97,10 +109,10 @@ if(tests AND pythonBindings)
                            "PATH=${PATH_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "DYLD_LIBRARY_PATH=${TESTNATDIR}/lib:$ENV{DYLD_LIBRARY_PATH}")
+                           "DYLD_LIBRARY_PATH=${TEST_INSTALL_DIRECTORY}/lib:$ENV{DYLD_LIBRARY_PATH}")
     elseif(UNIX)
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "LD_LIBRARY_PATH=${TESTNATDIR}/lib:$ENV{LD_LIBRARY_PATH}")
+                           "LD_LIBRARY_PATH=${TEST_INSTALL_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
     endif(MSVC)
   endfunction(feature_test)
 endif(tests AND pythonBindings)

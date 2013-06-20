@@ -142,8 +142,8 @@ else(WIN32)
     get_filename_component (${numpylibout} ${${numpylibout}}/${library} ABSOLUTE)
   endmacro(find_numpy_component)
 
-  find_numpy_component(multiarray.pyd NUMPY_MULTIARRAY_LIBRARY)
-  find_numpy_component(scalarmath.pyd NUMPY_SCALARMATH_LIBRARY)
+  find_numpy_component(multiarray.so NUMPY_MULTIARRAY_LIBRARY)
+  find_numpy_component(scalarmath.so NUMPY_SCALARMATH_LIBRARY)
 
   set(NUMPY_LIBRARIES ${NUMPY_MULTIARRAY_LIBRARY} ${NUMPY_SCALARMATH_LIBRARY})
 endif(WIN32)
