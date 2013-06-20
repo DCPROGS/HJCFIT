@@ -31,8 +31,8 @@ template<class T_APPROX, class T_EXACT>
     t_rmatrix const approx = _approx(_x + _dx) - _approx(_x);
     t_rmatrix const exact  = _dx * _exact(_x);
     t_rmatrix const diff = approx - exact;
-    t_bmatrix condition =    (diff.array().abs() < M * order2.array().abs())
-                          or (diff.array().abs() < 1e-11);
+    t_bmatrix condition =   (diff.array().abs() < M * order2.array().abs()).eval()
+                          + (diff.array().abs() < 1e-11).eval();
     EXPECT_TRUE( condition.all() ) << _message 
       << "Params:  x=" << _x << " -- dx=" << _dx << "\n"
       << "approx: \n" << approx << "\n"
@@ -89,7 +89,7 @@ TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero_check_derivative) {
   EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
 }
 
-// Test non-zero critical tau using numerical and enalytical derivatives.
+// Test non-zero critical tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, from_tau_derivative) {
 
   StateMatrix const states(Q, 2);
@@ -113,7 +113,7 @@ TEST_F(DeterminantEqTest, from_tau_derivative) {
   }
 }
 
-// Test s derivatives for non-zero critical tau using numerical and enalytical derivatives.
+// Test s derivatives for non-zero critical tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 
   StateMatrix const states(Q, 2);
