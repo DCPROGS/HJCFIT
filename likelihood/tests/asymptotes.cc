@@ -31,8 +31,8 @@ template<class T_APPROX, class T_EXACT>
     t_rmatrix const approx = _approx(_x + _dx) - _approx(_x);
     t_rmatrix const exact  = _dx * _exact(_x);
     t_rmatrix const diff = approx - exact;
-    t_bmatrix condition =    (diff.array().abs() < M * order2.array().abs())
-                          or (diff.array().abs() < 1e-11);
+    t_bmatrix condition =   (diff.array().abs() < M * order2.array().abs()).eval()
+                          + (diff.array().abs() < 1e-11).eval();
     EXPECT_TRUE( condition.all() ) << _message 
       << "Params:  x=" << _x << " -- dx=" << _dx << "\n"
       << "approx: \n" << approx << "\n"

@@ -6,14 +6,15 @@
 #include "../time_filter.h"
 using namespace DCProgs;
 
+t_int  const Nmax[2] = {6, 100};
+t_real const tau = 1;
+t_real const alpha = 10;
+
 class TestTimeFilter : public ::testing::TestWithParam<t_int> { 
   public:
     TestTimeFilter() { mersenne.seed(rd()); }
   protected:
     std::mt19937 mersenne;
-    t_int  const Nmax[2] = {6, 100};
-    t_real const tau = 1;
-    t_real const alpha = 10;
     std::random_device rd;
 };
 
@@ -66,8 +67,8 @@ t_int nbfiltered(t_rvector const &_vector, t_real _tau) {
 
 TEST_P(TestTimeFilter, nbfiltered) {
   typedef std::uniform_int_distribution<t_int> t_idist;
-  t_int const n = t_idist(this->Nmax[0], this->Nmax[1])(this->mersenne);
-  t_int const N = t_idist(this->Nmax[0], this->Nmax[1])(this->mersenne) + n;
+  t_int const n = t_idist(Nmax[0], Nmax[1])(this->mersenne);
+  t_int const N = t_idist(Nmax[0], Nmax[1])(this->mersenne) + n;
   t_rvector const series = fake_time_series(N, n, tau, alpha, this->mersenne); 
   auto const intervals = (series.tail(N) - series.head(N)).array();
   EXPECT_EQ(series.size(), N+1);
