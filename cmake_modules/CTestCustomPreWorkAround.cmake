@@ -1,9 +1,4 @@
-if(WIN32)
-  file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake
-       "set(CTEST_CUSTOM_PRE_TEST \"\\\"${CMAKE_COMMAND}\\\""
-             "  -DCMAKE_INSTALL_PREFIX=${TEST_INSTALL_DIRECTORY}"
-             "  -P \\\"${CMAKE_BINARY_DIR}/cmake_install.cmake\\\"\")\n")
-else(WIN32)
+if(APPLE)
   # Newer cmakes can't cope with CTEST_CUSTOM_PRE_TEST having arguments, at least on Mac.
   # Hence the BS below.
   file(WRITE ${CMAKE_BINARY_DIR}/fakeinstall.cc
@@ -20,4 +15,9 @@ else(WIN32)
 
   file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake
     "set(CTEST_CUSTOM_PRE_TEST ${CMAKE_BINARY_DIR}/fake_test_install)\n")
-endif(WIN32)
+else(APPLE)
+  file(WRITE ${CMAKE_BINARY_DIR}/CTestCustom.cmake
+       "set(CTEST_CUSTOM_PRE_TEST \"\\\"${CMAKE_COMMAND}\\\""
+             "  -DCMAKE_INSTALL_PREFIX=${TEST_INSTALL_DIRECTORY}"
+             "  -P \\\"${CMAKE_BINARY_DIR}/cmake_install.cmake\\\"\")\n")
+endif(APPLE)

@@ -82,7 +82,7 @@ if(MSYS)
   unset(NEED_CMATH_INCLUDE)
 endif(MSYS)
 
-find_package(numpy REQUIRED) 
+find_package(Numpy REQUIRED) 
 
 set(DCPROGS_PYTHON_BINDINGS True)
 

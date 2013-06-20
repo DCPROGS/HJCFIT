@@ -14,9 +14,9 @@
 #    define NPY_ARRAY_WRITEABLE    NPY_WRITEABLE
 #  endif
 #  ifndef DCPROGS_NPY_ENABLEFLAGS
-#    define PyArray_ENABLEFLAGS(ARRAY, FLAGS) ARRAY->flags |= FLAGS
-#    define PyArray_CLEARFLAGS(ARRAY, FLAGS)  ARRAY->flags &= (!FLAGS)
-#    define PyArray_SetBaseObject(ARRAY, BASE) ARRAY->base = BASE
+#    define PyArray_ENABLEFLAGS(ARRAY, FLAGS)  (ARRAY)->flags |= FLAGS
+#    define PyArray_CLEARFLAGS(ARRAY, FLAGS)   (ARRAY)->flags &= (!FLAGS)
+#    define PyArray_SetBaseObject(ARRAY, BASE) (ARRAY)->base   = BASE
 #  endif
 #  include "numpy_eigen.h"
 
