@@ -11,14 +11,14 @@ namespace DCProgs {
 #   ifdef DCPROGS_MACRO
 #     error DCPROGS_MACRO already defined
 #   endif
-#   define DCPROGS_MACRO(TYPE_NAME, TYPE_NUMBER)            \
-    template<> struct type<TYPE_NAME> {                     \
-      /*! Original Type */                                  \
-      typedef TYPE_NAME np_type;                            \
-      /*! Associated  number */                             \
-      constexpr static int value = TYPE_NUMBER;             \
-    };                                                      \
-    constexpr int type<TYPE_NAME> :: value;
+#   define DCPROGS_MACRO(TYPE_NAME, TYPE_NUMBER)                 \
+    template<> struct type<TYPE_NAME> {                          \
+      /*! Original Type */                                       \
+      typedef TYPE_NAME np_type;                                 \
+      /*! Associated  number */                                  \
+      DCPROGS_INIT_CONSTEXPR(int value, TYPE_NUMBER);            \
+    };                                                           \
+    DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
 
     DCPROGS_MACRO(npy_double,    NPY_DOUBLE);
     DCPROGS_MACRO(npy_float,     NPY_FLOAT);
@@ -43,9 +43,9 @@ namespace DCProgs {
         /*! Original Type */
         typedef npy_bool np_type;
         /*! Associated  number */
-        constexpr static int value = NPY_BOOL;
+        DCPROGS_INIT_CONSTEXPR(int value, NPY_BOOL); 
       };
-      constexpr int type<bool> :: value;
+      DCPROGS_DECL_CONSTEXPR(int type<bool>::value, NPY_BOOL);
 #   endif 
 
 #   undef DCPROGS_MACRO

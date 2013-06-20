@@ -39,10 +39,10 @@
 ## In order however not to affect other CMake modules we need to swap back in the
 ## original prefixes once the end of this module is reached.
 if(NOT PYTHONLIBS_FOUND)
-  find_package(PythonLibs REQUIRED)
+  message(FATAL_ERROR "[Numpy] please find python libraries first.")
 endif(NOT PYTHONLIBS_FOUND)
 if(NOT PYTHONINTERP_FOUND)
-  find_package(PythonInterp REQUIRED)
+  message(FATAL_ERROR "[Numpy] please find python executable first.")
 endif(NOT PYTHONINTERP_FOUND)
 if(NUMPY_FOUND AND NUMPY_LIBRARIES AND NUMPY_INCLUDES)
   set(NUMPY_FIND_QUIETLY TRUE)
@@ -63,7 +63,7 @@ set (CMAKE_FIND_LIBRARY_PREFIXES "" CACHE STRING
 ## ends up in /opt/local/Library/Frameworks/Python.framework ...
 
 execute_process (
-  COMMAND ${PYTHON_EXECUTABLE} -c "import numpy, os; print os.path.dirname(numpy.__file__)"
+  COMMAND ${PYTHON_EXECUTABLE} -c "import numpy, os; print(os.path.dirname(numpy.__file__))"
   OUTPUT_VARIABLE numpy_path
   )
 if (numpy_path)
@@ -111,34 +111,42 @@ find_path (NUMPY_INCLUDES numpy/__multiarray_api.h numpy/multiarray_api.txt
 ## -----------------------------------------------------------------------------
 ## Check for the library
 
-find_library (NUMPY_MULTIARRAY_LIBRARY multiarray
-  PATHS
-  ${numpy_search_path}
-  PATH_SUFFIXES
-  python
-  core
-  python/numpy/core
-  python${PYTHON_VERSION}/site-packages/numpy/core
-  NO_DEFAULT_PATH
+if(WIN32) 
+  find_library(NUMPY_LIBRARIES npymath
+    PATHS
+    ${numpy_search_path}
+    ${PYTHON_PKG_DIR}
+    PATH_SUFFIXES
+    numpy/core/lib
+    NO_DEFAULT_PATH
   )
-if (NUMPY_MULTIARRAY_LIBRARY)
-  get_filename_component (NUMPY_MULTIARRAY_LIBRARY ${NUMPY_MULTIARRAY_LIBRARY} ABSOLUTE)
-  list (APPEND NUMPY_LIBRARIES ${NUMPY_MULTIARRAY_LIBRARY})
-endif (NUMPY_MULTIARRAY_LIBRARY)
+  if(NOT NUMPY_LIBRARIES)
+    message(FATAL_ERROR "[Numpy] Could not find ${NUMPY_LIBRARIES} ${PYTHON_PKG_DIR}/numpy/lib")
+  endif(NOT NUMPY_LIBRARIES)
+else(WIN32)
+  macro(find_numpy_component library numpylibout)
+    find_library (${numpylibout} ${library}
+      PATHS
+      ${numpy_search_path}
+      ${PYTHON_PKG_DIR}
+      PATH_SUFFIXES
+      python
+      core
+      python/numpy/core
+      python${PYTHON_VERSION}/site-packages/numpy/core
+      NO_DEFAULT_PATH
+    )
+    if(NOT ${numpylibout})
+      message(FATAL_ERROR "[Numpy] Could not find ${library} ${PYTHON_PKG_DIR}/numpy/lib")
+    endif(NOT ${numpylibout})
+    get_filename_component (${numpylibout} ${${numpylibout}}/${library} ABSOLUTE)
+  endmacro(find_numpy_component)
 
-find_library (NUMPY_SCALARMATH_LIBRARY scalarmath
-  PATHS
-  ${numpy_search_path}
-  PATH_SUFFIXES
-  python
-  core
-  python/numpy/core
-  python${PYTHON_VERSION}/site-packages/numpy/core
-  NO_DEFAULT_PATH
-  )
-if (NUMPY_SCALARMATH_LIBRARY)
-  list (APPEND NUMPY_LIBRARIES ${NUMPY_SCALARMATH_LIBRARY})
-endif (NUMPY_SCALARMATH_LIBRARY)
+  find_numpy_component(multiarray.pyd NUMPY_MULTIARRAY_LIBRARY)
+  find_numpy_component(scalarmath.pyd NUMPY_SCALARMATH_LIBRARY)
+
+  set(NUMPY_LIBRARIES ${NUMPY_MULTIARRAY_LIBRARY} ${NUMPY_SCALARMATH_LIBRARY})
+endif(WIN32)
 
 ## -----------------------------------------------------------------------------
 ## Try to determine the API version
@@ -164,7 +172,7 @@ if (NUMPY_VERSION_PY AND PYTHON_EXECUTABLE)
   endif (NOT NUMPY_FIND_QUIETLY)
   ## Run Python to import module numpy and print the version information
   execute_process (
-    COMMAND ${PYTHON_EXECUTABLE} -c "import numpy; print numpy.__version__"
+    COMMAND ${PYTHON_EXECUTABLE} -c "import numpy; print(numpy.__version__)"
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
     RESULT_VARIABLE numpy_version_test_result
     OUTPUT_VARIABLE numpy_version_test_output
@@ -223,31 +231,29 @@ else (numpy_version_test_output)
 endif (numpy_version_test_output)
 
 macro(numpy_feature_test OUTVARNAME testfilename testname)
-  if (NUMPY_INCLUDES AND NUMPY_LIBRARIES AND NOT ${OUTVARNAME}) # only if numpy found.
-    find_file(NUMPY_TESTFILE ${testfilename} PATHS ${CMAKE_MODULE_PATH})
-    if (NOT NUMPY_TESTFILE)
-      message (FATAL "[NumPy] ${testname} -- Unable to locate test program ${testfilename}!")
-    endif(NOT NUMPY_TESTFILE)
+  if (NUMPY_INCLUDES AND NOT ${OUTVARNAME}) # only if numpy found.
     
-    if (NUMPY_TESTFILE AND PYTHON_INCLUDE_DIRS)
-      ## try to compile and run
-      try_compile (
-        ${OUTVARNAME}
-        ${CMAKE_BINARY_DIR}
-        ${NUMPY_TESTFILE}
-        COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIRS}  -I${NUMPY_INCLUDES} 
-        CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${PYTHON_LIBRARIES}
-        OUTPUT_VARIABLE NUMPY_TESTCOMPILE
-        )
-      ## display results
-      if (NOT NUMPY_FIND_QUIETLY)
-        message (STATUS "[NumPy] ${testname} = ${OUTVARNAME} ${${OUTVARNAME}}")
-      endif (NOT NUMPY_FIND_QUIETLY)
-    endif (NUMPY_TESTFILE AND PYTHON_INCLUDE_DIRS)
-    set(NUMPY_TESTFILE)
-    set(NUMPY_TESTCOMPILE)
+    ## try to compile and run
+    ## Using Release flags because MSCrapware fails otherwise.
+    try_compile(
+      ${OUTVARNAME}
+      ${CMAKE_BINARY_DIR}
+      ${CMAKE_MODULE_PATH}/${testfilename}
+      COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIRS}  -I${NUMPY_INCLUDES} 
+                          -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
+      CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${PYTHON_LIBRARIES} 
+                  -DCMAKE_CXX_FLAGS_DEBUG:STRING="${CMAKE_CXX_FLAGS_RELEASE}"
+                  -DCMAKE_C_FLAGS_DEBUG:STRING="${CMAKE_C_FLAGS_RELEASE}"
+                  -DCMAKE_EXE_LINKER_FLAGS_DEBUG:STRING="${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
+      OUTPUT_VARIABLE NUMPY_TESTCOMPILE
+    )
+    ## display results
+    if (NOT NUMPY_FIND_QUIETLY)
+      message (STATUS "[NumPy] ${testname} = ${${OUTVARNAME}}")
+    endif (NOT NUMPY_FIND_QUIETLY)
     mark_as_advanced(${OUTVARNAME})
-  endif (NUMPY_INCLUDES AND NUMPY_LIBRARIES AND NOT ${OUTVARNAME})
+    unset(NUMPY_TESTCOMPILE)
+  endif (NUMPY_INCLUDES AND NOT ${OUTVARNAME})
 endmacro()
 
 numpy_feature_test(DCPROGS_NPY_LONG_DOUBLE
@@ -259,6 +265,7 @@ numpy_feature_test(DCPROGS_NPY_BOOL
 numpy_feature_test(DCPROGS_NPY_ARRAY
                    test_numpy_is_noarray.cc 
                    "NPY_ARRAY_* macros exist")
+set(DCPROGS_NPY_ENABLE_FLAGS)
 numpy_feature_test(DCPROGS_NPY_ENABLEFLAGS
                    test_numpy_has_enableflags.cc 
                    "PyArray_ENABLEFLAGS exists")

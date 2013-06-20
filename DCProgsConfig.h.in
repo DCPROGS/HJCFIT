@@ -9,6 +9,16 @@
 #cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine noexcept throw()
 #cmakedefine MSWINDOBE __declspec(dllimport)
+#cmakedefine HAS_CXX11_CONSTEXPR
+
+#ifdef HAS_CXX11_CONSTEXPR
+# define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) constexpr static TYPEANDNAME = VALUE
+# define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) constexpr TYPEANDNAME
+#else 
+# define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) const static TYPEANDNAME
+# define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) const TYPEANDNAME = VALUE
+#endif
+
 #if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
 # undef MSWINDOBE
 # define MSWINDOBE __declspec(dllexport)
@@ -24,6 +34,7 @@
 #cmakedefine DCPROGS_NPY_ENABLEFLAGS
 #cmakedefine NUMPY_VERSION_MAJOR @NUMPY_VERSION_MAJOR@
 #cmakedefine NUMPY_VERSION_MINOR @NUMPY_VERSION_MINOR@
+
 
 namespace DCProgs {
   //! Types of reals across DCProgs.
