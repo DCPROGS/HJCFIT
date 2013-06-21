@@ -171,6 +171,34 @@ namespace DCProgs {
        return t_rmatrix();
     }
 
+    //! Cast data to given type from array type.
+    template<class T> T cast(void *_data, int _type) {
+      switch(_type) {
+#       define DCPROGS_MACRO(TYPENAME) case type<TYPENAME>::value: return T(*((TYPENAME*)_data));
+          DCPROGS_MACRO(npy_double);
+          DCPROGS_MACRO(npy_float);
+          DCPROGS_MACRO(npy_longlong);
+          DCPROGS_MACRO(npy_ulonglong);
+          DCPROGS_MACRO(npy_long);
+          DCPROGS_MACRO(npy_ulong);
+          DCPROGS_MACRO(npy_int);
+          DCPROGS_MACRO(npy_uint);
+          DCPROGS_MACRO(npy_short);
+          DCPROGS_MACRO(npy_ushort);
+          DCPROGS_MACRO(npy_byte);
+          DCPROGS_MACRO(npy_ubyte);
+#         ifdef DCPROGS_NPY_HAS_LONG_DOUBLE
+            DCPROGS_MACRO(npy_longdouble);
+#         endif
+#         ifdef DCPROGS_NPY_HAS_BOOL
+            DCPROGS_MACRO(npy_bool);
+#         endif
+#      undef DCPROGS_MACRO
+      }
+      throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+      return T(0);
+    }
+
   }
 }
 #endif

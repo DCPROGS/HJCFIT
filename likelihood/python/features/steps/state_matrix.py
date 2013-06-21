@@ -1,24 +1,6 @@
-from behave import given, when, then, matchers
-
-# First add some parsers.
-def Matrix(string): 
-  """ Creates matrices from specific strings """
-  from numpy import array, identity
-  if string == "Qmatrix":
-    return array([[ -3050,        50,  3000,      0,    0 ], 
-                  [ 2./3., -1502./3.,     0,    500,    0 ],  
-                  [    15,         0, -2065,     50, 2000 ],  
-                  [     0,     15000,  4000, -19000,    0 ],  
-                  [     0,         0,    10,      0,  -10 ] ])
-  if string == "empty": return array([])
-  if string == "spam": return identity(5).tolist()
-  if string == "numpy_spam": return array([['a', 'b', 'c']*3])
-
-  
-matchers.register_type(Integer=lambda x: int(x))
-matchers.register_type(Float=lambda x: float(x))
-matchers.register_type(Eval=lambda x: eval(x))
-matchers.register_type(Matrix=Matrix)
+from behave import given, when, then
+from test_setup import register_type
+register_type()
 
 @given("StateMatrix is accessible")
 def step(context):
@@ -31,25 +13,14 @@ def step(context):
 
 @when('we instantiate StateMatrix with {matrix:Matrix} and {nopen:Integer}')
 def step(context, matrix, nopen):
+  from sys import exc_info
   try: context.statematrix = context.StateMatrix(matrix, nopen)
-  except (TypeError, ValueError) as e: context.initialization_exception = e
+  except: context.initialization_exception = exc_info()
 
 @given('a StateMatrix instantiated with {matrix:Matrix} and {nopen:Integer}')
 def step(context, matrix, nopen):
   from dcprogs.likelihood import StateMatrix
   context.statematrix = StateMatrix(matrix, nopen)
-
-@then('instantiation did not throw')
-def step(context):
-  assert not hasattr(context, 'initialization_exception')
-
-@then('instantiation threw {type}')
-def step(context, type):
-  assert hasattr(context, 'initialization_exception')
-  exception = getattr(context, 'initialization_exception')
-  type = eval(type)
-  assert isinstance(exception, type)
-
 
 @then('nopen is {nopen:Integer}')
 def step(context, nopen):

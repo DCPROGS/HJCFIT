@@ -66,7 +66,7 @@ namespace DCProgs {
       //! Get resolution
       t_real get_tau() const { return tau_; }
       //! Set resolution
-      void set_tau(t_real const &_tau) { tau_ = _tau; }
+      void set_tau(t_real _tau) { tau_ = _tau; }
 
     protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$

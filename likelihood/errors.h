@@ -60,6 +60,11 @@ namespace DCProgs {
         private:
           std::string message_;
       };
+      //! Exception was thrown by python API.
+      class PythonErrorAlreadyThrown : public Python {
+        public:
+          PythonErrorAlreadyThrown() noexcept: Python("") {};
+      };
       //! Exception thrown in python module when converting to C types.
       class PythonTypeError : public Python { 
         public:

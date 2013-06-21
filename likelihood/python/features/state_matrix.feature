@@ -4,6 +4,7 @@ Feature: StateMatrix bindings
   sure that c++ objects are translated correctly, or signal somehow that translation could not
   happen. Sometimes the bindings are shallow wrappers around c++ objects. Othertimes they may copies
   of c++ objects. In any case, values modified in python should be reflected in C and vice-versa.
+  Below, a "numpy array" is a python object which represents a matrix. 
 
   Scenario: Initialize empty matrix
     Given StateMatrix is accessible
