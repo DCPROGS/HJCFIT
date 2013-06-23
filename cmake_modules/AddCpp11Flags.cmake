@@ -54,3 +54,10 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10")
 endif(MSVC)
 
+if(CMAKE_COMPILER_IS_GNUCXX AND WIN32)
+  # Problem with alignement of fixed-size eigen vectors.
+  # Comes from computing eigenvalues on smaller matrices?
+  # This solution is suboptimal as it could make the code slower.
+  # The problem should arise only on windows with gcc. 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -mincoming-stack-boundary=2")
+endif(CMAKE_COMPILER_IS_GNUCXX AND WIN32)
