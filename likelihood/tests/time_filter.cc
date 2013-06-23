@@ -14,7 +14,7 @@ t_real const alpha = 10;
 class TestTimeFilter : public ::testing::TestWithParam<t_int> { 
   public:
     TestTimeFilter() {
-#   if HAS_CXX11_RANDOM_DEVICE
+#   ifdef HAS_CXX11_RANDOM_DEVICE
       std::random_device rd;
       mersenne.seed(rd()); 
 #   else 
