@@ -86,7 +86,7 @@ find_package(Numpy REQUIRED)
 
 set(DCPROGS_PYTHON_BINDINGS True)
 
-if(tests AND pythonBindings)
+if(tests)
   if(NOT DEFINED TEST_INSTALL_DIRECTORY)
     set(TEST_INSTALL_DIRECTORY ${CMAKE_BINARY_DIR}/tests/install 
         CACHE PATH "Path of a fake install for testing purposes")
@@ -100,7 +100,7 @@ if(tests AND pythonBindings)
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${TEST_INSTALL_DIRECTORY}/${CMAKE_PYINSTALL_PREFIX}/..
              COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -q ${ARGN})
-    if(MSVC) 
+    if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${TEST_INSTALL_DIRECTORY}/lib;$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
@@ -113,6 +113,6 @@ if(tests AND pythonBindings)
     elseif(UNIX)
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
                            "LD_LIBRARY_PATH=${TEST_INSTALL_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
-    endif(MSVC)
+    endif(MSVC OR MSYS)
   endfunction(feature_test)
-endif(tests AND pythonBindings)
+endif(tests)
