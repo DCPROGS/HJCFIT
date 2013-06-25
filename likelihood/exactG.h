@@ -17,12 +17,18 @@ namespace DCProgs {
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
   class ExactG {
-    //! Just trying to figure out a complex return type...
-    typedef decltype( t_rmatrix::Zero(1, 1) ) t_Zero; 
-
     public:
       //! Initializes exact G functor.
+      //! \param[in] _matrix: Partitionned matrix with open states in top left corner.
+      //! \param[in] _tau: Missed event cutoff time.
       ExactG(StateMatrix const &_matrix, t_real _tau) { set(_matrix, _tau); }
+      //! Initializes exact G functor.
+      //! \param[in] _matrix: A transition matrix with open states in top left corner
+      //! \param[in] _nopen: Number of open states. 
+      //! \param[in] _tau: Missed event cutoff time.
+      template<class T>
+        ExactG(Eigen::DenseBase<T> const &_matrix, t_int _nopen, t_real _tau)
+          { set(StateMatrix(_matrix, _nopen), _tau); }
 
 
       //! Sets the values for which to compute exact g.
