@@ -21,9 +21,6 @@ namespace DCProgs {
     //! Just trying to figure out a complex return type...
     typedef decltype( (t_real(0) * std::declval<const StateMatrix>().ff()).exp()
                       * std::declval<const StateMatrix>().fa() ) t_laplace_result;
-    //! Just trying to figure out a complex return type...
-    typedef decltype( t_rmatrix::Zero(1, 1) ) t_Zero; 
-
     public:
       //! Constructor
       IdealG() : StateMatrix() {}
@@ -50,13 +47,6 @@ namespace DCProgs {
       //! Gets the number of open states
       t_int const & get_nopen() const { return this->nopen; }
 
-      //! Open to open transitions.
-      t_Zero aa(t_real t) const { return t_rmatrix::Zero(nopen, nopen); }
-      //! Shut to shut transitions.
-      t_Zero ff(t_real t) const { 
-        long const n(this->matrix.rows() - this->nopen);
-        return t_rmatrix::Zero(n, n);
-      }
       //! Shut to open transitions.
       t_laplace_result fa(t_real t) const 
         { return (t*StateMatrix::ff()).exp()*StateMatrix::fa(); }
@@ -64,14 +54,6 @@ namespace DCProgs {
       t_laplace_result af(t_real t) const 
         { return (t*StateMatrix::aa()).exp()*StateMatrix::af(); }
 
-      //! Laplace transform of open to open transitions.
-      t_Zero laplace_aa(t_real s) const
-        { return t_rmatrix::Zero(nopen, nopen); }
-      //! Laplace transform of shut to shut transitions.
-      t_Zero laplace_ff(t_real s) const {
-        long const N(this->matrix.rows() - this->nopen);
-        return t_rmatrix::Zero(N, N);
-      }
       //! Laplace transform of shut to open transitions.
       t_rmatrix laplace_fa(t_real s) const;
       //! Open to shut transitions.
