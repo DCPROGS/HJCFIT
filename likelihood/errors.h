@@ -45,6 +45,21 @@ namespace DCProgs {
                       : Domain(_message), std::domain_error(_message) {};
     };
 
+    //! Runtime error which carries a message.
+    class Runtime : public Root {
+      public:
+        Runtime(std::string const &_message) noexcept : Root() {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try { return message_.c_str(); } catch(...) { return ""; }
+        }
+        virtual ~Runtime() noexcept {};
+      private:
+        std::string message_;
+    };
+
 #   ifdef DCPROGS_PYTHON_BINDINGS
       //! Exception thrown in python modules 
       class Python : public Root {
