@@ -99,7 +99,9 @@ if(tests)
   function(feature_test name filename)
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${TEST_INSTALL_DIRECTORY}/${CMAKE_PYINSTALL_PREFIX}/..
-             COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} -q ${ARGN})
+             COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} 
+                            --junit --junit-directory ${CMAKE_BINARY_DIR}/test-results/
+                            -q ${ARGN})
     if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${TEST_INSTALL_DIRECTORY}/lib;$ENV{PATH}")
