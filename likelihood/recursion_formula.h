@@ -30,7 +30,7 @@ namespace DCProgs {
   //!        //! \brief Returns D objects, e.g. \f$A_{iAF}e^{Q_{FF}\tau}Q_{FA}\f$.
   //!        auto getD(t_int _i) const;
   //!        //! Returns specific eigenvalue of \f$Q\f$.
-  //!        auto get_eigval(t_int _i) const;
+  //!        t_real get_eigval(t_int _i) const;
   //!        //! Returns number of eigenvalues.
   //!        t_int nbeigval(t_int _i) const;
   //!      };
@@ -38,7 +38,7 @@ namespace DCProgs {
   //! \tparam T_ZERO: Type of a functor.
   //! \param _C: The object over which the recursion is perfomed.
   //! \param _i: An integer
-  //! \param _j: An integer
+  //! \param _m: An integer
   //! \param _l: An integer
   //! \parma _zero: A functor used to initialise intermediate objects.
   template<class T, class T_ZERO> 
@@ -55,26 +55,33 @@ namespace DCProgs {
       return details::general(_C, _i, _m, _l, _zero);
     }
 
+
+
   namespace details {
 
+    //! Recursion formula for l = 0
     template<class T, class T_ZERO> 
       typename T::t_element lzero(T & _C, t_int _i, t_int _m, T_ZERO const &_zero) {
 
-        auto result = _zero();
+        typename T::t_element result = _zero();
         auto Di = _C.getD(_i);
-        auto lambda_i = _C.get_eigvals(_i); 
+        t_real const lambda_i = _C.get_eigvals(_i); 
 
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
           if(_i == j) continue;
 
-          auto Dj = _C.getD(j);
-          auto lambda_j = _C.get_eigvals(j);
+          t_real const lambda_j = _C.get_eigvals(j);
+          t_real const diff_lambda(lambda_j - lambda_i);
+          if(std::abs(diff_lambda) < 1e-12) continue;
 
-          t_real const lambda_invdiff(1e0/(lambda_j - lambda_i)); 
+
+          t_real const lambda_invdiff(1e0/diff_lambda); 
+          auto Dj = _C.getD(j);
           t_real factor(lambda_invdiff); 
 
-          for(t_int r(0), sign(1); r < _m; ++r, sign = -sign) {
-            result += (Di * _C(j, _m-1, r) - sign * Dj * _C(_i, _m-1, r)) * factor;
+          t_real sign(1);
+          for(t_int r(0); r < _m; ++r, sign = -sign) {
+            result += (Di * _C(j, _m-1, r) + sign * Dj * _C(_i, _m-1, r)) * factor;
             factor *= lambda_invdiff * (r+1);
           }
         } // loop over j
@@ -82,6 +89,7 @@ namespace DCProgs {
         return result;
       }
 
+    //! Recursion formula for l != 0 and l != m
     template<class T, class T_ZERO> 
       typename T::t_element general(T & _C, t_int _i, t_int _m, t_int _l, T_ZERO const &_zero) {
 
@@ -91,7 +99,7 @@ namespace DCProgs {
 
           t_real const lambda(1e0/(_C.get_eigvals(_i)-_C.get_eigvals(j))); 
           t_real factor(lambda); 
-          auto intermediate = _zero();
+          typename T::t_element intermediate = _zero();
           for(t_int r(_l); r < _m; ++r) {
             intermediate += _C(_i, _m-1, r) * factor;
             factor *= lambda * (r+1);

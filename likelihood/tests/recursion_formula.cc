@@ -159,7 +159,7 @@ TEST_P(TestViaMatrix, lzero) {
       t_real const term1= (terms1[i].leftCols(m)
                            * jay.valmat.row(i).head(m).transpose()).array().sum();
       
-      t_real const check = term0.topLeftCorner(term0.rows(), m).sum() - term1; 
+      t_real const check = term0.topLeftCorner(term0.rows(), m).sum() + term1; 
       EXPECT_NEAR(recursion_formula(jay, i, m, 0, ZERO), check, std::abs(check) * 1e-8)
           << "i=" << i << " m=" << m;
                    

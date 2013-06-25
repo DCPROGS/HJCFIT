@@ -14,5 +14,6 @@ if(tests)
   cxx_test(time_filter time_filter.cc likelihood)
   cxx_test(asymptotes asymptotes.cc likelihood)
   cxx_test(recursion recursion_formula.cc likelihood)
+  cxx_test(exactG exactG.cc likelihood)
 
 endif(tests)

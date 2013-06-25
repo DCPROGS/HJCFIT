@@ -51,8 +51,7 @@ namespace DCProgs {
       t_int const & get_nopen() const { return this->nopen; }
 
       //! Open to open transitions.
-      t_Zero aa(t_real t) const 
-        { return std::move(t_rmatrix::Zero(nopen, nopen)); }
+      t_Zero aa(t_real t) const { return t_rmatrix::Zero(nopen, nopen); }
       //! Shut to shut transitions.
       t_Zero ff(t_real t) const { 
         long const n(this->matrix.rows() - this->nopen);
