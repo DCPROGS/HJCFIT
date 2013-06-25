@@ -67,10 +67,6 @@ TEST_F(IdealGTest, initialize){
 TEST_F(IdealGTest, blocks){
   StateMatrix states(Q, 2);
   idealg.set(Q, 2);
-  EXPECT_TRUE((idealg.aa(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.aa(1).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.ff(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.ff(1).array().abs() < 1e-8).all());
 
   // This test pretty much ensures that we are dealing with an exponential
   // At least over 10 integers. 
@@ -95,10 +91,6 @@ TEST_F(IdealGTest, blocks){
 TEST_F(IdealGTest, laplacians) {
 
   idealg.set(Q, 2);
-  EXPECT_TRUE((idealg.laplace_aa(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.laplace_aa(1).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.laplace_ff(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.laplace_ff(1).array().abs() < 1e-8).all());
 
   t_rmatrix af0(2, 3);
   af0 << 0.98362802881467, 0.01637197118533,  0., 
