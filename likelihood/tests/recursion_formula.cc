@@ -134,8 +134,8 @@ class TestViaMatrix : public ::testing::TestWithParam<t_int> {
     //! \f$\frac{D_j}{(\lambda_i-\lambda_j)^{r+1}}, with i std::vector first index
     std::vector<t_rmatrix> terms1;
     //! \f$\frac{D_j}{(\lambda_i-\lambda_j)^{r+1}}, with i std::vector first index
-    t_int const mmax = 8;
-    t_int const matsize = 5;
+    t_int const static mmax = 8;
+    t_int const static matsize = 5;
 };
 
 TEST_P(TestViaMatrix, lzero) {
