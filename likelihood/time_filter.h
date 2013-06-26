@@ -10,7 +10,7 @@ namespace DCProgs {
   //! \param[in] _tau: Critical resolution below which to remove events.
   //! \return: A  vector with the intervals smaller than _tau filtered out, and the adjacent
   //!          intervals joined.
-  t_rvector time_filter(t_rvector const & _series, t_real _tau);
+  t_rvector MSWINDOBE time_filter(t_rvector const & _series, t_real _tau);
 }
 
 //! \brief Wrapper around the time filter function.
