@@ -5,6 +5,7 @@
 
 #include <tuple>
 #include <map>
+#include <vector>
 #include <memory>
 
 
@@ -16,7 +17,7 @@ namespace DCProgs {
   //! \brief Implementation of recursion for exact missed-event G function
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
-  class ExactG {
+  class MSWINDOBE ExactG {
     public:
       //! Initializes exact G functor.
       //! \param[in] _matrix: Partitionned matrix with open states in top left corner.
@@ -45,7 +46,7 @@ namespace DCProgs {
       //!          needs not be called directly. Rather the public interface (which is about
       //!          computing the likelihood for an event of duration t) is in the containing class
       //!          ExactG.
-      class RecursionInterface;
+      class MSWINDOBE RecursionInterface;
 
 #     ifndef HAS_CXX11_UNIQUE_PTR
         //! Type of the pointers holding recursion interfaces.
@@ -67,7 +68,7 @@ namespace DCProgs {
   };
 
 
-  class ExactG::RecursionInterface {
+  class MSWINDOBE ExactG::RecursionInterface {
   
     public:
       //! Element on which to perform recursion.
