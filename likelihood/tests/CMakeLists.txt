@@ -11,7 +11,7 @@ if(tests)
   cxx_test(idealG_exponentials idealg_exponentials.cc likelihood)
   cxx_test(idealG_laplacian idealG_laplacian.cc likelihood)
   cxx_test(equilibrium equilibrium.cc likelihood)
-  cxx_test(time_filter time_filter.cc likelihood)
+# cxx_test(time_filter time_filter.cc likelihood)
   cxx_test(recursion recursion_formula.cc likelihood)
   cxx_test(exactG exactG.cc likelihood)
 
