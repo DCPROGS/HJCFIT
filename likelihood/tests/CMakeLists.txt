@@ -9,5 +9,7 @@ if(tests)
   cxx_test(asymptotes asymptotes.cc likelihood)
   cxx_test(recursion recursion_formula.cc likelihood)
   cxx_test(exactG exactG.cc likelihood)
+  cxx_test(root_finder_intervals root_finder_intervals.cc likelihood)
+  cxx_test(root_finder_lower_bound "root_finder_lower_bound.cc;random_matrix.h;random_matrix.cc" likelihood)
 
 endif(tests)

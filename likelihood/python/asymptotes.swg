@@ -114,4 +114,28 @@ class DeterminantEq {
                                 "Otherwise returns a numpy array."
   %}
                      
+  // The following functions allows us to get H for scalar values.
+  %extend { 
+    // Defines determinant function for a numpy array
+    PyObject* H(DCProgs::t_real _s) {
+      try { return DCProgs::numpy::wrap_to_numpy($self->H(_s)); }
+      DCPROGS_CATCH(return NULL;);
+    }
+    // Defines determinant function for a numpy array + changing tau
+    PyObject* H(DCProgs::t_real _s, DCProgs::t_real _tau) {
+      try { return DCProgs::numpy::wrap_to_numpy($self->H(_s)); }
+      DCPROGS_CATCH(return NULL;);
+    }
+  }
+  %pythoncode %{
+    H.__doc__ = "Computes the matrix H\n\n"                                            \
+                "H is defined as  :math:`"                                             \
+                "Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}`." \
+                "\n\nParameters:\n"                                                    \
+                "  s: scalar\n"                                                        \
+                "    The laplace scale.\n"                                             \
+                "  tau: *optional* number\n"                                           \
+                "    If present, it is the max length of missed events.\n\n"           \
+                "Returns: a numpy array."
+  %}
 };
