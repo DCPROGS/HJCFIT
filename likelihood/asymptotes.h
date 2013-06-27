@@ -66,7 +66,7 @@ namespace DCProgs {
       //! Get resolution
       t_real get_tau() const { return tau_; }
       //! Set resolution
-      void set_tau(t_real const &_tau) { tau_ = _tau; }
+      void set_tau(t_real _tau) { tau_ = _tau; }
 
     protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
@@ -84,8 +84,6 @@ namespace DCProgs {
                       ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
 
     protected:
-      //! Time below which events are missed
-      t_real tau_;
       //! The transition state matrix on which to act.
       StateMatrix matrix_;
       //! The eigenvalues of the ff matrix. Computed once.
@@ -94,6 +92,8 @@ namespace DCProgs {
       t_rmatrix ff_eigenvectors_;
       //! The inverse eigenvectors of the ff matrix. Computed once.
       t_rmatrix ff_eigenvectors_inv_;
+      //! Time below which events are missed
+      t_real tau_;
 #     ifdef HAS_CXX11_CONSTEXPR
         //! Hard coded static constant zero.
         constexpr static t_real ZERO = 1e-12;

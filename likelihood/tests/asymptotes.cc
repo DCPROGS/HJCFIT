@@ -6,6 +6,21 @@
 #include "../asymptotes.h"
 using namespace DCProgs;
 
+#ifdef HAS_CXX11_TYPETRAITS
+  // Checks some assumption about eigen matrix types.
+  static_assert( std::is_move_constructible<DeterminantEq>::value,
+  	       "DeterminantEq is not move constructible." );  
+  static_assert( std::is_move_assignable<DeterminantEq>::value, 
+  	       "DeterminantEq is not move assignable." );  
+#endif
+
+#ifdef HAS_CXX11_TRIVIALTYPETRAITS
+  static_assert( not std::is_trivially_move_constructible<DeterminantEq>::value,
+  	       "DeterminantEq is trivially move constructible." );  
+  static_assert( not std::is_trivially_move_assignable<DeterminantEq>::value, 
+  	       "DeterminantEq is trivially move assignable." );  
+#endif
+
 // Sets up test with parameters from CH82, 1e-7 nM.
 class DeterminantEqTest : public ::testing::Test {
   

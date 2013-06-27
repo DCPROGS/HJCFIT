@@ -47,12 +47,12 @@ namespace DCProgs {
       // Now we can figure out result:
       t_rvector vector(result.size());
       vector(0) = result.front();
-      for(size_t j(1); j < vector.size(); ++j)
+      for(decltype(vector.size()) j(1); j < vector.size(); ++j)
         vector(j) = vector(j-1) + result[j];
       return vector;
     }
   }
-  t_rvector time_filter(t_rvector const & _series, t_real _tau) {
+  t_rvector MSWINDOBE time_filter(t_rvector const & _series, t_real _tau) {
      return time_filter_impl(_series, _tau);
   }
 

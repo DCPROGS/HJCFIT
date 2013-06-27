@@ -1,7 +1,8 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
 PROJECT(DCprogs)
 
-option(tests       "Enable testing."       on)
+option(tests          "Enable testing."               on)
+option(pythonBindings "Enable python bindings."       on)
 
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
@@ -34,5 +35,18 @@ if(tests)
   find_package(GTest)
   enable_testing()
 endif(tests)
+if(pythonBindings) 
+  include(${CMAKE_MODULE_PATH}/AllPythonBindings.cmake)
+endif(pythonBindings)
+
+if(NOT HAS_CXX11_NOEXCEPT)
+  set(noexcept TRUE)
+endif()
+configure_file (
+ "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
+ "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
+)
+
+
 
 add_subdirectory(likelihood)

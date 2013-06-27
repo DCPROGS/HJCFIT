@@ -13,7 +13,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
 add_dependencies(likelihood eigen)
 
+install(TARGETS likelihood DESTINATION lib) 
+
 # Test subdirectory.
 add_subdirectory(tests)
-
-install(TARGETS likelihood DESTINATION lib) 
+add_subdirectory(python)

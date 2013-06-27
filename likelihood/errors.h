@@ -44,6 +44,38 @@ namespace DCProgs {
         NotInvertible   (std::string const &_message) noexcept 
                       : Domain(_message), std::domain_error(_message) {};
     };
+
+#   ifdef DCPROGS_PYTHON_BINDINGS
+      //! Exception thrown in python modules 
+      class Python : public Root {
+        public:
+          Python(std::string const &_message) noexcept : Root() {
+            try { message_ = _message; }
+            catch(...) { try { message_ = ""; } catch(...) {} }
+          }
+          virtual char const * what() const noexcept {
+            try { return message_.c_str(); } catch(...) { return ""; }
+          }
+          virtual ~Python() noexcept {};
+        private:
+          std::string message_;
+      };
+      //! Exception was thrown by python API.
+      class PythonErrorAlreadyThrown : public Python {
+        public:
+          PythonErrorAlreadyThrown() noexcept: Python("") {};
+      };
+      //! Exception thrown in python module when converting to C types.
+      class PythonTypeError : public Python { 
+        public:
+          PythonTypeError(std::string const &_message) noexcept: Python(_message) {};
+      };
+      //! Exception thrown in python module when converting to C types.
+      class PythonValueError : public Python {
+        public:
+          PythonValueError(std::string const &_message) noexcept: Python(_message) {};
+      };
+#   endif
   }
 }
 #endif
