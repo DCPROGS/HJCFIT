@@ -25,8 +25,23 @@ namespace DCProgs {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
         virtual ~Mass() noexcept {};
-      private:
+      protected:
         std::string message_;
+    };
+
+    //! Found unexpected complex eigenvalues. 
+    class ComplexEigenvalues : public Mass {
+      public:
+        ComplexEigenvalues(std::string const &_message) noexcept : Mass(_message) {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try {
+            return ("Found complex eigenvalues: " + message_).c_str(); 
+          } catch(...) { return ""; }
+        }
+        virtual ~ComplexEigenvalues() noexcept {};
     };
 
     //! Input error to a math problem
@@ -36,6 +51,7 @@ namespace DCProgs {
         explicit Domain(std::string const &_message) noexcept : Math(), std::domain_error(_message) {};
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
+
     //! Matrix is not invertible
     class NotInvertible : public Domain {
       public:

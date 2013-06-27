@@ -68,6 +68,9 @@ namespace DCProgs {
       //! Set resolution
       void set_tau(t_real _tau) { tau_ = _tau; }
 
+      //! Get expected number of roots.
+      t_int get_nbroots() const { return matrix_.nopen; }
+
     protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
       t_rmatrix integral_(t_real _s) const;
@@ -103,9 +106,6 @@ namespace DCProgs {
 #     endif
   };
 
+  
 }
-extern "C" void * create_determinant_eq(int _n0, int _n1, double *_matrix,  int _nopen, double _tau, bool _doopen);
-extern "C" void delete_determinant_eq(void *_self);
-extern "C" double call_determinant_eq(void *_self, double _s);
-extern "C" char const * str_determinant_eq(void *_self);
 #endif 

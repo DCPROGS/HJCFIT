@@ -72,25 +72,3 @@ namespace DCProgs {
   }
 
 }
-extern "C" void * create_determinant_eq(int _n0, int _n1, double *_matrix,  int _nopen, double _tau,
-                                        bool _doopen) {
-  using namespace DCProgs;
-  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> map(_matrix, _n0, _n1);
-  StateMatrix states(map.cast<t_rmatrix::Scalar>(), _nopen);
-  void *result = (void*) new DeterminantEq(states, _tau, _doopen);
-  return result;
-}
-extern "C" void delete_determinant_eq(void *_self) {
-  using namespace DCProgs;
-  DeterminantEq *self = static_cast<DeterminantEq*>(_self);
-  delete self;
-}
-extern "C" double call_determinant_eq(void *_self, double _s) {
-  return (*static_cast<DCProgs::DeterminantEq*>(_self))(_s);
-}
-
-extern "C" char const * str_determinant_eq(void *_self) {
-  std::ostringstream sstr;
-  sstr << (*static_cast<DCProgs::DeterminantEq*>(_self));
-  return sstr.str().c_str();
-}
