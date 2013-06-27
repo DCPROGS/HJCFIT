@@ -83,26 +83,6 @@ TEST_P(Laplacian, fa) {
   }
 }
 
-TEST_P(Laplacian, aa){
-  idealg.set(GetParam());
-  EXPECT_EQ(idealg.laplace_aa(0).rows(), idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_aa(0).cols(), idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_aa(1).rows(), idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_aa(1).cols(), idealg.get_nopen());
-  EXPECT_TRUE((idealg.laplace_aa(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.laplace_aa(1).array().abs() < 1e-8).all());
-}
-TEST_P(Laplacian, ff){
-  idealg.set(GetParam());
-  EXPECT_EQ(idealg.laplace_ff(0).rows(), idealg.get_Q().rows() - idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_ff(0).cols(), idealg.get_Q().rows() - idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_ff(1).rows(), idealg.get_Q().rows() - idealg.get_nopen());
-  EXPECT_EQ(idealg.laplace_ff(1).cols(), idealg.get_Q().rows() - idealg.get_nopen());
-  EXPECT_TRUE((idealg.laplace_ff(0).array().abs() < 1e-8).all());
-  EXPECT_TRUE((idealg.laplace_ff(1).array().abs() < 1e-8).all());
-}
-
-
 void add_data(std::vector<StateMatrix> &_container, t_rmatrix const &_matrix) {
   for(int i(1); i < _matrix.rows()-1; ++i)
     _container.push_back(StateMatrix(_matrix, i));
