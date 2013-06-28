@@ -34,6 +34,9 @@ namespace DCProgs {
     Eigen::EigenSolver<t_rmatrix> eigsolver(matrix_.ff());
     if(eigsolver.info() != Eigen::Success) 
         throw errors::Mass("Could not solve eigenvalue problem.");
+    if((eigsolver.eigenvalues().imag().array().abs() > 1e-8).any())
+      throw errors::ComplexEigenvalues("State matrix contains complex eigenvalues.\n"
+                                       "Cannot compute asymptotic expression.");
     ff_eigenvalues_ = eigsolver.eigenvalues().real();
     ff_eigenvectors_ = eigsolver.eigenvectors().real();
     ff_eigenvectors_inv_ = ff_eigenvectors_.inverse();

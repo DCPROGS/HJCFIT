@@ -41,12 +41,13 @@ Feature: Determinantal Equation bindings
 
     Examples:
 
-      | matrix    | nopen | tau   | doopen | Exception  |
-      | Qmatrix   |   0   |  0.4  |  True  | ValueError |
-      | Qmatrix   |   5   |  0.1  |  False | ValueError |
-      | empty     |   0   |  0.3  |  True  | ValueError |
-      | spam      |   1   |  0.1  |  False | TypeError  |
-      | rectangle |   1   |  0.1  |  True  | ValueError |
+      | matrix               | nopen | tau   | doopen | Exception       |
+      | Qmatrix              |   0   |  0.4  |  True  | ValueError      |
+      | Qmatrix              |   5   |  0.1  |  False | ValueError      |
+      | empty                |   0   |  0.3  |  True  | ValueError      |
+      | spam                 |   1   |  0.1  |  False | TypeError       |
+      | rectangle            |   1   |  0.1  |  True  | ValueError      |
+      | complex eigenvalues  |   2   |  1e-4 |  True  | ArithmeticError |
 
 
   Scenario Outline: Computes the determinant for open states of classic case

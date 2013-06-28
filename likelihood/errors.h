@@ -44,6 +44,21 @@ namespace DCProgs {
         virtual ~ComplexEigenvalues() noexcept {};
     };
 
+    //! Found a Not a Number 
+    class NaN : public Mass { 
+      public:
+        NaN(std::string const &_message) noexcept : Mass(_message) {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try {
+            return ("Found Not a Number: " + message_).c_str(); 
+          } catch(...) { return ""; }
+        }
+        virtual ~NaN() noexcept {};
+    };
+
     //! Input error to a math problem
     class Domain : public Math, virtual public std::domain_error {
       public:
