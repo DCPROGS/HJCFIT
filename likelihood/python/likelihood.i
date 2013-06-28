@@ -46,7 +46,21 @@
 # error DCPROGS_CATCH already defined.
 #endif 
 #define DCPROGS_CATCH(ONERROR)                                                \
-    catch (DCProgs::errors::PythonTypeError &_e) {                            \
+    catch (DCProgs::errors::ComplexEigenvalues &_e) {                         \
+      PyErr_SetString(PyExc_ArithmeticError, _e.what());                      \
+      ONERROR;                                                                \
+    } catch (DCProgs::errors::NaN &_e) {                                      \
+      PyErr_SetString(PyExc_TypeError, _e.what());                            \
+      ONERROR;                                                                \
+    } catch (DCProgs::errors::Mass &_e) {                                     \
+      PyErr_SetString(PyExc_TypeError, _e.what());                            \
+      ONERROR;                                                                \
+    } catch (DCProgs::errors::Math &_e) {                                     \
+      PyErr_SetString( PyExc_TypeError,                                       \
+                       ( std::string("Math error in dcprogs: ")               \
+                         + _e.what()).c_str() );                              \
+      ONERROR;                                                                \
+    } catch (DCProgs::errors::PythonTypeError &_e) {                          \
       PyErr_SetString(PyExc_TypeError, _e.what());                            \
       ONERROR;                                                                \
     } catch (DCProgs::errors::PythonValueError &_e) {                         \
