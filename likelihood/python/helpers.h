@@ -19,6 +19,7 @@ namespace {
         bool operator!() const { return object_ == NULL; }
         bool is_valid() const { return object_ != NULL; }
         T* new_ref() const { Py_INCREF( ((PyObject*)object_) ); return object_; }
+        T* release() { T* const dummy(object_); object_ = NULL; return dummy; }
 
       private:
         explicit Object(T * const _in) : object_(_in) {}

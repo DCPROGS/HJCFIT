@@ -24,24 +24,10 @@
 
 #  include "../state_matrix.h"
 #  include "../asymptotes.h"
+#  include "../root_finder.h"
 
 #  include "helpers.h"
-%}
 
-// Tells swig that we will deal with execptions.
-%include "exception.i"
-%init %{ import_array();  %}
-
-// Tells swig about our type hierarchy. 
-// These types should make it easier to go from one system to another, but they do make it slightly
-// more difficult for swig to understand our code.
-%apply int { t_int }; 
-%apply int { DCProgs::t_int }; 
-%apply double { t_real }; 
-%apply double { DCProgs::t_real }; 
-
-
-// These macros help us translate from C++ exceptions to python exceptions
 #ifdef DCPROGS_CATCH
 # error DCPROGS_CATCH already defined.
 #endif 
@@ -75,11 +61,28 @@
       PyErr_SetString(PyExc_RuntimeError, "Caught unknown exception.");       \
       ONERROR;                                                                \
     }
+%}
+
+// Tells swig that we will deal with execptions.
+%include "exception.i"
+%init %{ import_array();  %}
+
+// Tells swig about our type hierarchy. 
+// These types should make it easier to go from one system to another, but they do make it slightly
+// more difficult for swig to understand our code.
+%apply int { t_int }; 
+%apply int { DCProgs::t_int }; 
+%apply double { t_real }; 
+%apply double { DCProgs::t_real }; 
+
+
+// These macros help us translate from C++ exceptions to python exceptions
 //! General namespace for all things DCProgs.
 namespace DCProgs {
 
 %include "state_matrix.swg"
 %include "asymptotes.swg"
+%include "root_finder.swg"
 
 }
 #undef DCPROGS_CATCH
