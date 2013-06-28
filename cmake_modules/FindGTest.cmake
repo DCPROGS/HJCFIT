@@ -33,7 +33,7 @@ ExternalProject_Add(
     LOG_CONFIGURE ON
     LOG_BUILD ON)
 
-  add_definitions(-DGTEST_LANG_CXX11)
+add_definitions(-DGTEST_LANG_CXX11)
 
 macro(cxx_test name source)
 

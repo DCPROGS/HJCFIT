@@ -10,15 +10,14 @@ namespace DCProgs {
   // Some functions we need here and nowhere else.
   namespace {
 
-     // Compute number of roots above  s.
-     t_int getUpper(DeterminantEq const &_det, t_real _s) {
+     // Compute number of roots in interval.
+     t_rvector getEigenvalues(DeterminantEq const &_det, t_real _s) {
        // Compute matrix
        t_rmatrix const H(_det.H(_s));
 
        // checks that it is valid.
        // If condition below is true, then means at least one element is NaN.
-       if((H.array() != H.array()).any())
-         throw errors::Mass("Encountered NaN in H matrix when trying to figure out roots.");
+       if(not (H.array() == H.array()).all()) throw errors::NaN("when computing matrix H.");
 
        // Computes eigenvalues of midpoint.
        Eigen::EigenSolver<t_rmatrix> eigsolver(H);
@@ -29,10 +28,23 @@ namespace DCProgs {
        if((eigsolver.eigenvalues().array().imag().abs() > 1e-8).any())
          throw errors::ComplexEigenvalues("when computing interval for roots.");
 
-       t_rvector const eigs_real = eigsolver.eigenvalues().real();
-
-       // compute number of roots
-       return (eigs_real.array() >= _s).count();
+       t_rvector const eigs = eigsolver.eigenvalues().real();
+       return eigsolver.eigenvalues().real();
+     }
+     
+     // Compute number of roots in interval.
+     t_int getInterval(DeterminantEq const &_det, t_real _min, t_real _max) {
+       // Compute matrix
+       t_rvector const eigs(getEigenvalues(_det, _min));
+       // compute number of roots in interval
+       return ( (eigs.array() >= _min) and (eigs.array() < _max)).count();
+     }
+     // Compute number of roots above input
+     t_int getUpper(DeterminantEq const &_det, t_real _s) {
+       // Compute matrix
+       t_rvector const eigs(getEigenvalues(_det, _s));
+       // compute number of roots in interval
+       return (eigs.array() >= _s).count();
      }
 
      // Actual bisecting algorithm.
@@ -40,29 +52,35 @@ namespace DCProgs {
      // Based on that information, figures out whether to bisect some more or whether an interval
      // was found.
      void step_(DeterminantEq const &_det, 
-                t_int const _nroots, t_real const _mins, 
-                t_real const _maxs, t_real const _tolerance,
+                t_real _mins, t_real _maxs, t_real const _tolerance,
+                t_int _higher_than_min, t_int _higher_than_max,
                 std::vector<RootInterval> &_intervals) {
        
        t_real const mids = (_maxs + _mins) * 0.5;
+       t_rvector const eigenvalues = getEigenvalues(_det, mids);
+
        // compute number of roots
-       t_int const upper = getUpper(_det, mids);
-       t_int const lower = _nroots - upper;
+       t_int const higher_than_mid = (eigenvalues.array() >  mids).count();
 
-       // Checks whether we have an interval, or whether we should bisect some more.
-       auto check_and_set = [&](t_int _iroots, t_real _min, t_real _max) {
+       // This functor checks whether to bisect some more or whether an 
+       auto check_and_set = [&](t_real _min, t_real _max, t_int _imin, t_int _imax) {
 
-         if(_iroots == 1) 
-           _intervals.push_back({_min, _max, _iroots});
-         else if (_iroots > 1) {
-           if ((_max - _min) < _tolerance)  
-             _intervals.push_back({_min, _max, _iroots});
-           else step_(_det, _iroots, _min, _max, _tolerance, _intervals);
-         }
+         t_int const nroots = _imin - _imax;
+         if(nroots == 1) _intervals.push_back({_min, _max, 1});
+         else if(nroots != 0) {
+           if(_max - _min < _tolerance) {
+             t_int const s = (_min + _max) * 0.5;
+             t_rvector const eigenvalues = getEigenvalues(_det, s);
+             t_int const multiplicity = ((eigenvalues.array() - s) < _tolerance).count();
+             if(multiplicity == 0) throw errors::Runtime("Found interval with zero roots.");
+             _intervals.push_back({_min, _max, multiplicity});
+           } else step_(_det, _min, _max, _tolerance, _imin, _imax, _intervals);
+         } 
        };
 
-       check_and_set(upper, mids, _maxs);
-       check_and_set(lower, _mins, mids);
+       // Checks whether we have an interval, or whether we should bisect some more.
+       check_and_set(_mins, mids, _higher_than_min, higher_than_mid);
+       check_and_set(mids, _maxs, higher_than_mid, _higher_than_max);
      }
   }
 
@@ -92,7 +110,7 @@ namespace DCProgs {
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   
     std::vector<RootInterval> intervals;
     intervals.reserve(nroots);
-    step_(_det, nroots, mins, maxs, _tolerance, intervals);
+    step_(_det, mins, maxs, _tolerance, _det.get_nbroots(), 0, intervals);
     return intervals;
   }
 
@@ -106,7 +124,13 @@ namespace DCProgs {
 
        // checks that it is valid.
        // If condition below is true, then means at least one element is NaN.
-       if((H.array() != H.array()).any()) {
+       if(not (H.array() == H.array()).all()) {
+         if(std::abs(minroot) < 1e-1) {
+           std::ostringstream sstr;
+           sstr << "when computing matrix H(" << minroot << "):\n"
+                << numpy_io(H) << std::endl;
+           throw errors::NaN(sstr.str());
+         }
          minroot = 0.9 * minroot;
          continue;
        }
@@ -122,7 +146,6 @@ namespace DCProgs {
 
        t_real const minimum(eigsolver.eigenvalues().real().minCoeff());
        if(minimum > minroot) return minroot;
-       std::cout  << "minimum: " << minimum << " -- previous: " << minroot << std::endl;
        minroot = minimum + _alpha * (minimum - minroot);
     }
     throw errors::Runtime("Reached maximum number of iterations.");
