@@ -41,13 +41,24 @@ class StateMatrix {
                 "Number of open states cannot be larger than the number states.");
       return new DCProgs::StateMatrix(std::move(matrix), _nopen);
     }
+  }
 
+  // Add some printout functions.
+  %extend {
     PyObject* __str__() {
       if($self->matrix.rows() == 0 or $self->matrix.cols() == 0) 
         return PyString_FromString("Un-initialized transition matrix.");
       std::ostringstream sstr;
       sstr << "Transition matrix with " << $self->nopen
-           << " open states:\n" << $self->matrix << "\n";
+           << " open states:\n" << DCProgs::numpy_io($self->matrix) << "\n";
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      if($self->matrix.rows() == 0 or $self->matrix.cols() == 0)
+        return PyString_FromString("StateMatrix()");
+      std::ostringstream sstr;
+      sstr << "DeterminantEq( array(" << DCProgs::numpy_io($self->matrix) << "), "
+           << $self->nopen << ")";
       return PyString_FromString(sstr.str().c_str());
     }
   }
