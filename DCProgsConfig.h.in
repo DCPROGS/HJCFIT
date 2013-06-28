@@ -58,5 +58,14 @@ namespace DCProgs {
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
   //! Type of complex vectors.
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
+
+
+  // Some functions that come in usefull left and right.
+  template<class T>
+    auto numpy_io(Eigen::DenseBase<T> const &_matrix)
+                   -> decltype(_matrix.format(Eigen::IOFormat()))  {
+      return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n",
+                                            "[", "]", "[", "]"));
+    }
 }
 #endif
