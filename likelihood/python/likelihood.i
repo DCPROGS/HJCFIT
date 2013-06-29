@@ -74,6 +74,10 @@
 %apply int { DCProgs::t_int }; 
 %apply double { t_real }; 
 %apply double { DCProgs::t_real }; 
+%typemap(typecheck) DCProgs::t_int = int;
+%typemap(typecheck) t_int = int;
+%typemap(typecheck) DCProgs::t_real = double;
+%typemap(typecheck) t_real = double;
 
 
 // These macros help us translate from C++ exceptions to python exceptions

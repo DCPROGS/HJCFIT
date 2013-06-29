@@ -9,7 +9,7 @@ if(pythonBindings)
   set_target_properties(_likelihood PROPERTIES LINKER_LANGUAGE CXX)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
   install(TARGETS _likelihood DESTINATION ${CMAKE_PYINSTALL_PREFIX})
-  install(FILES  __init__.py ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py
+  install(FILES  __init__.py random.py ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py
           DESTINATION ${CMAKE_PYINSTALL_PREFIX})
 
 endif(pythonBindings)
