@@ -5,18 +5,21 @@
 }
 
 // Now we define the bindings for the StateMatrix
-//! \brief State matrix that can  be partitioned into open/shut states.
-//! \details In practice, this is a two tuple with some helper functions to get corners.
+// \brief State matrix that can  be partitioned into open/shut states.
+// \details In practice, this is a two tuple with some helper functions to get corners.
 class StateMatrix {
   public:
 
 
-  //! Number of open states.
+  // Number of open states.
   DCProgs::t_int nopen; 
+  // Tells SWIG how to convert eigen matrices to numpy matrices.
   %typemap(in) DCProgs::t_rmatrix matrix { 
     try { $1 = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)$input); }
     DCPROGS_CATCH(SWIG_fail);
   }
+  // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
+  // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
   %typemap(out) DCProgs::t_rmatrix { 
     try { $result = DCProgs::numpy::wrap_to_numpy(arg1->matrix, $self); }
     DCPROGS_CATCH(SWIG_fail);
@@ -24,6 +27,8 @@ class StateMatrix {
   //! The matrix itself.
   DCProgs::t_rmatrix matrix; 
 
+  // This is the end of automatic conversion from eigen to numpy.
+  // It is removed because elsewhere we don't know who will own the memory to the eigen matrix.
   %clear DCProgs::t_rmatrix;
 
   StateMatrix();
