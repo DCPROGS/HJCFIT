@@ -3,7 +3,8 @@
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
-  if string == "Qmatrix":
+  from dcprogs.random import qmatrix as random_qmatrix
+  if string == "classic":
     return array([[ -3050,        50,  3000,      0,    0 ], 
                   [ 2./3., -1502./3.,     0,    500,    0 ],  
                   [    15,         0, -2065,     50, 2000 ],  
@@ -56,6 +57,32 @@ def Matrix(string):
                    [ 0, 0, 0.5958562312957759, 0.8349824944924248, 21.78352763660896,
                      0, 0, 0, 0, 0, 0.8079999622957483, 0, 0, 0, 0, 0.2303859780888245,
                      -24.25275230278173]])
+  if string == "singular matrix":
+    return array([[ -8.60862871e+03,   0.00000000e+00,   0.00000000e+00, 8.60862871e+03,
+                     0.00000000e+00,   0.00000000e+00, 0.00000000e+00],
+                  [  0.00000000e+00,  -5.63832745e+03,   0.00000000e+00, 0.00000000e+00,
+                     5.63832745e+03,   0.00000000e+00, 0.00000000e+00],
+                  [  0.00000000e+00,   0.00000000e+00,  -5.43772860e+04, 0.00000000e+00,
+                     0.00000000e+00,   5.43772860e+04, 0.00000000e+00],
+                  [  1.18958719e+05,   0.00000000e+00,   0.00000000e+00, -1.24208820e+05,
+                     3.39628323e+03,   1.85381780e+03, 0.00000000e+00],
+                  [  0.00000000e+00,   6.77847125e+01,   0.00000000e+00, 1.01956162e+01,
+                     -1.93179812e+03,   0.00000000e+00, 1.85381780e+03],
+                  [  0.00000000e+00,   0.00000000e+00,   8.14133272e+01, 6.00000000e+00,
+                     0.00000000e+00,  -3.48369656e+03, 3.39628323e+03],
+                  [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00, 0.00000000e+00,
+                     6.00000000e+00,   1.01956162e+01, -1.61956162e+01]])
+  if string == "random": return random_qmatrix()
+
+def StatMat(string):
+  """ Creates matrices from specific strings """
+  from dcprogs.random import state_matrix as random_state_matrix
+  from dcprogs.likelihood import StateMatrix
+  if string == "classic": return StateMatrix(Matrix(string), 2)
+  if string == "complex eigenvalues": return StateMatrix(Matrix(string), 4)
+  if string == "singular": return StateMatrix(Matrix(string), 3)
+  if string == "random": return random_state_matrix
+  else: raise Exception("Unknown State Matrix {0}".format(string))
 
 def register_type(): 
   from behave import matchers
@@ -64,3 +91,4 @@ def register_type():
   matchers.register_type(Eval=lambda x: eval(x))
   matchers.register_type(Bool=lambda x: bool(x))
   matchers.register_type(Matrix=Matrix)
+  matchers.register_type(StatMat=StatMat)

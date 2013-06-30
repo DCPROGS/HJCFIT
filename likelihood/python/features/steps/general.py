@@ -12,3 +12,6 @@ def step(context, type):
   type = eval(type)
   if not isinstance(exception[1], type): raise exception[1]
 
+@then("no exception was thrown")
+def step(context):
+  if hasattr(context, 'exception'): raise context.exception[1]

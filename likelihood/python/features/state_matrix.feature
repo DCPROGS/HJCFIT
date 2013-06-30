@@ -40,12 +40,12 @@ Feature: StateMatrix bindings
     Examples: 
  
       | matrix   | nopen |
-      | Qmatrix  | 0     |
-      | Qmatrix  | 1     |
-      | Qmatrix  | 2     |
-      | Qmatrix  | 3     |
-      | Qmatrix  | 4     |
-      | Qmatrix  | 5     |
+      | classic  | 0     |
+      | classic  | 1     |
+      | classic  | 2     |
+      | classic  | 3     |
+      | classic  | 4     |
+      | classic  | 5     |
 
 
 
@@ -57,15 +57,15 @@ Feature: StateMatrix bindings
     Examples:
  
       | matrix     | nopen | exception  |
-      | Qmatrix    | -1    | ValueError |
-      | Qmatrix    | 6     | ValueError |
+      | classic    | -1    | ValueError |
+      | classic    | 6     | ValueError |
       | spam       | 0     | TypeError  |
       | numpy_spam | 0     | TypeError  |
 
 
   Scenario Outline: Modify matrix in-place
 
-    Given a StateMatrix instantiated with Qmatrix and 0
+    Given a StateMatrix instantiated with classic and 0
     When  item <item> is set to <value>
     Then  item <item> is <value>
 
@@ -77,6 +77,6 @@ Feature: StateMatrix bindings
 
   Scenario: Modify matrix in-place
 
-    Given a StateMatrix instantiated with Qmatrix and 0
+    Given a StateMatrix instantiated with classic and 0
     When  nopen is set to 2
     Then  nopen is 2

@@ -11,12 +11,12 @@ Feature: Determinantal Equation bindings
     Examples:
 
       | matrix   | nopen | tau   | doopen  |
-      | Qmatrix  | 1     |  0.4  |  True   |
-      | Qmatrix  | 1     |  0.1  |  False  |
-      | Qmatrix  | 4     |  0.3  |  True   |
-      | Qmatrix  | 4     |  0.1  |  False  |
-      | Qmatrix  | 2     |  0.2  |  True   |
-      | Qmatrix  | 2     |  0.1  |  False  |
+      | classic  | 1     |  0.4  |  True   |
+      | classic  | 1     |  0.1  |  False  |
+      | classic  | 4     |  0.3  |  True   |
+      | classic  | 4     |  0.1  |  False  |
+      | classic  | 2     |  0.2  |  True   |
+      | classic  | 2     |  0.1  |  False  |
 
   Scenario Outline: Initialise the determinantal equation with a state matrix
     Given a StateMatrix instantiated with <matrix> and <nopen>
@@ -27,12 +27,12 @@ Feature: Determinantal Equation bindings
     Examples:
 
       | matrix   | nopen | tau   | doopen  |
-      | Qmatrix  | 1     |  0.5  |  True   |
-      | Qmatrix  | 1     |  0.1  |  False  |
-      | Qmatrix  | 4     |  0.1  |  True   |
-      | Qmatrix  | 4     |  0.6  |  False  |
-      | Qmatrix  | 2     |  0.1  |  True   |
-      | Qmatrix  | 2     |  0.7  |  False  |
+      | classic  | 1     |  0.5  |  True   |
+      | classic  | 1     |  0.1  |  False  |
+      | classic  | 4     |  0.1  |  True   |
+      | classic  | 4     |  0.6  |  False  |
+      | classic  | 2     |  0.1  |  True   |
+      | classic  | 2     |  0.7  |  False  |
 
   Scenario Outline: Expected initialization failure with basic objects
     Given a <matrix>, <nopen>, <tau>, and <doopen>
@@ -42,8 +42,8 @@ Feature: Determinantal Equation bindings
     Examples:
 
       | matrix               | nopen | tau   | doopen | Exception       |
-      | Qmatrix              |   0   |  0.4  |  True  | ValueError      |
-      | Qmatrix              |   5   |  0.1  |  False | ValueError      |
+      | classic              |   0   |  0.4  |  True  | ValueError      |
+      | classic              |   5   |  0.1  |  False | ValueError      |
       | empty                |   0   |  0.3  |  True  | ValueError      |
       | spam                 |   1   |  0.1  |  False | TypeError       |
       | rectangle            |   1   |  0.1  |  True  | ValueError      |

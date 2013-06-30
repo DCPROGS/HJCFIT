@@ -119,7 +119,8 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
        elif interval[1] > 1: 
          result.append(((interval[0][0]+interval[0][1]) * 0.5, interval[1]));
      return result;
-  def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None): 
+
+  def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None, size=1000): 
      """ Computes and plots roots. 
 
          :param determinant: 
@@ -139,7 +140,7 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
            
          :returns: A figure
      """
-     from matplotlib.pyplot import Figure
+     from matplotlib import pyplot as plt
      from numpy import arange, min, max
 
      if intervals is None: intervals = find_root_intervals(determinant) 
@@ -153,10 +154,10 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
        maxi = max([maxi] + list(interval[0]))
      
      roots = find_roots(determinant, intervals)
-     x = arange(mini, maxi)
+     x = arange(mini, maxi+(maxi-mini)/float(size)*0.5, (maxi-mini)/float(size))
      y = determinant(x)
 
-     figure = Figure()
+     figure = plt.figure()
      ax = figure.add_subplot(111)
      ax.plot(x, y, **main)
      ax.set_xlim((mini, maxi))
@@ -167,7 +168,7 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
 
      for root in roots:
        ax.plot([root[0], root[0]], [ymin, 0], **lines)
+     ax.plot([x[0], x[-1]], [0, 0])
 
      return figure
-
 %}
