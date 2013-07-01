@@ -138,4 +138,16 @@ class DeterminantEq {
                 "    If present, it is the max length of missed events.\n\n"           \
                 "Returns: a numpy array."
   %}
+
+  // Add some printout functions.
+  %extend {
+    PyObject* __str__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+  }
 };

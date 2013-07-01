@@ -99,21 +99,23 @@ namespace DCProgs {
                          _single_root_finder );
   }
 
-// //! \brief Finds roots via brute force search
-// //! \details Computes all values between mins and maxs, for a given resolution.
-// //!          If determinant changes sign between two values, or if it comes to within tolerance of
-// //!          zero, then computes eigenvalues of H to determine possible multiplicity.
-// //! \param[in] _det: The determinantal equation
-// //! \param[in] _mins: A valid lower bound. All roots should be above that lower bound. 
-// //!                   If _mins > _maxs, then tries to determine the lower bound using
-// //!                   find_lower_bound_for_root.
-// //! \param[in] _maxs: A valid upper bound. All roots should be below that upper bound. 
-// //! \param[in] _resolution: resolution at which computes values in interval.
-// std::vector<RootIntervals> find_root_intervals_brute_force(DeterminantEq const &_det, 
-//                                                            t_real _mins = 1e8,
-//                                                            t_real _maxs   = 0e0,
-//                                                            t_real _resolution = 1e-1,
-//                                                            t_real _tolerance = 1e-1);
+  //! \brief Finds roots via brute force search
+  //! \details Computes all values between mins and maxs, for a given resolution.
+  //!          If determinant changes sign between two values, or if it comes to within tolerance of
+  //!          zero, then computes eigenvalues of H to determine possible multiplicity.
+  //! \param[in] _det: The determinantal equation
+  //! \param[in] _resolution: resolution at which computes values in interval.
+  //! \param[in] _mins: A valid lower bound. All roots should be above that lower bound. 
+  //!                   If _mins > _maxs, then tries to determine the lower bound using
+  //!                   find_lower_bound_for_root.
+  //! \param[in] _maxs: A valid upper bound. All roots should be below that upper bound. 
+  //! \param[in] _tolerance: Tolerance below which the value of the determinant is considered
+  //!                        "close to zero".
+  std::vector<RootInterval> find_root_intervals_brute_force(DeterminantEq const &_det, 
+                                                            t_real _resolution = 1e-1,
+                                                            t_real _mins = 1e8,
+                                                            t_real _maxs   = 0e0,
+                                                            t_real _tolerance = 1e-1);
 }
 
 #endif

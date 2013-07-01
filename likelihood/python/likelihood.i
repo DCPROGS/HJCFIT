@@ -70,6 +70,11 @@
 %include "exception.i"
 %init %{ import_array();  %}
 
+%exception {
+  try { $function }
+  DCPROGS_CATCH(return NULL;);
+}
+
 // Tells swig about our type hierarchy. 
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.

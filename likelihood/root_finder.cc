@@ -21,8 +21,11 @@ namespace DCProgs {
 
        // Computes eigenvalues of midpoint.
        Eigen::EigenSolver<t_rmatrix> eigsolver(H);
-       if(eigsolver.info() != Eigen::Success) 
-         throw errors::Mass("Could not solve eigenvalue problem.");
+       if(eigsolver.info() != Eigen::Success) {
+         std::ostringstream sstr("Could not solve eigenvalue problem.\n");
+         sstr << _det << "\n"; 
+         throw errors::Mass(sstr.str());
+       }
 
        return eigsolver.eigenvalues();
      }
@@ -87,30 +90,11 @@ namespace DCProgs {
   std::vector<RootInterval> MSWINDOBE
     find_root_intervals(DeterminantEq const &_det, t_real _mins, t_real _maxs, t_real _tolerance) {
 
-    
     t_real mins = _mins > _maxs ? find_lower_bound_for_roots(_det, _maxs): _mins;
-
-    // Increases size of intervals if number of roots above boundary is unexpected.
-    // This works both for min and max, since we can change the sign of alpha.
-    auto find_boundary = [&](t_real _s, t_int _nbroots, t_real _alpha) {
-      t_int i = 0;
-      while( getUpper(_det, _s) != _nbroots ) {
-        _s += _alpha;
-        if( (++i) > 100 ) 
-          throw errors::Runtime("Could not find interval with all roots.");
-      }
-      return _s;
-    };
-
-    // Sets up the size of the intervals to look for.
-    t_int const nroots = _det.get_nbroots();
-    t_real const maxs = find_boundary(_maxs, 0,  0.1 * (_maxs - _mins));
-    mins = find_boundary(mins, nroots, -0.1 * (_maxs - mins));
 
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   
     std::vector<RootInterval> intervals;
-    intervals.reserve(nroots);
-    step_(_det, mins, maxs, _tolerance, _det.get_nbroots(), 0, intervals);
+    step_(_det, mins, _maxs, _tolerance, _det.get_nbroots(), 0, intervals);
     return intervals;
   }
 
@@ -151,72 +135,72 @@ namespace DCProgs {
     throw errors::Runtime("Reached maximum number of iterations.");
   }
 
-// std::vector<RootIntervals> find_root_intervals_brute_force(DeterminantEq const &_det, 
-//                                                            t_real _resolution = 1e-1,
-//                                                            t_real _mins = 1e8,
-//                                                            t_real _maxs = 0e0,
-//                                                            t_real _root_tolerance = 1e-1
-//                                                            t_real _complex_tolerance = 1e-8) {
-//   if(_mins > _maxs) _mins = find_lower_bound_for_roots(_det, _maxs);
-//   if(_mins + 2e0 * _resolution > _maxs) _resolution = (_maxs - _mins) / 10e0;
-//
-//   std::vector<RootIntervals> intervals;
-//   t_real const half_step = 0.5 * _resolution;
-//   t_real previous = _det(_mins);
-//   t_real s(_mins + _resolution)
-//   do {
-//     t_real const current = _det(s);
-//
-//     // Checks we have sensible values. 
-//     if(not (std::isnan(current) or std::isnan(previous)))
-//     {
-//       // Sign changed. There should be at least one root.
-//       if(current * previous < 0e0) {
-//         // Tries and figures out the multiplicity.
-//         // It should be at least one and odd. Hence, falls back to one if result is even.
-//         t_cvector const eigenvalues = getEigenvalues(_det, s - half_step); 
-//         t_int const multiplicity = getMultiplicity(_det, s - half_step, _resolution);
-//         intervals.emplace_back(_s - _resolution, _s, multiplicity % 2 == 1 ? multiplicity: 1);
-//
-//       } else if( std::abs(current) < _root_tolerance) {
-//         // Tries and figures whether we are skimming the x axis, or whether we will cross it
-//         // later.
-//         t_real s_next = s;
-//         bool skimmed_out = false, crossed = false;
-//         t_real minimum_value(current), minimum_s(s); 
-//         do {
-//           s_next += _resolution;
-//           value_next = _det(s_next);
-//           crossed = value_next * current < 0;
-//           skimmed_out = (not crossed) and std::abs(value_next) > _root_tolerance;
-//           if(std::abs(value_next) < std::abs(mimimum_value)) {
-//             minimum_value = value_next;
-//             minimum_s = s_next;
-//           }
-//         } while( (not skimmed_out) and (not crossed) );
-//         
-//         // If we crossed we want to add it as a potential root.
-//         if(crossed) {
-//           t_int const multiplicity = getMultiplicity(_det, s_next - half_step, _resolution);
-//           intervals.emplace_back( root_s - half_step, root_s + half_step, 
-//                                   multiplicity % 2 == 0 ? multiplicity: 1);
-//         } else if(skimmed_out) {
-//           t_int const multiplicity = getMultiplicity(_det, minimum_s, 2*_resolution);
-//           intervals.emplace_back( root_s - step, root_s + step, 
-//                                   multiplicity % 2 == 1 ? multiplicity: 1 );
-//         }
-//         // Adjust current value and s position.
-//         current = value_next;
-//         s = s_next;
-//       }
-//     }
-//     // Move to next point.
-//     previous = current;
-//     s += _resolution;
-//     ++i;
-//   } while (s < _maxs);
-//
-//   // return result.
-//   return intervals;
-// }
+  std::vector<RootInterval> find_root_intervals_brute_force(DeterminantEq const &_det, 
+                                                            t_real _resolution,
+                                                            t_real _mins,
+                                                            t_real _maxs,
+                                                            t_real _root_tolerance) {
+    if(_mins > _maxs) _mins = find_lower_bound_for_roots(_det, _maxs);
+    if(_resolution < 1e-12) throw errors::Domain("Resolution cannot be negative or null");
+    if(_mins + 2e0 * _resolution > _maxs) _resolution = (_maxs - _mins) / 10e0;
+ 
+    std::vector<RootInterval> intervals;
+    t_real const half_step = 0.5 * _resolution;
+    t_real previous = _det(_mins);
+    t_real s(_mins + _resolution);
+    do {
+      t_real current = _det(s);
+ 
+      // Checks we have sensible values. 
+      if(not (std::isnan(current) or std::isnan(previous)))
+      {
+        // Sign changed. There should be at least one root.
+        if(current * previous < 0e0) {
+          // Tries and figures out the multiplicity.
+          // It should be at least one and odd. Hence, falls back to one if result is even.
+          t_cvector const eigenvalues = getEigenvalues(_det, s - half_step); 
+          t_int const multiplicity = getMultiplicity(_det, s - half_step, _resolution);
+          intervals.emplace_back(s - _resolution, s, multiplicity % 2 == 1 ? multiplicity: 1);
+ 
+        } else if( std::abs(current) < _root_tolerance) {
+          // Tries and figures whether we are skimming the x axis, or whether we will cross it
+          // later.
+          t_real s_next = s;
+          t_real value_next(current);
+          bool skimmed_out = false, crossed = false;
+          t_real minimum_value(current), minimum_s(s); 
+          do {
+            s_next += _resolution;
+            value_next = _det(s_next);
+            crossed = value_next * current < 0;
+            skimmed_out = (not crossed) and std::abs(value_next) > _root_tolerance;
+            if(std::abs(value_next) < std::abs(minimum_value)) {
+              minimum_value = value_next;
+              minimum_s = s_next;
+            }
+          } while( (not skimmed_out) and (not crossed) );
+          
+          // If we crossed we want to add it as a potential root.
+          if(crossed) {
+            t_int const multiplicity = getMultiplicity(_det, s_next - half_step, _resolution);
+            intervals.emplace_back( s_next - half_step, s_next + half_step, 
+                                    multiplicity % 2 == 0 ? multiplicity: 1);
+          } else if(skimmed_out) {
+            t_int const multiplicity = getMultiplicity(_det, minimum_s, 2*_resolution);
+            intervals.emplace_back( minimum_s - _resolution, minimum_s + _resolution, 
+                                    multiplicity % 2 == 1 ? multiplicity: 1 );
+          }
+          // Adjust current value and s position.
+          current = value_next;
+          s = s_next;
+        }
+      }
+      // Move to next point.
+      previous = current;
+      s += _resolution;
+    } while (s < _maxs);
+ 
+    // return result.
+    return intervals;
+  }
 }
