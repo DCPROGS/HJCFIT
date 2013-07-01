@@ -26,13 +26,14 @@ Feature: Determinantal Equation bindings
 
     Examples:
 
-      | matrix   | nopen | tau   | doopen  |
-      | classic  | 1     |  0.5  |  True   |
-      | classic  | 1     |  0.1  |  False  |
-      | classic  | 4     |  0.1  |  True   |
-      | classic  | 4     |  0.6  |  False  |
-      | classic  | 2     |  0.1  |  True   |
-      | classic  | 2     |  0.7  |  False  |
+      | matrix               | nopen |  tau  | doopen  |
+      | classic              |   1   |  0.5  |  True   |
+      | classic              |   1   |  0.1  |  False  |
+      | classic              |   4   |  0.1  |  True   |
+      | classic              |   4   |  0.6  |  False  |
+      | classic              |   2   |  0.1  |  True   |
+      | classic              |   2   |  0.7  |  False  |
+      | complex eigenvalues  |   2   | 1e-4  |  True   | 
 
   Scenario Outline: Expected initialization failure with basic objects
     Given a <matrix>, <nopen>, <tau>, and <doopen>
@@ -47,7 +48,6 @@ Feature: Determinantal Equation bindings
       | empty                |   0   |  0.3  |  True  | ValueError      |
       | spam                 |   1   |  0.1  |  False | TypeError       |
       | rectangle            |   1   |  0.1  |  True  | ValueError      |
-      | complex eigenvalues  |   2   |  1e-4 |  True  | ArithmeticError |
 
 
   Scenario Outline: Computes the determinant for open states of classic case

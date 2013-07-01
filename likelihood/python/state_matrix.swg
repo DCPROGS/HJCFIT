@@ -53,9 +53,7 @@ class StateMatrix {
     PyObject* __str__() {
       if($self->matrix.rows() == 0 or $self->matrix.cols() == 0) 
         return PyString_FromString("Un-initialized transition matrix.");
-      std::ostringstream sstr;
-      sstr << "Transition matrix with " << $self->nopen
-           << " open states:\n" << DCProgs::numpy_io($self->matrix) << "\n";
+      std::ostringstream sstr; sstr << *($self);
       return PyString_FromString(sstr.str().c_str());
     }
     PyObject* __repr__() {

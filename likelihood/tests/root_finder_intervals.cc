@@ -17,6 +17,8 @@ using namespace DCProgs;
   static_assert( std::is_move_assignable<Root>::value, 
         	       "Root is not move assignable." );  
 #endif
+static_assert(std::is_standard_layout<RootInterval>::value, "RootInterval is not a standard layout." );
+static_assert(std::is_standard_layout<Root>::value, "Root is not a standard layout." );
 
 #ifdef HAS_CXX11_TRIVIALTYPETRAITS
   static_assert( std::is_trivially_move_constructible<RootInterval>::value,
@@ -99,66 +101,57 @@ TEST_P(TestFindIntervals, random_matrix) {
 
   typedef std::uniform_int_distribution<t_int> t_idist;
   
-  //! Loop when complex eigenvalue thrown
-  bool doloop = false;
-  do {
-    doloop = false;
-    StateMatrix Qmatrix;
-    try {
+  StateMatrix Qmatrix;
+  try {
 
-      // This is the meat of the test.
-      // The rest if pfaff to catch complex eigenvalues and other errors.
-      // First create an appropriate Q matrix.
-      Qmatrix.matrix = nonsingular_qmatrix();
-      Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
+    // This is the meat of the test.
+    // The rest if pfaff to catch complex eigenvalues and other errors.
+    // First create an appropriate Q matrix.
+    Qmatrix.matrix = nonsingular_qmatrix(5, 8);
+    Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
 
-      // Then the determinant object
-      DeterminantEq det(Qmatrix, 1e-4, true);
-      // Look for roots and sort them
-      t_real const convergence = 1e-6;
-      std::vector<RootInterval> intervals = find_root_intervals(det, 1e8, 0e0, convergence);
-      std::sort(intervals.begin(), intervals.end(),
-                [](RootInterval const &_a, RootInterval const &_b)
-                { return _a.start < _b.end; });
+    // Then the determinant object
+    DeterminantEq det(Qmatrix, 1e-4, true);
+    // Look for roots and sort them
+    t_real const convergence = 1e-6;
+    std::vector<RootInterval> intervals = find_root_intervals(det, 1e8, 0e0, convergence);
+    std::sort(intervals.begin(), intervals.end(),
+              [](RootInterval const &_a, RootInterval const &_b)
+              { return _a.start < _b.end; });
 
-      t_int nroots = 0;
-      // A few tests:
-      //   - multiplicity should never be zero. What would be the point of an interval without
-      //     roots ?
-      //   - interval should have start < end, of course. 
-      //   - if multiplicity is larger than 1, then interval should be smaller than convergence.
-      //   - if multiplicity is _even_, then the sign of det(W(s)) _should not_ change between start and
-      //   end of interval.
-      //     If is it _odd_, then it _should_ change between start and end.
-      //   - The multiplicity should add up to the size of aa matrix.
-      for(RootInterval const &interval: intervals) {
+    t_int nroots = 0;
+    // A few tests:
+    //   - multiplicity should never be zero. What would be the point of an interval without
+    //     roots ?
+    //   - interval should have start < end, of course. 
+    //   - if multiplicity is larger than 1, then interval should be smaller than convergence.
+    //   - if multiplicity is _even_, then the sign of det(W(s)) _should not_ change between start and
+    //   end of interval.
+    //     If is it _odd_, then it _should_ change between start and end.
+    //   - The multiplicity should add up to the size of aa matrix.
+    for(RootInterval const &interval: intervals) {
 
 
-        nroots += interval.multiplicity;
-        EXPECT_TRUE(interval.multiplicity != 0);
-        EXPECT_TRUE(interval.end > interval.start);
-        if(interval.multiplicity > 1) {
-          EXPECT_TRUE(interval.end - interval.start < convergence );
-        } 
+      nroots += interval.multiplicity;
+      EXPECT_TRUE(interval.multiplicity != 0);
+      EXPECT_TRUE(interval.end > interval.start);
+      if(interval.multiplicity > 1) {
+        EXPECT_TRUE(interval.end - interval.start < convergence );
+      } 
 
-        t_int const start_sign = det(interval.start) > 0 ? 1: -1;
-        t_int const end_sign = det(interval.end) > 0 ? 1: -1;
-        EXPECT_TRUE(interval.multiplicity % 2 == 0?
-                        start_sign == end_sign:
-                        start_sign != end_sign );
-      }
-      EXPECT_EQ(Qmatrix.aa().rows(), det.get_nbroots());
-      EXPECT_EQ(Qmatrix.aa().rows(), nroots);
-      EXPECT_TRUE(nroots > 0);
+      t_int const start_sign = det(interval.start) > 0 ? 1: -1;
+      t_int const end_sign = det(interval.end) > 0 ? 1: -1;
+      EXPECT_TRUE(interval.multiplicity % 2 == 0?
+                      start_sign == end_sign:
+                      start_sign != end_sign );
     }
-    catch (errors::ComplexEigenvalues) { doloop = true; }
-    catch(...) {
-      std::cerr.precision(15);
-      std::cerr << "Error for nopen=" << Qmatrix.nopen << "\n" 
-                << numpy_io(Qmatrix.matrix) << std::endl;
-      throw;
-    }
-  } while(doloop);
+    EXPECT_EQ(Qmatrix.aa().rows(), det.get_nbroots()) << Qmatrix;
+    EXPECT_TRUE(nroots > 0) << Qmatrix;
+  } catch(...) {
+    std::cerr.precision(15);
+    std::cerr << "Error for " << Qmatrix << std::endl;
+    throw;
+  }
 }
 
 INSTANTIATE_TEST_CASE_P(random, TestFindIntervals, ::testing::Range(0, 100));

@@ -34,35 +34,37 @@ namespace DCProgs {
     Eigen::EigenSolver<t_rmatrix> eigsolver(matrix_.ff());
     if(eigsolver.info() != Eigen::Success) 
         throw errors::Mass("Could not solve eigenvalue problem.");
-    if((eigsolver.eigenvalues().imag().array().abs() > 1e-8).any())
-      throw errors::ComplexEigenvalues("State matrix contains complex eigenvalues.\n"
-                                       "Cannot compute asymptotic expression.");
-    ff_eigenvalues_ = eigsolver.eigenvalues().real();
-    ff_eigenvectors_ = eigsolver.eigenvectors().real();
+    ff_eigenvalues_ = eigsolver.eigenvalues();
+    ff_eigenvectors_ = eigsolver.eigenvectors();
     ff_eigenvectors_inv_ = ff_eigenvectors_.inverse();
   }
 
   t_rmatrix DeterminantEq :: integral_(t_real _s) const {
  
-    t_rvector const alpha = ff_eigenvalues_.array() - _s;
-    t_rmatrix diagonal = t_rmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
+    t_cvector const alpha = ff_eigenvalues_.array() - _s;
+    t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
     for(t_int i(0); i < ff_eigenvalues_.size(); ++i) 
       diagonal(i, i) = std::abs(alpha(i)) > ZERO ?  (std::exp(alpha(i) * tau_) - 1e0) / alpha(i): tau_; 
-    return ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
+    t_cmatrix const result = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
+    if((result.imag().array().abs() > 1e-8).any())
+      throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
+    return result.real();
   }
 
   t_rmatrix DeterminantEq::s_derivative(t_real _s) const { 
 
-    t_rvector const alpha = ff_eigenvalues_.array() - _s;
-    t_rmatrix diagonal = t_rmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
+    t_cvector const alpha = ff_eigenvalues_.array() - _s;
+    t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
     for(t_int i(0); i < ff_eigenvalues_.size(); ++i) {
       if(std::abs(alpha(i)) > ZERO) {
-        t_real const invalpha = 1e0 / alpha(i);
+        t_complex const invalpha = 1e0 / alpha(i);
         diagonal(i, i) = invalpha * ((invalpha - tau_) * std::exp(alpha(i)*tau_) - invalpha);
       } else diagonal(i, i) = -tau_ * tau_ * 0.5;
     }
-    return this->id_() +
-           matrix_.af() * ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_ * matrix_.fa(); 
+    t_cmatrix const integral = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
+    if((integral.imag().array().abs() > 1e-8).any())
+      throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
+    return this->id_() + matrix_.af() * integral.real() * matrix_.fa(); 
   }
 
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const & _self) {

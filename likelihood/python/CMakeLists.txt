@@ -18,5 +18,6 @@ if(pythonBindings AND tests)
 
   feature_test(state_matrix features/state_matrix.feature)
   feature_test(asymptotes features/asymptotes.feature)
+  feature_test(find_roots features/find_roots.feature)
   
 endif(pythonBindings AND tests)

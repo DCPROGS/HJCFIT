@@ -69,6 +69,7 @@ namespace DCProgs {
       void set_tau(t_real _tau) { tau_ = _tau; }
 
       //! Get expected number of roots.
+      //! This is an indication. There could be more roots.
       t_int get_nbroots() const { return matrix_.nopen; }
 
     protected:
@@ -90,11 +91,11 @@ namespace DCProgs {
       //! The transition state matrix on which to act.
       StateMatrix matrix_;
       //! The eigenvalues of the ff matrix. Computed once.
-      t_rvector ff_eigenvalues_;
+      t_cvector ff_eigenvalues_;
       //! The eigenvectors of the ff matrix. Computed once.
-      t_rmatrix ff_eigenvectors_;
+      t_cmatrix ff_eigenvectors_;
       //! The inverse eigenvectors of the ff matrix. Computed once.
-      t_rmatrix ff_eigenvectors_inv_;
+      t_cmatrix ff_eigenvectors_inv_;
       //! Time below which events are missed
       t_real tau_;
 #     ifdef HAS_CXX11_CONSTEXPR
