@@ -32,8 +32,11 @@ namespace DCProgs {
       matrix_.fa() = fa;
     }
     Eigen::EigenSolver<t_rmatrix> eigsolver(matrix_.ff());
-    if(eigsolver.info() != Eigen::Success) 
-        throw errors::Mass("Could not solve eigenvalue problem.");
+    if(eigsolver.info() != Eigen::Success)  {
+      std::ostringstream sstr("Could not solve eigenvalue problem.");
+      sstr << numpy_io(matrix_.ff()) << "\n";
+      throw errors::Mass(sstr.str());
+    }
     ff_eigenvalues_ = eigsolver.eigenvalues();
     ff_eigenvectors_ = eigsolver.eigenvectors();
     ff_eigenvectors_inv_ = ff_eigenvectors_.inverse();
@@ -71,9 +74,9 @@ namespace DCProgs {
     
     return _stream << "Determinant equation:\n"
                    << "=====================\n\n" 
-                   << "  * Transition Rate matrix\n" << _self.matrix_.matrix << "\n"
-                   << "  * Number of open states " << _self.matrix_.nopen << "\n"
-                   << "  * eigenvalues: " << _self.ff_eigenvalues_.transpose() << "\n";
+                   << "  * Transition Rate matrix:\n" << numpy_io(_self.matrix_.matrix) << "\n"
+                   << "  * Number of 'A' states: " << _self.matrix_.nopen << "\n"
+                   << "  * Tau: " << _self.tau_ << "\n"
+                   << "  * FF eigenvalues: " << _self.ff_eigenvalues_.transpose() << "\n";
   }
-
 }

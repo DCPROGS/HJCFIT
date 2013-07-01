@@ -65,7 +65,7 @@ def state_matrix(*args, **kwargs):
   from numpy.random import randint
   from .likelihood import StateMatrix
   matrix = qmatrix(*args, **kwargs)
-  nopen = randint(1, matrix.shape[0]-1)
+  nopen = randint(2, matrix.shape[0]-2)
   return StateMatrix(matrix, nopen)
 
 # Adds description of parameters and function from the qmatrix docstring.

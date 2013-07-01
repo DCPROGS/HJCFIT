@@ -60,7 +60,7 @@ class StateMatrix {
       if($self->matrix.rows() == 0 or $self->matrix.cols() == 0)
         return PyString_FromString("StateMatrix()");
       std::ostringstream sstr;
-      sstr << "DeterminantEq( array(" << DCProgs::numpy_io($self->matrix) << "), "
+      sstr << "StateMatrix( array(" << DCProgs::numpy_io($self->matrix) << "), "
            << $self->nopen << ")";
       return PyString_FromString(sstr.str().c_str());
     }
