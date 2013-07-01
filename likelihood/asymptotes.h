@@ -10,7 +10,7 @@ namespace DCProgs {
   class DeterminantEq;
 
   //! Dumps Determinantal equation to stream
-  MSWINDOBE std::ostream& operator<<(std::ostream&, DeterminantEq const &);
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const &_self);
 
   //! A functor to compute asymptotic missed event G.
   //! \detail The whole implementation is done w.r.t. to AF transitions. 

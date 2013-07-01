@@ -2,13 +2,16 @@
 #define DCPROGS_ROOT_FINDER_H
 
 #include "DCProgsConfig.h"
+
+#include <vector>
+
 #include "asymptotes.h"
 
 namespace DCProgs {
 
 
   //! Defines an interval which one or more roots.
-  struct RootInterval {
+  struct MSWINDOBE RootInterval {
     //! Start of the interval (lower value).
     t_real start;
     //! End of the interval (max value).
@@ -25,7 +28,7 @@ namespace DCProgs {
   };
 
   //! Defines a root, including mutliplicity.
-  struct Root {
+  struct MSWINDOBE Root {
     //! Start of the interval (lower value).
     t_real root;
     //! Number of roots in interval.
@@ -65,8 +68,8 @@ namespace DCProgs {
   //! \param[in] _alpha: factor by which to set new lower bound:
   //!                    \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
   //! \param[in] _itermax: Maximum number of iterations.
-  t_real find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
-                                    t_real _alpha = 5e0, t_int _itermax=100);
+  t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
+                                              t_real _alpha = 5e0, t_int _itermax=100);
 
   //! \brief Figures out interval where roots can be found by computing high and low values.
   template<class T> 
@@ -111,11 +114,12 @@ namespace DCProgs {
   //! \param[in] _maxs: A valid upper bound. All roots should be below that upper bound. 
   //! \param[in] _tolerance: Tolerance below which the value of the determinant is considered
   //!                        "close to zero".
-  std::vector<RootInterval> find_root_intervals_brute_force(DeterminantEq const &_det, 
-                                                            t_real _resolution = 1e-1,
-                                                            t_real _mins = 1e8,
-                                                            t_real _maxs   = 0e0,
-                                                            t_real _tolerance = 1e-1);
+  std::vector<RootInterval> MSWINDOBE 
+    find_root_intervals_brute_force(DeterminantEq const &_det, 
+                                    t_real _resolution = 1e-1,
+                                    t_real _mins = 1e8,
+                                    t_real _maxs   = 0e0,
+                                    t_real _tolerance = 1e-1);
 }
 
 #endif

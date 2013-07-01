@@ -6,29 +6,6 @@
 #include "random_matrix.h"
 using namespace DCProgs;
 
-#ifdef HAS_CXX11_TYPETRAITS
-  // Checks some assumption about RootIntervals
-  static_assert( std::is_move_constructible<RootInterval>::value,
-  	             "RootInterval is not move constructible." );  
-  static_assert( std::is_move_assignable<RootInterval>::value, 
-        	       "RootInterval is not move assignable." );  
-  static_assert( std::is_move_constructible<Root>::value,
-  	             "Root is not move constructible." );  
-  static_assert( std::is_move_assignable<Root>::value, 
-        	       "Root is not move assignable." );  
-#endif
-
-#ifdef HAS_CXX11_TRIVIALTYPETRAITS
-  static_assert( std::is_trivially_move_constructible<RootInterval>::value,
-  	       "RootInterval is trivially move constructible." );  
-  static_assert( std::is_trivially_move_assignable<RootInterval>::value, 
-  	       "RootInterval is trivially move assignable." );  
-  static_assert( std::is_trivially_move_constructible<Root>::value,
-  	       "Root is trivially move constructible." );  
-  static_assert( std::is_trivially_move_assignable<Root>::value, 
-  	       "Root is trivially move assignable." );  
-#endif
-
 // Sets up test with parameters from CH82, 1e-7 nM.
 class RootFinderLowerBoundTest : public ::testing::Test {
   

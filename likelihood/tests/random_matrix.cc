@@ -1,6 +1,8 @@
 #include "DCProgsConfig.h"
 
 #include <math.h>
+#include <cmath>
+#include <ctime>
 
 #include <iostream>
 
@@ -50,7 +52,7 @@ namespace DCProgs {
   t_rmatrix nonnan_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
     t_rmatrix result; 
     do { result = qmatrix(nmin, nmax, large, zeroprob); }
-    while(std::isnan(result.determinant()));
+    while(DCPROGS_ISNAN(result.determinant()));
     return result;
   }
   t_rmatrix nonsingular_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {

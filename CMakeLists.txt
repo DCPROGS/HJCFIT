@@ -14,6 +14,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 enable_language(CXX)
 include(${CMAKE_MODULE_PATH}/AddCpp11Flags.cmake)
 include(${CMAKE_MODULE_PATH}/CheckCXX11Features.cmake)
+include(${CMAKE_MODULE_PATH}/CheckIsNaNStatus.cmake)
 
 if(NOT HAS_CXX11_NOEXCEPT)
   set(noexcept TRUE)
