@@ -20,6 +20,10 @@
 # define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) const TYPEANDNAME = VALUE
 #endif
 
+// one should alway known when one is working on crapware
+#cmakedefine MSVC
+
+
 #if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
 # undef MSWINDOBE
 # define MSWINDOBE __declspec(dllexport)
@@ -35,6 +39,25 @@
 #cmakedefine DCPROGS_NPY_ENABLEFLAGS
 #cmakedefine NUMPY_VERSION_MAJOR @NUMPY_VERSION_MAJOR@
 #cmakedefine NUMPY_VERSION_MINOR @NUMPY_VERSION_MINOR@
+
+
+#cmakedefine CXX_HAS_STD_ISNAN
+#cmakedefine CXX_HAS_ISNAN
+#cmakedefine CXX_HAS__ISNAN
+#ifdef CXX_HAS_STD_ISNAN
+#  include <cmath>
+#  define DCPROGS_ISNAN(X) std::isnan(X)
+#elif defined(CXX_HAS_ISNAN)
+#  include <math.h>
+#  define DCPROGS_ISNAN(X) ::isnan(X)
+#elif defined CXX_HAS___ISNAN
+#  include <math.h>
+#  define DCPROGS_ISNAN(X) __isnan(X)
+#else // defined(CXX_HAS__ISNAN)
+#  include <float.h>
+#  define DCPROGS_ISNAN(X) _isnan(X)
+#endif
+
 
 
 namespace DCProgs {

@@ -27,7 +27,7 @@ namespace DCProgs {
      return std::make_tuple(eigs, vecs.transpose());
   }
 
-  std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat) {
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat) {
     return _stream << "Transition matrix with " << _mat.nopen
                    << " open states:\n" << DCProgs::numpy_io(_mat.matrix) << "\n";
   }

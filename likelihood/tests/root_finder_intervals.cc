@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
@@ -21,14 +22,17 @@ static_assert(std::is_standard_layout<RootInterval>::value, "RootInterval is not
 static_assert(std::is_standard_layout<Root>::value, "Root is not a standard layout." );
 
 #ifdef HAS_CXX11_TRIVIALTYPETRAITS
+// Another MSWindows Fail(TM)
+# ifndef MSVC
   static_assert( std::is_trivially_move_constructible<RootInterval>::value,
-  	       "RootInterval is trivially move constructible." );  
+           "RootInterval is trivially move constructible." );  
   static_assert( std::is_trivially_move_assignable<RootInterval>::value, 
-  	       "RootInterval is trivially move assignable." );  
+           "RootInterval is trivially move assignable." );  
   static_assert( std::is_trivially_move_constructible<Root>::value,
-  	       "Root is trivially move constructible." );  
+           "Root is trivially move constructible." );  
   static_assert( std::is_trivially_move_assignable<Root>::value, 
-  	       "Root is trivially move assignable." );  
+           "Root is trivially move assignable." );  
+# endif
 #endif
 
 // Sets up test with parameters from CH82, 1e-7 nM.

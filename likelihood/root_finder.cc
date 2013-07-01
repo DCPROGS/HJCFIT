@@ -68,7 +68,7 @@ namespace DCProgs {
            if(_det(_min) * _det(_max) <= 0e0) _intervals.emplace_back(_min, _max, 1);
          } else if(nroots != 0) {
            if(_max - _min < _tolerance) {
-             t_int const s = (_min + _max) * 0.5;
+             t_real const s = (_min + _max) * 0.5;
              t_cvector const eigenvalues = getEigenvalues(_det, s);
              // count number of eigenvalues that are equal to s *and* real.
              t_int const multiplicity = (
@@ -98,8 +98,8 @@ namespace DCProgs {
     return intervals;
   }
 
-  t_real find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
-                                    t_real _alpha, t_int _itermax) {
+  t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
+                                              t_real _alpha, t_int _itermax) {
 
     t_real minroot = _start;
     for(t_int i(0); i < _itermax; ++i) {
@@ -152,7 +152,7 @@ namespace DCProgs {
       t_real current = _det(s);
  
       // Checks we have sensible values. 
-      if(not (std::isnan(current) or std::isnan(previous)))
+      if(not (DCPROGS_ISNAN(current) or DCPROGS_ISNAN(previous)))
       {
         // Sign changed. There should be at least one root.
         if(current * previous < 0e0) {

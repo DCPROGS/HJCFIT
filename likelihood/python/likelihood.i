@@ -52,7 +52,7 @@
     } catch (DCProgs::errors::PythonValueError &_e) {                         \
       PyErr_SetString(PyExc_ValueError, _e.what());                           \
       ONERROR;                                                                \
-    } catch (DCProgs::errors::PythonErrorAlreadyThrown &_e) {                 \
+    } catch (DCProgs::errors::PythonErrorAlreadyThrown &) {                   \
       ONERROR;                                                                \
     } catch (DCProgs::errors::Python &_e) {                                   \
       PyErr_SetString(PyExc_RuntimeError, _e.what());                         \

@@ -60,7 +60,7 @@ namespace DCProgs {
   };
 
   //! Dumps object to stream.
-  std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat);
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat);
 }
 
 #endif
