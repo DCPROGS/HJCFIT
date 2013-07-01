@@ -81,7 +81,7 @@ def StatMat(string):
   if string == "classic": return StateMatrix(Matrix(string), 2)
   if string == "complex eigenvalues": return StateMatrix(Matrix(string), 4)
   if string == "singular": return StateMatrix(Matrix(string), 3)
-  if string == "random": return random_state_matrix
+  if string == "random": return random_state_matrix()
   else: raise Exception("Unknown State Matrix {0}".format(string))
 
 def register_type(): 

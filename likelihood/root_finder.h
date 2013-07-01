@@ -14,6 +14,7 @@ namespace DCProgs {
     //! End of the interval (max value).
     t_real end;
     //! Number of roots in interval.
+    //! This is likely just a guess.
     t_int multiplicity;
 
     //! Constructor.

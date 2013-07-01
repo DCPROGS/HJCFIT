@@ -55,7 +55,10 @@
     } catch (DCProgs::errors::PythonErrorAlreadyThrown &_e) {                 \
       ONERROR;                                                                \
     } catch (DCProgs::errors::Python &_e) {                                   \
-      PyErr_SetString(PyExc_RuntimeError, "Caught unspecified exception.");   \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                         \
+      ONERROR;                                                                \
+    } catch(std::exception &_e) {                                             \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                         \
       ONERROR;                                                                \
     } catch(...) {                                                            \
       PyErr_SetString(PyExc_RuntimeError, "Caught unknown exception.");       \

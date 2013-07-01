@@ -6,7 +6,7 @@ namespace {
         
     // Takes ownership of python object and decrefs when deconstructed.
     // This object *steals* a reference to the PyObject. 
-    template<class T> class Object {
+    template<class T = PyObject> class Object {
       friend Object<T> steal_ref<>(T * const);
       public:
         //! Constructs an object holding nothing.
