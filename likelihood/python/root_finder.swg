@@ -94,42 +94,56 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
 // Rather than creating a wrapper, we figure roots directly in python. 
 // This is easier and more sensible. 
 %pythoncode %{
-  def find_roots(determinant, intervals=None):
+  def find_roots(determinant, intervals=None, tolerance=1e-8):
      """ Computes roots for each interval. 
      
          :param determinant: 
            A function or functor of a single variable.
          :param intervals:
-           A list of items `[(a, b), multiplicity]`, where `(a, b)` is the interval over which to
-           look for roots. If multiplicity is larger than 1, then the root is set to `(a+b) * 0.5`.
-           If it is one, then the root is found using scipy.optimize.brentq.
-           If it is zero, then inteval is ignored. 
+           A list of items `[(a0, b0), ..., (a1, b1)]`, where `(a, b)` is the interval over which to
+           look for roots. 
 
            If this object is None (default), then uses :py:meth:`find_root_intervals` to figure out
            the  intervals.
+         :param tolerance:
+           Tolerance criteria. Used to determine multiplicity.
          :returns: A list of items `(root, multiplicity)`.
      """
      from scipy.optimize import brentq
-     if intervals is None: intervals = find_root_intervals(determinant) 
+     from numpy.linalg import eig
+     if intervals is None:
+       intervals = [u[0] for u in find_root_intervals(determinant)]
+     print intervals
      result = []
      for interval in intervals:
-       if interval[1] == 1: 
-         root = brentq(determinant, *interval[0])
-         result.append((root, interval[1]));
-       elif interval[1] > 1: 
-         result.append(((interval[0][0]+interval[0][1]) * 0.5, interval[1]));
+       # left, right: limit of interval.
+       left, right = determinant(interval)
+       if left * right < 0: root = brentq(determinant, *interval)
+       elif left < 0:
+         root, value, ierr, numfunc = fminboud(lambda x: -determinant(x), left, right)
+         if abs(value) > tolerance: continue
+       else:
+         root, value, ierr, numfunc = fminboud(determinant, left, right)
+         if abs(value) > tolerance: continue
+
+       eigenvalues = eig(determinant.H(root))[0]
+       multiplicity = len(abs(eigenvalues - root) < tolerance)
+       if left * right < 0:
+         if multiplicity == 0 or multiplicity % 2 != 1: multiplicity = 1
+       else:
+         if multiplicity == 0 or multiplicity % 2 != 0: multiplicity = 2
+       result.append((root, multiplicity));
      return result;
 
-  def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None, size=1000): 
+  def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None, size=1000,
+                 tolerance=1e-8): 
      """ Computes and plots roots. 
 
          :param determinant: 
            A function or functor of a single variable.
          :param intervals:
-           A list of items `[(a, b), multiplicity]`, where `(a, b)` is the interval over which to
-           look for roots. If multiplicity is larger than 1, then the root is set to `(a+b) * 0.5`.
-           If it is one, then the root is found using scipy.optimize.brentq.
-           If it is zero, then inteval is ignored. 
+           A list of items `[(a0, b0), ..., (a1, b1)]`, where `(a, b)` is the interval over which to
+           look for roots. 
 
            If this object is None (default), then uses :py:meth:`find_root_intervals` to figure out
            the  intervals.
@@ -141,19 +155,18 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
          :returns: A figure
      """
      from matplotlib import pyplot as plt
-     from numpy import arange, min, max
+     from numpy import arange, min, max, array
 
-     if intervals is None: intervals = find_root_intervals(determinant) 
+     if intervals is None:
+       intervals = [u[0] for u in find_root_intervals(determinant)]
+     intervals = array(intervals)
      if main is None: main = {}
      if lines is None: lines = {}
 
-     mini = min(intervals[0][0])
-     maxi = min(intervals[0][0])
-     for interval in intervals[1:]:
-       mini = min([mini] + list(interval[0]))
-       maxi = max([maxi] + list(interval[0]))
+     mini = min(intervals)
+     maxi = max(intervals)
      
-     roots = find_roots(determinant, intervals)
+     roots = find_roots(determinant, intervals, tolerance)
      x = arange(mini, maxi+(maxi-mini)/float(size)*0.5, (maxi-mini)/float(size))
      y = determinant(x)
 
@@ -161,6 +174,7 @@ PyObject* py_find_root_intervals(DeterminantEq const &det);
      ax = figure.add_subplot(111)
      ax.plot(x, y, **main)
      ax.set_xlim((mini, maxi))
+
      ymin, ymax = min(y), max(y)
      ymin = ymin - (ymax - ymin) * 0.05
      ymax = ymax + (ymax - ymin) * 0.05

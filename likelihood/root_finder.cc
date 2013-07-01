@@ -62,7 +62,7 @@ namespace DCProgs {
 
          t_int const nroots = _imin - _imax;
          if(nroots == 1) {
-           if(_det(_min) * _det(_max) <= 0e0) _intervals.push_back({_min, _max, 1});
+           if(_det(_min) * _det(_max) <= 0e0) _intervals.emplace_back(_min, _max, 1);
          } else if(nroots != 0) {
            if(_max - _min < _tolerance) {
              t_int const s = (_min + _max) * 0.5;
