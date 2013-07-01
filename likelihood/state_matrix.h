@@ -2,6 +2,7 @@
 #define DCPROGS_STATE_MATRIX_H
 
 #include <DCProgsConfig.h>
+#include <ostream>
 #include <tuple>
 #include "errors.h"
 
@@ -57,6 +58,9 @@ namespace DCProgs {
     //! \details Solves the *transpose* eigenproblem \f$\phi = \phi\cdot\mathcal{Q}\f$.
     std::tuple<t_cvector, t_cmatrix> eigenstuff() const;
   };
+
+  //! Dumps object to stream.
+  std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat);
 }
 
 #endif

@@ -15,6 +15,12 @@ namespace DCProgs {
     t_real end;
     //! Number of roots in interval.
     t_int multiplicity;
+
+    //! Constructor.
+    RootInterval   (t_real _start, t_real _end, t_int _mult) noexcept
+                 : start(_start), end(_end), multiplicity(_mult) {}
+    //! Default Constructor.
+    RootInterval() noexcept : start(0), end(0), multiplicity(0) {};
   };
 
   //! Defines a root, including mutliplicity.
@@ -23,6 +29,11 @@ namespace DCProgs {
     t_real root;
     //! Number of roots in interval.
     t_int multiplicity;
+
+    //! Constructor.
+    Root(t_real _root, t_int _mult) noexcept : root(_root), multiplicity(_mult) {}
+    //! Default Constructor.
+    Root() noexcept : root(0), multiplicity(0) {};
   };
 
   //! \brief Figures out interval where roots can be found.
@@ -86,6 +97,22 @@ namespace DCProgs {
                          find_root_intervals(_det, _mins, _maxs, _tolerance),
                          _single_root_finder );
   }
+
+// //! \brief Finds roots via brute force search
+// //! \details Computes all values between mins and maxs, for a given resolution.
+// //!          If determinant changes sign between two values, or if it comes to within tolerance of
+// //!          zero, then computes eigenvalues of H to determine possible multiplicity.
+// //! \param[in] _det: The determinantal equation
+// //! \param[in] _mins: A valid lower bound. All roots should be above that lower bound. 
+// //!                   If _mins > _maxs, then tries to determine the lower bound using
+// //!                   find_lower_bound_for_root.
+// //! \param[in] _maxs: A valid upper bound. All roots should be below that upper bound. 
+// //! \param[in] _resolution: resolution at which computes values in interval.
+// std::vector<RootIntervals> find_root_intervals_brute_force(DeterminantEq const &_det, 
+//                                                            t_real _mins = 1e8,
+//                                                            t_real _maxs   = 0e0,
+//                                                            t_real _resolution = 1e-1,
+//                                                            t_real _tolerance = 1e-1);
 }
 
 #endif

@@ -75,33 +75,20 @@ TEST_P(TestFindLowerBound, non_singular) {
 
   typedef std::uniform_int_distribution<t_int> t_idist;
   
-  //! Call this function so we can loop over complex eigenvalues errors.
-  auto callme_while_complex_eigenvalues = [&]() {
-    StateMatrix Qmatrix;
-    try {
-      Qmatrix.matrix = nonsingular_qmatrix();
-      Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
-      DeterminantEq det(Qmatrix, 1e-4, true);
-      t_real const lb(  find_lower_bound_for_roots(det) );
-      Eigen::EigenSolver<t_rmatrix> eigsolver(det.H(lb));
-      EXPECT_TRUE((eigsolver.eigenvalues().array().imag().abs() < 1e-8).all()) 
-          << "Found complex eigenvalue.\n";
-      EXPECT_TRUE((eigsolver.eigenvalues().array().real() > lb).all()) 
-          << "Found eigenvalue below lower bound.\n";
-      return false;
-    }
-    catch(errors::ComplexEigenvalues &e) { return true; }
-    catch(...) {
-      std::cerr.precision(15);
-      std::cerr << "Error for nopen=" << Qmatrix.nopen << "\n" 
-                << numpy_io(Qmatrix.matrix) << std::endl;
-      throw;
-    }
-  };
-
-  while(callme_while_complex_eigenvalues());
-
-
+  StateMatrix Qmatrix;
+  try {
+    Qmatrix.matrix = nonsingular_qmatrix();
+    Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
+    DeterminantEq det(Qmatrix, 1e-4, true);
+    t_real const lb(  find_lower_bound_for_roots(det) );
+    Eigen::EigenSolver<t_rmatrix> eigsolver(det.H(lb));
+    EXPECT_TRUE((eigsolver.eigenvalues().array().real() > lb).all()) 
+        << "Found eigenvalue below lower bound.\n";
+  } catch(...) {
+    std::cerr.precision(15);
+    std::cerr << "Error for " << Qmatrix << std::endl;
+    throw;
+  }
 }
 
 INSTANTIATE_TEST_CASE_P(random, TestFindLowerBound, ::testing::Range(0, 300));
