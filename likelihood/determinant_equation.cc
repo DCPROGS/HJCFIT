@@ -3,7 +3,7 @@
 #include <sstream>
 #include <iostream>
 
-#include "asymptotes.h"
+#include "determinant_equation.h"
 
 namespace DCProgs {
 

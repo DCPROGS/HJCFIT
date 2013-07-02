@@ -5,7 +5,7 @@
 
 #include <vector>
 
-#include "asymptotes.h"
+#include "determinant_equation.h"
 
 namespace DCProgs {
 
