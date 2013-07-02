@@ -1,5 +1,5 @@
-#ifndef DCPROGS_LIKELIHOOD_ASYMPTOTES_H
-#define DCPROGS_LIKELIHOOD_ASYMPTOTES_H
+#ifndef DCPROGS_LIKELIHOOD_DETERMINANT_EQUATION_H
+#define DCPROGS_LIKELIHOOD_DETERMINANT_EQUATION_H
 
 #include <DCProgsConfig.h>
 #include <ostream>
@@ -12,7 +12,7 @@ namespace DCProgs {
   //! Dumps Determinantal equation to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const &_self);
 
-  //! A functor to compute asymptotic missed event G.
+  //! A functor to compute the W matrix, so as to find its roots.
   //! \detail The whole implementation is done w.r.t. to AF transitions. 
   //!         However, in practice, this is sufficient to compute FA transitions as well, by messing
   //!         with the input matrix.

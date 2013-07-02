@@ -73,6 +73,23 @@ def Matrix(string):
                   [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00, 0.00000000e+00,
                      6.00000000e+00,   1.01956162e+01, -1.61956162e+01]])
   if string == "random": return random_qmatrix()
+  if string == "too many roots":
+    return array([[-4414.258163060556, 0.4706230361044994, 0, 4413.086136315604, 0, 0, 0,
+                   0.7014037088481371],
+                  [0.3818866108324416, -16137.44933376101, 0.9331363701846823, 0, 0, 0,
+                    8539.811330758015, 7596.322980021978],
+                  [0, 6686.180114098154, -6687.301356608697, 0, 0.4315860669358915,
+                    0.352333031582453, 0, 0.3373234120246746],
+                  [0.570228654057657, 0, 0, -1.560020527794796, 0.7974468748680791, 0,
+                    0.1923449988690604, 0],
+                  [0, 0, 0.3664825862329721, 0.5448973312634841, -1.006439170125455, 0, 0,
+                    0.09505925262899939],
+                  [0, 0, 0.1243678156269628, 0, 0, -0.7729992012450424, 0.6486313856180796, 0],
+                  [0, 0.5637166813049307, 0, 0.2697232218014844, 0, 3506.786361530494,
+                    -3508.431663286412, 0.8118618528108873],
+                  [0.4495444298299496, 0.216084389761949, 2900.417296533554, 0, 0.6837263682451331,
+                    0, 1953.625516641621, -4855.392168363011]])
+  raise Exception("Unknown Matrix {0}".format(string))
 
 def StatMat(string):
   """ Creates matrices from specific strings """
@@ -82,6 +99,7 @@ def StatMat(string):
   if string == "complex eigenvalues": return StateMatrix(Matrix(string), 4)
   if string == "singular matrix": return StateMatrix(Matrix(string), 3)
   if string == "random": return random_state_matrix()
+  if string == "too many roots": return StateMatrix(Matrix(string), 3)
   else: raise Exception("Unknown State Matrix {0}".format(string))
 
 def register_type(): 

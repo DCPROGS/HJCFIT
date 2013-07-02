@@ -137,6 +137,7 @@ std::vector<DCProgs::RootInterval>
          :returns: A list of items `(root, multiplicity)`.
      """
      from scipy.optimize import brentq
+     from numpy import abs, sum
      from numpy.linalg import eig
      if intervals is None:
        intervals = [u[0] for u in find_root_intervals(determinant)]
@@ -153,7 +154,7 @@ std::vector<DCProgs::RootInterval>
          if abs(value) > tolerance: continue
 
        eigenvalues = eig(determinant.H(root))[0]
-       multiplicity = len(abs(eigenvalues - root) < tolerance)
+       multiplicity = sum(abs(eigenvalues - root) < tolerance)
        if left * right < 0:
          if multiplicity == 0 or multiplicity % 2 != 1: multiplicity = 1
        else:

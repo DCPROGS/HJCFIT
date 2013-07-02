@@ -5,6 +5,15 @@ Feature: Figure out roots for a state matrix
   
     - figuring out the bounds where all roots resides
     - figuring out the interval where each root resides
+    - An irreducible(?) reversible Markove process has n _real_ roots, where n is the number of open
+      states.
+
+  At present, I'm not sure how to create random matrices that strictly respect point 3 above. Hence
+  the failure allowance in some of the scenario below.
+
+  Most of the tests below are designed to ignore failures do to issues such as convergence problems
+  when computing eigenvalues. This is to make it easier to detect failure due to (not) finding
+  roots.
 
   Scenario: Find intervals of classic open-state matrix
     Given the open-states determinantal equation "classic" with tau=1e-4
@@ -59,3 +68,11 @@ Feature: Figure out roots for a state matrix
       | open   | random          |  10        |
       | open   | random          |  10        |
       | open   | random          |  10        |
+
+
+  Scenario: Check roots add up for many random cases
+    Given a list of 500 random determinant equations
+      And allowing for 2% failure in tests below
+     When the roots are computed for each
+     Then roots are roots indeed, to within tolerance=1e-5 * variation of det W
+      And the multiplicity of the real roots add up to the number of open states
