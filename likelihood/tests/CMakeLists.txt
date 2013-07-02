@@ -6,7 +6,7 @@ if(tests)
   cxx_test(idealG_laplacian idealG_laplacian.cc likelihood)
   cxx_test(equilibrium equilibrium.cc likelihood)
   cxx_test(time_filter time_filter.cc likelihood)
-  cxx_test(asymptotes asymptotes.cc likelihood)
+  cxx_test(determinant_equation determinant_equation.cc likelihood)
   cxx_test(recursion recursion_formula.cc likelihood)
   cxx_test(exactG exactG.cc likelihood)
   cxx_test(root_finder_intervals

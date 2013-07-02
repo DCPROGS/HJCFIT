@@ -3,7 +3,7 @@
 #include <tuple>
 #include <gtest/gtest.h>
 #include <unsupported/Eigen/MatrixFunctions>
-#include "../asymptotes.h"
+#include "../determinant_equation.h"
 using namespace DCProgs;
 
 #ifdef HAS_CXX11_TYPETRAITS

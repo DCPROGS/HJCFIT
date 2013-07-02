@@ -23,7 +23,7 @@
 #  include "numpy_eigen.h"
 
 #  include "../state_matrix.h"
-#  include "../asymptotes.h"
+#  include "../determinant_equation.h"
 #  include "../root_finder.h"
 
 #  include "helpers.h"
@@ -93,7 +93,7 @@
 namespace DCProgs {
 
 %include "state_matrix.swg"
-%include "asymptotes.swg"
+%include "determinant_equation.swg"
 %include "root_finder.swg"
 
 }
