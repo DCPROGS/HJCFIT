@@ -33,8 +33,15 @@ namespace DCProgs {
      //! Count the number of roots at a given point.
      t_int getMultiplicity(DeterminantEq const &_det, t_real _s, t_real _tolerance) {
        t_cvector const eigenvalues = getEigenvalues(_det, _s);
-       return ( (eigenvalues.array().imag().abs() < _tolerance)
-                and (eigenvalues.array().real() - _s).abs() < _tolerance ).count();
+       // NOTE: Newer versions of eigen have and "and" operator, so the
+       // following could be simplified in the future.
+       t_int result(0);
+       t_cvector::Scalar const * i_data = &eigenvalues(0);
+       t_cvector::Scalar const * const i_data_end = i_data + eigenvalues.size();
+       for(; i_data != i_data_end; ++i_data) 
+         if( std::abs(i_data->imag()) < _tolerance
+             and std::abs(i_data->real() - _s) < _tolerance ) ++result;
+       return result;
      }
      
      // Compute number of roots above input
@@ -69,12 +76,8 @@ namespace DCProgs {
          } else if(nroots != 0) {
            if(_max - _min < _tolerance) {
              t_real const s = (_min + _max) * 0.5;
-             t_cvector const eigenvalues = getEigenvalues(_det, s);
              // count number of eigenvalues that are equal to s *and* real.
-             t_int const multiplicity = (
-                 (eigenvalues.array().imag().abs() < _tolerance)
-                 and (eigenvalues.array().real() - s).abs() < _tolerance
-             ).count();
+             t_int const multiplicity = getMultiplicity(_det, s, _tolerance);
              // Multiplicity == 0 corresponds to complex poles? 
              if(multiplicity != 0) _intervals.emplace_back(_min, _max, multiplicity);
            } else step_(_det, _min, _max, _tolerance, _imin, _imax, _intervals);
