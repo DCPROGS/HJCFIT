@@ -5,19 +5,42 @@ register_type()
 @given('the {doopen}-states determinantal equation \"{statmat:StatMat}\" with tau={tau:Float}')
 def step(context, doopen, statmat, tau):
   from dcprogs.likelihood import DeterminantEq
-  if statmat == "random":
-    # Avoid pb when eigenvalue problem cannot be solved.
-    while True:
-      try: context.equation = DeterminantEq(statmat, tau, doopen == "open")
-      except: continue
-  else: context.equation = DeterminantEq(statmat, tau, doopen == "open")
+  context.equation = DeterminantEq(statmat, tau, doopen == "open")
   print context.equation
+
+@given('a list of {n:Integer} random determinant equations')
+def step(context, n):
+  from dcprogs.likelihood import DeterminantEq
+  from dcprogs.random import state_matrix as random_state_matrix
+  context.matrices = []
+  context.equations = []
+  while len(context.equations) < n:
+    try:
+      matrix = random_state_matrix()
+      equation =  DeterminantEq(matrix, 1e-4, True)
+    except: continue
+    else:
+      context.matrices.append(matrix)
+      context.equations.append(equation)
+
+@given('allowing for {n:Integer}% failure in tests below')
+def step(context, n):
+  context.allowance = float(n) / 100.0
 
 @when("the root intervals are computed")
 def step(context):
   from dcprogs.likelihood import find_root_intervals
   if hasattr(context, "exception"): raise context.exception
   context.intervals = find_root_intervals(context.equation)
+
+@when("the roots are computed for each")
+def step(context):
+  from dcprogs.likelihood import find_roots
+  context.roots = []
+  for equation in context.equations:
+    try: roots = find_roots(equation)
+    except: roots = None
+    context.roots.append(roots)
 
 @when("a brute force search for roots is perfomed with resolution={resolution:Float}")
 def step(context, resolution):
@@ -96,3 +119,38 @@ def step(context):
     root = roots[0][0]
     if root < interval[0] or root > interval[1]:                  
       raise AssertionError("Root is outside of expected bound.")
+
+@then('roots are roots indeed, to within tolerance={tolerance:Float} * variation of det W')
+def step(context, tolerance): 
+  from numpy import max
+  isOK = 0
+  for (roots, matrix, equation) in zip(context.roots, context.matrices, context.equations): 
+    if roots is None: continue # eigenvalue problem. No to be tested here.
+    # tries to figure out reasonnable tolerance. 
+    # the function changes very rapidly, so that makes it tricky
+    variations = [(equation(root[0]+tolerance), equation(root[0]-tolerance)) for root in roots]
+    variations = [max([abs(u[0]), abs(u[1]), abs(u[0] - u[1])]) for u in variations]
+    false_roots = [(root[0], abs(equation(root[0]))) for variation, root in zip(variations, roots)
+                   if abs(equation(root[0])) > tolerance * variation]
+    if len(false_roots) > 0:
+      isOK += 1 
+      print("(s, error)={0} are not roots of {1}.\n"
+            .format(false_roots, matrix)) 
+  if isOK * getattr(context, 'allowance', 1) >= 1:
+    raise AssertionError("Found {0}/{1} systems with incorrect roots."\
+                         .format(isOK, len(context.equations)))
+
+@then('the multiplicity of the real roots add up to the number of open states')
+def step(context): 
+  isOK = 0
+  for (roots, matrix) in zip(context.roots, context.matrices): 
+    if roots is None: continue # eigenvalue problem. No to be tested here.
+    nroots = sum([r[1] for r in roots])
+    if nroots != matrix.aa.shape[0]:
+      isOK += 1 
+      print("Incorrect number of roots ({0}/{1}) for {2}.\n"
+            "Roots are {3}."
+            .format(len(roots), matrix.aa.shape[0], matrix, roots)) 
+  if isOK * getattr(context, 'allowance', 1) >= 1:
+    raise AssertionError("Found {0}/{1} systems with incorrect number of roots."\
+                         .format(isOK, len(context.equations)))
