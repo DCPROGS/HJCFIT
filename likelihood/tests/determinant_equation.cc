@@ -58,8 +58,8 @@ template<class T_APPROX, class T_EXACT>
 }
 
 
-// Missed event with t critical == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, FF_critical_resolution_is_zero) {
+// Missed event with t resolution == zero (e.g. no missed event)
+TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
   StateMatrix const states(Q, 2);
   DeterminantEq det(states, 0, false); 
   EXPECT_TRUE( ((det.H(0).array() - states.ff().array()).abs() < 1e-8).all() );
@@ -72,8 +72,8 @@ TEST_F(DeterminantEqTest, FF_critical_resolution_is_zero) {
   EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
   EXPECT_TRUE(std::abs(det(eigs(2)) / eigs(2)) < 1e-5);
 }
-// Missed event with t critical == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, FF_critical_resolution_is_zero_check_derivative) {
+// Missed event with t resolution == zero (e.g. no missed event)
+TEST_F(DeterminantEqTest, FF_resolution_is_zero_check_derivative) {
   StateMatrix const states(Q, 2);
   DeterminantEq det(states, 0, false); 
   t_rmatrix id = t_rmatrix::Identity(3, 3);
@@ -81,8 +81,8 @@ TEST_F(DeterminantEqTest, FF_critical_resolution_is_zero_check_derivative) {
   EXPECT_TRUE( ((det.s_derivative(1).array() - id.array()).abs() < 1e-8).all() );
   EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
 }
-// Missed event with t critical == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero) {
+// Missed event with t resolution == zero (e.g. no missed event)
+TEST_F(DeterminantEqTest, AA_resolution_is_zero) {
   StateMatrix const states(Q, 2);
   DeterminantEq det(states, 0, true); 
   EXPECT_TRUE( ((det.H(0).array() - states.aa().array()).abs() < 1e-8).all() );
@@ -94,8 +94,8 @@ TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero) {
   EXPECT_TRUE(std::abs(det(eigs(0)) / eigs(0)) < 1e-5);
   EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
 }
-// Missed event with t critical == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero_check_derivative) {
+// Missed event with t resolution == zero (e.g. no missed event)
+TEST_F(DeterminantEqTest, AA_resolution_is_zero_check_derivative) {
   StateMatrix const states(Q, 2);
   DeterminantEq det(states, 0, true); 
   t_rmatrix id = t_rmatrix::Identity(2, 2);
@@ -104,7 +104,7 @@ TEST_F(DeterminantEqTest, AA_critical_resolution_is_zero_check_derivative) {
   EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
 }
 
-// Test non-zero critical tau using numerical and analytical derivatives.
+// Test non-zero resolution tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, from_tau_derivative) {
 
   StateMatrix const states(Q, 2);
@@ -128,7 +128,7 @@ TEST_F(DeterminantEqTest, from_tau_derivative) {
   }
 }
 
-// Test s derivatives for non-zero critical tau using numerical and analytical derivatives.
+// Test s derivatives for non-zero resolution tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 
   StateMatrix const states(Q, 2);

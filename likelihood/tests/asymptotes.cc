@@ -11,7 +11,7 @@ using namespace DCProgs;
 //! Params are whether to do open or closed states, 
 //! and the root of the determinantal equation.
 typedef std::tuple<bool, std::vector<Root>> t_Params;
-// Sets up test with parameters from CH82, 1e-7 nM.
+
 class TestAsymptotes : public ::testing::TestWithParam<t_Params> {
   
   public:

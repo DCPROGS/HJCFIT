@@ -39,6 +39,26 @@ namespace DCProgs {
       t_rmatrix af(t_real t) const;
       //! Close to open transitions
       t_rmatrix fa(t_real t) const;
+      //! Probability of no shut times detected between 0 and t.
+      t_rmatrix R_af(t_real t) const;
+      //! Probability of no open times detected between 0 and t.
+      t_rmatrix R_fa(t_real t) const;
+
+      //! Gets the value of tau;
+      t_real get_tau() const { return tau_; }
+  
+      //! Returns recursion matrix for af
+      t_rmatrix recursion_af(t_int _i, t_int _m, t_int _l) const;
+      //! Returns recursion matrix for af
+      t_rmatrix recursion_fa(t_int _i, t_int _m, t_int _l) const;
+      //! Returns Di  matrix for af
+      t_rmatrix D_af(t_int _i) const;
+      //! Returns Di matrix for af
+      t_rmatrix D_fa(t_int _i) const;
+      //! Returns eigenvalues for af matrix
+      t_rvector eigenvalues_af() const;
+      //! Returns eigenvalues for fa matrix
+      t_rvector eigenvalues_fa() const;
 
     protected:
       //! \brief Implementation of recursion for exact missed-event G function
@@ -95,7 +115,6 @@ namespace DCProgs {
       //! Returns the number of eigenvalues
       t_int nbeigvals() const { return eigenvalues_.size(); }
   
-    protected:
       //! Key of the map where coefficient matrices are stored.
       typedef std::tuple<t_int, t_int, t_int> t_key;
       //! Map where coefficients are stored.

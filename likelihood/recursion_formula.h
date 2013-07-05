@@ -97,12 +97,15 @@ namespace DCProgs {
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
           if(_i == j) continue;
 
-          t_real const lambda(1e0/(_C.get_eigvals(_i)-_C.get_eigvals(j))); 
-          t_real factor(lambda); 
+          t_real const diff_lambda(_C.get_eigvals(_i)-_C.get_eigvals(j));
+          if(std::abs(diff_lambda) < 1e-12) continue;
+
+          t_real const diff_lambda_inv(1e0/diff_lambda); 
+          t_real factor(diff_lambda_inv); 
           typename T::t_element intermediate = _zero();
           for(t_int r(_l); r < _m; ++r) {
             intermediate += _C(_i, _m-1, r) * factor;
-            factor *= lambda * (r+1);
+            factor *= diff_lambda_inv * (r+1);
           }
           result -= _C.getD(j) * intermediate;
         } // loop over j

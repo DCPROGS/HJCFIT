@@ -1,9 +1,8 @@
-// More translating exception from c++ to python
-%exception StateMatrix::StateMatrix(PyObject *_in, int _nopen) {
-  try { $action }
-  DCPROGS_CATCH(SWIG_fail);
-}
-
+%feature("autodoc", "Transition rate matrix.\n\n"
+         "Open-open transitions should be located in the top-left corner.") StateMatrix;
+%feature("autodoc", "Swaps AA block with FF, AF block with FA, nopen with nclose.\n\n")
+         StateMatrix::transpose;
+%feature("autodoc", "Transition matrix itself.") StateMatrix::matrix;
 // Now we define the bindings for the StateMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.
@@ -65,6 +64,8 @@ class StateMatrix {
       return PyString_FromString(sstr.str().c_str());
     }
   }
+
+  StateMatrix transpose() const;
 };
 // Translate the convenience functions aa/af/fa/ff to properties in python. 
 // This means we have a natural access to the matrix blocks as "matrix.af", without parenthesis. 

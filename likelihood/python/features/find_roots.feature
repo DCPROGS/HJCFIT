@@ -20,17 +20,17 @@ Feature: Figure out roots for a state matrix
      When the root intervals are computed 
      Then no exception was thrown
       And there are 2 intervals 
-      And interval 0 contains -3045.285776
-      And interval 1 contains -162.929465
+      And interval 0 contains -3045.285776037674
+      And interval 1 contains -162.92946543451328
     
   Scenario: Find intervals of classic closed-state matrix
     Given the closed-states determinantal equation "classic" with tau=1e-4
      When the root intervals are computed 
      Then no exception was thrown
       And there are 3 intervals 
-      And interval 0 contains -17090.1927692368
-      And interval 1 contains -2058.08129216735
-      And interval 2 contains -0.243565355
+      And interval 0 contains -17090.192769236815
+      And interval 1 contains -2058.0812921673496
+      And interval 2 contains -0.24356535498785126
 
   Scenario Outline: Compare brute force and sensible search for intervals
     Given the <type>-states determinantal equation "<equation>" with tau=1e-4
