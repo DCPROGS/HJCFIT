@@ -37,6 +37,8 @@ namespace DCProgs {
         throw errors::Mass("Could not solve eigenvalue problem.");
 
     // Initializes eigenvalues
+    if((eigsolver.eigenvalues().imag().array().abs() > 1e-8).any()) 
+      throw errors::ComplexEigenvalues("Transition matrix has complex eigenvalues.");
     eigenvalues_ = -eigsolver.eigenvalues().real();
 
     // Initializes recursion formula for m == l == 0
@@ -111,8 +113,6 @@ namespace DCProgs {
     template<class T> 
       typename T::t_element R_of_t(T &_C, t_real _t, t_real _tau) {
 
-        assert(_t > 0);
-
         t_real current_t(_t);
         t_rmatrix result = M_m_of_t(_C, 0, _t);
         t_int m=1;
@@ -127,11 +127,49 @@ namespace DCProgs {
   }
 
   t_rmatrix ExactG :: af(t_real _t) const {
-    assert(_t > tau_);
+    if(_t <= tau_) return t_rmatrix::Zero(af_factor_.rows(), af_factor_.cols());
     return R_of_t(*recursion_af_, _t - tau_, tau_) * af_factor_; 
   }
   t_rmatrix ExactG :: fa(t_real _t) const {
-    assert(_t > tau_);
+    if(_t <= tau_) return t_rmatrix::Zero(fa_factor_.rows(), fa_factor_.cols());
     return R_of_t(*recursion_fa_, _t - tau_, tau_) * fa_factor_; 
   }
+
+  t_rmatrix ExactG :: R_af(t_real _t) const {
+    if(_t <= 0e0) return t_rmatrix::Zero(af_factor_.rows(), af_factor_.cols());
+    return R_of_t(*recursion_af_, _t, tau_);
+  }
+  t_rmatrix ExactG :: R_fa(t_real _t) const {
+    if(_t <= 0e0) return t_rmatrix::Zero(fa_factor_.rows(), fa_factor_.cols());
+    return R_of_t(*recursion_fa_, _t, tau_);
+  }
+
+  t_rmatrix ExactG :: recursion_af(t_int _i, t_int _m, t_int _l) const {
+    if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
+    if(_i >= recursion_af_->nbeigvals())  
+      throw errors::Index("i index should be smaller than the number of eigenvalues.");
+    if(_l > _m) throw errors::Index("l index should be smaller than m index.");
+    return  recursion_af_->operator()(_i, _m, _l);
+  }
+  t_rmatrix ExactG :: recursion_fa(t_int _i, t_int _m, t_int _l) const {
+    if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
+    if(_i >= recursion_fa_->nbeigvals())  
+      throw errors::Index("i index should be smaller than the number of eigenvalues.");
+    if(_l > _m) throw errors::Index("l index should be smaller than m index.");
+    return  recursion_fa_->operator()(_i, _m, _l);
+  }
+  t_rmatrix ExactG :: D_af(t_int _i) const {
+    if(_i < 0) throw errors::Index("Indices should be positive.");
+    if(_i >= recursion_af_->nbeigvals())  
+      throw errors::Index("i index should be smaller than the number of eigenvalues.");
+    return  recursion_af_->getD(_i);
+  }
+  t_rmatrix ExactG :: D_fa(t_int _i) const {
+    if(_i < 0) throw errors::Index("Indices should be positive.");
+    if(_i >= recursion_fa_->nbeigvals())  
+      throw errors::Index("i index should be smaller than the number of eigenvalues.");
+    return  recursion_fa_->getD(_i);
+  }
+  t_rvector ExactG::eigenvalues_af() const { return recursion_af_->eigenvalues_; }
+  t_rvector ExactG::eigenvalues_fa() const { return recursion_af_->eigenvalues_; }
 }

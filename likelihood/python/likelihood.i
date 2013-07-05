@@ -25,44 +25,60 @@
 #  include "../state_matrix.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
+#  include "../exactG.h"
+#  include "../asymptotes.h"
 
 #  include "helpers.h"
 
 #ifdef DCPROGS_CATCH
 # error DCPROGS_CATCH already defined.
 #endif 
-#define DCPROGS_CATCH(ONERROR)                                                \
-    catch (DCProgs::errors::ComplexEigenvalues &_e) {                         \
-      PyErr_SetString(PyExc_ArithmeticError, _e.what());                      \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::NaN &_e) {                                      \
-      PyErr_SetString(PyExc_TypeError, _e.what());                            \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::Mass &_e) {                                     \
-      PyErr_SetString(PyExc_TypeError, _e.what());                            \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::Math &_e) {                                     \
-      PyErr_SetString( PyExc_TypeError,                                       \
-                       ( std::string("Math error in dcprogs: ")               \
-                         + _e.what()).c_str() );                              \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::PythonTypeError &_e) {                          \
-      PyErr_SetString(PyExc_TypeError, _e.what());                            \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::PythonValueError &_e) {                         \
-      PyErr_SetString(PyExc_ValueError, _e.what());                           \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::PythonErrorAlreadyThrown &) {                   \
-      ONERROR;                                                                \
-    } catch (DCProgs::errors::Python &_e) {                                   \
-      PyErr_SetString(PyExc_RuntimeError, _e.what());                         \
-      ONERROR;                                                                \
-    } catch(std::exception &_e) {                                             \
-      PyErr_SetString(PyExc_RuntimeError, _e.what());                         \
-      ONERROR;                                                                \
-    } catch(...) {                                                            \
-      PyErr_SetString(PyExc_RuntimeError, "Caught unknown exception.");       \
-      ONERROR;                                                                \
+#define DCPROGS_CATCH(ONERROR)                                                 \
+    catch (DCProgs::errors::ComplexEigenvalues &_e) {                          \
+      PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::NaN &_e) {                                       \
+      PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Mass &_e) {                                      \
+      PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Domain &_e) {                                    \
+      PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Math &_e) {                                      \
+      PyErr_SetString( PyExc_ArithmeticError,                                  \
+                       ( std::string("Math error in dcprogs: ")                \
+                         + _e.what()).c_str() );                               \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Index &_e) {                                     \
+      PyErr_SetString(PyExc_IndexError, _e.what());                            \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::PythonTypeError &_e) {                           \
+      PyErr_SetString(PyExc_TypeError, _e.what());                             \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::PythonValueError &_e) {                          \
+      PyErr_SetString(PyExc_ValueError, _e.what());                            \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::PythonErrorAlreadyThrown &) {                    \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Python &_e) {                                    \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
+      ONERROR;                                                                 \
+    } catch(DCProgs::errors::NotImplemented &_e) {                             \
+      PyErr_SetString(PyExc_NotImplementedError, _e.what());                   \
+      ONERROR;                                                                 \
+    } catch(DCProgs::errors::Root &_e) {                                       \
+      PyErr_SetString( PyExc_RuntimeError,                                     \
+                       (std::string("Encountered unknonw error in DCProgs\n")  \
+                        + _e.what()).c_str() );                                \
+      ONERROR;                                                                 \
+    } catch(std::exception &_e) {                                              \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
+      ONERROR;                                                                 \
+    } catch(...) {                                                             \
+      PyErr_SetString(PyExc_RuntimeError, "Caught unknown exception.");        \
+      ONERROR;                                                                 \
     }
 %}
 
@@ -95,6 +111,8 @@ namespace DCProgs {
 %include "state_matrix.swg"
 %include "determinant_equation.swg"
 %include "root_finder.swg"
+%include "asymptotes.swg"
+%include "exactG.swg"
 
 }
 #undef DCPROGS_CATCH

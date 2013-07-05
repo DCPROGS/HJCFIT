@@ -8,6 +8,22 @@
   DCPROGS_CATCH(SWIG_fail);
 }
 
+%feature("autodoc", "Computes the matrix H\n\n" 
+         "H is defined as  :math:`"
+         "Q_{AA} + Q_{AF}\ \\int_0^\\tau e^{-st}e^{Q_{FF}t}\\partial\,t\ Q_{FA}`."
+         ":param number s:\n"
+         "    The laplace scale.\n"
+         ":param number tau:\n"
+         "    *Optional*. If present, it is the max length of missed events.\n\n"
+         ":returns: a numpy array.") DeterminantEq::H;
+%feature("autodoc", "Computes the derivative of H versus s\n\n" 
+         "H is defined as  :math:`"
+         "Q_{AA} + Q_{AF}\ \\int_0^\\tau e^{-st}e^{Q_{FF}t}\\partial\,t\ Q_{FA}`."
+         ":param number s:\n"
+         "    The laplace scale.\n"
+         ":param number tau:\n"
+         "    *Optional*. If present, it is the max length of missed events.\n\n"
+         ":returns: a numpy array.") DeterminantEq::s_derivative(DeterminantEq const *, DCProgs::t_real s);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
                     "There are several ways to instanciate this object:\n\n"
                     ">>> DeterminantEq(matrix, nopen, tau, doopen=True)\n\n"
@@ -41,7 +57,7 @@ class DeterminantEq {
     DeterminantEq(PyObject *_in, int _nopen, double _tau, bool _doopen=true) {
       if(_nopen <= 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
-      if(not PyArray_Check(_in))
+      if(not PyArray_Check(_in)) 
         throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_in);
       if(matrix.rows() != matrix.cols())
@@ -114,30 +130,19 @@ class DeterminantEq {
                                 "Otherwise returns a numpy array."
   %}
                      
-  // The following functions allows us to get H for scalar values.
-  %extend { 
-    // Defines determinant function for a numpy array
-    PyObject* H(DCProgs::t_real _s) {
-      try { return DCProgs::numpy::wrap_to_numpy($self->H(_s)); }
-      DCPROGS_CATCH(return NULL;);
-    }
-    // Defines determinant function for a numpy array + changing tau
-    PyObject* H(DCProgs::t_real _s, DCProgs::t_real _tau) {
-      try { return DCProgs::numpy::wrap_to_numpy($self->H(_s)); }
-      DCPROGS_CATCH(return NULL;);
-    }
-  }
-  %pythoncode %{
-    H.__doc__ = "Computes the matrix H\n\n"                                            \
-                "H is defined as  :math:`"                                             \
-                "Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}`." \
-                "\n\nParameters:\n"                                                    \
-                "  s: scalar\n"                                                        \
-                "    The laplace scale.\n"                                             \
-                "  tau: *optional* number\n"                                           \
-                "    If present, it is the max length of missed events.\n\n"           \
-                "Returns: a numpy array."
-  %}
+  // Copies eigen matrix to a numpy array,
+  %typemap(out) DCProgs::t_rmatrix { 
+    try { $result = DCProgs::numpy::wrap_to_numpy($1); }
+    DCPROGS_CATCH(SWIG_fail);
+  };
+
+  DCProgs::t_rmatrix H(DCProgs::t_real s);
+  DCProgs::t_rmatrix H(DCProgs::t_real s, DCProgs::t_real tau);
+  DCProgs::t_rmatrix s_derivative(DCProgs::t_real s);
+  DCProgs::t_rmatrix s_derivative(DCProgs::t_real s, DCProgs::t_real tau);
+  // Removes automatic conversion to numpy array.
+  %clear DCProgs::t_rmatrix;
+
 
   // Add some printout functions.
   %extend {

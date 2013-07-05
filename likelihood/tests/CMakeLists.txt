@@ -15,5 +15,6 @@ if(tests)
   cxx_test(root_finder_lower_bound
            "root_finder_lower_bound.cc;random_matrix.h;random_matrix.cc"
            likelihood)
+  cxx_test(asymptotes asymptotes.cc likelihood)
 
 endif(tests)

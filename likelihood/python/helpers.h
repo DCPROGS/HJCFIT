@@ -60,6 +60,7 @@ namespace {
           Py_XINCREF(_in);
           return steal(_in); 
         }
+        operator bool() const { return object_ != NULL; }
 
       private:
         explicit Object(T * const _in) : object_(_in) {}

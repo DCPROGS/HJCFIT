@@ -34,10 +34,9 @@ namespace DCProgs {
         lstsq_impl_( _gmatrix.laplace_af(0) * _gmatrix.laplace_fa(0) ):
         lstsq_impl_( _gmatrix.laplace_fa(0) * _gmatrix.laplace_af(0) );
     
-      return std::get<0>(problem)
-                  .jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
-                  .solve(std::get<1>(problem))
-                  .transpose();
+      Eigen::JacobiSVD<t_rmatrix>
+        svd(std::get<0>(problem), Eigen::ComputeThinU|Eigen::ComputeThinV); 
+      return svd.solve(std::get<1>(problem)).transpose();
     }
   }
 
