@@ -114,6 +114,11 @@ namespace DCProgs {
       }
       //! Returns the number of eigenvalues
       t_int nbeigvals() const { return eigenvalues_.size(); }
+
+      //! Reference to eigenvales
+      t_rvector const & eigenvalues() const { return eigenvalues_; }
+
+    protected:
   
       //! Key of the map where coefficient matrices are stored.
       typedef std::tuple<t_int, t_int, t_int> t_key;

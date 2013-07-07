@@ -102,6 +102,10 @@
 %typemap(typecheck) t_int = int;
 %typemap(typecheck) DCProgs::t_real = double;
 %typemap(typecheck) t_real = double;
+%typemap(out) DCProgs::t_rvector { 
+  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
+  DCPROGS_CATCH(SWIG_fail);
+}
 
 
 // These macros help us translate from C++ exceptions to python exceptions

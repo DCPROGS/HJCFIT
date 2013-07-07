@@ -170,6 +170,6 @@ namespace DCProgs {
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_fa_->getD(_i);
   }
-  t_rvector ExactG::eigenvalues_af() const { return recursion_af_->eigenvalues_; }
-  t_rvector ExactG::eigenvalues_fa() const { return recursion_af_->eigenvalues_; }
+  t_rvector ExactG::eigenvalues_af() const { return recursion_af_->eigenvalues(); }
+  t_rvector ExactG::eigenvalues_fa() const { return recursion_af_->eigenvalues(); }
 }
