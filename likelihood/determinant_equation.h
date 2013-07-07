@@ -72,6 +72,13 @@ namespace DCProgs {
       //! This is an indication. There could be more roots.
       t_int get_nbroots() const { return matrix_.nopen; }
 
+      //! \brief Returns the state matrix.
+      //! \details This is strictly a read-only function since changing the matrix has fairly far
+      //! ranging implications.
+      StateMatrix const &get_state_matrix() const { return matrix_; }
+      //! Equation for transposed state matrix
+      DeterminantEq transpose() const { return DeterminantEq(matrix_.transpose(), tau_); }
+
     protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
       t_rmatrix integral_(t_real _s) const;
