@@ -2,12 +2,6 @@
 class Asymptotes {
   public:
 
-  // Copies eigen matrix to a numpy array,
-  %typemap(out) DCProgs::t_rmatrix { 
-    try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-    DCPROGS_CATCH(SWIG_fail);
-  }
-
   %extend {
     Asymptotes(DCProgs::DeterminantEq const &_det, PyObject *_array) {
        
@@ -42,18 +36,6 @@ class Asymptotes {
   }
 
   DCProgs::t_rmatrix operator()(DCProgs::t_real _s) const;
-//   // The following function enhances allows the functor to take numpy, python lists, tuples,
-//   // etc...
-//   %extend { 
-//     // Defines determinant function for a numpy array
-//     PyObject* operator()(PyObject * _s) {
-//       try { return apply_real(_s, *$self); }
-//       DCPROGS_CATCH(return NULL;);
-//     }
-//   }
-// }
-  // Removes automatic conversion to numpy array.
-  %clear DCProgs::t_rmatrix;
 };
 
 %clear Asymptotes;

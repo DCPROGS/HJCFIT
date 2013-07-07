@@ -2,7 +2,7 @@ add_library(likelihood SHARED state_matrix.h errors.h idealG.h idealG.cc
             equilibrium.h equilibrium.cc time_filter.h time_filter.cc recursion_formula.h
             state_matrix.cc exactG.h exactG.cc root_finder.h root_finder.cc
             determinant_equation.h determinant_equation.cc 
-            asymptotes.h asymptotes.cc )
+            asymptotes.h asymptotes.cc approxG.h approxG.cc)
 
 # Windows + Visual studio specifics.
 if(MSVC)

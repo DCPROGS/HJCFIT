@@ -27,6 +27,7 @@
 #  include "../root_finder.h"
 #  include "../exactG.h"
 #  include "../asymptotes.h"
+#  include "../approxG.h"
 
 #  include "helpers.h"
 
@@ -106,6 +107,12 @@
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);
 }
+// Copies eigen matrix to a numpy array,
+%typemap(out) DCProgs::t_rmatrix { 
+  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
+  DCPROGS_CATCH(SWIG_fail);
+};
+
 
 
 // These macros help us translate from C++ exceptions to python exceptions
@@ -117,6 +124,7 @@ namespace DCProgs {
 %include "root_finder.swg"
 %include "asymptotes.swg"
 %include "exactG.swg"
+%include "approxG.swg"
 
 }
 #undef DCPROGS_CATCH

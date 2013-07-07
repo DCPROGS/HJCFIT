@@ -20,7 +20,7 @@ class StateMatrix {
   }
   // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
   // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
-  %typemap(out) DCProgs::t_rmatrix { 
+  %typemap(out) DCProgs::t_rmatrix matrix { 
     try { $result = DCProgs::numpy::wrap_to_numpy(arg1->matrix, $self); }
     DCPROGS_CATCH(SWIG_fail);
   }
@@ -29,7 +29,7 @@ class StateMatrix {
 
   // This is the end of automatic conversion from eigen to numpy.
   // It is removed because elsewhere we don't know who will own the memory to the eigen matrix.
-  %clear DCProgs::t_rmatrix;
+  %clear DCProgs::t_rmatrix matrix;
 
   StateMatrix();
 

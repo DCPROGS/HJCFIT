@@ -1,13 +1,3 @@
-// More translating exception from c++ to python
-%exception DeterminantEq::DeterminantEq(PyObject *_in, int _nopen, double _s, bool _doopen=true) {
-  try { $action }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%exception DeterminantEq::DeterminantEq(StateMatrix *_in, double _s, bool _doopen=true) {
-  try { $action }
-  DCPROGS_CATCH(SWIG_fail);
-}
-
 %feature("autodoc", "Computes the matrix H\n\n" 
          "H is defined as  :math:`"
          "Q_{AA} + Q_{AF}\ \\int_0^\\tau e^{-st}e^{Q_{FF}t}\\partial\,t\ Q_{FA}`."
@@ -130,19 +120,10 @@ class DeterminantEq {
                                 "Otherwise returns a numpy array."
   %}
                      
-  // Copies eigen matrix to a numpy array,
-  %typemap(out) DCProgs::t_rmatrix { 
-    try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-    DCPROGS_CATCH(SWIG_fail);
-  };
-
   DCProgs::t_rmatrix H(DCProgs::t_real s);
   DCProgs::t_rmatrix H(DCProgs::t_real s, DCProgs::t_real tau);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s, DCProgs::t_real tau);
-  // Removes automatic conversion to numpy array.
-  %clear DCProgs::t_rmatrix;
-
 
   // Add some printout functions.
   %extend {

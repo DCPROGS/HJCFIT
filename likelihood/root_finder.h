@@ -71,37 +71,6 @@ namespace DCProgs {
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
                                               t_real _alpha = 5e0, t_int _itermax=100);
 
-  //! \brief Figures out interval where roots can be found by computing high and low values.
-  template<class T> 
-    std::vector<Root> find_roots(DeterminantEq const &_det,
-                                 std::vector<RootInterval> const &_intervals,
-                                 T const &_single_root_finder) {
-    
-      std::vector<Root> roots;
-      roots.reserve(_det.get_nbroots());
-      for(RootInterval const &interval: _intervals) {
-        // Roots with multiplicity of 1 are refined. 
-        // Others are included as degenerate roots.
-        t_real const root = interval.multiplicity > 1 ?
-                               (interval.start + interval.end) * 0.5:
-                               _single_root_finder(_det, interval.start, interval.end);
-        roots.emplace_back(root, interval.multiplicity);
-      }
-      return roots;
-  }
-  //! \brief Refines root location from input interval.
-  template<class T> 
-    std::vector<Root> find_roots(DeterminantEq const &_det,
-                                 T const &_single_root_finder,
-                                 t_real _mins = 1e8,
-                                 t_real _maxs = 0e0,
-                                 t_real _tolerance = 1e-8) {
-    
-      return find_roots( _det, 
-                         find_root_intervals(_det, _mins, _maxs, _tolerance),
-                         _single_root_finder );
-  }
-
   //! \brief Finds roots via brute force search
   //! \details Computes all values between mins and maxs, for a given resolution.
   //!          If determinant changes sign between two values, or if it comes to within tolerance of
