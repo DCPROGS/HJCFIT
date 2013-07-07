@@ -8,7 +8,7 @@ if(tests)
   cxx_test(time_filter time_filter.cc likelihood)
   cxx_test(determinant_equation determinant_equation.cc likelihood)
   cxx_test(recursion recursion_formula.cc likelihood)
-  cxx_test(exactG exactG.cc likelihood)
+  cxx_test(exact_survivor exact_survivor.cc likelihood)
   cxx_test(root_finder_intervals
            "root_finder_intervals.cc;random_matrix.h;random_matrix.cc" 
            likelihood)

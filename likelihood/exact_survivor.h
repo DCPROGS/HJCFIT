@@ -1,5 +1,5 @@
-#ifndef DCPROGS_LIKELIHOOD_EXACTG_H
-#define DCPROGS_LIKELIHOOD_EXACTG_H
+#ifndef DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
+#define DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
 
 #include <DCProgsConfig.h>
 
@@ -8,41 +8,36 @@
 #include <vector>
 #include <memory>
 
-
 #include "state_matrix.h"
 #include "recursion_formula.h"
 
 namespace DCProgs {
 
-  //! \brief Implementation of recursion for exact missed-event G function
+  //! \brief Implementation of recursion for exact missed-event survivor function
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
-  class MSWINDOBE ExactG {
+  class MSWINDOBE ExactSurvivor {
     public:
-      //! Initializes exact G functor.
+      //! Initializes exact survivor functor.
       //! \param[in] _matrix: Partitionned matrix with open states in top left corner.
       //! \param[in] _tau: Missed event cutoff time.
-      ExactG(StateMatrix const &_matrix, t_real _tau) { set(_matrix, _tau); }
-      //! Initializes exact G functor.
+      ExactSurvivor(StateMatrix const &_matrix, t_real _tau) { set(_matrix, _tau); }
+      //! Initializes exact survivor functor.
       //! \param[in] _matrix: A transition matrix with open states in top left corner
       //! \param[in] _nopen: Number of open states. 
       //! \param[in] _tau: Missed event cutoff time.
       template<class T>
-        ExactG(Eigen::DenseBase<T> const &_matrix, t_int _nopen, t_real _tau)
+        ExactSurvivor(Eigen::DenseBase<T> const &_matrix, t_int _nopen, t_real _tau)
           { set(StateMatrix(_matrix, _nopen), _tau); }
 
 
       //! Sets the values for which to compute exact g.
       void set(StateMatrix const &_matrix, t_real _tau);
 
-      //! Open to close transitions 
-      t_rmatrix af(t_real t) const;
-      //! Close to open transitions
-      t_rmatrix fa(t_real t) const;
       //! Probability of no shut times detected between 0 and t.
-      t_rmatrix R_af(t_real t) const;
+      t_rmatrix af(t_real t) const;
       //! Probability of no open times detected between 0 and t.
-      t_rmatrix R_fa(t_real t) const;
+      t_rmatrix fa(t_real t) const;
 
       //! Gets the value of tau;
       t_real get_tau() const { return tau_; }
@@ -61,11 +56,11 @@ namespace DCProgs {
       t_rvector eigenvalues_fa() const;
 
     protected:
-      //! \brief Implementation of recursion for exact missed-event G function
+      //! \brief Implementation of recursion for exact missed-event Survivor function
       //! \details This is an interface to the function recursion_formula.  In practice, this object
       //!          needs not be called directly. Rather the public interface (which is about
       //!          computing the likelihood for an event of duration t) is in the containing class
-      //!          ExactG.
+      //!          ExactSurvivor.
       class MSWINDOBE RecursionInterface;
 
 #     ifndef HAS_CXX11_UNIQUE_PTR
@@ -81,21 +76,17 @@ namespace DCProgs {
       t_RecursionPtr recursion_fa_;
       //! Max length of missed events.
       t_real tau_;
-      //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
-      t_rmatrix af_factor_;
-      //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
-      t_rmatrix fa_factor_;
   };
 
 
-  class MSWINDOBE ExactG::RecursionInterface {
+  class MSWINDOBE ExactSurvivor::RecursionInterface {
   
     public:
       //! Element on which to perform recursion.
       typedef t_rmatrix t_element;
       //! Constructor. 
       //! \param[in] _matrix: The transition state matrix for which to compute
-      //!                     \f$^eG_{AF}(t\rightarrow\infty)\f$
+      //!                     \f$^eR_{AF}(t\rightarrow\infty)\f$
       //! \param[in] _doAF: Whether to do AF (true) or FA.
       RecursionInterface(StateMatrix const & _matrix, t_real _tau, bool _doAF=true);
   
@@ -117,6 +108,8 @@ namespace DCProgs {
 
       //! Reference to eigenvales
       t_rvector const & eigenvalues() const { return eigenvalues_; }
+      //! A null matrix of appropriate size
+      decltype(t_rmatrix::Zero(1,1)) zero() const { return t_rmatrix::Zero(nopen, nopen); };
 
     protected:
   
