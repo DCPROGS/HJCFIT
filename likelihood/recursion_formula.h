@@ -96,16 +96,16 @@ namespace DCProgs {
         typename T::t_element result(_C.getD(_i) * _C(_i, _m-1, _l-1) / t_real(_l));
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
           if(_i == j) continue;
-
+ 
           t_real const diff_lambda(_C.get_eigvals(_i)-_C.get_eigvals(j));
           if(std::abs(diff_lambda) < 1e-12) continue;
-
+ 
           t_real const diff_lambda_inv(1e0/diff_lambda); 
           t_real factor(diff_lambda_inv); 
-          typename T::t_element intermediate = _zero();
-          for(t_int r(_l); r < _m; ++r) {
+          typename T::t_element intermediate = _C(_i, _m-1, _l) * factor;
+          for(t_int r(_l+1); r < _m; ++r) {
+            factor *= diff_lambda_inv * r;
             intermediate += _C(_i, _m-1, r) * factor;
-            factor *= diff_lambda_inv * (r+1);
           }
           result -= _C.getD(j) * intermediate;
         } // loop over j

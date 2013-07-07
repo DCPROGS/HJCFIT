@@ -56,8 +56,27 @@ class ExactG {
   DCProgs::t_rmatrix recursion_fa(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;
   DCProgs::t_rmatrix D_af(DCProgs::t_int _i) const;
   DCProgs::t_rmatrix D_fa(DCProgs::t_int _i) const;
-  DCProgs::t_rmatrix eigenvalues_af() const;
-  DCProgs::t_rmatrix eigenvalues_fa() const;
+
+  // Renames some values so we can make it a property.
+  %rename(_get_tau) get_tau() const; 
+  %rename(_eigenvalues_af) eigenvalues_af() const;
+  %rename(_eigenvalues_fa) eigenvalues_fa() const;
+  DCProgs::t_real get_tau() const;
+  DCProgs::t_rvector eigenvalues_af() const;
+  DCProgs::t_rvector eigenvalues_fa() const;
+  %pythoncode %{
+    __swig_getmethods__["tau"] = _get_tau
+    __swig_getmethods__["eigenvalues_af"] = _eigenvalues_af
+    __swig_getmethods__["eigenvalues_fa"] = _eigenvalues_fa
+    if _newclass:
+      tau = property(_get_tau, doc="Max length of mixed events.")
+      eigenvalues_af = property(_eigenvalues_af,
+                                doc="Eigenvalues of the transition matrix.\n\n"  \
+                                    "This is the real part of eigenvalues only.\n")
+      eigenvalues_fa = property(_eigenvalues_fa,
+                                doc="Eigenvalues of the transition matrix.\n\n"  \
+                                    "This is the real part of eigenvalues only.\n")
+  %}
 
   // Removes automatic conversion to numpy array.
   %clear DCProgs::t_rmatrix;

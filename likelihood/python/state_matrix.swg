@@ -3,6 +3,7 @@
 %feature("autodoc", "Swaps AA block with FF, AF block with FA, nopen with nclose.\n\n")
          StateMatrix::transpose;
 %feature("autodoc", "Transition matrix itself.") StateMatrix::matrix;
+%feature("autodoc", "Number of open states.") StateMatrix::nopen;
 // Now we define the bindings for the StateMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.
@@ -78,5 +79,9 @@ class StateMatrix {
                             doc=""" Open to close transitions. """)
   StateMatrix.ff = property(lambda self: self.matrix[self.nopen:, self.nopen:],
                             doc=""" Open to close transitions. """)
+  StateMatrix.nshut = property(lambda self: self.matrix.shape[0] - self.nopen,
+                               lambda self, value: \
+                                   setattr(self, "nopen", self.matrix.shape[0] - value),
+                               doc=""" Number of shut states. """);
 %}
 
