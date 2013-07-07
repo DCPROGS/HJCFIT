@@ -28,6 +28,7 @@
 #  include "../asymptotes.h"
 #  include "../exact_survivor.h"
 #  include "../approx_survivor.h"
+#  include "../missed_eventsG.h"
 
 #  include "helpers.h"
 
@@ -125,6 +126,7 @@ namespace DCProgs {
 %include "asymptotes.swg"
 %include "exact_survivor.swg"
 %include "approx_survivor.swg"
+%include "missed_eventsG.swg"
 
 }
 #undef DCPROGS_CATCH
