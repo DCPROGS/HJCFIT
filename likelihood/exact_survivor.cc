@@ -6,11 +6,11 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 #include "errors.h"
-#include "exactG.h"
+#include "exact_survivor.h"
 
 namespace DCProgs {
 
-  void ExactG :: set(StateMatrix const &_matrix, t_real _tau) {
+  void ExactSurvivor :: set(StateMatrix const &_matrix, t_real _tau) {
     // Two step process. Otherwise, reset would catch any exception thrown. 
     RecursionInterface afinterface(_matrix, _tau, true);
     RecursionInterface fainterface(_matrix, _tau, false);
@@ -20,13 +20,11 @@ namespace DCProgs {
     if(not recursion_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
 
     tau_ = _tau;
-    af_factor_ = _matrix.af() * (_tau * _matrix.ff()).exp();
-    fa_factor_ = _matrix.fa() * (_tau * _matrix.aa()).exp();
   }
 
 
-  ExactG :: RecursionInterface::RecursionInterface( StateMatrix const & _matrix,
-                                                    t_real _tau, bool _doAF ) {
+  ExactSurvivor :: RecursionInterface::RecursionInterface( StateMatrix const & _matrix,
+                                                           t_real _tau, bool _doAF ) {
                    
     // Sets matrix depending on whether this is AF or FA stuff.
     StateMatrix const transitions = _doAF ? _matrix: _matrix.transpose();
@@ -62,8 +60,8 @@ namespace DCProgs {
   }
 
   // Recursion element i, m, l.
-  ExactG::RecursionInterface::t_element
-    ExactG::RecursionInterface::operator()(t_int _i, t_int _m, t_int _l) {
+  ExactSurvivor::RecursionInterface::t_element
+    ExactSurvivor::RecursionInterface::operator()(t_int _i, t_int _m, t_int _l) {
 
       assert(_i >= 0 and _m >= 0 and _l >= 0);
       assert(_i < nbeigvals());
@@ -74,10 +72,9 @@ namespace DCProgs {
       if(i_found != coeff_map_.end()) return i_found->second;
 
       // Otherwise compute it from recursion
-      t_int const nopen_ = this->nopen;
-      auto zero = [&nopen_]() { return t_element::Zero(nopen_, nopen_); };
-      t_element const result = recursion_formula(*this, _i, _m, _l, zero);
-      return result;
+      t_int const NOPEN = this->nopen;
+      auto ZERO = [NOPEN]() { return t_rmatrix::Zero(NOPEN, NOPEN); };
+      return recursion_formula(*this, _i, _m, _l, ZERO);
     }
 
   namespace {
@@ -126,50 +123,41 @@ namespace DCProgs {
 
   }
 
-  t_rmatrix ExactG :: af(t_real _t) const {
-    if(_t <= tau_) return t_rmatrix::Zero(af_factor_.rows(), af_factor_.cols());
-    return R_of_t(*recursion_af_, _t - tau_, tau_) * af_factor_; 
-  }
-  t_rmatrix ExactG :: fa(t_real _t) const {
-    if(_t <= tau_) return t_rmatrix::Zero(fa_factor_.rows(), fa_factor_.cols());
-    return R_of_t(*recursion_fa_, _t - tau_, tau_) * fa_factor_; 
-  }
-
-  t_rmatrix ExactG :: R_af(t_real _t) const {
-    if(_t <= 0e0) return t_rmatrix::Zero(af_factor_.rows(), af_factor_.cols());
+  t_rmatrix ExactSurvivor :: af(t_real _t) const {
+    if(_t <= 0e0) return recursion_af_->zero();
     return R_of_t(*recursion_af_, _t, tau_);
   }
-  t_rmatrix ExactG :: R_fa(t_real _t) const {
-    if(_t <= 0e0) return t_rmatrix::Zero(fa_factor_.rows(), fa_factor_.cols());
+  t_rmatrix ExactSurvivor :: fa(t_real _t) const {
+    if(_t <= 0e0) return recursion_af_->zero();
     return R_of_t(*recursion_fa_, _t, tau_);
   }
 
-  t_rmatrix ExactG :: recursion_af(t_int _i, t_int _m, t_int _l) const {
+  t_rmatrix ExactSurvivor :: recursion_af(t_int _i, t_int _m, t_int _l) const {
     if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     return  recursion_af_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactG :: recursion_fa(t_int _i, t_int _m, t_int _l) const {
+  t_rmatrix ExactSurvivor :: recursion_fa(t_int _i, t_int _m, t_int _l) const {
     if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     return  recursion_fa_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactG :: D_af(t_int _i) const {
+  t_rmatrix ExactSurvivor :: D_af(t_int _i) const {
     if(_i < 0) throw errors::Index("Indices should be positive.");
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_af_->getD(_i);
   }
-  t_rmatrix ExactG :: D_fa(t_int _i) const {
+  t_rmatrix ExactSurvivor :: D_fa(t_int _i) const {
     if(_i < 0) throw errors::Index("Indices should be positive.");
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_fa_->getD(_i);
   }
-  t_rvector ExactG::eigenvalues_af() const { return recursion_af_->eigenvalues(); }
-  t_rvector ExactG::eigenvalues_fa() const { return recursion_af_->eigenvalues(); }
+  t_rvector ExactSurvivor::eigenvalues_af() const { return recursion_af_->eigenvalues(); }
+  t_rvector ExactSurvivor::eigenvalues_fa() const { return recursion_af_->eigenvalues(); }
 }

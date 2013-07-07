@@ -25,9 +25,9 @@
 #  include "../state_matrix.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
-#  include "../exactG.h"
 #  include "../asymptotes.h"
-#  include "../approxG.h"
+#  include "../exact_survivor.h"
+#  include "../approx_survivor.h"
 
 #  include "helpers.h"
 
@@ -123,8 +123,8 @@ namespace DCProgs {
 %include "determinant_equation.swg"
 %include "root_finder.swg"
 %include "asymptotes.swg"
-%include "exactG.swg"
-%include "approxG.swg"
+%include "exact_survivor.swg"
+%include "approx_survivor.swg"
 
 }
 #undef DCPROGS_CATCH

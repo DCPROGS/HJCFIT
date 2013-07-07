@@ -19,36 +19,34 @@
     return result;
   }
 %}
-%feature("autodoc", "Computes approximate missed-event G.") ApproxG;
-%feature("autodoc", "Open to close transitions") ApproxG::af;
-%feature("autodoc", "Closed to open transitions") ApproxG::fa;
-class ApproxG {
+%feature("autodoc", "Computes approximate missed-event survivor function.") ApproxSurvivor;
+%feature("autodoc", "Open to close transitions") ApproxSurvivor::af;
+%feature("autodoc", "Closed to open transitions") ApproxSurvivor::fa;
+class ApproxSurvivor {
   public:
   
   // Other way to create this object.
   %extend {
-    ApproxG(DCProgs::DeterminantEq const &_af, PyObject * _roots_af, 
-            DCProgs::DeterminantEq const &_fa, PyObject * _roots_fa ) {
+    ApproxSurvivor(DCProgs::DeterminantEq const &_af, PyObject * _roots_af, 
+                   DCProgs::DeterminantEq const &_fa, PyObject * _roots_fa ) {
       std::vector<DCProgs::Root> roots_af = convert_to_roots(_roots_af);
       std::vector<DCProgs::Root> roots_fa = convert_to_roots(_roots_fa);
-      return new DCProgs::ApproxG(_af, roots_af, _fa, roots_fa);
+      return new DCProgs::ApproxSurvivor(_af, roots_af, _fa, roots_fa);
     }
   }
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
-  DCProgs::t_rmatrix R_af(DCProgs::t_real t);
-  DCProgs::t_rmatrix R_fa(DCProgs::t_real t);
 };
-%clear ApproxG;
+%clear ApproxSurvivor;
 
 %pythoncode %{
-  def create_approxg(rates, tau):
+  def create_approx_survivor(rates, tau):
 
-    """ Creates a ApproxG matrix from knowledge of rate matrix. """
+    """ Creates a ApproxSurvivor function from knowledge of rate matrix. """
     determinant_af = DeterminantEq(rates, tau) 
     determinant_fa = DeterminantEq(rates.transpose(), tau) 
     roots_af = find_roots(determinant_af)
     roots_fa = find_roots(determinant_fa)
-    return ApproxG(determinant_af, roots_af, determinant_fa, roots_fa)
+    return ApproxSurvivor(determinant_af, roots_af, determinant_fa, roots_fa)
 %}
