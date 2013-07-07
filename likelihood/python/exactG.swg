@@ -15,12 +15,6 @@ class ExactG {
   // Constructor.
   ExactG(DCProgs::StateMatrix const &_matrix, DCProgs::t_real _tau);
 
-  // Copies eigen matrix to a numpy array,
-  %typemap(out) DCProgs::t_rmatrix { 
-    try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-    DCPROGS_CATCH(SWIG_fail);
-  };
-
   %typemap(check) DCProgs::t_real t {
     if($1 > 11e0 * arg1->get_tau()) {
       std::ostringstream sstr;
@@ -77,9 +71,6 @@ class ExactG {
                                 doc="Eigenvalues of the transition matrix.\n\n"  \
                                     "This is the real part of eigenvalues only.\n")
   %}
-
-  // Removes automatic conversion to numpy array.
-  %clear DCProgs::t_rmatrix;
 };
 
 %clear ExactG;

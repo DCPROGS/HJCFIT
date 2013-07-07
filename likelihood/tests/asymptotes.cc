@@ -7,6 +7,13 @@
 
 #include "../asymptotes.h"
 using namespace DCProgs;
+#ifdef HAS_CXX11_TYPETRAITS
+  // Checks some assumption about Asymptotes matrix types.
+  static_assert( std::is_move_constructible<Asymptotes>::value,
+        	       "Asymptotes is not move constructible." );  
+  static_assert( std::is_move_assignable<Asymptotes>::value, 
+        	       "Asymptotes is not move assignable." );  
+#endif
 
 //! Params are whether to do open or closed states, 
 //! and the root of the determinantal equation.
