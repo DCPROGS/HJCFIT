@@ -23,6 +23,8 @@
 #  include "numpy_eigen.h"
 
 #  include "../state_matrix.h"
+#  include "../idealg.h"
+#  include "../equilibrium.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
 #  include "../asymptotes.h"
@@ -108,7 +110,10 @@
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);
 }
-// Copies eigen matrix to a numpy array,
+%typemap(out) DCProgs::t_initvec { 
+  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
+  DCPROGS_CATCH(SWIG_fail);
+}
 %typemap(out) DCProgs::t_rmatrix { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);
@@ -121,6 +126,7 @@
 namespace DCProgs {
 
 %include "state_matrix.swg"
+%include "idealg.swg"
 %include "determinant_equation.swg"
 %include "root_finder.swg"
 %include "asymptotes.swg"

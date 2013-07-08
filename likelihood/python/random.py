@@ -52,10 +52,18 @@ def qmatrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, re
     for i in xrange(matrix.shape[0]): matrix[i, i] -= sum(matrix[i, :])
     return matrix
 
+  def equilibrium(result): 
+    from numpy.linalg import svd
+    from numpy import sum, abs
+    try: U, sing, V = svd(result)
+    except: return False
+    else: return sum(abs(sing) < tolerance) == 1
+
   result = generate_matrix()
   # Loop until conditions are satisfied.
   while (nonsingular and abs(det(result)) < tolerance)                                             \
-        or (realeigs and any(abs(eig(result)[0].imag) > tolerance) ):
+        or (realeigs and any(abs(eig(result)[0].imag) > tolerance)                                 \
+        or not equilibrium(result) ):
     result = generate_matrix()
 
   return result
@@ -67,6 +75,11 @@ def state_matrix(*args, **kwargs):
   matrix = qmatrix(*args, **kwargs)
   nopen = randint(2, matrix.shape[0]-2)
   return StateMatrix(matrix, nopen)
+
+def random_idealg(*args, **kwargs):
+  """ Creates a random state matrix with some structure to it. """
+  from .likelihood import IdealG
+  return IdealG(state_matrix(*args, **kwargs))
 
 # Adds description of parameters and function from the qmatrix docstring.
 state_matrix.__doc__ = "\n".join(state_matrix.__doc__.splitlines()

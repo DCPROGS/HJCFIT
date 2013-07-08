@@ -20,7 +20,7 @@ namespace DCProgs {
 
     //! Just trying to figure out a complex return type...
     typedef decltype( (t_real(0) * std::declval<const StateMatrix>().ff()).exp()
-                      * std::declval<const StateMatrix>().fa() ) t_laplace_result;
+                      * std::declval<const StateMatrix>().fa() ) t_time_result;
     public:
       //! Constructor
       IdealG() : StateMatrix() {}
@@ -48,10 +48,10 @@ namespace DCProgs {
       t_int const & get_nopen() const { return this->nopen; }
 
       //! Shut to open transitions.
-      t_laplace_result fa(t_real t) const 
+      t_time_result fa(t_real t) const 
         { return (t*StateMatrix::ff()).exp()*StateMatrix::fa(); }
       //! Open to shut transitions.
-      t_laplace_result af(t_real t) const 
+      t_time_result af(t_real t) const 
         { return (t*StateMatrix::aa()).exp()*StateMatrix::af(); }
 
       //! Laplace transform of shut to open transitions.

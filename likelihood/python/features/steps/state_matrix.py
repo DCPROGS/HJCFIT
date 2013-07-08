@@ -60,3 +60,8 @@ def step(context, item, value):
 @When("nopen is set to {value:Integer}")
 def step(context, value):
   context.statematrix.nopen = value
+
+@given('a list of {n:Integer} random state matrices')
+def step(context, n):
+  from dcprogs.random import state_matrix as random_state_matrix
+  context.matrices = [random_state_matrix() for u in range(n)]
