@@ -1,5 +1,4 @@
 """ Holds some general setup for behave. """
-
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
@@ -106,7 +105,7 @@ def register_type():
   from behave import matchers
   matchers.register_type(Integer=lambda x: int(eval(x)))
   matchers.register_type(Float=lambda x: float(eval(x)))
-  matchers.register_type(Eval=lambda x: eval(eval(x)))
+  matchers.register_type(Eval=lambda x: eval(x))
   matchers.register_type(Bool=lambda x: bool(eval(x)))
   matchers.register_type(Matrix=Matrix)
   matchers.register_type(StatMat=StatMat)

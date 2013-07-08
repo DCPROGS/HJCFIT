@@ -23,7 +23,7 @@
 #  include "numpy_eigen.h"
 
 #  include "../state_matrix.h"
-#  include "../idealg.h"
+#  include "../idealG.h"
 #  include "../equilibrium.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
