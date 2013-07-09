@@ -4,6 +4,9 @@ from behave import then
 def step(context, n, name, start, end):
   from numpy import random
   setattr(context, name, random.sample(n) * (end - start) + start)
+@given('a parameter {name}={value:Eval}')
+def step(context, name, value):
+  setattr(context, name, value)
 
 @then('instantiation did not throw')
 def step(context):

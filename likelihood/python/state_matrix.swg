@@ -35,12 +35,12 @@ class StateMatrix {
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    StateMatrix(PyObject *_in, int _nopen) {
+    StateMatrix(PyObject *_py_matrix, int _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
-      if(not PyArray_Check(_in))
+      if(not PyArray_Check(_py_matrix))
         throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_in);
+      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_py_matrix);
       if(_nopen > std::max(matrix.rows(), matrix.cols()) )
         throw DCProgs::errors::PythonValueError(
                 "Number of open states cannot be larger than the number states.");
