@@ -16,9 +16,9 @@
          ":returns: a numpy array.") DeterminantEq::s_derivative(DeterminantEq const *, DCProgs::t_real s);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
                     "There are several ways to instanciate this object:\n\n"
-                    ">>> DeterminantEq(matrix, nopen, tau, doopen=True)\n\n"
+                    ">>> DeterminantEq(matrix, nopen, tau)\n\n"
                     "or,\n\n"
-                    ">>> DeterminantEq(qmatrix, tau, doopen=True)\n\n"
+                    ">>> DeterminantEq(qmatrix, tau)\n\n"
                     "Parameters:\n"
                     "   matrix: numpy array\n"
                     "      Transition matrix, where the upper left corner"
@@ -29,22 +29,16 @@
                     "      State matrix created from a transition matrix "
                           "and the number of open states\n" 
                     "   tau: number\n"
-                    "      Max length of missed events.\n"
-                    "   doopen: Boolean\n"
-                    "      Whether to compute AF (True, default) or AF determinant.\n")
+                    "      Max length of missed events.\n")
          DeterminantEq;
 //! Adds determinant functor
 class DeterminantEq {
 
   public: 
 
-  // Rename get_, set_tau so they are hidden (private) in python.
-  %rename(_get_tau) get_tau() const; 
-  %rename(_set_tau) set_tau(DCProgs::t_real); 
-
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    DeterminantEq(PyObject *_in, int _nopen, double _tau, bool _doopen=true) {
+    DeterminantEq(PyObject *_in, int _nopen, double _tau) {
       if(_nopen <= 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(not PyArray_Check(_in)) 
@@ -56,10 +50,9 @@ class DeterminantEq {
         throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
       if(_nopen >= matrix.rows())
         throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen),
-                                         _tau, _doopen );
+      return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
     }
-    DeterminantEq(QMatrix *_in, double _tau, bool _doopen=true) {
+    DeterminantEq(QMatrix *_in, double _tau) {
       if(_in->nopen <= 0) 
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 
@@ -68,10 +61,14 @@ class DeterminantEq {
         throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
       if(_in->nopen >= _in->matrix.rows()) 
         throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( *_in, _tau, _doopen );
+      return new DCProgs::DeterminantEq( *_in, _tau );
     }
   }
 
+  DCProgs::DeterminantEq transpose();
+  // Rename get_, set_tau so they are hidden (private) in python.
+  %rename(_get_tau) get_tau() const; 
+  %rename(_set_tau) set_tau(DCProgs::t_real); 
   // Converts get_, set_tau to property.
   DCProgs::t_real get_tau() const;
   void set_tau(DCProgs::t_real);
@@ -92,21 +89,6 @@ class DeterminantEq {
     PyObject* operator()(PyObject * _s) {
       try { return apply_real(_s, *$self); }
       DCPROGS_CATCH(return NULL;);
-    }
-    // Defines determinant function for a numpy array + changing tau
-    PyObject* operator()(PyObject * _s, DCProgs::t_real _tau) {
-      try {
-        DCProgs::t_real const oldtau = $self->get_tau();
-        $self->set_tau(_tau);
-        PyObject * result;
-        try { result = apply_real(_s, *$self); }
-        catch(...) {
-          $self->set_tau(oldtau); 
-          throw;
-        }
-        $self->set_tau(oldtau); 
-        return result;
-      } DCPROGS_CATCH(return NULL;);
     }
   }
   %pythoncode %{

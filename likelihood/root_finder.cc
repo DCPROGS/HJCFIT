@@ -97,7 +97,7 @@ namespace DCProgs {
 
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   
     std::vector<RootInterval> intervals;
-    step_(_det, mins, _maxs, _tolerance, _det.get_nbroots(), 0, intervals);
+    step_(_det, mins, _maxs, _tolerance, _det.get_nopen(), 0, intervals);
     return intervals;
   }
 

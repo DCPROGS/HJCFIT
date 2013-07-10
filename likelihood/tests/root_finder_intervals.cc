@@ -59,7 +59,7 @@ std::ostream &operator<< (std::ostream &_stream, DCProgs::RootInterval const &_i
 // Checks can find zero for cannonical matrix, open states.
 TEST_F(RootFinderIntervalsTest, open) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix, 1e-4, true); 
+  DeterminantEq det(qmatrix, 1e-4); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
   EXPECT_EQ(intervals.size(), 2);
@@ -77,7 +77,7 @@ TEST_F(RootFinderIntervalsTest, open) {
 // Checks can find zero for cannonical matrix, closed qmatrix.
 TEST_F(RootFinderIntervalsTest, closed) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix, 1e-4, false); 
+  DeterminantEq det(qmatrix.transpose(), 1e-4); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
   EXPECT_EQ(intervals.size(), 3);
@@ -115,7 +115,7 @@ TEST_P(TestFindIntervals, random_matrix) {
     qmatrix.nopen = t_idist(2, qmatrix.matrix.rows()-2)(global_mersenne());
 
     // Then the determinant object
-    DeterminantEq det(qmatrix, 1e-4, true);
+    DeterminantEq det(qmatrix, 1e-4);
     // Look for roots and sort them
     t_real const convergence = 1e-6;
     std::vector<RootInterval> intervals = find_root_intervals(det, 1e8, 0e0, convergence);
@@ -149,7 +149,7 @@ TEST_P(TestFindIntervals, random_matrix) {
                       start_sign == end_sign:
                       start_sign != end_sign );
     }
-    EXPECT_EQ(qmatrix.aa().rows(), det.get_nbroots()) << qmatrix;
+    EXPECT_EQ(qmatrix.aa().rows(), det.get_nopen()) << qmatrix;
     EXPECT_TRUE(nroots > 0) << qmatrix;
   } catch(...) {
     std::cerr.precision(15);

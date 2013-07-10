@@ -3,26 +3,26 @@
 #include <tuple>
 #include <gtest/gtest.h>
 #include <unsupported/Eigen/MatrixFunctions>
-#include "../determinant_equation.h"
+#include "../laplace_survivor.h"
 using namespace DCProgs;
 
 #ifdef HAS_CXX11_TYPETRAITS
   // Checks some assumption about eigen matrix types.
-  static_assert( std::is_move_constructible<DeterminantEq>::value,
-         	       "DeterminantEq is not move constructible." );  
-  static_assert( std::is_move_assignable<DeterminantEq>::value, 
-  	             "DeterminantEq is not move assignable." );  
+  static_assert( std::is_move_constructible<LaplaceSurvivor>::value,
+  	             "LaplaceSurvivor is not move constructible." );  
+  static_assert( std::is_move_assignable<LaplaceSurvivor>::value, 
+  	             "LaplaceSurvivor is not move assignable." );  
 #endif
 
 #ifdef HAS_CXX11_TRIVIALTYPETRAITS
-  static_assert( not std::is_trivially_move_constructible<DeterminantEq>::value,
-  	             "DeterminantEq is trivially move constructible." );  
-  static_assert( not std::is_trivially_move_assignable<DeterminantEq>::value, 
-  	             "DeterminantEq is trivially move assignable." );  
+  static_assert( not std::is_trivially_move_constructible<LaplaceSurvivor>::value,
+         	       "LaplaceSurvivor is trivially move constructible." );  
+  static_assert( not std::is_trivially_move_assignable<LaplaceSurvivor>::value, 
+  	             "LaplaceSurvivor is trivially move assignable." );  
 #endif
 
 // Sets up test with parameters from CH82, 1e-7 nM.
-class DeterminantEqTest : public ::testing::Test {
+class LaplaceSurvivorTest : public ::testing::Test {
   
   public:
   virtual void SetUp() {
@@ -59,62 +59,68 @@ template<class T_APPROX, class T_EXACT>
 
 
 // Missed event with t resolution == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
+TEST_F(LaplaceSurvivorTest, FF_resolution_is_zero) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix.transpose(), 0); 
-  EXPECT_TRUE( ((det.H(0).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(1).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(10).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
+  LaplaceSurvivor R(qmatrix.transpose()); 
+  EXPECT_TRUE( ((R.H(0, 0).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.H(1, 0).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.H(10, 0).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
 
-  Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.ff());
-  t_rvector const eigs = eigsolver.eigenvalues().real();
-  EXPECT_TRUE(std::abs(det(eigs(0)) / eigs(0)) < 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(2)) / eigs(2)) < 1e-5);
+  auto value = [&qmatrix](t_real _s) -> t_rmatrix {
+    return (_s * t_rmatrix::Identity(qmatrix.ff().rows(), qmatrix.ff().cols())
+            - qmatrix.ff()).inverse(); 
+  };
+  EXPECT_TRUE( ((R(0, 0).array() - value(0).array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R(1, 0).array() - value(1).array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R(10, 0).array() - value(10).array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R(11, 0).array() - value(10).array()).abs() > 1e-8).any() );
 }
 // Missed event with t resolution == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, FF_resolution_is_zero_check_derivative) {
+TEST_F(LaplaceSurvivorTest, FF_resolution_is_zero_check_derivative) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix.transpose(), 0); 
+  LaplaceSurvivor R(qmatrix.transpose()); 
   t_rmatrix id = t_rmatrix::Identity(3, 3);
-  EXPECT_TRUE( ((det.s_derivative(0).array() - id.array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.s_derivative(1).array() - id.array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(0, 0).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(1, 0).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(10, 0).array() - id.array()).abs() < 1e-8).all() );
 }
 // Missed event with t resolution == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, AA_resolution_is_zero) {
+TEST_F(LaplaceSurvivorTest, AA_resolution_is_zero) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix, 0); 
-  EXPECT_TRUE( ((det.H(0).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(1).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(10).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
+  LaplaceSurvivor R(qmatrix); 
+  EXPECT_TRUE( ((R.H(0, 0).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.H(1, 0).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.H(10, 0).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
 
-  Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.aa());
-  t_rvector const eigs = eigsolver.eigenvalues().real();
-  EXPECT_TRUE(std::abs(det(eigs(0)) / eigs(0)) < 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
+  auto value = [&qmatrix](t_real _s) -> t_rmatrix {
+    return (_s * t_rmatrix::Identity(qmatrix.aa().rows(), qmatrix.aa().cols()) 
+            - qmatrix.aa()).inverse(); 
+  };
+  EXPECT_TRUE( ((R(0, 0).array() - value(0).array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R(1, 0).array() - value(1).array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R(10, 0).array() - value(10).array()).abs() < 1e-8).all() );
 }
 // Missed event with t resolution == zero (e.g. no missed event)
-TEST_F(DeterminantEqTest, AA_resolution_is_zero_check_derivative) {
+TEST_F(LaplaceSurvivorTest, AA_resolution_is_zero_check_derivative) {
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq det(qmatrix, 0); 
+  LaplaceSurvivor R(qmatrix); 
   t_rmatrix id = t_rmatrix::Identity(2, 2);
-  EXPECT_TRUE( ((det.s_derivative(0).array() - id.array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.s_derivative(1).array() - id.array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.s_derivative(10).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(0, 0).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(1, 0).array() - id.array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((R.s_derivative(10, 0).array() - id.array()).abs() < 1e-8).all() );
 }
 
 // Test non-zero resolution tau using numerical and analytical derivatives.
-TEST_F(DeterminantEqTest, from_tau_derivative) {
+TEST_F(LaplaceSurvivorTest, H_from_tau_derivative) {
 
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq determinant(qmatrix.transpose(), 0); 
+  LaplaceSurvivor survivor(qmatrix.transpose()); 
 
   t_real svec[] = {0e0, 1e-1, 1e0};
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real dtaus[] = {1e-4, 1e-6, 1e-8};
   for(t_real s: svec) {
-    auto approx = [&determinant, &s](t_real _tau) -> t_rmatrix { return determinant.H(s, _tau); };
+    auto approx = [&survivor, &s](t_real _tau) { return survivor.H(s, _tau); };
     auto exact = [&qmatrix, &s](t_real _tau) -> t_rmatrix {
       return qmatrix.fa() * std::exp(-s * _tau) * (_tau * qmatrix.aa()).exp() * qmatrix.af();
     };
@@ -129,16 +135,16 @@ TEST_F(DeterminantEqTest, from_tau_derivative) {
 }
 
 // Test s derivatives for non-zero resolution tau using numerical and analytical derivatives.
-TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
+TEST_F(LaplaceSurvivorTest, s_derivative_from_tau_derivative) {
 
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq determinant(qmatrix.transpose(), 0); 
+  LaplaceSurvivor survivor(qmatrix.transpose()); 
 
   t_real svec[] = {0e0, 1e-1, 1e0};
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real dtaus[] = {1e-4, 1e-6, 1e-8};
   for(t_real s: svec) {
-    auto approx = [&determinant, &s](t_real _tau) { return determinant.s_derivative(s, _tau); };
+    auto approx = [&survivor, &s](t_real _tau) { return survivor.s_derivative(s, _tau); };
     auto exact = [&qmatrix, &s](t_real _tau) -> t_rmatrix {
       return -_tau * std::exp(-s * _tau) * qmatrix.fa() * (_tau * qmatrix.aa()).exp() * qmatrix.af();
     };
@@ -154,19 +160,19 @@ TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 }
 
 // Test s derivative from numerical derivative of H.
-TEST_F(DeterminantEqTest, s_derivative_from_H) {
+TEST_F(LaplaceSurvivorTest, s_derivative_from_H) {
 
   QMatrix const qmatrix(Q, 2);
-  DeterminantEq determinant(qmatrix.transpose(), 0); 
+  LaplaceSurvivor survivor(qmatrix.transpose()); 
 
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real svec[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real dsvec[] = {1e-4, 1e-6, 1e-8};
   for(t_real tau: taus) {
 
-    auto approx = [&determinant, &tau](t_real _s) { return determinant.H(_s, tau); };
-    auto exact = [&determinant, &tau](t_real _s) -> t_rmatrix { 
-      t_rmatrix const result = determinant.s_derivative(_s, tau); 
+    auto approx = [&survivor, &tau](t_real _s) { return survivor.H(_s, tau); };
+    auto exact = [&survivor, &tau](t_real _s) -> t_rmatrix { 
+      t_rmatrix const result = survivor.s_derivative(_s, tau); 
       return result - t_rmatrix::Identity(result.rows(), result.cols());
     };
     

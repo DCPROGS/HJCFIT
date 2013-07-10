@@ -28,6 +28,7 @@ namespace DCProgs {
                        t_int _nmax=2 )
                     : ExactSurvivor(_af.get_qmatrix(), _af.get_tau()),
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
+                      qmatrix_(_af.get_qmatrix()),
                       nmax_(_nmax), tmax_(_af.get_tau()*_nmax),
                       af_factor_( _af.get_qmatrix().af()
                                   * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
@@ -43,6 +44,7 @@ namespace DCProgs {
                         t_RootFinder const &_findroots, t_int _nmax=2 )
                     : ExactSurvivor(_qmatrix, _tau),
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
+                      qmatrix_(_qmatrix),
                       nmax_(_nmax), tmax_(_tau*_nmax),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
@@ -76,8 +78,14 @@ namespace DCProgs {
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
       t_rmatrix const & get_fa_factor() const { return fa_factor_; }
 
+//     //! Exact laplace of AF
+//     t_rmatrix laplace_af(t_real _s) const;
+//     //! Exact laplace of FA
+//     t_rmatrix laplace_fa(t_real _s) const;
 
     protected:
+      //! Transition matrix for which this is the likelihood.
+      QMatrix qmatrix_;
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
       t_int nmax_;
       //! Max length of missed events.
@@ -87,6 +95,7 @@ namespace DCProgs {
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
       t_rmatrix fa_factor_;
   };
+
 }
 
 #endif 

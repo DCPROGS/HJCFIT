@@ -2,12 +2,11 @@ from behave import given, when, then
 from test_setup import register_type
 register_type()
 
-@given('a {matrix:Matrix}, {nopen:Integer}, {tau:Float}, and {doopen:Bool}')
-def step(context, matrix, nopen, tau, doopen):
+@given('a {matrix:Matrix}, {nopen:Integer}, and {tau:Float}')
+def step(context, matrix, nopen, tau):
   context.matrix = matrix
   context.nopen = nopen
   context.tau = tau
-  context.doopen = doopen
 
 @when('a determinantal equation is instantiated')
 def step(context):
@@ -15,26 +14,25 @@ def step(context):
   from dcprogs.likelihood import DeterminantEq
 
   print context.matrix
-  try: context.determinant = DeterminantEq(context.matrix, context.nopen, 
-                                           context.tau, context.doopen)
+  try: context.determinant = DeterminantEq(context.matrix, context.nopen, context.tau)
   except: context.initialization_exception = exc_info() 
 
 @then("equation's tau is {tau:Float}")
 def step(context, tau):
   assert abs(context.determinant.tau - tau) < 1e-8
 
-@when("a determinantal equation is instantiated from a state matrix, {tau:Float}, and {doopen:Bool}")
-def step(context, tau, doopen):
+@when("a determinantal equation is instantiated from a state matrix and {tau:Float}")
+def step(context, tau):
   from sys import exc_info
   from dcprogs.likelihood import DeterminantEq
 
-  try: context.determinant = DeterminantEq(context.qmatrix, tau, doopen)
+  try: context.determinant = DeterminantEq(context.qmatrix, tau)
   except: context.initialization_exception = exc_info() 
 
 @when("The determinantal equation is computed for {s:Float}")
 def step(context, s):
   from dcprogs.likelihood import DeterminantEq
-  context.result = DeterminantEq(context.matrix, context.nopen, context.tau, context.doopen)(s)
+  context.result = DeterminantEq(context.matrix, context.nopen, context.tau)(s)
 
 @given("the transition matrix below with {nopen:Integer} open states")
 def step(context, nopen):
@@ -51,7 +49,8 @@ def step(context, event, s, tau):
   import numpy
   from dcprogs.likelihood import DeterminantEq
   s = eval(s, globals().copy(), numpy.__dict__.copy())
-  context.result = DeterminantEq(context.qmatrix, tau, event == "open")(s)
+  if event == "open": context.result = DeterminantEq(context.qmatrix, tau)(s)
+  else:               context.result = DeterminantEq(context.qmatrix.transpose(), tau)(s)
 
 @then("The result is close to zero ({convergence:Float})")
 def step(context, convergence): 

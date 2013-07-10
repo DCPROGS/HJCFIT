@@ -5,7 +5,8 @@ register_type()
 @given('the {doopen}-states determinantal equation \"{qmatrix:QMatrix}\" with tau={tau:Float}')
 def step(context, doopen, qmatrix, tau):
   from dcprogs.likelihood import DeterminantEq
-  context.equation = DeterminantEq(qmatrix, tau, doopen == "open")
+  context.equation = DeterminantEq(qmatrix, tau)
+  if doopen != "open": context.equation = context.equation.transpose()
   print context.equation
 
 @given('a list of {n:Integer} random determinant equations')
@@ -17,7 +18,7 @@ def step(context, n):
   while len(context.equations) < n:
     try:
       matrix = random_qmatrix()
-      equation =  DeterminantEq(matrix, 1e-4, True)
+      equation =  DeterminantEq(matrix, 1e-4)
     except: continue
     else:
       context.matrices.append(matrix)

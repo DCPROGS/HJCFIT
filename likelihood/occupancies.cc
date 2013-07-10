@@ -41,8 +41,10 @@ namespace DCProgs {
   }
 
   // Untemplates the templates.
-  t_initvec occupancies(IdealG const &_idealg, bool _initial) {
+  t_initvec MSWINDOBE occupancies(IdealG const &_idealg, bool _initial) {
     return occupancies_impl_(_idealg, _initial);
   }
 
+// t_initvec MSWINDOBE occupancies(DeterminantEq const &, QMatrix const &, bool _initial = true) {
+// }
 }

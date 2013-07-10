@@ -41,7 +41,8 @@ class TestAsymptotes : public ::testing::TestWithParam<t_Params> {
 TEST_P(TestAsymptotes, correct_size) {
 
   std::vector<Root> roots = std::get<1>(GetParam());
-  DeterminantEq equation(QMatrix(Q, 2), 1e-4, std::get<0>(GetParam()));
+  QMatrix qmatrix = std::get<0>(GetParam()) ? QMatrix(Q, 2): QMatrix(Q, 2).transpose();
+  DeterminantEq equation(qmatrix, 1e-4);
   Asymptotes asymptotes(equation, roots);
 
   t_rmatrix const result = asymptotes(0);
@@ -53,7 +54,8 @@ TEST_P(TestAsymptotes, correct_size) {
 TEST_P(TestAsymptotes, is_projection_matrix) {
 
   t_int const nopen = std::get<0>(GetParam()) ? 2: 3;
-  DeterminantEq equation(QMatrix(Q, 2), 1e-4, std::get<0>(GetParam()));
+  QMatrix qmatrix = std::get<0>(GetParam()) ? QMatrix(Q, 2): QMatrix(Q, 2).transpose();
+  DeterminantEq equation(qmatrix, 1e-4);
 
   for(auto root: std::get<1>(GetParam())) {
     // Creating asymptote equation with single root.
