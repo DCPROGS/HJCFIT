@@ -26,7 +26,7 @@ size_t const nscales = 10;
 
 // Try and make sure that blocks are either zero, or the exponential-like form they have.
 class Laplacian
-   : public ::testing::TestWithParam<StateMatrix> { 
+   : public ::testing::TestWithParam<QMatrix> { 
    protected:
      IdealG idealg;
 };
@@ -83,9 +83,9 @@ TEST_P(Laplacian, fa) {
   }
 }
 
-void add_data(std::vector<StateMatrix> &_container, t_rmatrix const &_matrix) {
+void add_data(std::vector<QMatrix> &_container, t_rmatrix const &_matrix) {
   for(int i(1); i < _matrix.rows()-1; ++i)
-    _container.push_back(StateMatrix(_matrix, i));
+    _container.push_back(QMatrix(_matrix, i));
 }
 t_rmatrix random_matrix() {
   typedef std::uniform_real_distribution<t_real> t_rdist;
@@ -109,9 +109,9 @@ t_rmatrix random_matrix() {
   return Q;
 }
 
-std::shared_ptr<std::vector<StateMatrix>> create_container() {
+std::shared_ptr<std::vector<QMatrix>> create_container() {
 
-  std::shared_ptr<std::vector<StateMatrix>> result(new std::vector<StateMatrix>);
+  std::shared_ptr<std::vector<QMatrix>> result(new std::vector<QMatrix>);
 
   t_rmatrix Q(5, 5);
   Q <<  -3050,        50,  3000,      0,    0,
@@ -125,7 +125,7 @@ std::shared_ptr<std::vector<StateMatrix>> create_container() {
   return result;
 }
 
-std::shared_ptr<std::vector<StateMatrix>> testcases = create_container();
+std::shared_ptr<std::vector<QMatrix>> testcases = create_container();
 INSTANTIATE_TEST_CASE_P(IdealG, Laplacian, ::testing::ValuesIn(*testcases));
 
 int main(int argc, char **argv) {

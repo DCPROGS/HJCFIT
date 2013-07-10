@@ -7,7 +7,7 @@
 
 #include <unsupported/Eigen/MatrixFunctions>
 
-#include "state_matrix.h"
+#include "qmatrix.h"
 #include "errors.h"
 
 //! General namespace for all things DCProgs.
@@ -16,14 +16,14 @@ namespace DCProgs {
   //! \brief Ideal transition matrix of open and shut intervals
   //! \details Given a transition matrix $Q$ it is possible to figure out the evolution of any given
   //! system. 
-  class MSWINDOBE IdealG : protected StateMatrix {
+  class MSWINDOBE IdealG : protected QMatrix {
 
     //! Just trying to figure out a complex return type...
-    typedef decltype( (t_real(0) * std::declval<const StateMatrix>().ff()).exp()
-                      * std::declval<const StateMatrix>().fa() ) t_time_result;
+    typedef decltype( (t_real(0) * std::declval<const QMatrix>().ff()).exp()
+                      * std::declval<const QMatrix>().fa() ) t_time_result;
     public:
       //! Constructor
-      IdealG() : StateMatrix() {}
+      IdealG() : QMatrix() {}
       //! \brief Constructor with parameters.
       //! \details Calls set method with input parameters.
       //! \param[in] _matrix: Any matrix or matrix expression from Eigen. Will become the transition
@@ -41,7 +41,7 @@ namespace DCProgs {
       //!          It is expected that open states are the top rows [0, _nopen].
       void set(t_rmatrix const &_Q, t_int const &_nopen);
       //! Sets state matrix on which to act.
-      void set(StateMatrix const &_in) { set(_in.matrix, _in.nopen); }
+      void set(QMatrix const &_in) { set(_in.matrix, _in.nopen); }
       //! Gets Q matrix. 
       t_rmatrix const & get_matrix() const { return this->matrix; }
       //! Gets the number of open states
@@ -49,10 +49,10 @@ namespace DCProgs {
 
       //! Shut to open transitions.
       t_time_result fa(t_real t) const 
-        { return (t*StateMatrix::ff()).exp()*StateMatrix::fa(); }
+        { return (t*QMatrix::ff()).exp()*QMatrix::fa(); }
       //! Open to shut transitions.
       t_time_result af(t_real t) const 
-        { return (t*StateMatrix::aa()).exp()*StateMatrix::af(); }
+        { return (t*QMatrix::aa()).exp()*QMatrix::af(); }
 
       //! Laplace transform of shut to open transitions.
       t_rmatrix laplace_fa(t_real s) const;
@@ -61,8 +61,7 @@ namespace DCProgs {
   };
 
   template<class T>
-    IdealG :: IdealG   (Eigen::DenseBase<T> const &_matrix, t_int _nopen)
-                     : StateMatrix() {
+    IdealG :: IdealG(Eigen::DenseBase<T> const &_matrix, t_int _nopen) : QMatrix() {
       try { this->set(_matrix, _nopen); }
       catch(...) {
         this->matrix.resize(0, 0);

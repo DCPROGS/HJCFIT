@@ -4,7 +4,7 @@ if(pythonBindings)
 
   set_source_files_properties(likelihood.i PROPERTIES CPLUSPLUS ON)
   set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall")
-  set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg state_matrix.swg root_finder.swg
+  set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg)
   swig_add_module(likelihood python likelihood.i)
@@ -18,7 +18,7 @@ endif(pythonBindings)
 
 if(pythonBindings AND tests)
 
-  feature_test(state_matrix features/state_matrix.feature)
+  feature_test(qmatrix features/qmatrix.feature)
   feature_test(determinant_equation features/determinant_equation.feature)
   feature_test(find_roots features/find_roots.feature)
   feature_test(asymptotes features/asymptotes.feature)

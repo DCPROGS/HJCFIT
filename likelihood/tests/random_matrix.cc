@@ -27,7 +27,7 @@ namespace DCProgs {
 
 
   //! Creates a fake Qmatrix
-  t_rmatrix qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  t_rmatrix rate_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
     
     std::mt19937& mersenne = global_mersenne();
     typedef std::uniform_int_distribution<t_int> t_idist;
@@ -49,32 +49,32 @@ namespace DCProgs {
     return result;
   }
 
-  t_rmatrix nonnan_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  t_rmatrix nonnan_rate_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
     t_rmatrix result; 
-    do { result = qmatrix(nmin, nmax, large, zeroprob); }
+    do { result = rate_matrix(nmin, nmax, large, zeroprob); }
     while(DCPROGS_ISNAN(result.determinant()));
     return result;
   }
-  t_rmatrix nonsingular_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  t_rmatrix nonsingular_rate_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
     t_rmatrix result;
-    do { result = nonnan_qmatrix(nmin, nmax, large, zeroprob); }
+    do { result = nonnan_rate_matrix(nmin, nmax, large, zeroprob); }
     while(std::abs(result.determinant()) < 1e-4);
     return result;
   }
 
-  StateMatrix state_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  QMatrix qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
      typedef std::uniform_int_distribution<t_int> t_idist;
-     t_rmatrix matrix = qmatrix(nmin, nmax, large, zeroprob);
-     return StateMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
+     t_rmatrix matrix = rate_matrix(nmin, nmax, large, zeroprob);
+     return QMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
   }
-  StateMatrix nonnan_state_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  QMatrix nonnan_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
      typedef std::uniform_int_distribution<t_int> t_idist;
-     t_rmatrix matrix = nonnan_qmatrix(nmin, nmax, large, zeroprob);
-     return StateMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
+     t_rmatrix matrix = nonnan_rate_matrix(nmin, nmax, large, zeroprob);
+     return QMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
   }
-  StateMatrix nonsingular_state_matrix(int nmin, int nmax, t_real large, t_real zeroprob) {
+  QMatrix nonsingular_qmatrix(int nmin, int nmax, t_real large, t_real zeroprob) {
      typedef std::uniform_int_distribution<t_int> t_idist;
-     t_rmatrix matrix = nonsingular_qmatrix(nmin, nmax, large, zeroprob);
-     return StateMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
+     t_rmatrix matrix = nonsingular_rate_matrix(nmin, nmax, large, zeroprob);
+     return QMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
   }
 }

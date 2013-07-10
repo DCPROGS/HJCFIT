@@ -3,7 +3,7 @@ from test_setup import register_type
 register_type()
 
 
-@when('IdealG objects are instantiated with the state matrices')
+@when('IdealG objects are instantiated with the q-matrices')
 def step(context):
   from dcprogs.likelihood import IdealG
   context.idealgs = [IdealG(u) for u in context.matrices]

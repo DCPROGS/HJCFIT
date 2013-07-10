@@ -92,8 +92,8 @@ class ExactSurvivorTest : public ::testing::Test {
 
 // Compares recursive implementation to the expanded one in this file.
 TEST_F(ExactSurvivorTest, negative_times) {
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   EXPECT_TRUE( (survivor.af(-1e-5).array().abs() < 1e-8).all()  );
   EXPECT_EQ(survivor.af(-1e-5).rows(), 2);
@@ -106,8 +106,8 @@ TEST_F(ExactSurvivorTest, negative_times) {
 // Compares recursive implementation to the expanded one in this file.
 TEST_F(ExactSurvivorTest, first_interval) {
   std::cout.precision(15);
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   auto aR0 = [&](t_real _t, t_real _tau) { return N0(_t, _tau, true); };
   auto fR0 = [&](t_real _t, t_real _tau) { return N0(_t, _tau, false); };
@@ -128,8 +128,8 @@ TEST_F(ExactSurvivorTest, first_interval) {
 
 TEST_F(ExactSurvivorTest, second_interval) {
   std::cout.precision(15);
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   auto aG0 = [&](t_real _t, t_real _tau) { return N0(_t, _tau, true); };
   auto aG1 = [&](t_real _t, t_real _tau) -> t_rmatrix {
@@ -154,8 +154,8 @@ TEST_F(ExactSurvivorTest, second_interval) {
 // Checks that Di matrices throw out-of-range
 TEST_F(ExactSurvivorTest, out_of_range_Di) {
 
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
   EXPECT_THROW(survivor.D_af(-1), errors::Index);
   EXPECT_THROW(survivor.D_af(5), errors::Index);
   EXPECT_THROW(survivor.D_fa(-1), errors::Index);
@@ -165,8 +165,8 @@ TEST_F(ExactSurvivorTest, out_of_range_Di) {
 // Checks that Di matrices are what we expect them to be. 
 TEST_F(ExactSurvivorTest, regression_Di_matrices) {
 
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   t_rmatrix D0(2, 2); D0 << -2.766592241217363e-04, 1.337366986151818e+00, 1.199995862780172e-02,
                             -5.800763938001960e+01;
@@ -193,8 +193,8 @@ TEST_F(ExactSurvivorTest, regression_Di_matrices) {
 // yield the recursion.
 TEST_F(ExactSurvivorTest, regression_Ci00_matrices) {
 
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   t_rmatrix C000(2, 2); C000 << 1.455330874554811e-07, -4.734319903811114e-04, -6.312426538410201e-06,
                                 2.053488119070023e-02;
@@ -216,8 +216,8 @@ TEST_F(ExactSurvivorTest, regression_Ci00_matrices) {
 // Tests one bit of the regression, eg m=1 using m=0 
 TEST_F(ExactSurvivorTest, regression_Ci10_matrices) {
 
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   t_rmatrix C010(2, 2); C010 << 1.543216801935930e-08, -5.832161141244571e-05,
                                 -7.776214854987692e-07, 2.881846635882015e-03;
@@ -240,8 +240,8 @@ TEST_F(ExactSurvivorTest, regression_Ci10_matrices) {
 // Tests other bit of the regression
 TEST_F(ExactSurvivorTest, regression_Ci11_matrices) {
 
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
 
   t_rmatrix C011(2, 2); C011 << -8.442071118049461e-06,  2.746280314831956e-02,
                                  3.661707086439929e-04, -1.191185663985985e+00;
@@ -261,8 +261,8 @@ TEST_F(ExactSurvivorTest, regression_Ci11_matrices) {
 }
 
 TEST_F(ExactSurvivorTest, out_of_range_Ciml_matrices) {
-  StateMatrix transitions(Q, 2);
-  ExactSurvivor survivor(transitions, 1e-4);
+  QMatrix qmatrix(Q, 2);
+  ExactSurvivor survivor(qmatrix, 1e-4);
   
   EXPECT_THROW(survivor.recursion_af(-1, 0, 0), errors::Index);
   EXPECT_THROW(survivor.recursion_af(5, 0, 0), errors::Index);

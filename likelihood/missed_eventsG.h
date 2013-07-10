@@ -26,26 +26,26 @@ namespace DCProgs {
                        DeterminantEq const &_fa,
                        std::vector<Root> const &_roots_fa,
                        t_int _nmax=2 )
-                    : ExactSurvivor(_af.get_state_matrix(), _af.get_tau()),
+                    : ExactSurvivor(_af.get_qmatrix(), _af.get_tau()),
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
                       nmax_(_nmax), tmax_(_af.get_tau()*_nmax),
-                      af_factor_( _af.get_state_matrix().af()
-                                  * (_af.get_tau() * _af.get_state_matrix().ff()).exp() ),
-                      fa_factor_( _fa.get_state_matrix().af()
-                                  * (_af.get_tau() * _fa.get_state_matrix().ff()).exp() ) {}
+                      af_factor_( _af.get_qmatrix().af()
+                                  * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
+                      fa_factor_( _fa.get_qmatrix().af()
+                                  * (_af.get_tau() * _fa.get_qmatrix().ff()).exp() ) {}
       //! Initializes missed events functor.
-      //! \param[in] _matrix: Transition matrix
+      //! \param[in] _qmatrix: Transition matrix
       //! \param[in] _tau: resolution/max length missed events
       //! \param[in] _findroots: A functor with which to find all roots.
       //!                        This function should take a DeterminantEq as its sole argument and
       //!                        return a std::vector<RootIntervals>
-      MissedEventsG   ( StateMatrix const &_matrix, t_real _tau, 
+      MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
                         t_RootFinder const &_findroots, t_int _nmax=2 )
-                    : ExactSurvivor(_matrix, _tau),
-                      ApproxSurvivor(_matrix, _tau, _findroots), 
+                    : ExactSurvivor(_qmatrix, _tau),
+                      ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       nmax_(_nmax), tmax_(_tau*_nmax),
-                      af_factor_(_matrix.af() * (_tau * _matrix.ff()).exp()),
-                      fa_factor_(_matrix.fa() * (_tau * _matrix.aa()).exp()) {}
+                      af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
+                      fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const {

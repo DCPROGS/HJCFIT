@@ -50,7 +50,7 @@ namespace DCProgs {
   //! \brief Matrix with which to compute \f$H_{FA}\f$ for  the CHS vectors.
   //! \cite hawkes:1996.
   t_rmatrix tcrit_H_FA_matrix( Asymptotes const &_asymptotes,
-                               StateMatrix const &_qmatrix,
+                               QMatrix const &_qmatrix,
                                t_real _eta, t_real _tcrit);
   
 }

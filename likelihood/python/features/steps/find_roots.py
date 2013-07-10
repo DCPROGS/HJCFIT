@@ -2,21 +2,21 @@ from behave import given, when, then
 from test_setup import register_type
 register_type()
 
-@given('the {doopen}-states determinantal equation \"{statmat:StatMat}\" with tau={tau:Float}')
-def step(context, doopen, statmat, tau):
+@given('the {doopen}-states determinantal equation \"{qmatrix:QMatrix}\" with tau={tau:Float}')
+def step(context, doopen, qmatrix, tau):
   from dcprogs.likelihood import DeterminantEq
-  context.equation = DeterminantEq(statmat, tau, doopen == "open")
+  context.equation = DeterminantEq(qmatrix, tau, doopen == "open")
   print context.equation
 
 @given('a list of {n:Integer} random determinant equations')
 def step(context, n):
   from dcprogs.likelihood import DeterminantEq
-  from dcprogs.random import state_matrix as random_state_matrix
+  from dcprogs.random import qmatrix as random_qmatrix
   context.matrices = []
   context.equations = []
   while len(context.equations) < n:
     try:
-      matrix = random_state_matrix()
+      matrix = random_qmatrix()
       equation =  DeterminantEq(matrix, 1e-4, True)
     except: continue
     else:

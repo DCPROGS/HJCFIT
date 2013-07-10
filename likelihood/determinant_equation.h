@@ -3,7 +3,7 @@
 
 #include <DCProgsConfig.h>
 #include <ostream>
-#include "state_matrix.h"
+#include "qmatrix.h"
 
 namespace DCProgs {
 
@@ -22,21 +22,21 @@ namespace DCProgs {
 
     public:
       //! Constructor. 
-      //! \param[in] _matrix: The transition state matrix for which to compute
+      //! \param[in] _qmatrix: The transition state matrix for which to compute
       //!                     \f$^eG_{AF}(t\rightarrow\infty)\f$
       //! \param[in] _tau: Missed event resolution.
       //! \param[in] _doopen: Whether to do AF or FA.
-      DeterminantEq(StateMatrix const & _matrix, t_real _tau, bool _doopen=true);
+      DeterminantEq(QMatrix const & _qmatrix, t_real _tau, bool _doopen=true);
       //! Copy constructor
       DeterminantEq   (DeterminantEq const & _c)
-                    : tau_(_c.tau_), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
+                    : tau_(_c.tau_), qmatrix_(_c.qmatrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
                       ff_eigenvectors_(_c.ff_eigenvectors_), 
                       ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
 
       //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
       //! \param[in] _s: Value of the laplacian scale.
       inline t_rmatrix H(t_real _s) const {
-        return matrix_.aa() + matrix_.af() * this->integral_(_s) * matrix_.fa();
+        return qmatrix_.aa() + qmatrix_.af() * this->integral_(_s) * qmatrix_.fa();
       }
       //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
       //! \param[in] _s: Value of the laplacian scale.
@@ -70,33 +70,33 @@ namespace DCProgs {
 
       //! Get expected number of roots.
       //! This is an indication. There could be more roots.
-      t_int get_nbroots() const { return matrix_.nopen; }
+      t_int get_nbroots() const { return qmatrix_.nopen; }
 
-      //! \brief Returns the state matrix.
+      //! \brief Returns the Q matrix.
       //! \details This is strictly a read-only function since changing the matrix has fairly far
       //! ranging implications.
-      StateMatrix const &get_state_matrix() const { return matrix_; }
+      QMatrix const &get_qmatrix() const { return qmatrix_; }
       //! Equation for transposed state matrix
-      DeterminantEq transpose() const { return DeterminantEq(matrix_.transpose(), tau_); }
+      DeterminantEq transpose() const { return DeterminantEq(qmatrix_.transpose(), tau_); }
 
     protected:
       //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
       t_rmatrix integral_(t_real _s) const;
       //! Just the identity, just to write shorter code.
       inline auto id_() const ->decltype(t_rmatrix::Identity(1, 1)) 
-        { return t_rmatrix::Identity(matrix_.nopen, matrix_.nopen); }
+        { return t_rmatrix::Identity(qmatrix_.nopen, qmatrix_.nopen); }
 
 
     private:
       //! Copy constructor for changing tau in constant functions.
       DeterminantEq   (DeterminantEq const & _c, t_real _tau)
-                    : tau_(_tau), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
+                    : tau_(_tau), qmatrix_(_c.qmatrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
                       ff_eigenvectors_(_c.ff_eigenvectors_), 
                       ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
 
     protected:
       //! The transition state matrix on which to act.
-      StateMatrix matrix_;
+      QMatrix qmatrix_;
       //! The eigenvalues of the ff matrix. Computed once.
       t_cvector ff_eigenvalues_;
       //! The eigenvectors of the ff matrix. Computed once.

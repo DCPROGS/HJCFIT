@@ -58,8 +58,8 @@ std::ostream &operator<< (std::ostream &_stream, DCProgs::RootInterval const &_i
 
 // Checks can find zero for cannonical matrix, open states.
 TEST_F(RootFinderIntervalsTest, open) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 1e-4, true); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 1e-4, true); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
   EXPECT_EQ(intervals.size(), 2);
@@ -74,10 +74,10 @@ TEST_F(RootFinderIntervalsTest, open) {
   EXPECT_TRUE(intervals.back().end   > -162.929465);
 }
 
-// Checks can find zero for cannonical matrix, closed states.
+// Checks can find zero for cannonical matrix, closed qmatrix.
 TEST_F(RootFinderIntervalsTest, closed) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 1e-4, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 1e-4, false); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
   EXPECT_EQ(intervals.size(), 3);
@@ -105,17 +105,17 @@ TEST_P(TestFindIntervals, random_matrix) {
 
   typedef std::uniform_int_distribution<t_int> t_idist;
   
-  StateMatrix Qmatrix;
+  QMatrix qmatrix;
   try {
 
     // This is the meat of the test.
     // The rest if pfaff to catch complex eigenvalues and other errors.
     // First create an appropriate Q matrix.
-    Qmatrix.matrix = nonsingular_qmatrix(5, 8);
-    Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
+    qmatrix.matrix = nonsingular_rate_matrix(5, 8);
+    qmatrix.nopen = t_idist(2, qmatrix.matrix.rows()-2)(global_mersenne());
 
     // Then the determinant object
-    DeterminantEq det(Qmatrix, 1e-4, true);
+    DeterminantEq det(qmatrix, 1e-4, true);
     // Look for roots and sort them
     t_real const convergence = 1e-6;
     std::vector<RootInterval> intervals = find_root_intervals(det, 1e8, 0e0, convergence);
@@ -149,11 +149,11 @@ TEST_P(TestFindIntervals, random_matrix) {
                       start_sign == end_sign:
                       start_sign != end_sign );
     }
-    EXPECT_EQ(Qmatrix.aa().rows(), det.get_nbroots()) << Qmatrix;
-    EXPECT_TRUE(nroots > 0) << Qmatrix;
+    EXPECT_EQ(qmatrix.aa().rows(), det.get_nbroots()) << qmatrix;
+    EXPECT_TRUE(nroots > 0) << qmatrix;
   } catch(...) {
     std::cerr.precision(15);
-    std::cerr << "Error for " << Qmatrix << std::endl;
+    std::cerr << "Error for " << qmatrix << std::endl;
     throw;
   }
 }

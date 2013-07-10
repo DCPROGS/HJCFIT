@@ -13,7 +13,7 @@ class ExactSurvivor {
   public:
 
   // Constructor.
-  ExactSurvivor(DCProgs::StateMatrix const &_matrix, DCProgs::t_real _tau);
+  ExactSurvivor(DCProgs::QMatrix const &_matrix, DCProgs::t_real _tau);
 
   %typemap(check) DCProgs::t_real t {
     if($1 > 11e0 * arg1->get_tau()) {

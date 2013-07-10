@@ -19,7 +19,7 @@ namespace DCProgs {
   }
 
   t_rmatrix IdealG::laplace_af(t_real s) const {
-    t_rmatrix const Qaa( StateMatrix::aa() );
+    t_rmatrix const Qaa( QMatrix::aa() );
     auto const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) {
@@ -27,10 +27,10 @@ namespace DCProgs {
       sstr << *this << "\nQaa has eigenvalue of 1.0";
       throw errors::NotInvertible(sstr.str());
     }
-    return pivotLU.inverse() * StateMatrix::af();
+    return pivotLU.inverse() * QMatrix::af();
   }
   t_rmatrix IdealG::laplace_fa(t_real s) const {
-    t_rmatrix const Qff( StateMatrix::ff() );
+    t_rmatrix const Qff( QMatrix::ff() );
     auto const stuff = s * t_rmatrix::Identity(Qff.rows(), Qff.rows()) - Qff;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) {
@@ -38,13 +38,13 @@ namespace DCProgs {
       sstr << *this << "\nQff has eigenvalue of 1.0";
       throw errors::NotInvertible(sstr.str());
     }
-    return pivotLU.inverse() * StateMatrix::fa();
+    return pivotLU.inverse() * QMatrix::fa();
   }
  
   MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat) {
     return _stream << "Ideal Likelihood:\n" 
-                   << "-----------------" 
-                   << "  - nopen: "  << _mat.get_nopen()
-                   << "  - matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
+                   << "=================\n\n" 
+                   << "  * nopen: "  << _mat.get_nopen()
+                   << "  * matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
   }
 }

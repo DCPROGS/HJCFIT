@@ -8,7 +8,7 @@
 #include <vector>
 #include <memory>
 
-#include "state_matrix.h"
+#include "qmatrix.h"
 #include "recursion_formula.h"
 
 namespace DCProgs {
@@ -19,20 +19,20 @@ namespace DCProgs {
   class MSWINDOBE ExactSurvivor {
     public:
       //! Initializes exact survivor functor.
-      //! \param[in] _matrix: Partitionned matrix with open states in top left corner.
+      //! \param[in] _qmatrix: Partitionned matrix with open states in top left corner.
       //! \param[in] _tau: Missed event cutoff time.
-      ExactSurvivor(StateMatrix const &_matrix, t_real _tau) { set(_matrix, _tau); }
+      ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) { set(_qmatrix, _tau); }
       //! Initializes exact survivor functor.
-      //! \param[in] _matrix: A transition matrix with open states in top left corner
+      //! \param[in] _qmatrix: A transition matrix with open states in top left corner
       //! \param[in] _nopen: Number of open states. 
       //! \param[in] _tau: Missed event cutoff time.
       template<class T>
-        ExactSurvivor(Eigen::DenseBase<T> const &_matrix, t_int _nopen, t_real _tau)
-          { set(StateMatrix(_matrix, _nopen), _tau); }
+        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_int _nopen, t_real _tau)
+          { set(QMatrix(_qmatrix, _nopen), _tau); }
 
 
       //! Sets the values for which to compute exact g.
-      void set(StateMatrix const &_matrix, t_real _tau);
+      void set(QMatrix const &_qmatrix, t_real _tau);
 
       //! Probability of no shut times detected between 0 and t.
       t_rmatrix af(t_real t) const;
@@ -85,10 +85,10 @@ namespace DCProgs {
       //! Element on which to perform recursion.
       typedef t_rmatrix t_element;
       //! Constructor. 
-      //! \param[in] _matrix: The transition state matrix for which to compute
+      //! \param[in] _qmatrix: The transition state matrix for which to compute
       //!                     \f$^eR_{AF}(t\rightarrow\infty)\f$
       //! \param[in] _doAF: Whether to do AF (true) or FA.
-      RecursionInterface(StateMatrix const & _matrix, t_real _tau, bool _doAF=true);
+      RecursionInterface(QMatrix const & _qmatrix, t_real _tau, bool _doAF=true);
   
       //! Recursion element i, m, l.
       t_element operator()(t_int _i, t_int _m, t_int _l);

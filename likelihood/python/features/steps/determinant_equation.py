@@ -28,7 +28,7 @@ def step(context, tau, doopen):
   from sys import exc_info
   from dcprogs.likelihood import DeterminantEq
 
-  try: context.determinant = DeterminantEq(context.statematrix, tau, doopen)
+  try: context.determinant = DeterminantEq(context.qmatrix, tau, doopen)
   except: context.initialization_exception = exc_info() 
 
 @when("The determinantal equation is computed for {s:Float}")
@@ -39,11 +39,11 @@ def step(context, s):
 @given("the transition matrix below with {nopen:Integer} open states")
 def step(context, nopen):
   from numpy import array
-  from dcprogs.likelihood import StateMatrix
+  from dcprogs.likelihood import QMatrix
 
   matrix = context.text.lstrip().rstrip().splitlines()
   matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype='float64')
-  context.statematrix = StateMatrix(matrix, nopen)
+  context.qmatrix = QMatrix(matrix, nopen)
 
 
 @when("the {event}-state determinant is computed for s=({s}) and tau={tau:Float}")
@@ -51,7 +51,7 @@ def step(context, event, s, tau):
   import numpy
   from dcprogs.likelihood import DeterminantEq
   s = eval(s, globals().copy(), numpy.__dict__.copy())
-  context.result = DeterminantEq(context.statematrix, tau, event == "open")(s)
+  context.result = DeterminantEq(context.qmatrix, tau, event == "open")(s)
 
 @then("The result is close to zero ({convergence:Float})")
 def step(context, convergence): 

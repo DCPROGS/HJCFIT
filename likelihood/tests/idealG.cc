@@ -65,21 +65,21 @@ TEST_F(IdealGTest, initialize){
 }
 
 TEST_F(IdealGTest, blocks){
-  StateMatrix states(Q, 2);
+  QMatrix qmatrix(Q, 2);
   idealg.set(Q, 2);
 
   // This test pretty much ensures that we are dealing with an exponential
   // At least over 10 integers. 
-  { t_rmatrix exponential = states.aa().exp();
-    t_rmatrix current = states.af();
+  { t_rmatrix exponential = qmatrix.aa().exp();
+    t_rmatrix current = qmatrix.af();
     for(size_t i(0); i < 21; ++i, current = exponential * current) {
       Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
         diff = (idealg.af(t_real(i)) - current).array().abs();
       EXPECT_TRUE((diff < 1e-8).all()); 
     }
   }
-  { t_rmatrix exponential = states.ff().exp();
-    t_rmatrix current = states.fa();
+  { t_rmatrix exponential = qmatrix.ff().exp();
+    t_rmatrix current = qmatrix.fa();
     for(size_t i(0); i < 21; ++i, current = exponential * current) {
       Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
         diff = (idealg.fa(t_real(i)) - current).array().abs();

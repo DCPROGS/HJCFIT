@@ -18,14 +18,14 @@
                     "There are several ways to instanciate this object:\n\n"
                     ">>> DeterminantEq(matrix, nopen, tau, doopen=True)\n\n"
                     "or,\n\n"
-                    ">>> DeterminantEq(statematrix, tau, doopen=True)\n\n"
+                    ">>> DeterminantEq(qmatrix, tau, doopen=True)\n\n"
                     "Parameters:\n"
                     "   matrix: numpy array\n"
                     "      Transition matrix, where the upper left corner"
                          " contain open-open transitions\n"  
                     "   nopen: int\n"
                     "      Number of open states in the transition matrix.\n"
-                    "   statematrix: StateMatrix\n"
+                    "   qmatrix: QMatrix\n"
                     "      State matrix created from a transition matrix "
                           "and the number of open states\n" 
                     "   tau: number\n"
@@ -56,10 +56,10 @@ class DeterminantEq {
         throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
       if(_nopen >= matrix.rows())
         throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( DCProgs::StateMatrix(std::move(matrix), _nopen),
+      return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen),
                                          _tau, _doopen );
     }
-    DeterminantEq(StateMatrix *_in, double _tau, bool _doopen=true) {
+    DeterminantEq(QMatrix *_in, double _tau, bool _doopen=true) {
       if(_in->nopen <= 0) 
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 

@@ -2,8 +2,8 @@
          "This object can be instantiated one of several way:\n\n"
          "   - With a matrix and an integer\n\n"
          "     >>> idealg = IdealG(array([...]), 2)\n\n"
-         "   - With a StateMatrix\n\n"
-         "     >>> matrix = StateMatrix(array([...]), 2)\n"
+         "   - With a QMatrix\n\n"
+         "     >>> matrix = QMatrix(array([...]), 2)\n"
          "     >>> idealg = IdealG(matrix)\n\n") IdealG;
 %feature("autodoc", "AF transitions with respect to time: :math:`e^{tQ_{FF}}Q_{FA}`.") IdealG::af;
 %feature("autodoc", "FA transitions with respect to time: :math:`e^{tQ_{AA}}Q_{AF}$.") IdealG::fa;
@@ -11,7 +11,7 @@
         IdealG::laplace_af;
 %feature("autodoc", "FA transitions with respect to scale: :math:`(sI - Q_{FF})^{-1}Q_{FA}$`.")
         IdealG::laplace_fa;
-// Now we define the bindings for the StateMatrix
+// Now we define the bindings for the QMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.
 class IdealG {
@@ -19,7 +19,7 @@ class IdealG {
 
   // Some constructors.
   %extend { 
-    IdealG(DCProgs::StateMatrix const &states) {
+    IdealG(DCProgs::QMatrix const &states) {
       return new DCProgs::IdealG(states.matrix, states.nopen); 
     }
     IdealG(PyObject* _py_matrix, int _nopen) {

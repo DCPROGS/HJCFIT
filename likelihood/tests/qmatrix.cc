@@ -2,49 +2,49 @@
 #include <utility>
 #include <gtest/gtest.h>
 #include <iostream>
-#include "../state_matrix.h"
+#include "../qmatrix.h"
 using namespace DCProgs;
 
 #ifdef HAS_CXX11_TYPETRAITS
   // Checks some assumption about eigen matrix types.
   static_assert( std::is_move_constructible<t_rmatrix>::value,
-  	       "t_rmatrix is not move constructible." );  
+        	       "t_rmatrix is not move constructible." );  
   static_assert( std::is_move_assignable<t_rmatrix>::value, 
-  	       "t_rmatrix is not move assignable." );  
+  	             "t_rmatrix is not move assignable." );  
   
-  // Checks some assumption about StateMatrix type.
-  static_assert( std::is_move_constructible<StateMatrix>::value,
-  	       "StateMatrix is not move constructible." );  
-  static_assert( std::is_move_assignable<StateMatrix>::value, 
-  	       "StateMatrix is not move assignable." );  
+  // Checks some assumption about QMatrix type.
+  static_assert( std::is_move_constructible<QMatrix>::value,
+  	             "QMatrix is not move constructible." );  
+  static_assert( std::is_move_assignable<QMatrix>::value, 
+  	             "QMatrix is not move assignable." );  
 #endif
 #ifdef HAS_CXX11_TRIVIALTYPETRAITS
   static_assert( not std::is_trivially_move_constructible<t_rmatrix>::value,
-  	       "t_rmatrix is trivially move constructible." );  
+  	             "t_rmatrix is trivially move constructible." );  
   static_assert( not std::is_trivially_move_assignable<t_rmatrix>::value, 
-  	       "t_rmatrix is trivially move assignable." );  
-  static_assert( not std::is_trivially_move_constructible<StateMatrix>::value,
-  	       "StateMatrix is trivially move constructible." );  
-  static_assert( not std::is_trivially_move_assignable<StateMatrix>::value, 
-  	       "StateMatrix is trivially move assignable." );  
+  	             "t_rmatrix is trivially move assignable." );  
+  static_assert( not std::is_trivially_move_constructible<QMatrix>::value,
+  	            "QMatrix is trivially move constructible." );  
+  static_assert( not std::is_trivially_move_assignable<QMatrix>::value, 
+  	             "QMatrix is trivially move assignable." );  
 #endif
 
 // Checks some assumption about return of aa, af, fa, ff functions.
-static_assert( not std::is_same<decltype(std::declval<StateMatrix>().aa()),  t_rmatrix>::value,
-               "StateMatrix's aa function does not return an expression." );
-static_assert( not std::is_same<decltype(std::declval<StateMatrix>().af()),  t_rmatrix>::value,
-               "StateMatrix's af function does not return an expression." );
-static_assert( not std::is_same<decltype(std::declval<StateMatrix>().ff()),  t_rmatrix>::value,
-               "StateMatrix's ff function does not return an expression." );
-static_assert( not std::is_same<decltype(std::declval<StateMatrix>().fa()),  t_rmatrix>::value,
-               "StateMatrix's fa function does not return an expression." );
+static_assert( not std::is_same<decltype(std::declval<QMatrix>().aa()),  t_rmatrix>::value,
+               "QMatrix's aa function does not return an expression." );
+static_assert( not std::is_same<decltype(std::declval<QMatrix>().af()),  t_rmatrix>::value,
+               "QMatrix's af function does not return an expression." );
+static_assert( not std::is_same<decltype(std::declval<QMatrix>().ff()),  t_rmatrix>::value,
+               "QMatrix's ff function does not return an expression." );
+static_assert( not std::is_same<decltype(std::declval<QMatrix>().fa()),  t_rmatrix>::value,
+               "QMatrix's fa function does not return an expression." );
 
 
 // Sets up test with parameters from CH82, 1e-7 nM.
-class StateMatrixTest : public ::testing::Test {
+class QMatrixTest : public ::testing::Test {
   
   public:
-  StateMatrixTest() : Q(), matrix() {}
+  QMatrixTest() : Q(), matrix() {}
 
   virtual void SetUp() {
     Q.matrix.resize(5, 5);
@@ -57,11 +57,11 @@ class StateMatrixTest : public ::testing::Test {
     matrix = Q.matrix;
   }
   protected:
-    StateMatrix Q;
+    QMatrix Q;
     t_rmatrix matrix;
 };
 
-TEST_F(StateMatrixTest, blocks){
+TEST_F(QMatrixTest, blocks){
   Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
     diff = (Q.matrix  - matrix).array().abs();
   EXPECT_TRUE((diff < 1e-8).all());
@@ -88,7 +88,7 @@ TEST_F(StateMatrixTest, blocks){
 }
 
 
-TEST_F(StateMatrixTest, eigenvalues){
+TEST_F(QMatrixTest, eigenvalues){
   
   auto const eigenstuff = Q.eigenstuff();
   auto const & vectors = std::get<1>(eigenstuff);

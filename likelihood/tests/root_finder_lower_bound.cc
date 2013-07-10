@@ -29,15 +29,15 @@ std::ostream &operator<< (std::ostream &_stream, DCProgs::RootInterval &_interva
 
 // Checks can find zero for cannonical matrix, open states.
 TEST_F(RootFinderLowerBoundTest, open) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 1e-4, true); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 1e-4, true); 
   
   EXPECT_TRUE(find_lower_bound_for_roots(det) < -3045.285776);
   EXPECT_TRUE(std::abs(find_lower_bound_for_roots(det, -4e4) + 4e4) < 1e-8);
 }
 TEST_F(RootFinderLowerBoundTest, close) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 1e-4, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 1e-4, false); 
   
   EXPECT_TRUE(find_lower_bound_for_roots(det) < -17090.1927692368);
   EXPECT_TRUE(std::abs(find_lower_bound_for_roots(det, -2e5) + 2e5) < 1e-4);
@@ -52,9 +52,9 @@ TEST_P(TestFindLowerBound, non_singular) {
 
   typedef std::uniform_int_distribution<t_int> t_idist;
   
-  StateMatrix Qmatrix;
+  QMatrix Qmatrix;
   try {
-    Qmatrix.matrix = nonsingular_qmatrix();
+    Qmatrix.matrix = nonsingular_rate_matrix();
     Qmatrix.nopen = t_idist(2, Qmatrix.matrix.rows()-2)(global_mersenne());
     DeterminantEq det(Qmatrix, 1e-4, true);
     t_real const lb(  find_lower_bound_for_roots(det) );

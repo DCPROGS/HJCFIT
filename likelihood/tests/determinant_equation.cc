@@ -60,13 +60,13 @@ template<class T_APPROX, class T_EXACT>
 
 // Missed event with t resolution == zero (e.g. no missed event)
 TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 0, false); 
-  EXPECT_TRUE( ((det.H(0).array() - states.ff().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(1).array() - states.ff().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(10).array() - states.ff().array()).abs() < 1e-8).all() );
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 0, false); 
+  EXPECT_TRUE( ((det.H(0).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((det.H(1).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((det.H(10).array() - qmatrix.ff().array()).abs() < 1e-8).all() );
 
-  Eigen::EigenSolver<t_rmatrix> eigsolver(states.ff());
+  Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.ff());
   t_rvector const eigs = eigsolver.eigenvalues().real();
   EXPECT_TRUE(std::abs(det(eigs(0)) / eigs(0)) < 1e-5);
   EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
@@ -74,8 +74,8 @@ TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
 }
 // Missed event with t resolution == zero (e.g. no missed event)
 TEST_F(DeterminantEqTest, FF_resolution_is_zero_check_derivative) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 0, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 0, false); 
   t_rmatrix id = t_rmatrix::Identity(3, 3);
   EXPECT_TRUE( ((det.s_derivative(0).array() - id.array()).abs() < 1e-8).all() );
   EXPECT_TRUE( ((det.s_derivative(1).array() - id.array()).abs() < 1e-8).all() );
@@ -83,21 +83,21 @@ TEST_F(DeterminantEqTest, FF_resolution_is_zero_check_derivative) {
 }
 // Missed event with t resolution == zero (e.g. no missed event)
 TEST_F(DeterminantEqTest, AA_resolution_is_zero) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 0, true); 
-  EXPECT_TRUE( ((det.H(0).array() - states.aa().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(1).array() - states.aa().array()).abs() < 1e-8).all() );
-  EXPECT_TRUE( ((det.H(10).array() - states.aa().array()).abs() < 1e-8).all() );
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 0, true); 
+  EXPECT_TRUE( ((det.H(0).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((det.H(1).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
+  EXPECT_TRUE( ((det.H(10).array() - qmatrix.aa().array()).abs() < 1e-8).all() );
 
-  Eigen::EigenSolver<t_rmatrix> eigsolver(states.aa());
+  Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.aa());
   t_rvector const eigs = eigsolver.eigenvalues().real();
   EXPECT_TRUE(std::abs(det(eigs(0)) / eigs(0)) < 1e-5);
   EXPECT_TRUE(std::abs(det(eigs(1)) / eigs(1)) < 1e-5);
 }
 // Missed event with t resolution == zero (e.g. no missed event)
 TEST_F(DeterminantEqTest, AA_resolution_is_zero_check_derivative) {
-  StateMatrix const states(Q, 2);
-  DeterminantEq det(states, 0, true); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq det(qmatrix, 0, true); 
   t_rmatrix id = t_rmatrix::Identity(2, 2);
   EXPECT_TRUE( ((det.s_derivative(0).array() - id.array()).abs() < 1e-8).all() );
   EXPECT_TRUE( ((det.s_derivative(1).array() - id.array()).abs() < 1e-8).all() );
@@ -107,16 +107,16 @@ TEST_F(DeterminantEqTest, AA_resolution_is_zero_check_derivative) {
 // Test non-zero resolution tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, from_tau_derivative) {
 
-  StateMatrix const states(Q, 2);
-  DeterminantEq determinant(states, 0, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq determinant(qmatrix, 0, false); 
 
   t_real svec[] = {0e0, 1e-1, 1e0};
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real dtaus[] = {1e-4, 1e-6, 1e-8};
   for(t_real s: svec) {
     auto approx = [&determinant, &s](t_real _tau) { return determinant.H(s, _tau); };
-    auto exact = [&states, &s](t_real _tau) -> t_rmatrix {
-      return states.fa() * std::exp(-s * _tau) * (_tau * states.aa()).exp() * states.af();
+    auto exact = [&qmatrix, &s](t_real _tau) -> t_rmatrix {
+      return qmatrix.fa() * std::exp(-s * _tau) * (_tau * qmatrix.aa()).exp() * qmatrix.af();
     };
     std::ostringstream sstr;
     sstr << "Testing H with s=" << s << "\n";
@@ -131,16 +131,16 @@ TEST_F(DeterminantEqTest, from_tau_derivative) {
 // Test s derivatives for non-zero resolution tau using numerical and analytical derivatives.
 TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 
-  StateMatrix const states(Q, 2);
-  DeterminantEq determinant(states, 0, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq determinant(qmatrix, 0, false); 
 
   t_real svec[] = {0e0, 1e-1, 1e0};
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real dtaus[] = {1e-4, 1e-6, 1e-8};
   for(t_real s: svec) {
     auto approx = [&determinant, &s](t_real _tau) { return determinant.s_derivative(s, _tau); };
-    auto exact = [&states, &s](t_real _tau) -> t_rmatrix {
-      return -_tau * std::exp(-s * _tau) * states.fa() * (_tau * states.aa()).exp() * states.af();
+    auto exact = [&qmatrix, &s](t_real _tau) -> t_rmatrix {
+      return -_tau * std::exp(-s * _tau) * qmatrix.fa() * (_tau * qmatrix.aa()).exp() * qmatrix.af();
     };
     
     std::ostringstream sstr;
@@ -156,8 +156,8 @@ TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
 // Test s derivative from numerical derivative of H.
 TEST_F(DeterminantEqTest, s_derivative_from_H) {
 
-  StateMatrix const states(Q, 2);
-  DeterminantEq determinant(states, 0, false); 
+  QMatrix const qmatrix(Q, 2);
+  DeterminantEq determinant(qmatrix, 0, false); 
 
   t_real taus[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};
   t_real svec[] = {0e0, 1e-4, 1e-3, 1e-2, 1e-1, 1e0};

@@ -22,7 +22,7 @@
 #  endif
 #  include "numpy_eigen.h"
 
-#  include "../state_matrix.h"
+#  include "../qmatrix.h"
 #  include "../idealG.h"
 #  include "../occupancies.h"
 #  include "../determinant_equation.h"
@@ -125,7 +125,7 @@
 //! General namespace for all things DCProgs.
 namespace DCProgs {
 
-%include "state_matrix.swg"
+%include "qmatrix.swg"
 %include "idealg.swg"
 %include "determinant_equation.swg"
 %include "root_finder.swg"

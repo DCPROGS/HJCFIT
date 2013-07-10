@@ -2,7 +2,7 @@
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.random import rate_matrix as random_rate_matrix
   if string == "classic":
     return array([[ -3050,        50,  3000,      0,    0 ], 
                   [ 2./3., -1502./3.,     0,    500,    0 ],  
@@ -71,7 +71,7 @@ def Matrix(string):
                      0.00000000e+00,  -3.48369656e+03, 3.39628323e+03],
                   [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00, 0.00000000e+00,
                      6.00000000e+00,   1.01956162e+01, -1.61956162e+01]])
-  if string == "random": return random_qmatrix()
+  if string == "random": return random_rate_matrix()
   if string == "too many roots":
     return array([[-4414.258163060556, 0.4706230361044994, 0, 4413.086136315604, 0, 0, 0,
                    0.7014037088481371],
@@ -90,15 +90,15 @@ def Matrix(string):
                     0, 1953.625516641621, -4855.392168363011]])
   raise Exception("Unknown Matrix {0}".format(string))
 
-def StatMat(string):
+def QMat(string):
   """ Creates matrices from specific strings """
-  from dcprogs.random import state_matrix as random_state_matrix
-  from dcprogs.likelihood import StateMatrix
-  if string == "classic": return StateMatrix(Matrix(string), 2)
-  if string == "complex eigenvalues": return StateMatrix(Matrix(string), 4)
-  if string == "singular matrix": return StateMatrix(Matrix(string), 3)
-  if string == "random": return random_state_matrix()
-  if string == "too many roots": return StateMatrix(Matrix(string), 3)
+  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood import QMatrix
+  if string == "classic": return QMatrix(Matrix(string), 2)
+  if string == "complex eigenvalues": return QMatrix(Matrix(string), 4)
+  if string == "singular matrix": return QMatrix(Matrix(string), 3)
+  if string == "random": return random_qmatrix()
+  if string == "too many roots": return QMatrix(Matrix(string), 3)
   else: raise Exception("Unknown State Matrix {0}".format(string))
 
 def register_type(): 
@@ -108,4 +108,4 @@ def register_type():
   matchers.register_type(Eval=lambda x: eval(x))
   matchers.register_type(Bool=lambda x: bool(eval(x)))
   matchers.register_type(Matrix=Matrix)
-  matchers.register_type(StatMat=StatMat)
+  matchers.register_type(QMatrix=QMat)

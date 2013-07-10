@@ -11,7 +11,7 @@ namespace DCProgs {
 
   //! \brief State matrix that can  be partitioned into open/shut states.
   //! \details In practice, this is a two tuple with some helper functions to get corners.
-  struct MSWINDOBE StateMatrix {
+  struct MSWINDOBE QMatrix {
  
     //! Number of open states.
     t_int nopen; 
@@ -19,11 +19,10 @@ namespace DCProgs {
     t_rmatrix matrix; 
  
     //! Constructor
-    StateMatrix() : matrix(0,0), nopen(0) {}
+    QMatrix() : matrix(0,0), nopen(0) {}
     //! Constructor
     template<class T>
-      StateMatrix   (Eigen::DenseBase<T> const &_c, t_int _nopen = 0)
-                  : matrix(_c), nopen(_nopen) {}
+      QMatrix(Eigen::DenseBase<T> const &_c, t_int _nopen = 0) : matrix(_c), nopen(_nopen) {}
   
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
@@ -52,7 +51,7 @@ namespace DCProgs {
     //! \brief Returns transpose of state matrix.
     //! \details Means A states become F states, and F states become A states, and the partitionned
     //! matrix is transposed such that the new AA block is top left corner.
-    StateMatrix transpose() const;
+    QMatrix transpose() const;
  
     //! \brief Computes eigenvalues and eigenvectors
     //! \details Solves the *transpose* eigenproblem \f$\phi = \phi\cdot\mathcal{Q}\f$.
@@ -60,7 +59,7 @@ namespace DCProgs {
   };
 
   //! Dumps object to stream.
-  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat);
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat);
 }
 
 #endif

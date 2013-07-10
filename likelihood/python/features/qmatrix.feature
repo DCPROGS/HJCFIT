@@ -1,14 +1,14 @@
-Feature: StateMatrix bindings
+Feature: QMatrix bindings
 
-  The following tests the c++ to python bindings of StateMatrix. Most of the tests are about making
+  The following tests the c++ to python bindings of QMatrix. Most of the tests are about making
   sure that c++ objects are translated correctly, or signal somehow that translation could not
   happen. Sometimes the bindings are shallow wrappers around c++ objects. Othertimes they may copies
   of c++ objects. In any case, values modified in python should be reflected in C and vice-versa.
   Below, a "numpy array" is a python object which represents a matrix. 
 
   Scenario: Initialize empty matrix
-    Given StateMatrix is accessible
-    When  we instantiate StateMatrix without arguments
+    Given QMatrix is accessible
+    When  we instantiate QMatrix without arguments
     Then  nopen is 0
     And   matrix is a numpy array
     And   matrix is empty
@@ -16,8 +16,8 @@ Feature: StateMatrix bindings
 
 
   Scenario: Initialize empty matrix with arguments
-    Given StateMatrix is accessible
-    When  we instantiate StateMatrix with empty and 0
+    Given QMatrix is accessible
+    When  we instantiate QMatrix with empty and 0
     Then  nopen is 0
     And   matrix is a numpy array
     And   matrix is empty
@@ -26,8 +26,8 @@ Feature: StateMatrix bindings
 
 
   Scenario Outline: Initialize with non-empty arguments
-    Given StateMatrix is accessible
-    When  we instantiate StateMatrix with <matrix> and <nopen>
+    Given QMatrix is accessible
+    When  we instantiate QMatrix with <matrix> and <nopen>
     Then  instantiation did not throw
     And   nopen is <nopen>
     And   matrix is a numpy array
@@ -50,8 +50,8 @@ Feature: StateMatrix bindings
 
 
   Scenario Outline: Initialization throws
-    Given StateMatrix is accessible
-    When  we instantiate StateMatrix with <matrix> and <nopen>
+    Given QMatrix is accessible
+    When  we instantiate QMatrix with <matrix> and <nopen>
     Then  instantiation threw <exception> 
  
     Examples:
@@ -65,7 +65,7 @@ Feature: StateMatrix bindings
 
   Scenario Outline: Modify matrix in-place
 
-    Given a StateMatrix instantiated with classic and 0
+    Given a QMatrix instantiated with classic and 0
     When  item <item> is set to <value>
     Then  item <item> is <value>
 
@@ -77,6 +77,6 @@ Feature: StateMatrix bindings
 
   Scenario: Modify matrix in-place
 
-    Given a StateMatrix instantiated with classic and 0
+    Given a QMatrix instantiated with classic and 0
     When  nopen is set to 2
     Then  nopen is 2

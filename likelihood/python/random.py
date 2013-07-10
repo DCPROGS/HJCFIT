@@ -1,5 +1,5 @@
-def qmatrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, realeigs=True,
-            tolerance=1e-8):
+def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, realeigs=True,
+                tolerance=1e-8):
   """ Creates a random matrix with some structure to it.
 
       The structure given to the random matrix is as follows:
@@ -68,21 +68,21 @@ def qmatrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, re
 
   return result
 
-def state_matrix(*args, **kwargs):
+def qmatrix(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """
   from numpy.random import randint
-  from .likelihood import StateMatrix
-  matrix = qmatrix(*args, **kwargs)
+  from .likelihood import QMatrix
+  matrix = rate_matrix(*args, **kwargs)
   nopen = randint(2, matrix.shape[0]-2)
-  return StateMatrix(matrix, nopen)
+  return QMatrix(matrix, nopen)
 
 def random_idealg(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """
   from .likelihood import IdealG
-  return IdealG(state_matrix(*args, **kwargs))
+  return IdealG(qmatrix(*args, **kwargs))
 
-# Adds description of parameters and function from the qmatrix docstring.
-state_matrix.__doc__ = "\n".join(state_matrix.__doc__.splitlines()
-                                 + qmatrix.__doc__.splitlines()[1:])
+# Adds description of parameters and function from the rate_matrix docstring.
+qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
+                                 + rate_matrix.__doc__.splitlines()[1:])
 
 

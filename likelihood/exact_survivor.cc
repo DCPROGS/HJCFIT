@@ -10,7 +10,7 @@
 
 namespace DCProgs {
 
-  void ExactSurvivor :: set(StateMatrix const &_matrix, t_real _tau) {
+  void ExactSurvivor :: set(QMatrix const &_matrix, t_real _tau) {
     // Two step process. Otherwise, reset would catch any exception thrown. 
     RecursionInterface afinterface(_matrix, _tau, true);
     RecursionInterface fainterface(_matrix, _tau, false);
@@ -23,11 +23,11 @@ namespace DCProgs {
   }
 
 
-  ExactSurvivor :: RecursionInterface::RecursionInterface( StateMatrix const & _matrix,
+  ExactSurvivor :: RecursionInterface::RecursionInterface( QMatrix const & _matrix,
                                                            t_real _tau, bool _doAF ) {
                    
     // Sets matrix depending on whether this is AF or FA stuff.
-    StateMatrix const transitions = _doAF ? _matrix: _matrix.transpose();
+    QMatrix const transitions = _doAF ? _matrix: _matrix.transpose();
 
     // Solves eigenvalue problem
     Eigen::EigenSolver<t_rmatrix> eigsolver(transitions.matrix);

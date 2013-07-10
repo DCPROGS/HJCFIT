@@ -30,7 +30,7 @@ namespace DCProgs {
       //! \param[in] _findroots: A functor with which to find all roots.
       //!                        This function should take a DeterminantEq as its sole argument and
       //!                        return a std::vector<RootIntervals>
-      ApproxSurvivor(StateMatrix const &_matrix, t_real _tau, t_RootFinder const &_findroots);
+      ApproxSurvivor(QMatrix const &_matrix, t_real _tau, t_RootFinder const &_findroots);
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }

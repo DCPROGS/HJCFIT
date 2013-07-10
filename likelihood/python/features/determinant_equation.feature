@@ -19,7 +19,7 @@ Feature: Determinantal Equation bindings
       | classic  | 2     |  0.1  |  False  |
 
   Scenario Outline: Initialise the determinantal equation with a state matrix
-    Given a StateMatrix instantiated with <matrix> and <nopen>
+    Given a QMatrix instantiated with <matrix> and <nopen>
     When  a determinantal equation is instantiated from a state matrix, <tau>, and <doopen>
     Then  instantiation did not throw
     And   equation's tau is <tau>

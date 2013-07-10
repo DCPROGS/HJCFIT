@@ -1,10 +1,10 @@
 #include <iostream>
-#include "state_matrix.h"
+#include "qmatrix.h"
 
 namespace DCProgs {
-  StateMatrix StateMatrix::transpose() const {
+  QMatrix QMatrix::transpose() const {
   
-    StateMatrix result;
+    QMatrix result;
     t_int const nclose(matrix.rows() - nopen);
     result.nopen = nclose;
     result.matrix.resize(matrix.rows(), matrix.cols());
@@ -15,7 +15,7 @@ namespace DCProgs {
     return result;
   }
 
-  std::tuple<t_cvector, t_cmatrix> StateMatrix::eigenstuff() const {
+  std::tuple<t_cvector, t_cmatrix> QMatrix::eigenstuff() const {
      Eigen::EigenSolver<t_rmatrix> eigsolver(matrix.transpose());
      if(eigsolver.info() != Eigen::Success) {
        std::ostringstream sstr("Could not solve eigenvalue problem.\n");
@@ -27,7 +27,7 @@ namespace DCProgs {
      return std::make_tuple(eigs, vecs.transpose());
   }
 
-  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, StateMatrix const &_mat) {
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat) {
     return _stream << "Transition matrix with " << _mat.nopen
                    << " open states:\n" << DCProgs::numpy_io(_mat.matrix) << "\n";
   }

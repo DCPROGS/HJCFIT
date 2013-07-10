@@ -15,26 +15,26 @@ namespace DCProgs {
     const t_real DeterminantEq :: ZERO = 1e-12;
 # endif
 
-  DeterminantEq :: DeterminantEq   (StateMatrix const & _matrix, t_real _tau, bool _doopen)
-                                 : tau_(_tau), matrix_(_matrix), ff_eigenvalues_(),
+  DeterminantEq :: DeterminantEq   (QMatrix const & _qmatrix, t_real _tau, bool _doopen)
+                                 : tau_(_tau), qmatrix_(_qmatrix), ff_eigenvalues_(),
                                    ff_eigenvectors_() {
     if(not _doopen) {
-      t_int const nopen = matrix_.nopen;
-      t_int const nclose = matrix_.matrix.rows() - nopen;
-      t_rmatrix const aa = matrix_.ff();
-      t_rmatrix const af = matrix_.fa();
-      t_rmatrix const fa = matrix_.af();
-      t_rmatrix const ff = matrix_.aa();
-      matrix_.nopen = nclose;
-      matrix_.aa() = aa;
-      matrix_.af() = af;
-      matrix_.ff() = ff;
-      matrix_.fa() = fa;
+      t_int const nopen = qmatrix_.nopen;
+      t_int const nclose = qmatrix_.matrix.rows() - nopen;
+      t_rmatrix const aa = qmatrix_.ff();
+      t_rmatrix const af = qmatrix_.fa();
+      t_rmatrix const fa = qmatrix_.af();
+      t_rmatrix const ff = qmatrix_.aa();
+      qmatrix_.nopen = nclose;
+      qmatrix_.aa() = aa;
+      qmatrix_.af() = af;
+      qmatrix_.ff() = ff;
+      qmatrix_.fa() = fa;
     }
-    Eigen::EigenSolver<t_rmatrix> eigsolver(matrix_.ff());
+    Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix_.ff());
     if(eigsolver.info() != Eigen::Success)  {
       std::ostringstream sstr("Could not solve eigenvalue problem.");
-      sstr << numpy_io(matrix_.ff()) << "\n";
+      sstr << numpy_io(qmatrix_.ff()) << "\n";
       throw errors::Mass(sstr.str());
     }
     ff_eigenvalues_ = eigsolver.eigenvalues();
@@ -67,15 +67,15 @@ namespace DCProgs {
     t_cmatrix const integral = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
     if((integral.imag().array().abs() > 1e-8).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
-    return this->id_() + matrix_.af() * integral.real() * matrix_.fa(); 
+    return this->id_() + qmatrix_.af() * integral.real() * qmatrix_.fa(); 
   }
 
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const & _self) {
     
     return _stream << "Determinant equation:\n"
                    << "=====================\n\n" 
-                   << "  * Transition Rate matrix:\n" << numpy_io(_self.matrix_.matrix) << "\n"
-                   << "  * Number of 'A' states: " << _self.matrix_.nopen << "\n"
+                   << "  * Transition Rate matrix:\n" << numpy_io(_self.qmatrix_.matrix) << "\n"
+                   << "  * Number of 'A' states: " << _self.qmatrix_.nopen << "\n"
                    << "  * Tau: " << _self.tau_ << "\n"
                    << "  * FF eigenvalues: " << _self.ff_eigenvalues_.transpose() << "\n";
   }
