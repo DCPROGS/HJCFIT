@@ -2,7 +2,7 @@
 #include <type_traits>
 #include <gtest/gtest.h>
 #include "../idealG.h"
-#include "../equilibrium.h"
+#include "../occupancies.h"
 using namespace DCProgs;
 
 // Sets up test with parameters from CH82, 1e-7 nM.
@@ -24,12 +24,12 @@ class EquilibriumTest : public ::testing::Test {
 
 TEST_F(EquilibriumTest, initial_states){
   IdealG idealg(Q, 2);
-  t_initvec const phiA = equilibrium(idealg);
+  t_initvec const phiA = occupancies(idealg);
   EXPECT_EQ(phiA.size(), 2);
   EXPECT_NEAR(phiA(0), 10./135., 1e-10);
   EXPECT_NEAR(phiA(1), 1 - 10./135., 1e-10);
 
-  t_initvec const phiF = equilibrium(idealg, false);
+  t_initvec const phiF = occupancies(idealg, false);
   EXPECT_EQ(phiF.size(), 3);
   EXPECT_NEAR(phiF(0), 10./135., 1e-10);
   EXPECT_NEAR(phiF(1), 1 - 10./135., 1e-10);

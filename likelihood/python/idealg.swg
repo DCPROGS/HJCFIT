@@ -36,15 +36,15 @@ class IdealG {
   }
 
   %extend {
-    DCProgs::t_initvec _equilibrium_a() { return DCProgs::equilibrium(*$self); }
-    DCProgs::t_initvec _equilibrium_f() { return DCProgs::equilibrium(*$self, false); }
+    DCProgs::t_initvec _occupancies_initial() { return DCProgs::occupancies(*$self); }
+    DCProgs::t_initvec _occupancies_final() { return DCProgs::occupancies(*$self, false); }
   }
   %pythoncode %{
-    __swig_getmethods__["equilibrium_a"] = _equilibrium_a
-    __swig_getmethods__["equilibrium_f"] = _equilibrium_f
+    __swig_getmethods__["occupancies_initial"] = _occupancies_initial
+    __swig_getmethods__["occupancies_final"] = _occupancies_final
     if _newclass:
-      equilibrium_af = property(_equilibrium_a, doc="Equilibrium for ideal AF process.")
-      equilibrium_fa = property(_equilibrium_f, doc="Equilibrium for ideal AF process.")
+      occupancies_initialf = property(_occupancies_initial, doc="Occupancies for initial states.")
+      occupancies_fa = property(_occupancies_final, doc="Occupancies for final states.")
   %}
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;

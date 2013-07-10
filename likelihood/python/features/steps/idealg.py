@@ -64,38 +64,40 @@ def step(context):
         raise
 
 
-@then('the a equilibrium solution exists and is the kernel of I - laplace_af * laplace_fa')
+@then('the initial occupancies exists and is the kernel of I - laplace_af * laplace_fa')
 def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.matrices, context.idealgs):
-    equilibrium = idealg.equilibrium_a
+    occupancies = idealg.occupancies_initial
     kernel = dot( dot(inv(matrix.aa), matrix.af), dot(inv(matrix.ff), matrix.fa) )
-    U, singvals, V = svd(identity(kernel.shape[0]) - kernel)
+    kernel = identity(kernel.shape[0]) - kernel
+    U, singvals, V = svd(kernel)
 
     try:
       assert sum(abs(singvals) < context.tolerance) == 1
-      assert all(dot(equilibrium, identity(kernel.shape[0]) - kernel) < context.tolerance)
+      assert all(dot(occupancies, kernel) < context.tolerance)
     except:
       print(matrix)
-      print("Equilibrium: {0}".format(equilibrium))
+      print("Equilibrium: {0}".format(occupancies))
+      print("Kernel Application: {0}".format(dot(occupancies, kernel)))
       raise
     
-@then('the f equilibrium solution exists and is the kernel of I - laplace_fa * laplace_af')
+@then('the final occupancies exists and is the kernel of I - laplace_fa * laplace_af')
 def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.matrices, context.idealgs):
-    equilibrium = idealg.equilibrium_f
+    occupancies = idealg.occupancies_final
     kernel = dot( dot(inv(matrix.ff), matrix.fa), dot(inv(matrix.aa), matrix.af) )
     kernel = identity(kernel.shape[0]) - kernel
     U, singvals, V = svd(kernel)
 
     try:
       assert sum(abs(singvals) < context.tolerance) == 1
-      assert all(dot(equilibrium, kernel) < context.tolerance)
+      assert all(dot(occupancies, kernel) < context.tolerance)
     except:
       print(matrix)
-      print("Equilibrium: {0}".format(equilibrium))
-      print("Kernel Application: {0}".format(dot(equilibrium, - kernel)))
+      print("Equilibrium: {0}".format(occupancies))
+      print("Kernel Application: {0}".format(dot(occupancies, kernel)))
       raise

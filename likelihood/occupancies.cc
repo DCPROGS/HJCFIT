@@ -1,7 +1,7 @@
 #include <DCProgsConfig.h>
 
 #include <iostream>
-#include "equilibrium.h"
+#include "occupancies.h"
 #include "idealG.h"
 
 namespace DCProgs {
@@ -28,7 +28,7 @@ namespace DCProgs {
     // Should work for both IdealG and MissedEventsG.
     // Creates basic input matrix for open and shut cases
     // Retrieves Ax = b problem and solves it using Eigen.
-    template<class T> t_initvec equilibrium_impl_(T const &_gmatrix, bool _open) {
+    template<class T> t_initvec occupancies_impl_(T const &_gmatrix, bool _open) {
         
       std::tuple<t_rmatrix, t_rvector> problem = _open ?
         lstsq_impl_( _gmatrix.laplace_af(0) * _gmatrix.laplace_fa(0) ):
@@ -41,8 +41,8 @@ namespace DCProgs {
   }
 
   // Untemplates the templates.
-  t_initvec equilibrium(IdealG const &_idealg, bool _open) {
-    return equilibrium_impl_(_idealg, _open);
+  t_initvec occupancies(IdealG const &_idealg, bool _initial) {
+    return occupancies_impl_(_idealg, _initial);
   }
 
 }

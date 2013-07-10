@@ -24,7 +24,7 @@
 
 #  include "../state_matrix.h"
 #  include "../idealG.h"
-#  include "../equilibrium.h"
+#  include "../occupancies.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
 #  include "../asymptotes.h"

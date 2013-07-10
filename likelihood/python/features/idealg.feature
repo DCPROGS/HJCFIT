@@ -23,5 +23,5 @@ Feature: Check IdealG bindings
     Given a list of 500 random state matrices
       And a parameter tolerance=1e-6
      When IdealG objects are instantiated with the state matrices
-     Then the a equilibrium solution exists and is the kernel of I - laplace_af * laplace_fa
-      And the f equilibrium solution exists and is the kernel of I - laplace_fa * laplace_af
+     Then the initial occupancies exists and is the kernel of I - laplace_af * laplace_fa
+      And the final occupancies exists and is the kernel of I - laplace_fa * laplace_af
