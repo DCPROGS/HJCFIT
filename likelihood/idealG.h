@@ -43,7 +43,7 @@ namespace DCProgs {
       //! Sets state matrix on which to act.
       void set(StateMatrix const &_in) { set(_in.matrix, _in.nopen); }
       //! Gets Q matrix. 
-      t_rmatrix const & get_Q() const { return this->matrix; }
+      t_rmatrix const & get_matrix() const { return this->matrix; }
       //! Gets the number of open states
       t_int const & get_nopen() const { return this->nopen; }
 
@@ -70,6 +70,9 @@ namespace DCProgs {
         throw;
       }
     }
+
+  //! Dumps object to stream.
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat);
 }
 
 #endif

@@ -22,14 +22,29 @@ namespace DCProgs {
     t_rmatrix const Qaa( StateMatrix::aa() );
     auto const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
-    if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
+    if(not pivotLU.isInvertible()) {
+      std::ostringstream sstr; 
+      sstr << *this << "\nQaa has eigenvalue of 1.0";
+      throw errors::NotInvertible(sstr.str());
+    }
     return pivotLU.inverse() * StateMatrix::af();
   }
   t_rmatrix IdealG::laplace_fa(t_real s) const {
     t_rmatrix const Qff( StateMatrix::ff() );
     auto const stuff = s * t_rmatrix::Identity(Qff.rows(), Qff.rows()) - Qff;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
-    if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
+    if(not pivotLU.isInvertible()) {
+      std::ostringstream sstr; 
+      sstr << *this << "\nQff has eigenvalue of 1.0";
+      throw errors::NotInvertible(sstr.str());
+    }
     return pivotLU.inverse() * StateMatrix::fa();
+  }
+ 
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat) {
+    return _stream << "Ideal Likelihood:\n" 
+                   << "-----------------" 
+                   << "  - nopen: "  << _mat.get_nopen()
+                   << "  - matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
   }
 }

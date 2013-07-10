@@ -39,7 +39,7 @@ class IdealGTest : public ::testing::Test {
 
 TEST_F(IdealGTest, initialize){
   idealg.set(Q, 2);
-  Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic> diff = (Q - idealg.get_Q()).array().abs();
+  Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic> diff = (Q - idealg.get_matrix()).array().abs();
   EXPECT_TRUE((diff < 1e-8).all());
   EXPECT_EQ(idealg.get_nopen(), 2);
 
@@ -52,14 +52,14 @@ TEST_F(IdealGTest, initialize){
  
   // Tests row constraints.
   for(t_int i(0); i < Q.rows(); ++i)
-    EXPECT_DOUBLE_EQ(std::abs(idealg.get_Q().row(i).sum()), 0e0);
+    EXPECT_DOUBLE_EQ(std::abs(idealg.get_matrix().row(i).sum()), 0e0);
  
   // Test that row constraints always works.
   { t_rmatrix qq(Q);
     qq(1, 1) = 5e5;
     idealg.set(qq, 2);
     Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
-      diff = (Q - idealg.get_Q()).array().abs();
+      diff = (Q - idealg.get_matrix()).array().abs();
     EXPECT_TRUE((diff < 1e-8).all());
   }
 }

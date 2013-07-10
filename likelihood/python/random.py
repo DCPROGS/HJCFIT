@@ -52,7 +52,7 @@ def qmatrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, re
     for i in xrange(matrix.shape[0]): matrix[i, i] -= sum(matrix[i, :])
     return matrix
 
-  def equilibrium(result): 
+  def zero_eig(result): 
     from numpy.linalg import svd
     from numpy import sum, abs
     try: U, sing, V = svd(result)
@@ -63,7 +63,7 @@ def qmatrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, re
   # Loop until conditions are satisfied.
   while (nonsingular and abs(det(result)) < tolerance)                                             \
         or (realeigs and any(abs(eig(result)[0].imag) > tolerance)                                 \
-        or not equilibrium(result) ):
+        or not zero_eig(result) ):
     result = generate_matrix()
 
   return result
