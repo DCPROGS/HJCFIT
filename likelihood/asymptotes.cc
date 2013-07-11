@@ -69,18 +69,17 @@ namespace DCProgs {
   }
 
   // Matrix with which to compute \f$H_{FA}\f$ for  the CHS vectors.
-  t_rmatrix tcrit_H_FA_matrix( Asymptotes const &_asymptotes,
-                               QMatrix const &_qmatrix,
-                               t_real _eta, t_real _tcrit) {
+  t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
+                                          t_real _tau, t_real _tcrit ) {
 
-    auto function = [&_asymptotes, &_qmatrix, &_tcrit, &_eta](t_int i) -> t_rmatrix {
+    auto function = [&_asymptotes, &_tcrit, &_tau](t_int i) -> t_rmatrix {
       Asymptotes::t_MatrixAndRoot const & mat_and_root = _asymptotes[i];
       t_rmatrix const & Ri = std::get<0>(mat_and_root);
       t_real const root = std::get<1>(mat_and_root);
-      return -Ri * _qmatrix.fa() * (_eta * _qmatrix.aa()).exp() * std::exp(root * (_tcrit - _eta)) / root;
+      return -Ri * std::exp(root * (_tcrit - _tau)) / root;
     };
     t_rmatrix result = function(0);
-    for(t_int i(1); i < _qmatrix.nclose(); ++i) result += function(i);
+    for(t_int i(1); i < _asymptotes.size(); ++i) result += function(i);
     return result;
   }
 

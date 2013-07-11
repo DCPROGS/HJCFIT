@@ -10,10 +10,21 @@
 
 namespace DCProgs {
 
+  class MissedEventsG;
+
+  //! CHS matrices \f$H_{FA}\f$
+  t_rmatrix CHS_matrix_Hfa(MissedEventsG const &, t_real);
+  //! CHS matrices \f$H_{FA}\f$
+  t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
+
+
   //! \brief Implementation of recursion for exact missed-event G function
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
   class MSWINDOBE MissedEventsG : protected ExactSurvivor, protected ApproxSurvivor {
+     
+      friend t_rmatrix CHS_matrix_Hfa(MissedEventsG const &, t_real);
+      friend t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
     public:
       //! Initializes missed events G functor.
       //! \param[in] _af: Determinant equation for af.
@@ -28,7 +39,8 @@ namespace DCProgs {
                        t_int _nmax=2 )
                     : ExactSurvivor(_af.get_qmatrix(), _af.get_tau()),
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
-                      qmatrix_(_af.get_qmatrix()),
+                      laplace_a_(new LaplaceSurvivor(_af.get_qmatrix())),
+                      laplace_f_(new LaplaceSurvivor(_fa.get_qmatrix())),
                       nmax_(_nmax), tmax_(_af.get_tau()*_nmax),
                       af_factor_( _af.get_qmatrix().af()
                                   * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
@@ -44,7 +56,8 @@ namespace DCProgs {
                         t_RootFinder const &_findroots, t_int _nmax=2 )
                     : ExactSurvivor(_qmatrix, _tau),
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
-                      qmatrix_(_qmatrix),
+                      laplace_a_(new LaplaceSurvivor(_qmatrix)),
+                      laplace_f_(new LaplaceSurvivor(_qmatrix.transpose())),
                       nmax_(_nmax), tmax_(_tau*_nmax),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
@@ -78,14 +91,29 @@ namespace DCProgs {
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
       t_rmatrix const & get_fa_factor() const { return fa_factor_; }
 
-//     //! Exact laplace of AF
-//     t_rmatrix laplace_af(t_real _s) const;
-//     //! Exact laplace of FA
-//     t_rmatrix laplace_fa(t_real _s) const;
+      //! Exact laplace of AF
+      t_rmatrix laplace_af(t_real _s) const {
+        return laplace_a_->operator()(_s, get_tau()) * std::exp(-_s*get_tau()) * af_factor_;
+      }
+      //! Exact laplace of FA
+      t_rmatrix laplace_fa(t_real _s) const {
+        return laplace_f_->operator()(_s, get_tau()) * std::exp(-_s*get_tau()) * fa_factor_;
+      }
+      //! Returns current QMatrix
+      QMatrix const & get_qmatrix() const { return laplace_a_->get_qmatrix(); }
 
     protected:
-      //! Transition matrix for which this is the likelihood.
-      QMatrix qmatrix_;
+#     ifndef HAS_CXX11_UNIQUE_PTR
+        //! Type of the pointers holding laplace object.
+        typedef std::auto_ptr<LaplaceSurvivor> t_LaplacePtr;
+#     else
+        //! Type of the pointers holding laplace object.
+        typedef std::unique_ptr<LaplaceSurvivor> t_LaplacePtr;
+#     endif
+      //! Laplace Survivor function \f$^{A}R(s)\f$.
+      t_LaplacePtr laplace_a_;
+      //! Laplace Survivor function \f$^{F}R(s)\f$.
+      t_LaplacePtr laplace_f_;
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
       t_int nmax_;
       //! Max length of missed events.
@@ -96,6 +124,8 @@ namespace DCProgs {
       t_rmatrix fa_factor_;
   };
 
+  //! Dumps Missed-Events likelihood to stream
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const &_self);
 }
 
 #endif 

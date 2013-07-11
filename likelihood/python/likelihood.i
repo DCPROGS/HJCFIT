@@ -20,7 +20,9 @@
 #    define PyArray_CLEARFLAGS(ARRAY, FLAGS)   (ARRAY)->flags &= (!FLAGS)
 #    define PyArray_SetBaseObject(ARRAY, BASE) (ARRAY)->base   = BASE
 #  endif
+#  include "object.h"
 #  include "numpy_eigen.h"
+#  include "helpers.h"
 
 #  include "../qmatrix.h"
 #  include "../idealG.h"
@@ -31,8 +33,8 @@
 #  include "../exact_survivor.h"
 #  include "../approx_survivor.h"
 #  include "../missed_eventsG.h"
+#  include "../likelihood.h"
 
-#  include "helpers.h"
 
 #ifdef DCPROGS_CATCH
 # error DCPROGS_CATCH already defined.
@@ -125,14 +127,15 @@
 //! General namespace for all things DCProgs.
 namespace DCProgs {
 
-%include "qmatrix.swg"
-%include "idealg.swg"
-%include "determinant_equation.swg"
-%include "root_finder.swg"
-%include "asymptotes.swg"
-%include "exact_survivor.swg"
-%include "approx_survivor.swg"
-%include "missed_eventsG.swg"
+  %include "qmatrix.swg"
+  %include "idealg.swg"
+  %include "determinant_equation.swg"
+  %include "root_finder.swg"
+  %include "asymptotes.swg"
+  %include "exact_survivor.swg"
+  %include "approx_survivor.swg"
+  %include "missed_eventsG.swg"
 
 }
+%include "chained.swg"
 #undef DCPROGS_CATCH

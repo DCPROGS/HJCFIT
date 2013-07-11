@@ -69,7 +69,7 @@ def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.matrices, context.idealgs):
-    occupancies = idealg.occupancies_initial
+    occupancies = idealg.initial_occupancies
     kernel = dot( dot(inv(matrix.aa), matrix.af), dot(inv(matrix.ff), matrix.fa) )
     kernel = identity(kernel.shape[0]) - kernel
     U, singvals, V = svd(kernel)
@@ -88,7 +88,7 @@ def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.matrices, context.idealgs):
-    occupancies = idealg.occupancies_final
+    occupancies = idealg.final_occupancies
     kernel = dot( dot(inv(matrix.ff), matrix.fa), dot(inv(matrix.aa), matrix.af) )
     kernel = identity(kernel.shape[0]) - kernel
     U, singvals, V = svd(kernel)

@@ -2,6 +2,7 @@
 #define DCPROGS_NUMPY_EIGEN
 #include <type_traits>
 #include "../errors.h"
+#include "object.h"
 
 namespace DCProgs {
   namespace numpy {
@@ -144,16 +145,21 @@ namespace DCProgs {
     //! \details It is best to check PyErr_Occurred after a call to this function.
     //! \param[in] _in a numpy array. 
     //! \return An eigen object which is a copy of the numpy input.
-    DCProgs::t_rmatrix map_to_rmatrix(PyArrayObject *_in) {
-       if(not PyArray_Check(_in))
-         throw DCProgs::errors::PythonTypeError("Expected a numpy array as input.");
-       int const type = PyArray_TYPE(_in);
+    DCProgs::t_rmatrix map_to_rmatrix(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
 #      ifdef DCPROGS_MACRO
 #        error DCPROGS_MACRO is already defined.
 #      endif
-#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                              \
-         if(type == NUM_TYPE)                                                            \
-           return details::wrap_to_eigen<TYPE>(_in).cast<t_rmatrix::Scalar>(); 
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
        DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
        else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )

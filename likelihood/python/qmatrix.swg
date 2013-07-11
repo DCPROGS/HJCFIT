@@ -15,7 +15,7 @@ class QMatrix {
   DCProgs::t_int nopen; 
   // Tells SWIG how to convert eigen matrices to numpy matrices.
   %typemap(in) DCProgs::t_rmatrix matrix { 
-    try { $1 = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)$input); }
+    try { $1 = DCProgs::numpy::map_to_rmatrix($input); }
     DCPROGS_CATCH(SWIG_fail);
   }
   // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
@@ -38,9 +38,7 @@ class QMatrix {
     QMatrix(PyObject *_py_matrix, int _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
-      if(not PyArray_Check(_py_matrix))
-        throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_py_matrix);
+      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
       if(_nopen > std::max(matrix.rows(), matrix.cols()) )
         throw DCProgs::errors::PythonValueError(
                 "Number of open states cannot be larger than the number states.");

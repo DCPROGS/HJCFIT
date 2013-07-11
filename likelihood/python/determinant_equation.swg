@@ -41,9 +41,7 @@ class DeterminantEq {
     DeterminantEq(PyObject *_in, int _nopen, double _tau) {
       if(_nopen <= 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
-      if(not PyArray_Check(_in)) 
-        throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_in);
+      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
       if(matrix.rows() != matrix.cols())
         throw DCProgs::errors::PythonValueError("Expected a square matrix on input.");
       if(matrix.rows() == 0)

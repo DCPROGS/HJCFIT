@@ -11,6 +11,7 @@
 #cmakedefine MSWINDOBE __declspec(dllimport)
 #cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine HAS_CXX11_RANDOM_DEVICE
+#cmakedefine HAS_CXX11_UNIQUE_PTR
 
 #ifdef HAS_CXX11_CONSTEXPR
 # define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) constexpr static TYPEANDNAME = VALUE

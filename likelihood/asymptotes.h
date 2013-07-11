@@ -41,17 +41,22 @@ namespace DCProgs {
         return matrices_and_roots_[_i]; 
       }
       //! Number of matrices and roots.
-      t_int size() { return matrices_and_roots_.size(); }
+      t_int size() const { return matrices_and_roots_.size(); }
     protected:
       //! Holds the weight and the exponent of the exponential functions.
       t_MatricesAndRoots matrices_and_roots_;
   };
 
-  //! \brief Matrix with which to compute \f$H_{FA}\f$ for  the CHS vectors.
-  //! \cite hawkes:1996.
-  t_rmatrix tcrit_H_FA_matrix( Asymptotes const &_asymptotes,
-                               QMatrix const &_qmatrix,
-                               t_real _eta, t_real _tcrit);
-  
+  //! \brief Partial computation of \f$H_{FA}\f$ for CHS vectors.
+  //! \details The object is to implement Eq. 5.10 from \cite colquhoun:1996. 
+  //! In order to do this, we abstract the part that comes from the likelihood and compute in
+  //! this function \f$-\sum_{i=1}^{k_F}{}^{A}R_i\frac{1}{s_i}
+  //! e^{(t_{\mathrm{crit}-\tau)s_i}\f$. The additional factor \f$Q_{AF}e^{Q_{FF}\tau}\f$ is
+  //! computed in MissedEventsG.
+  //! \note This is somewhat outside the remit of Asymptotes, although the calculations are similar
+  //! for good reasons. In any case, we keep this function outside the class itself, so as to not
+  //! confuse the purpose of the class itself.
+  t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
+                                          t_real _tau, t_real _tcrit );
 }
 #endif 

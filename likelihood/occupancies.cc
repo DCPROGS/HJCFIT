@@ -3,6 +3,7 @@
 #include <iostream>
 #include "occupancies.h"
 #include "idealG.h"
+#include "missed_eventsG.h"
 
 namespace DCProgs {
 
@@ -38,6 +39,7 @@ namespace DCProgs {
         svd(std::get<0>(problem), Eigen::ComputeThinU|Eigen::ComputeThinV); 
       return svd.solve(std::get<1>(problem)).transpose();
     }
+
   }
 
   // Untemplates the templates.
@@ -45,6 +47,22 @@ namespace DCProgs {
     return occupancies_impl_(_idealg, _initial);
   }
 
-// t_initvec MSWINDOBE occupancies(DeterminantEq const &, QMatrix const &, bool _initial = true) {
-// }
+  t_initvec MSWINDOBE occupancies(MissedEventsG const &_missedeventsG, bool _initial) {
+    return occupancies_impl_(_missedeventsG, _initial);
+  }
+
+  t_initvec MSWINDOBE CHS_occupancies(MissedEventsG const &_G, t_real _tcrit, bool _initial) {
+    
+    t_int const nopen = _G.get_qmatrix().nopen;
+    t_rmatrix const Hfa = CHS_matrix_Hfa(_G, _tcrit);
+    if(_initial) {
+      // \f$\phi_F H_{FA}\f$
+      t_initvec const phif_times_Hfa = occupancies(_G, false) * Hfa;
+      // \f$\phi_F H_{FA} / \phi_F H_FA u_A\f$
+      return phif_times_Hfa / phif_times_Hfa.array().head(nopen).sum();
+    } else {
+      // \f$H_{FA} u_A\f$
+      return Hfa.leftCols(nopen).rowwise().sum();
+    }
+  }
 }

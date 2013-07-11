@@ -25,9 +25,7 @@ class IdealG {
     IdealG(PyObject* _py_matrix, int _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
-      if(not PyArray_Check(_py_matrix))
-        throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_py_matrix);
+      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
       if(_nopen > std::max(matrix.rows(), matrix.cols()) )
         throw DCProgs::errors::PythonValueError(
                 "Number of open states cannot be larger than the number states.");
@@ -36,15 +34,15 @@ class IdealG {
   }
 
   %extend {
-    DCProgs::t_initvec _occupancies_initial() { return DCProgs::occupancies(*$self); }
-    DCProgs::t_initvec _occupancies_final() { return DCProgs::occupancies(*$self, false); }
+    DCProgs::t_initvec _initial_occupancies() { return DCProgs::occupancies(*$self); }
+    DCProgs::t_initvec _final_occupancies() { return DCProgs::occupancies(*$self, false); }
   }
   %pythoncode %{
-    __swig_getmethods__["occupancies_initial"] = _occupancies_initial
-    __swig_getmethods__["occupancies_final"] = _occupancies_final
+    __swig_getmethods__["initial_occupancies"] = _initial_occupancies
+    __swig_getmethods__["final_occupancies"]   = _final_occupancies
     if _newclass:
-      occupancies_initialf = property(_occupancies_initial, doc="Occupancies for initial states.")
-      occupancies_fa = property(_occupancies_final, doc="Occupancies for final states.")
+      initial_occupancies = property(_initial_occupancies, doc="Occupancies for initial states.")
+      final_occupancies = property(_final_occupancies, doc="Occupancies for final states.")
   %}
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;

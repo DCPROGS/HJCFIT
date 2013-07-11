@@ -12,7 +12,7 @@ namespace DCProgs {
                    << "=====================\n\n" 
                    << "  * Transition Rate matrix:\n" << numpy_io(_self.get_qmatrix().matrix) << "\n"
                    << "  * Number of 'A' states: " << _self.get_nopen() << "\n"
-                   << "  * Tau: " << _self.get_tau() << "\n"
+                   << "  * Resolution time tau: " << _self.get_tau() << "\n"
                    << "  * FF eigenvalues: " << _self.get_ff_eigenvalues().transpose() << "\n";
   }
 }

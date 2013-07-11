@@ -95,8 +95,7 @@ if(NOT (HAS_CXX11_AUTO
         AND HAS_CXX11_LAMBDA 
         AND HAS_CXX11_STATIC_ASSERT 
         AND HAS_CXX11_RVALUE_REFERENCES 
-        AND HAS_CXX11_DECLTYPE
-        AND HAS_CXX11_SHARED_PTR))
+        AND HAS_CXX11_DECLTYPE) )
   MESSAGE(FATAL_ERROR "Not enough c++11 features. Are you using a c++11 compiler?")
 endif()
 # CXX11_CHECK_FEATURE("nullptr"            2431 HAS_CXX11_NULLPTR)
