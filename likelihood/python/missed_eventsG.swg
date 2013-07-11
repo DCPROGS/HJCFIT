@@ -75,10 +75,10 @@ class MissedEventsG {
 %clear MissedEventsG;
 
 %pythoncode %{
-  def create_missed_eventsG(rates, tau, nmax=2):
+  def create_missed_eventsG(qmatrix, tau, nmax=2):
 
     """ Creates a MissedEvents function from knowledge of rate matrix. """
-    determinant_af = DeterminantEq(rates, tau) 
+    determinant_af = DeterminantEq(qmatrix, tau) 
     determinant_fa = determinant_af.transpose()
     roots_af = find_roots(determinant_af)
     roots_fa = find_roots(determinant_fa)

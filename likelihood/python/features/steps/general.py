@@ -1,6 +1,6 @@
 from behave import then
 
-@given('a list of random of {n:Integer} {name} between {start:Float} and {end:Float}')
+@given('a list of {n:Integer} random {name} between {start:Float} and {end:Float}')
 def step(context, n, name, start, end):
   from numpy import random
   setattr(context, name, random.sample(n) * (end - start) + start)

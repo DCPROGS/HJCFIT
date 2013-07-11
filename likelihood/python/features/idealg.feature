@@ -5,7 +5,7 @@ Feature: Check IdealG bindings
 
   Scenario: Computation of af, fa
     Given a list of 10 random q-matrices
-      And a list of random of 5 times between 0 and 8*1e-4
+      And a list of 5 random times between 0 and 8*1e-4
       And a parameter tolerance=1e-8
      When IdealG objects are instantiated with the q-matrices
      Then computing af for each time yields exp(t Q_AA) Q_AF
@@ -13,7 +13,7 @@ Feature: Check IdealG bindings
 
   Scenario: Computation of laplace_af, laplace_fa
     Given a list of 10 random q-matrices
-      And a list of random of 5 scales between 0 and 1
+      And a list of 5 random scales between 0 and 1
       And a parameter tolerance=1e-8
      When IdealG objects are instantiated with the matrices and nopens
      Then computing laplace_af for each scale yields (sI - Q_AA)^-1 Q_AF
