@@ -2,8 +2,11 @@ from behave import then
 
 @given('a list of {n:Integer} random {name} between {start:Float} and {end:Float}')
 def step(context, n, name, start, end):
-  from numpy import random
-  setattr(context, name, random.sample(n) * (end - start) + start)
+  from numpy import random, concatenate
+  result = random.sample(n) * (end - start) + start
+  if hasattr(context, name): result = concatenate((getattr(context, name), result))
+  setattr(context, name, result)
+  
 @given('a parameter {name}={value:Eval}')
 def step(context, name, value):
   setattr(context, name, value)

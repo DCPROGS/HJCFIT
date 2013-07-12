@@ -70,6 +70,26 @@ class MissedEventsG {
       initial_occupancies = property(_initial_occupancies, doc="Occupancies for initial states.")
       final_occupancies = property(_final_occupancies, doc="Occupancies for final states.")
   %}
+
+  // Add some printout functions.
+  %extend {
+    PyObject* __str__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+  }
+
+  // Some more properties
+  %extend { DCProgs::t_real const tmax; }
+  %{
+    DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_tmax();
+    }
+  %}
 };
 
 %clear MissedEventsG;

@@ -124,8 +124,11 @@ namespace DCProgs {
 
        // Computes eigenvalues of midpoint.
        Eigen::EigenSolver<t_rmatrix> eigsolver(H);
-       if(eigsolver.info() != Eigen::Success) 
-         throw errors::Mass("Could not solve eigenvalue problem.");
+       if(eigsolver.info() != Eigen::Success) {
+         std::ostringstream sstr;
+         sstr << _det << "\n" << "Could not solve eigenvalue problem at " << minroot << ".";
+         throw errors::Mass(sstr.str());
+       }
 
      // // Checks we have no complex eigenvalues.
      // if((eigsolver.eigenvalues().array().imag().abs() > 1e-8).any())
@@ -133,9 +136,10 @@ namespace DCProgs {
 
        t_real const minimum(eigsolver.eigenvalues().real().minCoeff());
        if(minimum > minroot) return minroot;
-       minroot = minimum + _alpha * (minimum - minroot);
+       minroot = minimum - _alpha * std::min(minroot - minimum, 0.1 * std::abs(minimum));
     }
-    throw errors::Runtime("Reached maximum number of iterations.");
+    throw errors::Runtime("Reached maximum number of iterations "
+                          "when searching for smallest root.");
   }
 
   std::vector<RootInterval> find_root_intervals_brute_force(DeterminantEq const &_det, 

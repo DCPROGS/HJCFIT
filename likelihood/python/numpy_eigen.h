@@ -103,8 +103,8 @@ namespace DCProgs {
 
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &&_in, PyObject *_parent = NULL) {
-        PyObject* const result = wrap_to_numpy_(_in, _parent);
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &&_in) {
+        PyObject* const result = wrap_to_numpy_(_in);
         PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }

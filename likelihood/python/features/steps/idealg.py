@@ -6,17 +6,17 @@ register_type()
 @when('IdealG objects are instantiated with the q-matrices')
 def step(context):
   from dcprogs.likelihood import IdealG
-  context.idealgs = [IdealG(u) for u in context.matrices]
+  context.idealgs = [IdealG(u) for u in context.qmatrices]
 @when('IdealG objects are instantiated with the matrices and nopens')
 def step(context):
   from dcprogs.likelihood import IdealG
-  context.idealgs = [IdealG(u.matrix, u.nopen) for u in context.matrices]
+  context.idealgs = [IdealG(u.matrix, u.nopen) for u in context.qmatrices]
 
 @then('computing af for each time yields exp(t Q_AA) Q_AF')
 def step(context):
   from numpy import abs, all, dot
   from scipy.linalg import expm
-  for idealg, matrix in zip(context.idealgs, context.matrices):
+  for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for t in context.times:
       value = dot(expm(t * matrix.aa), matrix.af)
       try: assert all(abs(idealg.af(t) - value) < context.tolerance)
@@ -29,7 +29,7 @@ def step(context):
 def step(context):
   from numpy import abs, all, dot
   from scipy.linalg import expm
-  for idealg, matrix in zip(context.idealgs, context.matrices):
+  for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for t in context.times:
       value = dot(expm(t * matrix.ff), matrix.fa)
       try: assert all(abs(idealg.fa(t) - value) < context.tolerance)
@@ -42,7 +42,7 @@ def step(context):
 def step(context):
   from numpy import abs, all, dot, identity
   from numpy.linalg import inv
-  for idealg, matrix in zip(context.idealgs, context.matrices):
+  for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for scale in context.scales:
       value = dot(inv(scale * identity(matrix.aa.shape[0]) - matrix.aa), matrix.af)
       try: assert all(abs(idealg.laplace_af(scale) - value) < context.tolerance)
@@ -55,7 +55,7 @@ def step(context):
 def step(context):
   from numpy import abs, all, dot, identity
   from numpy.linalg import inv
-  for idealg, matrix in zip(context.idealgs, context.matrices):
+  for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for scale in context.scales:
       value = dot(inv(scale * identity(matrix.ff.shape[0]) - matrix.ff), matrix.fa)
       try: assert all(abs(idealg.laplace_fa(scale) - value) < context.tolerance)
@@ -68,7 +68,7 @@ def step(context):
 def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
-  for matrix, idealg in zip(context.matrices, context.idealgs):
+  for matrix, idealg in zip(context.qmatrices, context.idealgs):
     occupancies = idealg.initial_occupancies
     kernel = dot( dot(inv(matrix.aa), matrix.af), dot(inv(matrix.ff), matrix.fa) )
     kernel = identity(kernel.shape[0]) - kernel
@@ -87,7 +87,7 @@ def step(context):
 def step(context):
   from numpy.linalg import inv, svd
   from numpy import abs, all, dot, identity
-  for matrix, idealg in zip(context.matrices, context.idealgs):
+  for matrix, idealg in zip(context.qmatrices, context.idealgs):
     occupancies = idealg.final_occupancies
     kernel = dot( dot(inv(matrix.ff), matrix.fa), dot(inv(matrix.aa), matrix.af) )
     kernel = identity(kernel.shape[0]) - kernel

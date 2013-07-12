@@ -19,8 +19,8 @@ class ExactSurvivor {
     if($1 > 11e0 * arg1->get_tau()) {
       std::ostringstream sstr;
       sstr << "Input value for time (" << $1
-           << ") is more than 11 times larger that tau (" << arg1->get_tau() 
-           << ". Could take a very long-time... Aborting\n"
+           << ") is more than 11 times larger that tau (" << arg1->get_tau() << "). "
+           << "Could take a very long-time... Aborting\n"
               "If you want to disable this safeguard, take a look at"
               " exact_survivor.swg, modify and recompile.\n";
       PyErr_SetString(PyExc_ValueError, sstr.str().c_str());
@@ -29,19 +29,6 @@ class ExactSurvivor {
   }
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
-
-  %typemap(check) DCProgs::t_real t {
-    if($1 > 10e0 * arg1->get_tau()) {
-      std::ostringstream sstr;
-      sstr << "Input value for time (" << $1
-           << ") is more than 10 times larger that tau (" << arg1->get_tau() 
-           << ". Could take a very long-time... Aborting\n"
-              "If you want to disable this safeguard, take a look at"
-              " exact_survivor.swg, modify and recompile.\n";
-      PyErr_SetString(PyExc_ValueError, sstr.str().c_str());
-      return NULL;
-    }
-  } 
   %clear DCProgs::t_real t;
 
   DCProgs::t_rmatrix recursion_af(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;

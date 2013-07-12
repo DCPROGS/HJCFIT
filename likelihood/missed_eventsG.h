@@ -41,7 +41,7 @@ namespace DCProgs {
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
                       laplace_a_(new LaplaceSurvivor(_af.get_qmatrix())),
                       laplace_f_(new LaplaceSurvivor(_fa.get_qmatrix())),
-                      nmax_(_nmax), tmax_(_af.get_tau()*_nmax),
+                      nmax_(_nmax), tmax_(nmax_ * get_tau()),
                       af_factor_( _af.get_qmatrix().af()
                                   * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
                       fa_factor_( _fa.get_qmatrix().af()
@@ -58,7 +58,7 @@ namespace DCProgs {
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       laplace_a_(new LaplaceSurvivor(_qmatrix)),
                       laplace_f_(new LaplaceSurvivor(_qmatrix.transpose())),
-                      nmax_(_nmax), tmax_(_tau*_nmax),
+                      nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
 
@@ -68,7 +68,7 @@ namespace DCProgs {
       }
       //! Close to open transitions
       t_rmatrix fa(t_real _t) const {
-        return survivor_af(_t - ExactSurvivor::get_tau()) * fa_factor_; 
+        return survivor_fa(_t - ExactSurvivor::get_tau()) * fa_factor_; 
       }
       //! Probability of no shut times detected between 0 and t.
       t_rmatrix survivor_af(t_real _t) const {
@@ -76,15 +76,17 @@ namespace DCProgs {
       }
       //! Probability of no open times detected between 0 and t.
       t_rmatrix survivor_fa(t_real _t) const {
-        return _t > tmax_ ? ApproxSurvivor::af(_t): ExactSurvivor::af(_t);
+        return _t > tmax_ ? ApproxSurvivor::fa(_t): ExactSurvivor::fa(_t);
       }
 
       //! Sets \f$t\geq n_{\mathrm{max}}\tau\f$
-      void  set_nmax(t_int _n) { nmax_ = _n; tmax_ = _n * ExactSurvivor::get_tau(); }
+      void  set_nmax(t_int _n) { nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); }
       //! When to switch to asymptotic values
       t_int  get_nmax() const { return nmax_; }
       //! Gets the value of missed event resolution;
       t_real get_tau() const { return ExactSurvivor::get_tau(); }
+      //! Tmax is the maximum time after which to switch to approximate calculations.
+      t_real get_tmax() const { return tmax_; }
 
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
       t_rmatrix const & get_af_factor() const { return af_factor_; }
@@ -117,7 +119,7 @@ namespace DCProgs {
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
       t_int nmax_;
       //! Max length of missed events.
-      t_int tmax_;
+      t_real tmax_;
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
       t_rmatrix af_factor_;
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$

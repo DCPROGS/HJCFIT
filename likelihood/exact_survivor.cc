@@ -11,6 +11,8 @@
 namespace DCProgs {
 
   void ExactSurvivor :: set(QMatrix const &_matrix, t_real _tau) {
+    if(_tau <= 0e0) throw errors::Domain("The resolution time tau cannot be zero or negative.");
+
     // Two step process. Otherwise, reset would catch any exception thrown. 
     RecursionInterface afinterface(_matrix, _tau, true);
     RecursionInterface fainterface(_matrix, _tau, false);
