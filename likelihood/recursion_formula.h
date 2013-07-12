@@ -28,7 +28,7 @@ namespace DCProgs {
   //!        //! Returns (prior) element in recursion
   //!        t_element operator()(t_int _i, t_int _j, t_int _m);
   //!        //! \brief Returns D objects, e.g. \f$A_{iAF}e^{Q_{FF}\tau}Q_{FA}\f$.
-  //!        auto getD(t_int _i) const;
+  //!        t_element getD(t_int _i) const;
   //!        //! Returns specific eigenvalue of \f$Q\f$.
   //!        t_real get_eigval(t_int _i) const;
   //!        //! Returns number of eigenvalues.
@@ -64,19 +64,21 @@ namespace DCProgs {
       typename T::t_element lzero(T & _C, t_int _i, t_int _m, T_ZERO const &_zero) {
 
         typename T::t_element result = _zero();
-        auto Di = _C.getD(_i);
+        typename T::t_element const Di = _C.getD(_i);
         t_real const lambda_i = _C.get_eigvals(_i); 
 
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
-          if(_i == j) continue;
-
           t_real const lambda_j = _C.get_eigvals(j);
+
+          if(_i == j) continue;
+          if(std::abs(lambda_j) < 1e-8) continue;
+
           t_real const diff_lambda(lambda_j - lambda_i);
-          if(std::abs(diff_lambda) < 1e-12) continue;
+          if(std::abs(diff_lambda) < 1e-8) continue;
 
 
           t_real const lambda_invdiff(1e0/diff_lambda); 
-          auto Dj = _C.getD(j);
+          typename T::t_element const Dj = _C.getD(j);
           t_real factor(lambda_invdiff); 
 
           t_real sign(1);
@@ -96,6 +98,7 @@ namespace DCProgs {
         typename T::t_element result(_C.getD(_i) * _C(_i, _m-1, _l-1) / t_real(_l));
         for(t_int j(0); j < _C.nbeigvals(); ++j) {
           if(_i == j) continue;
+          if(std::abs(_C.get_eigvals(j)) < 1e-8) continue;
  
           t_real const diff_lambda(_C.get_eigvals(_i)-_C.get_eigvals(j));
           if(std::abs(diff_lambda) < 1e-12) continue;

@@ -153,8 +153,11 @@ std::vector<DCProgs::RootInterval>
          root, value, ierr, numfunc = fminboud(determinant, left, right)
          if abs(value) > tolerance: continue
 
-       eigenvalues = eig(determinant.H(root))[0]
-       multiplicity = count_nonzero(abs(eigenvalues - root) < tolerance)
+       H = determinant.H(root)
+       if len(H) > 1:
+         eigenvalues = eig(determinant.H(root))[0]
+         multiplicity = count_nonzero(abs(eigenvalues - root) < tolerance)
+       else: multiplicity = 1
        if left * right < 0:
          if multiplicity == 0 or multiplicity % 2 != 1: multiplicity = 1
        else:

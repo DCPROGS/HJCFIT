@@ -80,7 +80,10 @@ namespace DCProgs {
       }
 
       //! Sets \f$t\geq n_{\mathrm{max}}\tau\f$
-      void  set_nmax(t_int _n) { nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); }
+      void  set_nmax(t_int _n) { 
+        if(_n <= 0) throw errors::Domain("n should be strictly positive.");
+        nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); 
+      }
       //! When to switch to asymptotic values
       t_int  get_nmax() const { return nmax_; }
       //! Gets the value of missed event resolution;

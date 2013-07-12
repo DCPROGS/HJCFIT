@@ -84,10 +84,19 @@ class MissedEventsG {
   }
 
   // Some more properties
-  %extend { DCProgs::t_real const tmax; }
+  %extend { 
+    DCProgs::t_real const tmax; 
+    DCProgs::t_int nmax; 
+  }
   %{
     DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
       return _in->get_tmax();
+    }
+    DCProgs::t_int DCProgs_MissedEventsG_nmax_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_nmax();
+    }
+    void DCProgs_MissedEventsG_nmax_set(DCProgs::MissedEventsG *_in, DCProgs::t_int _n) {
+      _in->set_nmax(_n);
     }
   %}
 };
