@@ -2,6 +2,8 @@
 
 #include <sstream>
 #include <iostream>
+#include <algorithm>
+#include <vector>
 
 #include <unsupported/Eigen/MatrixFunctions>
 
@@ -9,6 +11,38 @@
 #include "exact_survivor.h"
 
 namespace DCProgs {
+
+  // anonymous namespace -- functions inside are not expected in the shared library.
+  namespace {
+    // Computes lowest two eigenvalues,
+    // Checks they are real
+    // Checks they are positive
+    // Checks they are not equal,
+    // Checks the lowest is below tolerance,
+    // Returns something above lowest and below second lowest.
+    t_real lowest_eigenvalue(t_cvector const &_eigs, t_real _tolerance=1e-8) {
+
+      // NOTE: neg_eig will be -_eigs.real(). Watch sign. 
+      std::vector<t_real> neg_eigs(_eigs.size());
+      std::vector<t_real> :: iterator i_first = neg_eigs.begin();
+      t_cvector::Scalar const * ptr_eig = &_eigs[0];
+      t_cvector::Scalar const * const ptr_eig_end = ptr_eig + _eigs.size();
+      for(; ptr_eig != ptr_eig_end; ++ptr_eig, ++i_first) {
+        if(std::abs(ptr_eig->imag()) > _tolerance) 
+          throw errors::ComplexEigenvalues("Transition matrix has complex eigenvalues.");
+        *i_first = -ptr_eig->real();
+      }
+
+      std::partial_sort(neg_eigs.begin(), neg_eigs.begin() + 2, neg_eigs.end());
+      if( neg_eigs.front() < -_tolerance )
+        throw errors::Mass("Expected eigenvalues of transition matrix to be negative.");
+      if( neg_eigs[0] > _tolerance)
+        throw errors::Mass("Kernel of transition matrix is of dimension 0.");
+      if( neg_eigs[1] - neg_eigs[0] < _tolerance)
+        throw errors::Mass("Kernel of transition matrix is larger than 1.");
+      return (neg_eigs[1] + neg_eigs[0]) * 0.5;
+    }
+  }
 
   void ExactSurvivor :: set(QMatrix const &_matrix, t_real _tau) {
     if(_tau <= 0e0) throw errors::Domain("The resolution time tau cannot be zero or negative.");
@@ -37,22 +71,26 @@ namespace DCProgs {
         throw errors::Mass("Could not solve eigenvalue problem.");
 
     // Initializes eigenvalues
-    if((eigsolver.eigenvalues().imag().array().abs() > 1e-8).any()) 
-      throw errors::ComplexEigenvalues("Transition matrix has complex eigenvalues.");
-    eigenvalues_ = -eigsolver.eigenvalues().real();
+    t_cvector const & eigenvalues = eigsolver.eigenvalues();
+    t_real const mineig = lowest_eigenvalue(eigenvalues);
+    eigenvalues_.resize(eigsolver.eigenvalues().size()-1);
 
     // Initializes recursion formula for m == l == 0
     t_rmatrix const eigenvectors = eigsolver.eigenvectors().real();
     t_rmatrix const eigenvectors_inv = eigenvectors.inverse();
-    for(t_int i(0); i < nbeigvals(); ++i) {
+    for(t_int i(0), j(0); i < eigenvalues.size(); ++i) {
+      if(-eigenvalues(i).real() < mineig) continue;
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).head(transitions.nopen);
-      coeff_map_[ std::make_tuple(i, 0, 0) ] = left * right;
+      coeff_map_[ std::make_tuple(j, 0, 0) ] = left * right;
+      eigenvalues_(j) = -eigenvalues(i).real();
+      ++j;
     }
 
     // Computes all Di values
     t_rmatrix const exponential_factor = (_tau * transitions.ff()).exp() * transitions.fa();
-    for(t_int i(0); i < nbeigvals(); ++i) {
+    for(t_int i(0); i < eigenvalues.size(); ++i) {
+      if(-eigenvalues(i).real() < mineig) continue;
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).tail(transitions.nclose());
       dvalues_.push_back((left * right) * exponential_factor);
@@ -75,8 +113,7 @@ namespace DCProgs {
 
       // Otherwise compute it from recursion
       t_int const NOPEN = this->nopen;
-      auto ZERO = [NOPEN]() { return t_rmatrix::Zero(NOPEN, NOPEN); };
-      return recursion_formula(*this, _i, _m, _l, ZERO);
+      return recursion_formula(*this, _i, _m, _l);
     }
 
   namespace {
@@ -126,11 +163,11 @@ namespace DCProgs {
   }
 
   t_rmatrix ExactSurvivor :: af(t_real _t) const {
-    if(_t <= 0e0) return recursion_af_->zero();
+    if(_t < 0e0) return recursion_af_->zero();
     return R_of_t(*recursion_af_, _t, tau_);
   }
   t_rmatrix ExactSurvivor :: fa(t_real _t) const {
-    if(_t <= 0e0) return recursion_af_->zero();
+    if(_t < 0e0) return recursion_af_->zero();
     return R_of_t(*recursion_fa_, _t, tau_);
   }
 

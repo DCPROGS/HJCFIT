@@ -4,7 +4,6 @@
 #include "../recursion_formula.h"
 using namespace DCProgs;
 
-t_real ZERO() { return 0e0; }
 struct FullRecursion {
   typedef t_real t_element;
 
@@ -19,7 +18,7 @@ struct FullRecursion {
 
   t_element operator()(t_int _i, t_int _j, t_int _k) const {
     if(_j == 0 and _k == 0) return initials(_i);
-    return recursion_formula(*this, _i, _j, _k, ZERO);
+    return recursion_formula(*this, _i, _j, _k);
   }
   t_element getD(t_int _i) const { return D(_i); }
   t_element get_eigvals(t_int _i) const { return eigvals(_i); }
@@ -35,7 +34,7 @@ TEST(TestRecursion, m_equal_l_InitialZero) {
 
   for(t_int i(0); i < 5; ++i) {
     for(t_int m(0); m < 10; ++m) 
-      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, m, m, ZERO), 0e0);
+      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, m, m), 0e0);
   }
 }
 
@@ -46,9 +45,9 @@ TEST(TestRecursion, m_equal_l_InitialOnes) {
   FullRecursion fullrecursion;
 
   for(t_int i(0); i < 5; ++i) {
-    EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, 0, 0, ZERO), fullrecursion.initials(i));
+    EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, 0, 0), fullrecursion.initials(i));
     for(t_int m(1); m < 10; ++m)  {
-      EXPECT_NEAR( recursion_formula(fullrecursion, i, m, m, ZERO), 
+      EXPECT_NEAR( recursion_formula(fullrecursion, i, m, m), 
                    std::pow(fullrecursion.D(i), m) / t_real(factorial(m)) * fullrecursion.initials(i),
                    1e-8 );
     }
@@ -61,9 +60,9 @@ TEST(TestRecursion, m_equal_l_InitialRandom) {
     fullrecursion.initials = t_rvector::Random(5);
   
     for(t_int i(0); i < 5; ++i) {
-      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, 0, 0, ZERO), fullrecursion.initials(i));
+      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, 0, 0), fullrecursion.initials(i));
       for(t_int m(1); m < 10; ++m)  {
-        EXPECT_NEAR( recursion_formula(fullrecursion, i, m, m, ZERO), 
+        EXPECT_NEAR( recursion_formula(fullrecursion, i, m, m), 
                      std::pow(fullrecursion.D(i), m) / t_real(factorial(m)) * fullrecursion.initials(i),
                      1e-8 );
       }
@@ -77,7 +76,7 @@ TEST(TestRecursion, lzero_InitialZero) {
 
   for(t_int i(0); i < 5; ++i) {
     for(t_int m(0); m < 5; ++m) 
-      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, m, 0, ZERO), 0e0);
+      EXPECT_DOUBLE_EQ(recursion_formula(fullrecursion, i, m, 0), 0e0);
   }
 }
 
@@ -160,7 +159,7 @@ TEST_P(TestViaMatrix, lzero) {
                            * jay.valmat.row(i).head(m).transpose()).array().sum();
       
       t_real const check = term0.topLeftCorner(term0.rows(), m).sum() + term1; 
-      EXPECT_NEAR(recursion_formula(jay, i, m, 0, ZERO), check, std::abs(check) * 1e-8)
+      EXPECT_NEAR(recursion_formula(jay, i, m, 0), check, std::abs(check) * 1e-8)
           << "i=" << i << " m=" << m;
                    
     }
@@ -197,7 +196,7 @@ TEST_P(TestViaMatrix, general) {
           dcl -= (valrow.segment(l, m-l) * term.row(j).segment(l, m-l).transpose() * factor)(0, 0);
         }
           
-        EXPECT_NEAR( recursion_formula(jay, i, m, l, ZERO), dcl, std::abs(dcl) * 1e-8 )
+        EXPECT_NEAR( recursion_formula(jay, i, m, l), dcl, std::abs(dcl) * 1e-8 )
           << "i=" << i << " m=" << m << " l=" << l;
       }
     }
