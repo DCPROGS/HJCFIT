@@ -10,7 +10,10 @@ def Matrix(string):
                   [     0,     15000,  4000, -19000,    0 ],  
                   [     0,         0,    10,      0,  -10 ] ])
   if string == "empty": return array([])
-  if string == "spam": return identity(5).tolist()
+  if string == "spam": 
+    r = identity(5).tolist()
+    r[1].append(0)
+    return r
   if string == "numpy_spam": return array([['a', 'b', 'c']*3])
   if string == "rectangle": return identity(6).reshape(3, 12)
   if string == "complex eigenvalues": 

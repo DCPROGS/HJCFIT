@@ -36,6 +36,18 @@ namespace DCProgs {
       t_rmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }
       //! Close to open transitions
       t_rmatrix fa(t_real _t) const { return asymptotes_fa_->operator()(_t); }
+      //! Number of exponential components for af
+      t_int nb_af_components() const { return asymptotes_af_->size(); }
+      //! Number of exponential components for fa
+      t_int nb_fa_components() const { return asymptotes_fa_->size(); }
+      //! AF exponential components
+      Asymptotes::t_MatrixAndRoot const & af_components(t_int i) const {
+        return (*asymptotes_af_)[i]; 
+      }
+      //! FA exponential components
+      Asymptotes::t_MatrixAndRoot const & fa_components(t_int i) const {
+        return (*asymptotes_fa_)[i]; 
+      }
     protected:
 #     ifndef HAS_CXX11_UNIQUE_PTR
         //! Type of the pointers holding recursion interfaces.

@@ -1,6 +1,22 @@
-from behave import when, then
+from behave import given, when, then
 from test_setup import register_type
 register_type()
+
+@given('a list of {n:Integer} random missed events with tau={tau:Float} and nmax={nmax:Integer}')
+def step(context, n, tau, nmax):
+  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood import create_missed_eventsG
+  qmatrices, Gs = [], []
+  while len(Gs) != n:
+    qmatrix = random_qmatrix()
+    try: G = create_missed_eventsG(qmatrix, tau, nmax)
+    except: continue
+    else: Gs.append(G)
+  if not hasattr(context, 'qmatrices'): context.qmatrices = []
+  if not hasattr(context, 'missed_events_Gs'): context.missed_events_Gs = []
+  context.qmatrices.extend(qmatrices)
+  context.missed_events_Gs.extend(Gs)
+
 @when('MissedEventsG objects are instantiated with the q-matrices and tau={tau:Float}' \
       'and nmax={nmax:Integer}')
 def step(context, tau, nmax):
@@ -18,7 +34,15 @@ def step(context, tau, nmax):
       print qmatrix
       raise
 
-@then('MissedEventsG.{name}(t) is zero if t is between {start:Float} and {end:Float}')
+@when('the {name} equilibrium occupancies are computed')
+def step(context, name): 
+  if not hasattr(context, 'occupancies'): context.occupancies = []
+  equname = '{0}_occupancies'.format(name)
+  for G in context.missed_events_Gs:
+    context.occupancies.append( getattr(G, equname) )
+
+
+@then('{name} is zero if t is between {start:Float} and {end:Float}')
 def step(context, name, start, end): 
   from numpy import abs, any
   times = context.times
@@ -27,14 +51,15 @@ def step(context, name, start, end):
   for missed_events_G in context.missed_events_Gs:
     if missed_events_G is None: continue
     for t in times:
-      value = getattr(missed_events_G, name)(t)
-      if any(abs(value) > context.tolerance): 
+      try:
+        value = getattr(missed_events_G, name)(t)
+        assert any(abs(value) < context.tolerance)
+      except:
         print(missed_events_G)
         print("{name}({t}) = {value}".format(name=name, t=t, value=value))
-        raise AssertionError()
+        raise 
 
-@then('MissedEventsG.{name}(t) can be found from ExactSurvivor if t is between '  \
-      '{start:Float} and {end:Float}')
+@then('{name} can be found from ExactSurvivor if t is between {start:Float} and {end:Float}')
 def step(context, name, start, end): 
   from numpy import abs, any, dot
   from scipy.linalg import expm
@@ -61,8 +86,7 @@ def step(context, name, start, end):
         print("factor:\n{factor}".format(factor=factor))
         raise AssertionError()
 
-@then('MissedEventsG.{name}(t) can be found from ApproxSurvivor if t is larger than '  \
-      '{start:Float}')
+@then('{name} can be found from ApproxSurvivor if t is larger than {start:Float}')
 def step(context, name, start): 
   from numpy import abs, any, dot
   from scipy.linalg import expm
@@ -87,3 +111,18 @@ def step(context, name, start):
         print("approx.af({t}*tau) * factor: \n{value}".format(name=name, t=(t-tau)/tau, value=check))
         print("factor:\n{factor}".format(factor=factor))
         raise AssertionError()
+
+@then('the {name} equilibrium occupancies are the only solution to the equilibrium equations')
+def step(context, name):
+  from numpy.linalg import svd
+  from numpy import dot, identity, abs, all
+  for qmatrix, G, occ in zip(context.qmatrices, context.missed_events_Gs, context.occupancies):
+    eqmatrix = dot(G.laplace_af(0), G.laplace_fa(0))
+    if name == "initial": eqmatrix = eqmatrix.T
+    eqmatrix -= identity(eqmatrix.shape[0])
+
+    left, sings, right = svd(eqmatrix)
+
+    assert sum(abs(sings) < context.tolerance) == 1
+    assert all(abs(dot(occ,  eqmatrix)) < 1e-8)
+

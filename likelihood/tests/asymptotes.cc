@@ -81,7 +81,6 @@ TEST_P(TestAsymptotes, is_projection_matrix) {
   }
 }
 
-
 t_Params create_open_params() {
   std::vector<Root> roots;
   roots.emplace_back(-3045.285776037674, 1);

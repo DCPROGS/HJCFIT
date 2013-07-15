@@ -23,5 +23,6 @@ if(pythonBindings AND tests)
   feature_test(find_roots features/find_roots.feature)
   feature_test(asymptotes features/asymptotes.feature)
   feature_test(idealg features/idealg.feature)
+  feature_test(missed_eventsG features/missed_eventsG.feature)
   
 endif(pythonBindings AND tests)

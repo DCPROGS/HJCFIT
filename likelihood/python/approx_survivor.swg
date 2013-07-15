@@ -37,6 +37,43 @@ class ApproxSurvivor {
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
+
+  %extend {
+    PyObject* const af_components;
+//   PyObject* fa_components;
+  }
+  %{ namespace { 
+    template<class T> 
+      PyObject* affa_components_get(DCProgs::ApproxSurvivor *_in,
+                                    Py_ssize_t const _N, T const &_getstuff) {
+        Object<> result = steal_ref( PyList_New(_N) );
+        if(not result) throw DCProgs::errors::PythonErrorAlreadyThrown();
+        for(Py_ssize_t i(0); i < _N; ++i) {
+          DCProgs::Asymptotes::t_MatrixAndRoot const &item = _getstuff(i);
+          Object<> py_item = steal_ref( PyTuple_New(2) );
+          if(not py_item) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          Object<> py_root = steal_ref(PyFloat_FromDouble(std::get<1>(item)));
+          if(not py_root) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          DCProgs::t_rmatrix const & matrix = std::get<0>(item);
+          Object<> py_matrix = steal_ref(DCProgs::numpy::wrap_to_numpy(matrix));
+          if(not py_matrix) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          PyArray_CLEARFLAGS((PyArrayObject*) ~py_matrix, NPY_ARRAY_WRITEABLE);
+          PyTuple_SET_ITEM(~py_item, 0, py_matrix.release());
+          PyTuple_SET_ITEM(~py_item, 1, py_root.release());
+          PyList_SET_ITEM(~result, i, py_item.release());
+        }
+        return result.release();
+      }
+    PyObject* DCProgs_ApproxSurvivor_af_components_get(DCProgs::ApproxSurvivor *_in) {
+        return affa_components_get( _in, (Py_ssize_t)_in->nb_af_components(),
+                                    [&_in](DCProgs::t_int i) { return _in->af_components(i); } );
+    }
+    PyObject* DCProgs_ApproxSurvivor_fa_components_get(DCProgs::ApproxSurvivor *_in) {
+        return affa_components_get( _in, (Py_ssize_t)_in->nb_fa_components(),
+                                    [&_in](DCProgs::t_int i) { return _in->fa_components(i); } );
+    }
+ 
+  } %}
 };
 %clear ApproxSurvivor;
 

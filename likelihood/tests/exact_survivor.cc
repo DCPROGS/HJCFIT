@@ -32,21 +32,17 @@ class ExactSurvivorTest : public ::testing::Test {
   t_rmatrix N0(t_real _t, t_real _tau, bool _a = true)  {
     t_int const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
-    for(t_int i(0); i < eigenvalues.size(); ++i) {
-      if(std::abs(eigenvalues(i) > 1e-12))  {
-        result += get_ci00(i, _a) * std::exp(-eigenvalues(i)*_t);
-      }
-    }
+    for(t_int i(0); i < eigenvalues.size(); ++i) 
+      result += get_ci00(i, _a) * std::exp(-eigenvalues(i)*_t);
     return result;
   }
   t_rmatrix N1(t_real _t, t_real _tau, bool _a = true)  {
     t_real const t(_t - _tau);
     t_int const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
-    for(t_int i(0); i < eigenvalues.size(); ++i) {
-      if(std::abs(eigenvalues(i) > 1e-12)) 
-        result += (get_ci10(i, _tau, _a)  + get_ci11(i, _tau, _a) * _t) * std::exp(-eigenvalues(i)*_t);
-    }
+    for(t_int i(0); i < eigenvalues.size(); ++i) 
+      result += (get_ci10(i, _tau, _a)  + get_ci11(i, _tau, _a) * _t) 
+                * std::exp(-eigenvalues(i)*_t);
     return result;
   }
 
@@ -71,7 +67,6 @@ class ExactSurvivorTest : public ::testing::Test {
     t_int const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
     for(t_int j(0); j < eigenvalues.size(); ++j) {
-      if(std::abs(eigenvalues(j) < 1e-12)) continue;
       t_real const delta(eigenvalues(j) - eigenvalues(_i));
       if(std::abs(delta) > 1e-8) {
         result += (get_di(_i, _tau, _a) * get_ci00(j, _a) + get_di(j, _tau, _a) * get_ci00(_i, _a)) 
@@ -100,8 +95,8 @@ TEST_F(ExactSurvivorTest, negative_times) {
   EXPECT_EQ(survivor.af(-1e-5).rows(), 2);
   EXPECT_EQ(survivor.af(-1e-5).cols(), 2);
   EXPECT_TRUE( (survivor.fa(-1e-5).array().abs() < 1e-8).all()  );
-  EXPECT_EQ(survivor.fa(-1e-5).rows(), 2);
-  EXPECT_EQ(survivor.fa(-1e-5).cols(), 2);
+  EXPECT_EQ(survivor.fa(-1e-5).rows(), 3);
+  EXPECT_EQ(survivor.fa(-1e-5).cols(), 3);
 }
 
 // Compares recursive implementation to the expanded one in this file.
@@ -269,6 +264,15 @@ TEST_F(ExactSurvivorTest, continuity_at_t_eq_three_tau) {
   }
 }
 
+// Checks that likelihood for t=0 is identity (states are where they start at).
+TEST_F(ExactSurvivorTest, at_t_equal_0_is_identity) {
+
+  QMatrix qmatrix(Q, 2);
+  t_real const tau = 1e-4;
+  ExactSurvivor survivor(qmatrix, tau);
+  EXPECT_TRUE(((survivor.af(0) - t_rmatrix::Identity(2, 2)).array().abs() < 1e-12).all());
+  EXPECT_TRUE(((survivor.fa(0) - t_rmatrix::Identity(3, 3)).array().abs() < 1e-12).all());
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
