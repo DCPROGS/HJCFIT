@@ -46,7 +46,7 @@ namespace DCProgs {
     Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
 
-    t_int nclose() const { return matrix.cols() - nopen; }
+    t_int nshut() const { return matrix.cols() - nopen; }
 
     //! \brief Returns transpose of state matrix.
     //! \details Means A states become F states, and F states become A states, and the partitionned

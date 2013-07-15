@@ -14,7 +14,7 @@ namespace DCProgs {
 
   //! CHS matrices \f$H_{FA}\f$
   t_rmatrix CHS_matrix_Hfa(MissedEventsG const &, t_real);
-  //! CHS matrices \f$H_{FA}\f$
+  //! CHS matrices \f$H_{AF}\f$
   t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
 
 
@@ -44,6 +44,7 @@ namespace DCProgs {
                       nmax_(_nmax), tmax_(nmax_ * get_tau()),
                       af_factor_( _af.get_qmatrix().af()
                                   * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
+                      // _fa is already transpose of _af, so it is indeed _fa.matrix.af * e^...
                       fa_factor_( _fa.get_qmatrix().af()
                                   * (_af.get_tau() * _fa.get_qmatrix().ff()).exp() ) {}
       //! Initializes missed events functor.

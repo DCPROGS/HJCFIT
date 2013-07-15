@@ -40,7 +40,7 @@ class ApproxSurvivor {
 
   %extend {
     PyObject* const af_components;
-//   PyObject* fa_components;
+    PyObject* const fa_components;
   }
   %{ namespace { 
     template<class T> 
@@ -66,14 +66,28 @@ class ApproxSurvivor {
       }
     PyObject* DCProgs_ApproxSurvivor_af_components_get(DCProgs::ApproxSurvivor *_in) {
         return affa_components_get( _in, (Py_ssize_t)_in->nb_af_components(),
-                                    [&_in](DCProgs::t_int i) { return _in->af_components(i); } );
+                                    [&_in](DCProgs::t_int i)
+                                      { return _in->get_af_components(i); } );
     }
     PyObject* DCProgs_ApproxSurvivor_fa_components_get(DCProgs::ApproxSurvivor *_in) {
         return affa_components_get( _in, (Py_ssize_t)_in->nb_fa_components(),
-                                    [&_in](DCProgs::t_int i) { return _in->fa_components(i); } );
+                                    [&_in](DCProgs::t_int i)
+                                       { return _in->get_fa_components(i); } );
     }
  
   } %}
+
+  // Add some printout functions.
+  %extend {
+    PyObject* __str__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+  }
 };
 %clear ApproxSurvivor;
 

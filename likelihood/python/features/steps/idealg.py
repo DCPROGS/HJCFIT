@@ -3,14 +3,47 @@ from test_setup import register_type
 register_type()
 
 
+@given('a list of {n:Integer} random ideal likelihoods')
+def step(context, n):
+  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood import IdealG
+  qmatrices, Gs, i = [], [], 10*n
+  while len(Gs) != n:
+    i -= 1
+    if i == 0: raise AssertionError('Could not instanciate enough likelihoods.')
+    qmatrix = random_qmatrix()
+    try: G = IdealG(qmatrix)
+    except: continue
+    else:
+      Gs.append(G)
+      qmatrices.append(qmatrix)
+  if not hasattr(context, 'qmatrices'): context.qmatrices = []
+  if not hasattr(context, 'likelihoods'): context.likelihoods = []
+  context.qmatrices.extend(qmatrices)
+  context.likelihoods.extend(Gs)
+
+
+
+
 @when('IdealG objects are instantiated with the q-matrices')
 def step(context):
   from dcprogs.likelihood import IdealG
   context.idealgs = [IdealG(u) for u in context.qmatrices]
+
 @when('IdealG objects are instantiated with the matrices and nopens')
 def step(context):
   from dcprogs.likelihood import IdealG
   context.idealgs = [IdealG(u.matrix, u.nopen) for u in context.qmatrices]
+
+@when('the {name} equilibrium occupancies are computed')
+def step(context, name): 
+  if not hasattr(context, 'occupancies'): context.occupancies = []
+  equname = '{0}_occupancies'.format(name)
+  for G in context.likelihoods:
+    context.occupancies.append( getattr(G, equname) )
+
+
+
 
 @then('computing af for each time yields exp(t Q_AA) Q_AF')
 def step(context):
@@ -101,3 +134,31 @@ def step(context):
       print("Equilibrium: {0}".format(occupancies))
       print("Kernel Application: {0}".format(dot(occupancies, kernel)))
       raise
+
+@then('the {name} equilibrium occupancies are the only solution to the equilibrium equations')
+def step(context, name):
+  from numpy.linalg import svd
+  from numpy import dot, identity, abs, all
+  for qmatrix, G, occ in zip(context.qmatrices, context.likelihoods, context.occupancies):
+    eqmatrix = dot(G.laplace_af(0), G.laplace_fa(0)) if name == "initial"                         \
+               else dot(G.laplace_fa(0), G.laplace_af(0))
+    eqmatrix -= identity(eqmatrix.shape[0])
+
+    left, sings, right = svd(eqmatrix)
+
+    try:
+      assert sum(abs(sings) < context.tolerance) == 1
+      assert all(abs(dot(occ,  eqmatrix)) < context.tolerance)
+    except: 
+      print(G)
+      print(" * occupancies: {0}".format(occ))
+      print(" * matrix:\n{0}".format(eqmatrix))
+      print(" * error: {0}".format(dot(occ, eqmatrix)))
+      raise
+
+@then('the components of the {name} equilibrium occupancies sum to one')
+def step(context, name):
+  from numpy import sum
+  for qmatrix, G, occ in zip(context.qmatrices, context.likelihoods, context.occupancies):
+    assert (sum(occ) - 1e0) < context.tolerance
+

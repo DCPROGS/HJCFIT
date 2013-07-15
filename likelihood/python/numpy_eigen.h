@@ -53,18 +53,17 @@ namespace DCProgs {
     
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy_(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL)
+      PyObject* wrap_to_numpy_(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL,
+                               bool _keep2d = false)
       {
         typedef type<typename Eigen::DenseBase<T_DERIVED>::Scalar> t_ScalarType;
         npy_intp dims[2] = { _in.rows(), _in.cols() };
+        npy_int const ndims = (_in.cols() > 1 or _keep2d) ? 2: 1;
         if(_in.rows() == 0 or _in.cols() == 0)
-          return PyArray_ZEROS( _in.cols() > 1? 2: 1, dims, t_ScalarType::value,
-                                _in.IsRowMajor ? 0: 1 );
+          return PyArray_ZEROS(ndims, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1 );
         PyArrayObject *result = _parent == NULL ?
-          (PyArrayObject*) PyArray_ZEROS( _in.cols() > 1? 2: 1, dims,
-                                          t_ScalarType::value, _in.IsRowMajor ? 0: 1 ):
-          (PyArrayObject*) PyArray_SimpleNewFromData( _in.cols() > 1? 2: 1, dims,
-                                                      t_ScalarType::value,
+          (PyArrayObject*) PyArray_ZEROS(ndims, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1):
+          (PyArrayObject*) PyArray_SimpleNewFromData( ndims, dims, t_ScalarType::value,
                                                       (void*)(&_in(0,0)) );
         if(result == NULL) return NULL;
         // If has a parent, do not copy data, just incref it as base.
@@ -103,15 +102,16 @@ namespace DCProgs {
 
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> const &_in) {
-        PyObject* const result = wrap_to_numpy_(_in);
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> const &_in, bool _keep2d=false) {
+        PyObject* const result = wrap_to_numpy_(_in, NULL, _keep2d);
         PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &_in, PyObject *_parent = NULL) {
-        PyObject* const result = wrap_to_numpy_(_in, _parent);
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &_in, PyObject *_parent = NULL,
+                              bool _keep2d=false) {
+        PyObject* const result = wrap_to_numpy_(_in, _parent, _keep2d);
         PyArray_ENABLEFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }

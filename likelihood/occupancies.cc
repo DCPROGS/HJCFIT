@@ -62,7 +62,7 @@ namespace DCProgs {
       return phif_times_Hfa / phif_times_Hfa.array().head(nopen).sum();
     } else {
       // \f$H_{FA} u_A\f$
-      return Hfa.leftCols(nopen).rowwise().sum();
+      return Hfa.rowwise().sum();
     }
   }
 }

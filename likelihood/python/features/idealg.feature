@@ -19,9 +19,15 @@ Feature: Check IdealG bindings
      Then computing laplace_af for each scale yields (sI - Q_AA)^-1 Q_AF
       And computing laplace_fa for each scale yields (sI - Q_FF)^-1 Q_FA
       
-  Scenario: Computation of equilibrium vectors
-    Given a list of 500 random q-matrices
-      And a parameter tolerance=1e-6
-     When IdealG objects are instantiated with the q-matrices
-     Then the initial occupancies exists and is the kernel of I - laplace_af * laplace_fa
-      And the final occupancies exists and is the kernel of I - laplace_fa * laplace_af
+  Scenario Outline: Computation of equilibrium vectors
+    Given a list of 100 random ideal likelihoods
+      And a parameter tolerance=1e-8
+     When the <name> equilibrium occupancies are computed 
+     Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
+      And the components of the <name> equilibrium occupancies sum to one
+
+    Examples:
+ 
+      | name    |
+      | initial |
+      | final   |

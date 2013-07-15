@@ -90,7 +90,7 @@ namespace DCProgs {
     t_rmatrix const exponential_factor = (_tau * transitions.ff()).exp() * transitions.fa();
     for(t_int i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
-      auto right = eigenvectors_inv.row(i).tail(transitions.nclose());
+      auto right = eigenvectors_inv.row(i).tail(transitions.nshut());
       dvalues_.push_back((left * right) * exponential_factor);
     }
     // set number of open states

@@ -24,5 +24,6 @@ if(pythonBindings AND tests)
   feature_test(asymptotes features/asymptotes.feature)
   feature_test(idealg features/idealg.feature)
   feature_test(missed_eventsG features/missed_eventsG.feature)
+  feature_test(approx_survivor features/approx_survivor.feature)
   
 endif(pythonBindings AND tests)

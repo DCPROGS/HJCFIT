@@ -13,8 +13,8 @@
          ":math:`^{e}G_{FA}(s) = {}^FR(s) e^{-s\\tau}Q_{FA}e^{Q_{AA}\\tau}`, "
          "with :math:{}^FR(s) = [sI - Q_{FF} - Q_{FA} \\int_0^\\taue^{-st}"
          "e^{Q_{AA}t}\\partial t Q_{AF}]^{-1}`.") MissedEventsG::laplace_af;
-%feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::_initial_CHS_occupancies;
-%feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::_final_CHS_occupancies;
+%feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::initial_CHS_occupancies;
+%feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::final_CHS_occupancies;
 class MissedEventsG {
   public:
 
@@ -36,11 +36,11 @@ class MissedEventsG {
   DCProgs::t_rmatrix laplace_af(DCProgs::t_real t);
   DCProgs::t_rmatrix laplace_fa(DCProgs::t_real t);
   %extend {
-    DCProgs::t_initvec _initial_CHS_occupancies(DCProgs::t_real t_critical) {
-      return DCProgs::CHS_occupancies(*$self, $self->get_tau(), t_critical); 
+    DCProgs::t_initvec initial_CHS_occupancies(DCProgs::t_real t_critical) {
+      return DCProgs::CHS_occupancies(*$self, t_critical, true); 
     }
-    DCProgs::t_initvec _final_CHS_occupancies(DCProgs::t_real t_critical) { 
-      return DCProgs::CHS_occupancies(*$self, $self->get_tau(), t_critical); 
+    DCProgs::t_initvec final_CHS_occupancies(DCProgs::t_real t_critical) { 
+      return DCProgs::CHS_occupancies(*$self, t_critical, false); 
     }
   }
 
@@ -87,6 +87,8 @@ class MissedEventsG {
   %extend { 
     DCProgs::t_real const tmax; 
     DCProgs::t_int nmax; 
+    DCProgs::t_int const nopen;
+    DCProgs::t_int const nshut;
   }
   %{
     DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
@@ -97,6 +99,12 @@ class MissedEventsG {
     }
     void DCProgs_MissedEventsG_nmax_set(DCProgs::MissedEventsG *_in, DCProgs::t_int _n) {
       _in->set_nmax(_n);
+    }
+    DCProgs::t_int DCProgs_MissedEventsG_nopen_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_qmatrix().nopen;
+    }
+    DCProgs::t_int DCProgs_MissedEventsG_nshut_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_qmatrix().nshut();
     }
   %}
 };

@@ -1,6 +1,6 @@
 %feature("autodoc", "Transition rate matrix.\n\n"
          "Open-open transitions should be located in the top-left corner.") QMatrix;
-%feature("autodoc", "Swaps AA block with FF, AF block with FA, nopen with nclose.\n\n")
+%feature("autodoc", "Swaps AA block with FF, AF block with FA, nopen with nshut.\n\n")
          QMatrix::transpose;
 %feature("autodoc", "Transition matrix itself.") QMatrix::matrix;
 %feature("autodoc", "Number of open states.") QMatrix::nopen;

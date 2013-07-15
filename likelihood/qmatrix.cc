@@ -5,12 +5,12 @@ namespace DCProgs {
   QMatrix QMatrix::transpose() const {
   
     QMatrix result;
-    t_int const nclose(matrix.rows() - nopen);
-    result.nopen = nclose;
+    t_int const nclosed(nshut());
+    result.nopen = nclosed;
     result.matrix.resize(matrix.rows(), matrix.cols());
-    result.matrix.topLeftCorner(nclose, nclose) = matrix.bottomRightCorner(nclose, nclose);
-    result.matrix.topRightCorner(nclose, nopen) = matrix.bottomLeftCorner(nclose, nopen);
-    result.matrix.bottomLeftCorner(nopen, nclose) = matrix.topRightCorner(nopen, nclose);
+    result.matrix.topLeftCorner(nclosed, nclosed) = matrix.bottomRightCorner(nclosed, nclosed);
+    result.matrix.topRightCorner(nclosed, nopen) = matrix.bottomLeftCorner(nclosed, nopen);
+    result.matrix.bottomLeftCorner(nopen, nclosed) = matrix.topRightCorner(nopen, nclosed);
     result.matrix.bottomRightCorner(nopen, nopen) = matrix.topLeftCorner(nopen, nopen);
     return result;
   }

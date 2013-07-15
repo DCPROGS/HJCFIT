@@ -44,7 +44,7 @@ namespace DCProgs {
   MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat) {
     return _stream << "Ideal Likelihood:\n" 
                    << "=================\n\n" 
-                   << "  * nopen: "  << _mat.get_nopen()
+                   << "  * nopen: "  << _mat.get_nopen() << "\n"
                    << "  * matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
   }
 }

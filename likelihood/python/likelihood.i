@@ -117,7 +117,7 @@
   DCPROGS_CATCH(SWIG_fail);
 }
 %typemap(out) DCProgs::t_rmatrix { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
+  try { $result = DCProgs::numpy::wrap_to_numpy($1, NULL, true); }
   DCPROGS_CATCH(SWIG_fail);
 };
 

@@ -2,44 +2,51 @@ from behave import given, when, then
 from test_setup import register_type
 register_type()
 
-@given('a list of {n:Integer} random missed events with tau={tau:Float} and nmax={nmax:Integer}')
+@given('a list of {n:Integer} random missed-events likelihoods with tau={tau:Float} '             \
+       'and nmax={nmax:Integer}')
 def step(context, n, tau, nmax):
   from dcprogs.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import create_missed_eventsG
-  qmatrices, Gs = [], []
+  qmatrices, Gs, i = [], [], 10*n
   while len(Gs) != n:
+    i -= 1
+    if i == 0: raise AssertionError('Could not instanciate enough likelihoods.')
     qmatrix = random_qmatrix()
     try: G = create_missed_eventsG(qmatrix, tau, nmax)
     except: continue
-    else: Gs.append(G)
+    else:
+      Gs.append(G)
+      qmatrices.append(qmatrix)
   if not hasattr(context, 'qmatrices'): context.qmatrices = []
-  if not hasattr(context, 'missed_events_Gs'): context.missed_events_Gs = []
+  if not hasattr(context, 'likelihoods'): context.likelihoods = []
   context.qmatrices.extend(qmatrices)
-  context.missed_events_Gs.extend(Gs)
+  context.likelihoods.extend(Gs)
 
-@when('MissedEventsG objects are instantiated with the q-matrices and tau={tau:Float}' \
+@when('MissedEventsG objects are instantiated with the q-matrices and tau={tau:Float}'             \
       'and nmax={nmax:Integer}')
 def step(context, tau, nmax):
   from dcprogs.likelihood import create_missed_eventsG
-  if not hasattr(context, "missed_events_Gs"): context.missed_events_Gs = []
+  if not hasattr(context, "likelihoods"): context.likelihoods = []
   for i, qmatrix in enumerate(context.qmatrices):
-    if qmatrix is None: context.missed_events_Gs.append(None); continue
+    if qmatrix is None: context.likelihoods.append(None); continue
     try: 
-      context.missed_events_Gs.append(create_missed_eventsG(qmatrix, tau, nmax))
+      context.likelihoods.append(create_missed_eventsG(qmatrix, tau, nmax))
     except ArithmeticError: 
-      context.missed_events_Gs.append(None)
+      context.likelihoods.append(None)
       context.qmatrices[i] = None
       continue
     except:
       print qmatrix
       raise
 
-@when('the {name} equilibrium occupancies are computed')
+@when('the {name} CHS occupancies are computed')
 def step(context, name): 
   if not hasattr(context, 'occupancies'): context.occupancies = []
-  equname = '{0}_occupancies'.format(name)
-  for G in context.missed_events_Gs:
-    context.occupancies.append( getattr(G, equname) )
+  equname = '{0}_CHS_occupancies'.format(name)
+  for G in context.likelihoods:
+    function = getattr(G, equname)
+    context.occupancies.append([function(t) for t in context.times])
+    
 
 
 @then('{name} is zero if t is between {start:Float} and {end:Float}')
@@ -48,7 +55,7 @@ def step(context, name, start, end):
   times = context.times
   times = times[times < end] 
   times = times[times >= start]
-  for missed_events_G in context.missed_events_Gs:
+  for missed_events_G in context.likelihoods:
     if missed_events_G is None: continue
     for t in times:
       try:
@@ -67,7 +74,7 @@ def step(context, name, start, end):
   times = times[times < end] 
   times = times[times > start]
   for exact, missed_events_G, qmatrix in zip(context.exact_survivors,
-                                             context.missed_events_Gs,
+                                             context.likelihoods,
                                              context.qmatrices):
     if missed_events_G is None: continue
     tau = missed_events_G.tau
@@ -93,7 +100,7 @@ def step(context, name, start):
   times = context.times
   times = times[times > start]
   for approx, missed_events_G, qmatrix in zip(context.approx_survivors,
-                                             context.missed_events_Gs,
+                                             context.likelihoods,
                                              context.qmatrices):
     if missed_events_G is None: continue
     tau = missed_events_G.tau
@@ -112,17 +119,61 @@ def step(context, name, start):
         print("factor:\n{factor}".format(factor=factor))
         raise AssertionError()
 
-@then('the {name} equilibrium occupancies are the only solution to the equilibrium equations')
-def step(context, name):
-  from numpy.linalg import svd
-  from numpy import dot, identity, abs, all
-  for qmatrix, G, occ in zip(context.qmatrices, context.missed_events_Gs, context.occupancies):
-    eqmatrix = dot(G.laplace_af(0), G.laplace_fa(0))
-    if name == "initial": eqmatrix = eqmatrix.T
-    eqmatrix -= identity(eqmatrix.shape[0])
+def compute_Hfa(qmatrix, tau, tcrit):
+  from dcprogs.likelihood import create_approx_survivor
+  from scipy.linalg import expm
+  from numpy import exp, dot
 
-    left, sings, right = svd(eqmatrix)
+  approx = create_approx_survivor(qmatrix, tau)
+  result = None
+  # This sums ^{F}R_i tau_i e^(-(tcrit - tau) / tau_i )
+  for matrix, root in approx.fa_components: 
+    if result is None: result = -matrix / root * exp( root * (tcrit - tau) )
+    else: result += -matrix / root * exp( root * (tcrit - tau) )
+  # multiply by Q_{FA} e^{Q_AA} 
+  print "!!!! \n", result
+  return dot(result, dot(qmatrix.fa, expm(tau * qmatrix.aa)))
 
-    assert sum(abs(sings) < context.tolerance) == 1
-    assert all(abs(dot(occ,  eqmatrix)) < 1e-8)
 
+@then('the initial CHS occupancies are the solutions to the CHS equations')
+def step(context):
+  from numpy import dot, abs, all, any, sum
+
+  didloop = False
+  for qmatrix, G, occupancies in zip(context.qmatrices, context.likelihoods, context.occupancies):
+    phif = G.final_occupancies
+
+    for t, occ in zip(context.times, occupancies):
+      try:  
+        Hfa = compute_Hfa(qmatrix, G.tau, t)
+        phif_Hfa = dot(phif, Hfa)
+        check = phif_Hfa / sum(phif_Hfa[:G.nopen], axis=1)
+        assert all(abs(occ - check) < context.tolerance)
+        assert any(abs(occ - 2e0*check) > context.tolerance)
+      except:
+        print(G)
+        print("  * occupancies: {0}".format(occ))
+        print("  * check: {0}".format(check))
+        print("  * Hfa shape: {0}".format(Hfa))
+        raise
+
+      didloop = True
+  assert didloop
+
+@then('the final CHS occupancies are the solutions to the CHS equations')
+def step(context):
+  from numpy import abs, all, any, sum
+
+  for qmatrix, G, occupancies in zip(context.qmatrices, context.likelihoods, context.occupancies):
+    for t, occ in zip(context.times, occupancies):
+      try:  
+        Hfa = compute_Hfa(qmatrix, G.tau, t)
+        check = sum(Hfa[:, :G.nopen], axis=1) 
+        assert all(abs(occ - check) < context.tolerance)
+        assert any(abs(occ - 2e0*check) > context.tolerance)
+      except:
+        print(G)
+        print("  * occupancies: {0}".format(occ))
+        print("  * check: {0}".format(check))
+        print("  * Hfa shape: {0}".format(Hfa.shape))
+        raise

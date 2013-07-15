@@ -27,10 +27,26 @@ Feature: Check Missed Events G functionality
 
  
   Scenario Outline: Computation of equilibrium occupancy
-    Given a list of 100 random missed events with tau=1e-4 and nmax=2
+    Given a list of 100 random missed-events likelihoods with tau=1e-4 and nmax=2
       And a parameter tolerance=1e-8
      When the <name> equilibrium occupancies are computed 
      Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
+      And the components of the <name> equilibrium occupancies sum to one
+ 
+    Examples:
+ 
+      | name    |
+      | initial |
+      | final   |
+
+
+
+  Scenario Outline: Computation of CHS vectors
+    Given a list of 10 random missed-events likelihoods with tau=1e-4 and nmax=2
+      And a list of 10 random times between 1e-3 and 3e-3
+      And a parameter tolerance=1e-8
+     When the <name> CHS occupancies are computed 
+     Then the <name> CHS occupancies are the solutions to the CHS equations
  
     Examples:
  

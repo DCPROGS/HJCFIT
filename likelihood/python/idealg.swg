@@ -49,4 +49,16 @@ class IdealG {
   DCProgs::t_rmatrix fa(DCProgs::t_real t) const;
   DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s) const;
   DCProgs::t_rmatrix laplace_af(DCProgs::t_real s) const;
+
+  // Add some printout functions.
+  %extend {
+    PyObject* __str__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+  }
 };

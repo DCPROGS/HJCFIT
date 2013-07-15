@@ -41,11 +41,11 @@ namespace DCProgs {
       //! Number of exponential components for fa
       t_int nb_fa_components() const { return asymptotes_fa_->size(); }
       //! AF exponential components
-      Asymptotes::t_MatrixAndRoot const & af_components(t_int i) const {
+      Asymptotes::t_MatrixAndRoot const & get_af_components(t_int i) const {
         return (*asymptotes_af_)[i]; 
       }
       //! FA exponential components
-      Asymptotes::t_MatrixAndRoot const & fa_components(t_int i) const {
+      Asymptotes::t_MatrixAndRoot const & get_fa_components(t_int i) const {
         return (*asymptotes_fa_)[i]; 
       }
     protected:
@@ -61,6 +61,9 @@ namespace DCProgs {
       //! Pointer to FA recursion interface
       t_AsymptotesPtr asymptotes_fa_;
   };
+
+  //! Dumps Survivor function equation to stream
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, ApproxSurvivor const &_self);
 }
 #endif 
 
