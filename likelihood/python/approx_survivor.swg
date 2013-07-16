@@ -19,14 +19,32 @@
     return result;
   }
 %}
-%feature("autodoc", "Computes approximate missed-event survivor function.") ApproxSurvivor;
+%feature("autodoc", "Computes approximate missed-event survivor function.\n\n"
+         "This object can be created  explicitely from the determinantal equations and the "
+         "roots of the AF and FA blocks:\n\n"
+         ">>> approx = ApproxSurvivor(determinant_af, roots_af, determinant_fa, roots_fa)\n\n"
+         "However, it can also be created using the helper function "
+         ":meth:`create_approx_survivor`.\n\n"
+         ":param DeterminantEq determinant_af:\n"
+         "  The determinantal equation for the af block.\n"
+         ":param roots_af:\n"
+         "  The roots of the af determinantal equation. The should come in the format "
+            "`[(root, multiplicity), (root, multiplicity), ...]`.\n" 
+         ":param DeterminantEq determinant_fa:\n"
+         "  The determinantal equation for the fa block. It should likely be "
+           "the transpose of determinant_fa.\n"
+         ":param roots_fa:\n"
+         "  The roots of the fa determinantal equation. The should come in the format "
+            "`[(root, multiplicity), (root, multiplicity), ...]`.\n" 
+         ":param float tau:\n"
+         "  The maximum length of the missed events.\n") ApproxSurvivor;
 %feature("autodoc", "Open to close transitions") ApproxSurvivor::af;
 %feature("autodoc", "Closed to open transitions") ApproxSurvivor::fa;
 class ApproxSurvivor {
   public:
   
-  // Other way to create this object.
   %extend {
+    // Creates object from determinants and roots.
     ApproxSurvivor(DCProgs::DeterminantEq const &_af, PyObject * _roots_af, 
                    DCProgs::DeterminantEq const &_fa, PyObject * _roots_fa ) {
       std::vector<DCProgs::Root> roots_af = convert_to_roots(_roots_af);
@@ -91,13 +109,3 @@ class ApproxSurvivor {
 };
 %clear ApproxSurvivor;
 
-%pythoncode %{
-  def create_approx_survivor(rates, tau):
-
-    """ Creates a ApproxSurvivor function from knowledge of rate matrix. """
-    determinant_af = DeterminantEq(rates, tau) 
-    determinant_fa = DeterminantEq(rates.transpose(), tau) 
-    roots_af = find_roots(determinant_af)
-    roots_fa = find_roots(determinant_fa)
-    return ApproxSurvivor(determinant_af, roots_af, determinant_fa, roots_fa)
-%}

@@ -1,5 +1,5 @@
 // Starts the likelihood sub-package
-%module likelihood
+%module(package="dcprogs") likelihood
 // C++ definitions that are needed to compile the python bindings.
 %{
 #define SWIG_FILE_WITH_INIT
@@ -88,7 +88,11 @@
     }
 %}
 
-// Tells swig that we will deal with execptions.
+%pythoncode %{
+from ._likelihood_methods import *
+%}
+
+// Tells swig that we will deal with exceptions.
 %include "exception.i"
 %init %{ import_array();  %}
 

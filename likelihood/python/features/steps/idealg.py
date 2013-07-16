@@ -145,15 +145,18 @@ def step(context, name):
     eqmatrix -= identity(eqmatrix.shape[0])
 
     left, sings, right = svd(eqmatrix)
+    sings = sorted(sings)
 
     try:
-      assert sum(abs(sings) < context.tolerance) == 1
+      assert abs(sings[0]) < context.tolerance
+      assert sings[0] < sings[1] + context.tolerance
       assert all(abs(dot(occ,  eqmatrix)) < context.tolerance)
     except: 
       print(G)
       print(" * occupancies: {0}".format(occ))
       print(" * matrix:\n{0}".format(eqmatrix))
       print(" * error: {0}".format(dot(occ, eqmatrix)))
+      print(" * singular values: {0}".format(sings))
       raise
 
 @then('the components of the {name} equilibrium occupancies sum to one')

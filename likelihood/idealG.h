@@ -45,7 +45,9 @@ namespace DCProgs {
       //! Gets Q matrix. 
       t_rmatrix const & get_matrix() const { return this->matrix; }
       //! Gets the number of open states
-      t_int const & get_nopen() const { return this->nopen; }
+      t_int get_nopen() const { return this->nopen; }
+      //! Gets the number of open states
+      t_int get_nshut() const { return this->nshut(); }
 
       //! Shut to open transitions.
       t_time_result fa(t_real t) const 

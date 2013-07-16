@@ -72,9 +72,28 @@ def qmatrix(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """
   from numpy.random import randint
   from .likelihood import QMatrix
-  matrix = rate_matrix(*args, **kwargs)
-  nopen = randint(2, matrix.shape[0]-2)
-  return QMatrix(matrix, nopen)
+  
+  def zero_eig(result):
+    """ Qff and Qaa cannot be singular. """
+    from numpy.linalg import svd
+    from numpy import all, any, abs
+    try: singular = svd(result.aa)[1]
+    except: return False
+    if any(abs(singular) < 1e-8): return False
+    try: singular = svd(result.ff)[1]
+    except: return False
+    return all(abs(singular) > 1e-8)
+
+
+  def get_qmatrix():
+    matrix = rate_matrix(*args, **kwargs)
+    nopen = randint(2, matrix.shape[0]-2)
+    return QMatrix(matrix, nopen)
+
+  result = get_qmatrix()
+  while not zero_eig(result): result = get_qmatrix()
+
+  return result
 
 def random_idealg(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """

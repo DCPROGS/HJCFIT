@@ -11,6 +11,11 @@
         IdealG::laplace_af;
 %feature("autodoc", "FA transitions with respect to scale: :math:`(sI - Q_{FF})^{-1}Q_{FA}$`.")
         IdealG::laplace_fa;
+%feature("autodoc", "Occupancies for initial states.") IdealG::initial_occupancies;
+%feature("autodoc", "Occupancies for final states.") IdealG::final_occupancies;
+%feature("autodoc", "Number of open-states.") IdealG::nopen;
+%feature("autodoc", "Number of shut-states.") IdealG::nshut;
+
 // Now we define the bindings for the QMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.
@@ -33,16 +38,22 @@ class IdealG {
     }
   }
 
+  // Adds some quantities as properties
   %extend {
-    DCProgs::t_initvec _initial_occupancies() { return DCProgs::occupancies(*$self); }
-    DCProgs::t_initvec _final_occupancies() { return DCProgs::occupancies(*$self, false); }
+    DCProgs::t_initvec const initial_occupancies;
+    DCProgs::t_initvec const final_occupancies;
+    DCProgs::t_int const nopen;
+    DCProgs::t_int const nshut;
   }
-  %pythoncode %{
-    __swig_getmethods__["initial_occupancies"] = _initial_occupancies
-    __swig_getmethods__["final_occupancies"]   = _final_occupancies
-    if _newclass:
-      initial_occupancies = property(_initial_occupancies, doc="Occupancies for initial states.")
-      final_occupancies = property(_final_occupancies, doc="Occupancies for final states.")
+  %{
+    DCProgs::t_initvec DCProgs_IdealG_initial_occupancies_get(DCProgs::IdealG *_in) {
+      return DCProgs::occupancies(*_in, true);
+    }
+    DCProgs::t_initvec DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
+      return DCProgs::occupancies(*_in, false);
+    }
+    DCProgs::t_int DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
+    DCProgs::t_int DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
   %}
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;

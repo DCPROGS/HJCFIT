@@ -59,7 +59,7 @@ namespace DCProgs {
       // \f$\phi_F H_{FA}\f$
       t_initvec const phif_times_Hfa = occupancies(_G, false) * Hfa;
       // \f$\phi_F H_{FA} / \phi_F H_FA u_A\f$
-      return phif_times_Hfa / phif_times_Hfa.array().head(nopen).sum();
+      return phif_times_Hfa / phif_times_Hfa.array().sum();
     } else {
       // \f$H_{FA} u_A\f$
       return Hfa.rowwise().sum();

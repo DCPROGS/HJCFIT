@@ -24,7 +24,7 @@ namespace DCProgs {
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) {
       std::ostringstream sstr; 
-      sstr << *this << "\nQaa has eigenvalue of 1.0";
+      sstr << *this << "\n ***** " << s << " is an eigenvalue of Qaa.";
       throw errors::NotInvertible(sstr.str());
     }
     return pivotLU.inverse() * QMatrix::af();
@@ -35,7 +35,7 @@ namespace DCProgs {
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
     if(not pivotLU.isInvertible()) {
       std::ostringstream sstr; 
-      sstr << *this << "\nQff has eigenvalue of 1.0";
+      sstr << *this << "\n  ***** " << s << " is an eigenvalue of Qff.";
       throw errors::NotInvertible(sstr.str());
     }
     return pivotLU.inverse() * QMatrix::fa();
