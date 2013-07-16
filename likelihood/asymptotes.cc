@@ -53,8 +53,8 @@ namespace DCProgs {
 
       // Following is 2.29 from Colquhounm Hawkes, Srodzinski (1996)
       auto single_root_function = [&svd, &derivative, &H, &root](t_int _index) -> t_rmatrix { 
-         auto c_i = svd.matrixV().col(_index);
-         auto r_i = svd.matrixU().col(_index).transpose();
+         auto c_i = svd.matrixV().col(_index) / svd.matrixV().col(_index).sum() ; 
+         auto r_i = svd.matrixU().col(_index).transpose() / svd.matrixU().col(_index).sum();
          return c_i * r_i / (r_i * derivative * c_i);
       }; 
       // Now loop over all degenerate roots.

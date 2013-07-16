@@ -64,7 +64,7 @@ TEST_P(TestAsymptotes, is_projection_matrix) {
     std::vector<Root> roots(1, root);
     Asymptotes asymptotes(equation, roots);
   
-    for(t_int i(0); i < 5; ++i) {
+    for(t_int i(0); i < 1; ++i) {
       // Following tests imply that asymptotes is a factor of the projection matrix of H for the
       // eigenvalue root.root. The loop over different times ensure this is the case for more than
       // one time, eg time independent result.
@@ -73,9 +73,11 @@ TEST_P(TestAsymptotes, is_projection_matrix) {
                             - t_rmatrix::Identity(nopen, nopen) * root.root; 
       EXPECT_TRUE(((HmI * result).array().abs() < 1e-8).all()) 
                  << "right applied projection matrix does not yield zero \n" 
+                 << result << std::endl << std::endl
                  << HmI * result << std::endl;
       EXPECT_TRUE(((result * HmI).array().abs() < 1e-8).all()) 
                  << "left applied projection matrix does not yield zero \n"
+                 << result << std::endl << std::endl
                  << result * HmI << std::endl;
     }
   }
