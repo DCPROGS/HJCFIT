@@ -125,10 +125,13 @@ def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None, 
    if main is None: main = {}
    if lines is None: lines = {}
 
-   mini = min(intervals)
-   maxi = max(intervals)
-   
    roots = find_roots(determinant, intervals, tolerance)
+   mini = min([u[0] for u in roots])
+   maxi = max([u[0] for u in roots])
+   diff = maxi - mini
+   maxi += diff  * 0.05
+   mini -= diff  * 0.05
+   
    x = arange(mini, maxi+(maxi-mini)/float(size)*0.5, (maxi-mini)/float(size))
    y = determinant(x)
 
@@ -214,7 +217,6 @@ def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
   if shut:
     for matrix, root in components:
       coef = sum(dot(phi, dot(matrix, g.fa_factor)))
-      print "coef", coef
       results.append(partial(function, coef, root))
   else:
     for matrix, root in components:
