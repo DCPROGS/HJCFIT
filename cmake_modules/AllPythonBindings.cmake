@@ -102,19 +102,20 @@ if(tests)
              COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} 
                             --junit --junit-directory ${CMAKE_BINARY_DIR}/test-results/
                             -q ${ARGN})
+    set(ADD_TO_PATH ${TEST_INSTALL_DIRECTORY}/${LIB_INSTALL_DIR}) 
     if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
-      set(PATH_STRING "${TEST_INSTALL_DIRECTORY}/lib;$ENV{PATH}")
+      set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
       STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
                            "PATH=${PATH_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "DYLD_LIBRARY_PATH=${TEST_INSTALL_DIRECTORY}/lib:$ENV{DYLD_LIBRARY_PATH}")
+                           "DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH}")
     elseif(UNIX)
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "LD_LIBRARY_PATH=${TEST_INSTALL_DIRECTORY}/lib:$ENV{LD_LIBRARY_PATH}")
+                           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH}")
     endif(MSVC OR MSYS)
   endfunction(feature_test)
 endif(tests)
