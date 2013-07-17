@@ -41,6 +41,7 @@ Feature: Check Missed Events G functionality
 
 
 
+
   Scenario Outline: Computation of CHS vectors
     Given a list of 10 random missed-events likelihoods with tau=1e-4 and nmax=2
       And a list of 10 random times between 1e-3 and 3e-3
@@ -53,3 +54,28 @@ Feature: Check Missed Events G functionality
       | name    |
       | initial |
       | final   |
+
+
+
+
+  Scenario Outline: Test CHS vector for CH82 model against prior calculation.
+    Given the <model> missed-events likelihood
+      And a parameter tolerance=1e-10
+     When we compute the <which> CHS occupancies with tcrit=<tcrit>
+     Then the <which> CHS occupancies compare to <prior> 
+
+    Examples: 
+
+      |  model   |  which  | tcrit | prior                                                     |
+      | classic  | initial | 4e-3  | [0.220418113246138, 0.779581886753862]                    |
+      | classic  | initial | 1e-3  | [0.220339411420015, 0.779660588579985]                    |
+      | classic  | initial | 5e-4  | [0.220101271499783, 0.779898728500217]                    |
+      | classic  | initial | 5e-5  | [0.1122948887589, 0.8877051112411]                        |
+      | classic  |  final  | 4e-3  | [0.974851711507551, 0.213460487245399, 0.999179485194199] |
+      | classic  |  final  | 5e-5  | [0.99960557806125, 1.96870728834576, 0.999999979357141]   |
+      |  CH82    | initial |   4   | [0.17394315362718,  0.82605684637282]                     |
+      |  CH82    |  final  |   4   | [0.976491211386193, 0.222305380522348, 0.999257244552633] |
+      |   CKS    | initial |   4   | [1]                                                       |
+      |   CKS    |  final  |   4   | [0.36908082444647, 0.942440306684466]                     |
+      |   CB     | initial |   4   | [1]                                                       |
+      |   CB     |  final  |   4   | [0.846530054887709, 0.168045183806247, 0.852959014045751] |

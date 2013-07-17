@@ -9,6 +9,13 @@ def Matrix(string):
                   [    15,         0, -2065,     50, 2000 ],  
                   [     0,     15000,  4000, -19000,    0 ],  
                   [     0,         0,    10,      0,  -10 ] ])
+  if string == 'CH82': return Matrix('classic') / 1e3
+  if string == 'CB':
+    return array([ [-2,    1,   1,    0], 
+                   [ 1, -101,   0,  100], 
+                   [50,    0, -50,    0],
+                   [ 0,  5.6,   0, -5.6] ])
+  if string == 'CKS': return array([[-1, 1, 0], [19, -29, 10], [0, 0.026, -0.026]])
   if string == "empty": return array([])
   if string == "spam": 
     r = identity(5).tolist()
@@ -97,12 +104,23 @@ def QMat(string):
   """ Creates matrices from specific strings """
   from dcprogs.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import QMatrix
-  if string == "classic": return QMatrix(Matrix(string), 2)
+  if string == "classic" or string == "CH82": return QMatrix(Matrix(string), 2)
+  if string == "CB": return QMatrix(Matrix(string), 1)
+  if string == "CKS": return QMatrix(Matrix(string), 1)
   if string == "complex eigenvalues": return QMatrix(Matrix(string), 4)
   if string == "singular matrix": return QMatrix(Matrix(string), 3)
   if string == "random": return random_qmatrix()
   if string == "too many roots": return QMatrix(Matrix(string), 3)
-  else: raise Exception("Unknown State Matrix {0}".format(string))
+  else: raise Exception("Unknown QMatrix {0}".format(string))
+
+def eG(string):
+  """ Creates matrices from specific strings """
+  from dcprogs.likelihood import create_missed_eventsG
+  if string == "classic": return create_missed_eventsG(QMat(string), 1e-4)
+  if string == "CH82": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "CB": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "CKS": return create_missed_eventsG(QMat(string), 0.2)
+  else: raise Exception("Unknown eG model {0}".format(string))
 
 def register_type(): 
   from behave import matchers

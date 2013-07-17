@@ -22,6 +22,12 @@ def step(context, n, tau, nmax):
   context.qmatrices.extend(qmatrices)
   context.likelihoods.extend(Gs)
 
+@given('the {model} missed-events likelihood') 
+def step(context, model):
+  from test_setup import eG
+  context.eG = eG(model)
+
+
 @when('MissedEventsG objects are instantiated with the q-matrices and tau={tau:Float}'             \
       'and nmax={nmax:Integer}')
 def step(context, tau, nmax):
@@ -47,6 +53,12 @@ def step(context, name):
     function = getattr(G, equname)
     context.occupancies.append([function(t) for t in context.times])
     
+@when('we compute the {which} CHS occupancies with tcrit={tcrit:Float}')
+def step(context, which, tcrit):
+  context.chs = getattr(context.eG, '{0}_CHS_occupancies'.format(which))(tcrit)
+
+
+
 
 
 @then('{name} is zero if t is between {start:Float} and {end:Float}')
@@ -177,3 +189,9 @@ def step(context):
         print("  * check: {0}".format(check))
         print("  * Hfa shape: {0}".format(Hfa.shape))
         raise
+
+@then('the {which} CHS occupancies compare to {prior:Eval}')
+def step(context, which, prior):
+  from numpy import all, abs
+
+  assert all(abs(context.chs - prior) < context.tolerance)
