@@ -34,7 +34,7 @@ namespace DCProgs {
       t_rmatrix H(t_real _s) const { return LaplaceSurvivor::H(_s, tau_); }
       using LaplaceSurvivor::H;
 
-      //! Derivative along _s
+      //! Derivative of W along s
       t_rmatrix s_derivative(t_real _s) const { 
         return LaplaceSurvivor::s_derivative(_s, tau_); 
       }

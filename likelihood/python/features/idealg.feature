@@ -20,7 +20,7 @@ Feature: Check IdealG bindings
       And computing laplace_fa for each scale yields (sI - Q_FF)^-1 Q_FA
       
   Scenario Outline: Computation of equilibrium vectors
-    Given a list of 10000 random ideal likelihoods
+    Given a list of 100 random ideal likelihoods
       And a parameter tolerance=1e-7
      When the <name> equilibrium occupancies are computed 
      Then the <name> equilibrium occupancies are the only solution to the equilibrium equations

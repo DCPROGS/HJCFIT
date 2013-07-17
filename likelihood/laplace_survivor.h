@@ -33,7 +33,12 @@ namespace DCProgs {
       t_rmatrix operator()(t_real _s, t_real _tau) const {
         return (_s * id_() - H(_s, _tau)).inverse(); 
       }
-      //! Derivative along _s
+      //! Computes the matrix \f$W=\mathrm{det}(sI - H(s, \tau))\f$
+      //! \param[in] _s: Value of the laplacian scale.
+      t_rmatrix W(t_real _s, t_real _tau) const {
+        return _s * this->id_() - LaplaceSurvivor::H(_s, _tau);
+      }
+      //! Derivative along of W along s
       t_rmatrix s_derivative(t_real _s, t_real _tau) const;
 
       //! \brief Returns the Q matrix.

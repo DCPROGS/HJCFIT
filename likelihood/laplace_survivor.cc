@@ -55,7 +55,7 @@ namespace DCProgs {
     t_cmatrix const integral = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
     if((integral.imag().array().abs() > 1e-8).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
-    return this->id_() + qmatrix_.af() * integral.real() * qmatrix_.fa(); 
+    return this->id_() - qmatrix_.af() * integral.real() * qmatrix_.fa(); 
   }
 
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, LaplaceSurvivor const & _self) {

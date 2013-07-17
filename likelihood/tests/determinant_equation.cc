@@ -140,7 +140,7 @@ TEST_F(DeterminantEqTest, s_derivative_from_tau_derivative) {
   for(t_real s: svec) {
     auto approx = [&determinant, &s](t_real _tau) { return determinant.s_derivative(s, _tau); };
     auto exact = [&qmatrix, &s](t_real _tau) -> t_rmatrix {
-      return -_tau * std::exp(-s * _tau) * qmatrix.fa() * (_tau * qmatrix.aa()).exp() * qmatrix.af();
+      return _tau * std::exp(-s * _tau) * qmatrix.fa() * (_tau * qmatrix.aa()).exp() * qmatrix.af();
     };
     
     std::ostringstream sstr;
@@ -167,7 +167,7 @@ TEST_F(DeterminantEqTest, s_derivative_from_H) {
     auto approx = [&determinant, &tau](t_real _s) { return determinant.H(_s, tau); };
     auto exact = [&determinant, &tau](t_real _s) -> t_rmatrix { 
       t_rmatrix const result = determinant.s_derivative(_s, tau); 
-      return result - t_rmatrix::Identity(result.rows(), result.cols());
+      return t_rmatrix::Identity(result.rows(), result.cols()) - result;
     };
     
     std::ostringstream sstr;
