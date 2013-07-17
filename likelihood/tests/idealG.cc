@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <iostream>
 #include <gtest/gtest.h>
 #include "../idealG.h"

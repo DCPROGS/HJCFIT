@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <random>
 #include <vector>
 #include <algorithm>
@@ -94,7 +95,7 @@ TEST_P(TestTimeFilter, nbfiltered) {
   EXPECT_EQ(nbfiltered(series, tau), filtered.size()) << series.transpose();
 }
 
-INSTANTIATE_TEST_CASE_P(random, TestTimeFilter, ::testing::Range(0, 300));
+INSTANTIATE_TEST_CASE_P(random, TestTimeFilter, ::testing::Range(t_int(0), t_int(300)));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

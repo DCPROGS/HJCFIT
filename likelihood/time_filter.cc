@@ -10,10 +10,10 @@ namespace DCProgs {
   namespace {
     template<class T> t_rvector time_filter_impl(Eigen::DenseBase<T> const & _series, t_real _tau) {
       
-      long const n(_series.size());
+      typename Eigen::DenseBase<T>::Index const n(_series.size());
       auto const durations = _series.tail(n-1) - _series.head(n-1);
-      long i(0);
-      long const nbIntervals = durations.size();
+      typename Eigen::DenseBase<T>::Index i(0);
+      typename Eigen::DenseBase<T>::Index const nbIntervals = durations.size();
 
       // Finds starting interval (first detectable interval).
       for(; i < nbIntervals && durations(i) < _tau; i += 2);

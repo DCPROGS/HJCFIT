@@ -84,13 +84,13 @@ class ApproxSurvivor {
       }
     PyObject* DCProgs_ApproxSurvivor_af_components_get(DCProgs::ApproxSurvivor *_in) {
         return affa_components_get( _in, (Py_ssize_t)_in->nb_af_components(),
-                                    [&_in](DCProgs::t_int i)
-                                      { return _in->get_af_components(i); } );
+                                    [&_in](Py_ssize_t i) {
+                 return _in->get_af_components(static_cast<DCProgs::t_int>(i)); } );
     }
     PyObject* DCProgs_ApproxSurvivor_fa_components_get(DCProgs::ApproxSurvivor *_in) {
         return affa_components_get( _in, (Py_ssize_t)_in->nb_fa_components(),
-                                    [&_in](DCProgs::t_int i)
-                                       { return _in->get_fa_components(i); } );
+                                    [&_in](Py_ssize_t i) {
+                 return _in->get_fa_components(static_cast<DCProgs::t_int>(i)); } );
     }
  
   } %}

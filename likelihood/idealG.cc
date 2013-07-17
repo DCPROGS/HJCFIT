@@ -1,3 +1,5 @@
+#include "DCProgsConfig.h"
+
 #include <iostream>
 #include "idealG.h"
 

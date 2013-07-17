@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <iostream>
 #include <utility>
 #include <gtest/gtest.h>
