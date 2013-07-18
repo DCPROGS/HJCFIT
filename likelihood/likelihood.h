@@ -21,7 +21,7 @@ namespace DCProgs {
       t_rvector current = _final;
       bool is_AF = true;
       for(; _begin != _end; ++_begin, is_AF = not is_AF)
-        current = is_AF ? _g.af(*_begin): _g.fa(*_begin);
+        current = is_AF ? _g.af(static_cast<t_real>(*_begin)): _g.fa(static_cast<t_real>(*_begin));
       return _initial * current;
     }
   //! Computes likelihood of a time series.

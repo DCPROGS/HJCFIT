@@ -16,7 +16,12 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
 add_dependencies(likelihood eigen)
 
-install(TARGETS likelihood DESTINATION ${LIB_INSTALL_DIR}) 
+if(WIN32)
+  set(LIB_DIRECTORY dcprogs/DLLs)
+else()
+  set(LIB_DIRECTORY lib)
+endif(WIN32)
+install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
 
 # Test subdirectory.
 add_subdirectory(tests)

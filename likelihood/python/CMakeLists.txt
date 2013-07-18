@@ -10,10 +10,16 @@ if(pythonBindings)
   swig_add_module(likelihood python likelihood.i)
   set_target_properties(_likelihood PROPERTIES LINKER_LANGUAGE CXX)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
-  install(TARGETS _likelihood DESTINATION ${CMAKE_PYINSTALL_PREFIX})
-  install(FILES  __init__.py random.py _likelihood_methods.py ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py
-          DESTINATION ${CMAKE_PYINSTALL_PREFIX})
 
+  if(WIN32)
+    set(PYINSTALL_DIRECTORY dcprogs/python-pkg)
+  else()
+    set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
+  endif(WIN32)
+  
+  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
+  install(FILES  __init__.py random.py _likelihood_methods.py ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py
+          DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
 endif(pythonBindings)
 
 if(pythonBindings AND tests)
