@@ -8,6 +8,18 @@ def step(context, matrix, nopen, tau):
   context.nopen = nopen
   context.tau = tau
 
+@given('a determinantal equation instantiated with the {model} Q matrix')
+def setp(context, model):
+  from test_setup import DetModel
+  context.determinant = DetModel(model)
+
+@given('the output matrices below')
+def step(context):
+  from re import compile
+  pattern = compile('\s*q(\d+)')
+  if not hasattr(context, 'output'): context.output = {}
+  exec(pattern.sub('\nq\\1', context.text), globals(), context.output)
+
 @when('a determinantal equation is instantiated')
 def step(context):
   from sys import exc_info
@@ -52,8 +64,22 @@ def step(context, event, s, tau):
   if event == "open": context.result = DeterminantEq(context.qmatrix, tau)(s)
   else:               context.result = DeterminantEq(context.qmatrix.transpose(), tau)(s)
 
+@when('H is computed from the scalar or sequence {input:Eval}')
+def step(context, input):
+  context.H = context.determinant.H(input)
+
 @then("The result is close to zero ({convergence:Float})")
 def step(context, convergence): 
   from numpy import abs, any, array
   if any(abs(array(context.result)) > convergence):
     raise Exception("Result is not zero ({0}).".format(context.result))
+
+@then('H returns the matrix or sequence of matrices {output}')
+def step(context, output):
+  from numpy import all, abs, array
+  output = array(eval(output, globals(), context.output))
+
+  assert all(context.H.shape == output.shape)
+  print abs(context.H - output) <= 1e-8 * abs(output) + 1e-8
+  print context.H
+  assert all(abs(context.H - output) <= 1e-8 * abs(output) + 1e-8) 

@@ -129,9 +129,12 @@ namespace DCProgs {
             int const ndim = PyArray_NDIM(_in);
             npy_intp const * const strides = PyArray_STRIDES(_in);
             npy_intp const * const dims = PyArray_DIMS(_in);
-            t_int realdims[2] = { (t_int)dims[0], ndim == 2 ? (t_int)dims[1]: 1 };
-            t_int realstrides[2] = { (t_int) strides[0],
-                                     (t_int)(ndim == 2 ? strides[1]: strides[0] * dims[0]) };
+            t_int realdims[2] = { static_cast<t_int>(dims[0]),
+                                  ndim == 2 ? static_cast<t_int>(dims[1]): 1 };
+            t_int realstrides[2] = {
+              static_cast<t_int>(strides[0]),
+              static_cast<t_int>(ndim == 2 ? strides[1]: strides[0] * dims[0]) 
+            };
             
             t_Map result( (T*)PyArray_DATA(_in), realdims[0], realdims[1], 
                           t_Stride( realstrides[1] * sizeof(char) / sizeof(T),
@@ -180,7 +183,8 @@ namespace DCProgs {
     //! Cast data to given type from array type.
     template<class T> T cast(void *_data, int _type) {
       switch(_type) {
-#       define DCPROGS_MACRO(TYPENAME) case type<TYPENAME>::value: return T(*((TYPENAME*)_data));
+#       define DCPROGS_MACRO(TYPENAME)                                                             \
+          case type<TYPENAME>::value: return static_cast<T>(*(static_cast<TYPENAME*>(_data)));
           DCPROGS_MACRO(npy_double);
           DCPROGS_MACRO(npy_float);
           DCPROGS_MACRO(npy_longlong);

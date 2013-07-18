@@ -7,7 +7,7 @@ option(pythonBindings "Enable python bindings."       on)
 # directory where libraries are installed
 if(NOT LIB_INSTALL_DIR)
   # defaults to lib: relative to ${CMAKE_INSTALL_PREFIX}
-  set(LIB_INSTALL_DIR lib CACHE "Path to libraries, relative to CMAKE_INSTALL_PREFIX")
+  set(LIB_INSTALL_DIR lib CACHE STRING "Path to libraries, relative to CMAKE_INSTALL_PREFIX")
 endif(NOT LIB_INSTALL_DIR)
 
 # Enable ExternalProject CMake module

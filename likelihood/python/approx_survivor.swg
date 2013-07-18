@@ -55,6 +55,15 @@ class ApproxSurvivor {
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
+  // Add the ability to pass in numpy arrays.
+  %extend {
+    PyObject* af(PyObject *_s) {
+      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->af(s); }); 
+    }
+    PyObject* fa(PyObject *_s) {
+      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->fa(s); }); 
+    }
+  }
 
   %extend {
     PyObject* const af_components;

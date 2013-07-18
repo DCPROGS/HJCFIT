@@ -33,8 +33,29 @@ class MissedEventsG {
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
+  %extend {
+    PyObject* af(PyObject *t) {
+      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
+    }
+    PyObject* fa(PyObject *t) {
+      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
+    }
+  }
   DCProgs::t_rmatrix laplace_af(DCProgs::t_real t);
   DCProgs::t_rmatrix laplace_fa(DCProgs::t_real t);
+  %extend {
+    PyObject* laplace_af(PyObject *t) {
+      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->laplace_af(_t); }); 
+    }
+    PyObject* laplace_fa(PyObject *t) {
+      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->laplace_fa(_t); }); 
+    }
+  }
+  // Make CHS_occupancies member methods of MissedEventsG. 
+  // Python is a glue language, so it makes sense to keep both MissedEventsG functionality and
+  // CHS vector functionality together, even when it doesn't in c++.
+  // Basically, c++ stuff is kept conceptual -- and separate concepts are kept separate.
+  // On the other hand, python is just about being practical.
   %extend {
     DCProgs::t_initvec initial_CHS_occupancies(DCProgs::t_real t_critical) {
       return DCProgs::CHS_occupancies(*$self, t_critical, true); 
