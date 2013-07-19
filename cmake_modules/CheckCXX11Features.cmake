@@ -88,9 +88,14 @@ CXX11_CHECK_FEATURE("type_traits"         ""   HAS_CXX11_TYPETRAITS)
 CXX11_CHECK_FEATURE("trivial_type_traits" ""   HAS_CXX11_TRIVIALTYPETRAITS)
 CXX11_CHECK_FEATURE("noexcept"            ""   HAS_CXX11_NOEXCEPT)
 CXX11_CHECK_FEATURE("constexpr"           2235 HAS_CXX11_CONSTEXPR)
-CXX11_CHECK_FEATURE("random_device"       ""   HAS_CXX11_RANDOM_DEVICE)
 CXX11_CHECK_FEATURE("unique_ptr"          ""   HAS_CXX11_UNIQUE_PTR)
 CXX11_CHECK_FEATURE("shared_ptr"          ""   HAS_CXX11_SHARED_PTR)
+# MinGW has not implemented std::random_device fully yet. Unfortunately, this can only be detected
+# by running a program which tries to call std::random_device. However that generates an error that
+# is *not* caught by CMake's try_run. 
+if(NOT MSYS)
+  CXX11_CHECK_FEATURE("random_device"       ""   HAS_CXX11_RANDOM_DEVICE)
+endif(NOT MSYS)
 if(NOT (HAS_CXX11_AUTO 
         AND HAS_CXX11_LAMBDA 
         AND HAS_CXX11_STATIC_ASSERT 

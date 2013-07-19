@@ -99,7 +99,6 @@ if(tests)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
       STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
-      message(FATAL_ERROR "${ADD_TO_PATH}")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
                            "PATH=${PATH_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
