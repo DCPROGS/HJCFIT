@@ -1,96 +1,86 @@
 #include <DCProgsConfig.h>
 
-#include <sstream>
 #include <iostream>
+
+#include <unsupported/Eigen/MatrixFunctions>
 
 #include "asymptotes.h"
 
 namespace DCProgs {
 
-# ifdef HAS_CXX11_CONSTEXPR
-    // Only the God of linkers knows why we need this declaration twice.
-    constexpr t_real DeterminantEq :: ZERO;
-# else
-    // Only the God of linkers knows why we need this declaration twice.
-    const t_real DeterminantEq :: ZERO = 1e-12;
-# endif
+  t_rmatrix Asymptotes :: operator()(t_real _t) const {
 
-  DeterminantEq :: DeterminantEq   (StateMatrix const & _matrix, t_real _tau, bool _doopen)
-                                 : tau_(_tau), matrix_(_matrix), ff_eigenvalues_(),
-                                   ff_eigenvectors_() {
-    if(not _doopen) {
-      t_int const nopen = matrix_.nopen;
-      t_int const nclose = matrix_.matrix.rows() - nopen;
-      t_rmatrix const aa = matrix_.ff();
-      t_rmatrix const af = matrix_.fa();
-      t_rmatrix const fa = matrix_.af();
-      t_rmatrix const ff = matrix_.aa();
-      matrix_.nopen = nclose;
-      matrix_.aa() = aa;
-      matrix_.af() = af;
-      matrix_.ff() = ff;
-      matrix_.fa() = fa;
+    t_MatricesAndRoots :: const_iterator i_first = matrices_and_roots_.begin();
+    t_MatricesAndRoots :: const_iterator const i_end = matrices_and_roots_.end();
+
+    auto function = [_t](t_MatrixAndRoot const &_mat_and_root) -> t_rmatrix {
+      return std::get<0>(_mat_and_root) * std::exp(_t * std::get<1>(_mat_and_root));
+    };
+
+    t_rmatrix result = function(*i_first);
+    for(++i_first; i_first != i_end; ++i_first) result += function(*i_first); 
+    return result;
+  }
+
+
+  Asymptotes :: Asymptotes   (DeterminantEq const &_equation, std::vector<Root> const &_roots) 
+                           : matrices_and_roots_() {
+
+    matrices_and_roots_.reserve(_roots.size());
+
+    for(Root const & root: _roots) {
+
+      t_rmatrix const H(_equation.H(root.root));
+      t_rmatrix const derivative(_equation.s_derivative(root.root)); 
+      Eigen::JacobiSVD<t_rmatrix> svd(H - root.root * t_rmatrix::Identity(H.rows(), H.cols()), 
+                                      Eigen::ComputeThinU|Eigen::ComputeThinV);
+
+      t_rvector const abs_singval( svd.singularValues().array().abs() );
+
+      if(abs_singval.size() < root.multiplicity) 
+        throw errors::Mass("Requesting more roots than there are singular values.");
+
+      // Figures out lowest singular values
+      // To do this, creates a vector of indices that is partially sorted.
+      t_int i(0);
+      std::vector<t_int> indices( abs_singval.size() ); 
+      std::generate(indices.begin(), indices.end(), [&i]() { return i++; });
+      auto comparison = [abs_singval](t_int a, t_int b) {
+        return abs_singval(a) < abs_singval(b); 
+      };
+      std::partial_sort(indices.begin(), indices.begin() + root.multiplicity,
+                        indices.end(), comparison);
+
+      // Following is 2.29 from Colquhounm Hawkes, Srodzinski (1996)
+      auto single_root_function = [&svd, &derivative, &H, &root](t_int _index) -> t_rmatrix { 
+         auto c_i = svd.matrixV().col(_index) / svd.matrixV().col(_index).sum() ; 
+         auto r_i = svd.matrixU().col(_index).transpose() / svd.matrixU().col(_index).sum();
+         return c_i * r_i / (r_i * derivative * c_i);
+      }; 
+      // Now loop over all degenerate roots.
+      std::vector<t_int> :: const_iterator i_first = indices.begin();
+      std::vector<t_int> :: const_iterator const i_end = i_first + root.multiplicity;
+      t_rmatrix Ri = single_root_function(*i_first);  
+      for(++i_first; i_first != i_end; ++i_first) Ri += single_root_function(*i_first);
+
+      // Finally, add to vector of matrices and roots
+      matrices_and_roots_.emplace_back(std::move(Ri), root.root);
     }
-    Eigen::EigenSolver<t_rmatrix> eigsolver(matrix_.ff());
-    if(eigsolver.info() != Eigen::Success) 
-        throw errors::Mass("Could not solve eigenvalue problem.");
-    ff_eigenvalues_ = eigsolver.eigenvalues().real();
-    ff_eigenvectors_ = eigsolver.eigenvectors().real();
-    ff_eigenvectors_inv_ = ff_eigenvectors_.inverse();
   }
 
-  t_rmatrix DeterminantEq :: integral_(t_real _s) const {
- 
-    t_rvector const alpha = ff_eigenvalues_.array() - _s;
-    t_rmatrix diagonal = t_rmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) 
-      diagonal(i, i) = std::abs(alpha(i)) > ZERO ?  (std::exp(alpha(i) * tau_) - 1e0) / alpha(i): tau_; 
-    return ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
+  // Matrix with which to compute \f$H_{FA}\f$ for  the CHS vectors.
+  t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
+                                          t_real _tau, t_real _tcrit ) {
+
+    auto function = [&_asymptotes, &_tcrit, &_tau](t_int i) -> t_rmatrix {
+      Asymptotes::t_MatrixAndRoot const & mat_and_root = _asymptotes[i];
+      t_rmatrix const & Ri = std::get<0>(mat_and_root);
+      t_real const root = std::get<1>(mat_and_root);
+      return -Ri * std::exp(root * (_tcrit - _tau)) / root;
+    };
+    t_rmatrix result = function(0);
+    for(t_int i(1); i < _asymptotes.size(); ++i) result += function(i);
+    return result;
   }
 
-  t_rmatrix DeterminantEq::s_derivative(t_real _s) const { 
-
-    t_rvector const alpha = ff_eigenvalues_.array() - _s;
-    t_rmatrix diagonal = t_rmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) {
-      if(std::abs(alpha(i)) > ZERO) {
-        t_real const invalpha = 1e0 / alpha(i);
-        diagonal(i, i) = invalpha * ((invalpha - tau_) * std::exp(alpha(i)*tau_) - invalpha);
-      } else diagonal(i, i) = -tau_ * tau_ * 0.5;
-    }
-    return this->id_() +
-           matrix_.af() * ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_ * matrix_.fa(); 
-  }
-
-  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const & _self) {
-    
-    return _stream << "Determinant equation:\n"
-                   << "=====================\n\n" 
-                   << "  * Transition Rate matrix\n" << _self.matrix_.matrix << "\n"
-                   << "  * Number of open states " << _self.matrix_.nopen << "\n"
-                   << "  * eigenvalues: " << _self.ff_eigenvalues_.transpose() << "\n";
-  }
-
-}
-extern "C" void * create_determinant_eq(int _n0, int _n1, double *_matrix,  int _nopen, double _tau,
-                                        bool _doopen) {
-  using namespace DCProgs;
-  Eigen::Map<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic>> map(_matrix, _n0, _n1);
-  StateMatrix states(map.cast<t_rmatrix::Scalar>(), _nopen);
-  void *result = (void*) new DeterminantEq(states, _tau, _doopen);
-  return result;
-}
-extern "C" void delete_determinant_eq(void *_self) {
-  using namespace DCProgs;
-  DeterminantEq *self = static_cast<DeterminantEq*>(_self);
-  delete self;
-}
-extern "C" double call_determinant_eq(void *_self, double _s) {
-  return (*static_cast<DCProgs::DeterminantEq*>(_self))(_s);
-}
-
-extern "C" char const * str_determinant_eq(void *_self) {
-  std::ostringstream sstr;
-  sstr << (*static_cast<DCProgs::DeterminantEq*>(_self));
-  return sstr.str().c_str();
 }

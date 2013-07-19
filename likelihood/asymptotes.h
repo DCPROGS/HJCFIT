@@ -3,109 +3,60 @@
 
 #include <DCProgsConfig.h>
 #include <ostream>
-#include "state_matrix.h"
+#include "root_finder.h"
 
 namespace DCProgs {
 
-  class DeterminantEq;
-
-  //! Dumps Determinantal equation to stream
-  MSWINDOBE std::ostream& operator<<(std::ostream&, DeterminantEq const &);
 
   //! A functor to compute asymptotic missed event G.
-  //! \detail The whole implementation is done w.r.t. to AF transitions. 
-  //!         However, in practice, this is sufficient to compute FA transitions as well, by messing
-  //!         with the input matrix.
-  class MSWINDOBE DeterminantEq {
+  //! \detail From the knowledged of roots and eigenvectors, figures out how to compute the
+  //!         asymptotic values of missed events R.
+  class MSWINDOBE Asymptotes {
     
-    friend std::ostream& operator<<(std::ostream&, DeterminantEq const &);
-
     public:
+      //! Holds a pair defining each exponential function.
+      typedef std::pair<t_rmatrix, t_real> t_MatrixAndRoot;
+      //| Holds all data relating to this functor.
+      typedef std::vector<t_MatrixAndRoot> t_MatricesAndRoots;
+
       //! Constructor. 
-      //! \param[in] _matrix: The transition state matrix for which to compute
-      //!                     \f$^eG_{AF}(t\rightarrow\infty)\f$
-      //! \param[in] _tau: Missed event resolution.
-      //! \param[in] _doopen: Whether to do AF or FA.
-      DeterminantEq(StateMatrix const & _matrix, t_real _tau, bool _doopen=true);
-      //! Copy constructor
-      DeterminantEq   (DeterminantEq const & _c)
-                    : tau_(_c.tau_), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
-                      ff_eigenvectors_(_c.ff_eigenvectors_), 
-                      ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
+      Asymptotes(t_MatricesAndRoots const &_values ) : matrices_and_roots_(_values) {} 
+      //! Creates functor from equation and roots.
+      Asymptotes(DeterminantEq const &_equation, std::vector<Root> const &_roots);
 
-      //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
-      //! \param[in] _s: Value of the laplacian scale.
-      inline t_rmatrix H(t_real _s) const {
-        return matrix_.aa() + matrix_.af() * this->integral_(_s) * matrix_.fa();
-      }
-      //! Computes \f$Q_{AA} + Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
-      //! \param[in] _s: Value of the laplacian scale.
-      //! \param[in] _tau: Value of tau for duration of call.
-      inline t_rmatrix H(t_real _s, t_real _tau) const {
-        return DeterminantEq(*this, _tau).H(_s);
-      }
+      //! Computes \f$\sum_i R_i e^{-\frac{t}{s_i}}\f$.
+      //! \details The \f$s_i\f$ are the roots. \f$R_i\f$ matrices are weighted
+      //! projections of the eigenvectors corresponding to the roots:
+      //! \f$R_i = \frac{c_i\cross r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$.
+      t_rmatrix operator()(t_real _t) const;
 
-      //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
-      //! \param[in] _s: Value of the laplacian scale.
-      inline t_real operator()(t_real _s) const { 
-        return (_s * this->id_() - H(_s)).determinant();
+      //! Access to matrices and roots
+      //! The matrices are \f$^AR_i = \frac{c_i\cdot r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$, where
+      //! \f$c_i\f$ and \f$r_i\f$ are the left and right eigenvectors of \f$H(s_i)\f$ with
+      //! eigenvalue $s_i$. \f$W'(s) = \left.\frac{d W(s)}{d s}\right|_{s=s_i}\f$.
+      t_MatrixAndRoot const & operator[](t_int _i) const {
+        if(_i < 0) _i += static_cast<t_int>(matrices_and_roots_.size());
+        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size()))
+          throw errors::Index("Index to matrices and roots out-of-range.");
+        return matrices_and_roots_[_i]; 
       }
-      //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
-      //! \param[in] _s: Value of the laplacian scale.
-      //! \param[in] _tau: Value of tau for duration of call.
-      inline t_real operator()(t_real _s, t_real _tau) const { 
-        return (_s * this->id_() - H(_s, _tau)).determinant();
-      }
-      //! Derivative along _s
-      t_rmatrix s_derivative(t_real _s) const;
-      //! Derivative along _s
-      inline t_rmatrix s_derivative(t_real _s, t_real _tau) const {
-        return DeterminantEq(*this, _tau).s_derivative(_s);
-      }
-
-      //! Get resolution
-      t_real get_tau() const { return tau_; }
-      //! Set resolution
-      void set_tau(t_real _tau) { tau_ = _tau; }
-
+      //! Number of matrices and roots.
+      t_int size() const { return static_cast<t_int>(matrices_and_roots_.size()); }
     protected:
-      //! Computes integral \f$\int_0^\tau\partial\,t\ e^{(Q_{FF} - sI)t}\f$
-      t_rmatrix integral_(t_real _s) const;
-      //! Just the identity, just to write shorter code.
-      inline auto id_() const ->decltype(t_rmatrix::Identity(1, 1)) 
-        { return t_rmatrix::Identity(matrix_.nopen, matrix_.nopen); }
-
-
-    private:
-      //! Copy constructor for changing tau in constant functions.
-      DeterminantEq   (DeterminantEq const & _c, t_real _tau)
-                    : tau_(_tau), matrix_(_c.matrix_), ff_eigenvalues_(_c.ff_eigenvalues_),
-                      ff_eigenvectors_(_c.ff_eigenvectors_), 
-                      ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
-
-    protected:
-      //! The transition state matrix on which to act.
-      StateMatrix matrix_;
-      //! The eigenvalues of the ff matrix. Computed once.
-      t_rvector ff_eigenvalues_;
-      //! The eigenvectors of the ff matrix. Computed once.
-      t_rmatrix ff_eigenvectors_;
-      //! The inverse eigenvectors of the ff matrix. Computed once.
-      t_rmatrix ff_eigenvectors_inv_;
-      //! Time below which events are missed
-      t_real tau_;
-#     ifdef HAS_CXX11_CONSTEXPR
-        //! Hard coded static constant zero.
-        constexpr static t_real ZERO = 1e-12;
-#     else
-        //! Hard coded static constant zero.
-        const static t_real ZERO;
-#     endif
+      //! Holds the weight and the exponent of the exponential functions.
+      t_MatricesAndRoots matrices_and_roots_;
   };
 
+  //! \brief Partial computation of \f$H_{FA}\f$ for CHS vectors.
+  //! \details The object is to implement Eq. 5.10 from \cite colquhoun:1996. 
+  //! In order to do this, we abstract the part that comes from the likelihood and compute in
+  //! this function \f$-\sum_{i=1}^{k_F}{}^{A}R_i\frac{1}{s_i}
+  //! e^{(t_{\mathrm{crit}-\tau)s_i}\f$. The additional factor \f$Q_{AF}e^{Q_{FF}\tau}\f$ is
+  //! computed in MissedEventsG.
+  //! \note This is somewhat outside the remit of Asymptotes, although the calculations are similar
+  //! for good reasons. In any case, we keep this function outside the class itself, so as to not
+  //! confuse the purpose of the class itself.
+  t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
+                                          t_real _tau, t_real _tcrit );
 }
-extern "C" void * create_determinant_eq(int _n0, int _n1, double *_matrix,  int _nopen, double _tau, bool _doopen);
-extern "C" void delete_determinant_eq(void *_self);
-extern "C" double call_determinant_eq(void *_self, double _s);
-extern "C" char const * str_determinant_eq(void *_self);
 #endif 

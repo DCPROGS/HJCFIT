@@ -25,8 +25,38 @@ namespace DCProgs {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
         virtual ~Mass() noexcept {};
-      private:
+      protected:
         std::string message_;
+    };
+
+    //! Found unexpected complex eigenvalues. 
+    class ComplexEigenvalues : public Mass {
+      public:
+        ComplexEigenvalues(std::string const &_message) noexcept : Mass(_message) {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try {
+            return ("Found complex eigenvalues: " + message_).c_str(); 
+          } catch(...) { return ""; }
+        }
+        virtual ~ComplexEigenvalues() noexcept {};
+    };
+
+    //! Found a Not a Number 
+    class NaN : public Mass { 
+      public:
+        NaN(std::string const &_message) noexcept : Mass(_message) {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try {
+            return ("Found Not a Number: " + message_).c_str(); 
+          } catch(...) { return ""; }
+        }
+        virtual ~NaN() noexcept {};
     };
 
     //! Input error to a math problem
@@ -36,6 +66,15 @@ namespace DCProgs {
         explicit Domain(std::string const &_message) noexcept : Math(), std::domain_error(_message) {};
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
+    //! Index error
+    class Index : public Root, public virtual std::out_of_range {
+      public:
+        explicit Index(char const *_message) noexcept : Root(), std::out_of_range(_message) {};
+        explicit Index(std::string const &_message) noexcept : Root(), std::out_of_range(_message) {};
+        virtual char const* what() const noexcept { return this->std::out_of_range::what(); }
+    };
+
+
     //! Matrix is not invertible
     class NotInvertible : public Domain {
       public:
@@ -44,6 +83,37 @@ namespace DCProgs {
         NotInvertible   (std::string const &_message) noexcept 
                       : Domain(_message), std::domain_error(_message) {};
     };
+
+    //! Runtime error which carries a message.
+    class Runtime : public Root {
+      public:
+        Runtime(std::string const &_message) noexcept : Root() {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try { return message_.c_str(); } catch(...) { return ""; }
+        }
+        virtual ~Runtime() noexcept {};
+      private:
+        std::string message_;
+    };
+
+    //! NotImplemented error which carries a message.
+    class NotImplemented : public Root {
+      public:
+        NotImplemented(std::string const &_message) noexcept : Root() {
+          try { message_ = _message; }
+          catch(...) { try { message_ = ""; } catch(...) {} }
+        }
+        virtual char const * what() const noexcept {
+          try { return message_.c_str(); } catch(...) { return ""; }
+        }
+        virtual ~NotImplemented() noexcept {};
+      private:
+        std::string message_;
+    };
+
 
 #   ifdef DCPROGS_PYTHON_BINDINGS
       //! Exception thrown in python modules 

@@ -1,3 +1,5 @@
+#include "DCProgsConfig.h"
+
 #include <iostream>
 #include "idealG.h"
 
@@ -19,17 +21,32 @@ namespace DCProgs {
   }
 
   t_rmatrix IdealG::laplace_af(t_real s) const {
-    t_rmatrix const Qaa( StateMatrix::aa() );
+    t_rmatrix const Qaa( QMatrix::aa() );
     auto const stuff = s * t_rmatrix::Identity(Qaa.rows(), Qaa.rows()) - Qaa;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
-    if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
-    return pivotLU.inverse() * StateMatrix::af();
+    if(not pivotLU.isInvertible()) {
+      std::ostringstream sstr; 
+      sstr << *this << "\n ***** " << s << " is an eigenvalue of Qaa.";
+      throw errors::NotInvertible(sstr.str());
+    }
+    return pivotLU.inverse() * QMatrix::af();
   }
   t_rmatrix IdealG::laplace_fa(t_real s) const {
-    t_rmatrix const Qff( StateMatrix::ff() );
+    t_rmatrix const Qff( QMatrix::ff() );
     auto const stuff = s * t_rmatrix::Identity(Qff.rows(), Qff.rows()) - Qff;
     Eigen::FullPivLU<t_rmatrix> pivotLU(stuff);
-    if(not pivotLU.isInvertible()) throw errors::NotInvertible("Found pole of laplacian.");
-    return pivotLU.inverse() * StateMatrix::fa();
+    if(not pivotLU.isInvertible()) {
+      std::ostringstream sstr; 
+      sstr << *this << "\n  ***** " << s << " is an eigenvalue of Qff.";
+      throw errors::NotInvertible(sstr.str());
+    }
+    return pivotLU.inverse() * QMatrix::fa();
+  }
+ 
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat) {
+    return _stream << "Ideal Likelihood:\n" 
+                   << "=================\n\n" 
+                   << "  * nopen: "  << _mat.get_nopen() << "\n"
+                   << "  * matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
   }
 }

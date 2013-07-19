@@ -2,6 +2,7 @@
 #define DCPROGS_STATE_MATRIX_H
 
 #include <DCProgsConfig.h>
+#include <ostream>
 #include <tuple>
 #include "errors.h"
 
@@ -10,8 +11,7 @@ namespace DCProgs {
 
   //! \brief State matrix that can  be partitioned into open/shut states.
   //! \details In practice, this is a two tuple with some helper functions to get corners.
-  struct MSWINDOBE StateMatrix {
- 
+  struct MSWINDOBE QMatrix {
  
     //! Number of open states.
     t_int nopen; 
@@ -19,45 +19,47 @@ namespace DCProgs {
     t_rmatrix matrix; 
  
     //! Constructor
-    StateMatrix() : matrix(0,0), nopen(0) {}
+    QMatrix() : matrix(0,0), nopen(0) {}
     //! Constructor
     template<class T>
-      StateMatrix   (Eigen::DenseBase<T> const &_c, t_int _nopen = 0)
-                  : matrix(_c), nopen(_nopen) {}
+      QMatrix(Eigen::DenseBase<T> const &_c, t_int _nopen = 0) : matrix(_c), nopen(_nopen) {}
   
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
-    Eigen::Block<t_rmatrix> af() { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
+    Eigen::Block<t_rmatrix> af() { return matrix.topRightCorner(nopen, nshut()); }
     //! Shut to open transitions.
-    Eigen::Block<t_rmatrix> fa() { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
+    Eigen::Block<t_rmatrix> fa() { return matrix.bottomLeftCorner(nshut(), nopen); }
     //! Shut to shut transitions.
     Eigen::Block<t_rmatrix> ff() 
-      { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
+      { return matrix.bottomRightCorner(nshut(), nshut()); }
     //! Open to open transitions.
     Eigen::Block<t_rmatrix const> aa() const 
       { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
     Eigen::Block<t_rmatrix const> af() const 
-      { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
+      { return matrix.topRightCorner(nopen, nshut()); }
     //! Shut to open transitions.
     Eigen::Block<t_rmatrix const> fa() const 
-      { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
+      { return matrix.bottomLeftCorner(nshut(), nopen); }
     //! Shut to shut transitions.
     Eigen::Block<t_rmatrix const> ff() const 
-      { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
+      { return matrix.bottomRightCorner(nshut(), nshut()); }
+
+    t_int nshut() const { return static_cast<t_int>(matrix.cols()) - nopen; }
+
+    //! \brief Returns transpose of state matrix.
+    //! \details Means A states become F states, and F states become A states, and the partitionned
+    //! matrix is transposed such that the new AA block is top left corner.
+    QMatrix transpose() const;
  
     //! \brief Computes eigenvalues and eigenvectors
     //! \details Solves the *transpose* eigenproblem \f$\phi = \phi\cdot\mathcal{Q}\f$.
-    std::tuple<t_cvector, t_cmatrix> eigenstuff() {
-      Eigen::EigenSolver<t_rmatrix> eigsolver(matrix.transpose());
-      if(eigsolver.info() != Eigen::Success) 
-        throw errors::Mass("Could not solve eigenvalue problem.");
-      t_cvector const eigs = eigsolver.eigenvalues();
-      t_cmatrix const vecs = eigsolver.eigenvectors();
-      return std::make_tuple(eigs, vecs.transpose());
-    }
+    std::tuple<t_cvector, t_cmatrix> eigenstuff() const;
   };
+
+  //! Dumps object to stream.
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat);
 }
 
 #endif

@@ -7,7 +7,7 @@
 
 #include <unsupported/Eigen/MatrixFunctions>
 
-#include "state_matrix.h"
+#include "qmatrix.h"
 #include "errors.h"
 
 //! General namespace for all things DCProgs.
@@ -16,17 +16,14 @@ namespace DCProgs {
   //! \brief Ideal transition matrix of open and shut intervals
   //! \details Given a transition matrix $Q$ it is possible to figure out the evolution of any given
   //! system. 
-  class MSWINDOBE IdealG : protected StateMatrix {
+  class MSWINDOBE IdealG : protected QMatrix {
 
     //! Just trying to figure out a complex return type...
-    typedef decltype( (t_real(0) * std::declval<const StateMatrix>().ff()).exp()
-                      * std::declval<const StateMatrix>().fa() ) t_laplace_result;
-    //! Just trying to figure out a complex return type...
-    typedef decltype( t_rmatrix::Zero(1, 1) ) t_Zero; 
-
+    typedef decltype( (t_real(0) * std::declval<const QMatrix>().ff()).exp()
+                      * std::declval<const QMatrix>().fa() ) t_time_result;
     public:
       //! Constructor
-      IdealG() : StateMatrix() {}
+      IdealG() : QMatrix() {}
       //! \brief Constructor with parameters.
       //! \details Calls set method with input parameters.
       //! \param[in] _matrix: Any matrix or matrix expression from Eigen. Will become the transition
@@ -44,35 +41,21 @@ namespace DCProgs {
       //!          It is expected that open states are the top rows [0, _nopen].
       void set(t_rmatrix const &_Q, t_int const &_nopen);
       //! Sets state matrix on which to act.
-      void set(StateMatrix const &_in) { set(_in.matrix, _in.nopen); }
+      void set(QMatrix const &_in) { set(_in.matrix, _in.nopen); }
       //! Gets Q matrix. 
-      t_rmatrix const & get_Q() const { return this->matrix; }
+      t_rmatrix const & get_matrix() const { return this->matrix; }
       //! Gets the number of open states
-      t_int const & get_nopen() const { return this->nopen; }
+      t_int get_nopen() const { return this->nopen; }
+      //! Gets the number of open states
+      t_int get_nshut() const { return this->nshut(); }
 
-      //! Open to open transitions.
-      t_Zero aa(t_real t) const 
-        { return std::move(t_rmatrix::Zero(nopen, nopen)); }
-      //! Shut to shut transitions.
-      t_Zero ff(t_real t) const { 
-        long const n(this->matrix.rows() - this->nopen);
-        return t_rmatrix::Zero(n, n);
-      }
       //! Shut to open transitions.
-      t_laplace_result fa(t_real t) const 
-        { return (t*StateMatrix::ff()).exp()*StateMatrix::fa(); }
+      t_time_result fa(t_real t) const 
+        { return (t*QMatrix::ff()).exp()*QMatrix::fa(); }
       //! Open to shut transitions.
-      t_laplace_result af(t_real t) const 
-        { return (t*StateMatrix::aa()).exp()*StateMatrix::af(); }
+      t_time_result af(t_real t) const 
+        { return (t*QMatrix::aa()).exp()*QMatrix::af(); }
 
-      //! Laplace transform of open to open transitions.
-      t_Zero laplace_aa(t_real s) const
-        { return t_rmatrix::Zero(nopen, nopen); }
-      //! Laplace transform of shut to shut transitions.
-      t_Zero laplace_ff(t_real s) const {
-        long const N(this->matrix.rows() - this->nopen);
-        return t_rmatrix::Zero(N, N);
-      }
       //! Laplace transform of shut to open transitions.
       t_rmatrix laplace_fa(t_real s) const;
       //! Open to shut transitions.
@@ -80,8 +63,7 @@ namespace DCProgs {
   };
 
   template<class T>
-    IdealG :: IdealG   (Eigen::DenseBase<T> const &_matrix, t_int _nopen)
-                     : StateMatrix() {
+    IdealG :: IdealG(Eigen::DenseBase<T> const &_matrix, t_int _nopen) : QMatrix() {
       try { this->set(_matrix, _nopen); }
       catch(...) {
         this->matrix.resize(0, 0);
@@ -89,6 +71,9 @@ namespace DCProgs {
         throw;
       }
     }
+
+  //! Dumps object to stream.
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, IdealG const &_mat);
 }
 
 #endif

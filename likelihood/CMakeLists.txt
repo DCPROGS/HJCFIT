@@ -1,5 +1,8 @@
-add_library(likelihood SHARED state_matrix.h errors.h idealG.h idealG.cc 
-            equilibrium.h equilibrium.cc time_filter.h time_filter.cc asymptotes.h asymptotes.cc)
+add_library(likelihood SHARED qmatrix.h qmatrix.cc errors.h idealG.h idealG.cc 
+            occupancies.h occupancies.cc time_filter.h time_filter.cc recursion_formula.h
+            exact_survivor.h exact_survivor.cc root_finder.h root_finder.cc determinant_equation.h
+            determinant_equation.cc asymptotes.h asymptotes.cc approx_survivor.h approx_survivor.cc
+            missed_eventsG.h missed_eventsG.cc laplace_survivor.h laplace_survivor.cc likelihood.h)
 
 # Windows + Visual studio specifics.
 if(MSVC)
@@ -13,7 +16,12 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
 add_dependencies(likelihood eigen)
 
-install(TARGETS likelihood DESTINATION lib) 
+if(WIN32)
+  set(LIB_DIRECTORY dcprogs/DLLs)
+else()
+  set(LIB_DIRECTORY lib)
+endif(WIN32)
+install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
 
 # Test subdirectory.
 add_subdirectory(tests)

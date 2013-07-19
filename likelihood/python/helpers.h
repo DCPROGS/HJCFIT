@@ -1,34 +1,5 @@
 namespace {
 
-    template<class T> class Object;
-    // Helper function to create a python pointer that knows to decref itself on deconstruction.
-    template<class T> Object<T> steal_ref(T * const _in); 
-        
-    // Takes ownership of python object and decrefs when deconstructed.
-    // This object *steals* a reference to the PyObject. 
-    template<class T> class Object {
-      friend Object<T> steal_ref<>(T * const);
-      public:
-        Object(Object const & _c) : object_(_c.object_) {}
-        ~Object() {
-          PyObject * const dummy = (PyObject*)object_;
-          object_ = NULL;
-          Py_XDECREF(((PyObject*)dummy));
-        }
-        T* operator ~() const { return object_; }
-        bool operator!() const { return object_ == NULL; }
-        bool is_valid() const { return object_ != NULL; }
-        T* new_ref() const { Py_INCREF( ((PyObject*)object_) ); return object_; }
-
-      private:
-        explicit Object(T * const _in) : object_(_in) {}
-        T * object_; 
-    };
-
-    template<class T> Object<T> steal_ref(T * const _in) { return Object<T>(_in); }
-
-
-
     // Applies functor to an input array
     // Output array will have same shape as input. It will always be of type real.
     template<class T_FUNC> PyObject* apply_real(PyObject* _in, T_FUNC const & _func) {

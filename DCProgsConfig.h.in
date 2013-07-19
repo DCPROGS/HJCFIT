@@ -11,6 +11,7 @@
 #cmakedefine MSWINDOBE __declspec(dllimport)
 #cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine HAS_CXX11_RANDOM_DEVICE
+#cmakedefine HAS_CXX11_UNIQUE_PTR
 
 #ifdef HAS_CXX11_CONSTEXPR
 # define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) constexpr static TYPEANDNAME = VALUE
@@ -19,6 +20,10 @@
 # define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) const static TYPEANDNAME
 # define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) const TYPEANDNAME = VALUE
 #endif
+
+// one should alway known when one is working on crapware
+#cmakedefine MSVC
+
 
 #if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
 # undef MSWINDOBE
@@ -37,13 +42,35 @@
 #cmakedefine NUMPY_VERSION_MINOR @NUMPY_VERSION_MINOR@
 
 
+#cmakedefine CXX_HAS_STD_ISNAN
+#cmakedefine CXX_HAS_ISNAN
+#cmakedefine CXX_HAS__ISNAN
+#cmakedefine CXX_HAS_FLOAT_H_ISNAN
+#ifdef CXX_HAS_STD_ISNAN
+#  include <cmath>
+#  define DCPROGS_ISNAN(X) std::isnan(X)
+#elif defined(CXX_HAS_ISNAN)
+#  include <math.h>
+#  define DCPROGS_ISNAN(X) ::isnan(X)
+#elif defined CXX_HAS___ISNAN
+#  include <math.h>
+#  define DCPROGS_ISNAN(X) __isnan(X)
+#elif defined(CXX_HAS_FLOAT_H_ISNAN)
+#  include <float.h>
+#  define DCPROGS_ISNAN(X) _isnan(X)
+#else
+#  error no macro defined for isnan
+#endif
+
+
+
 namespace DCProgs {
   //! Types of reals across DCProgs.
   typedef double t_real;
   //! Complex real type
   typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.
-  typedef int t_int;
+  typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of boolean matrices across DCProgs.
@@ -58,5 +85,14 @@ namespace DCProgs {
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
   //! Type of complex vectors.
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
+
+
+  // Some functions that come in usefull left and right.
+  template<class T>
+    auto numpy_io(Eigen::DenseBase<T> const &_matrix)
+                   -> decltype(_matrix.format(Eigen::IOFormat()))  {
+      return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n",
+                                            "[", "]", "[", "]"));
+    }
 }
 #endif

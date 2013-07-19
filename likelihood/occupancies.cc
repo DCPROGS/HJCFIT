@@ -1,8 +1,9 @@
 #include <DCProgsConfig.h>
 
 #include <iostream>
-#include "equilibrium.h"
+#include "occupancies.h"
 #include "idealG.h"
+#include "missed_eventsG.h"
 
 namespace DCProgs {
 
@@ -28,22 +29,40 @@ namespace DCProgs {
     // Should work for both IdealG and MissedEventsG.
     // Creates basic input matrix for open and shut cases
     // Retrieves Ax = b problem and solves it using Eigen.
-    template<class T> t_initvec equilibrium_impl_(T const &_gmatrix, bool _open) {
+    template<class T> t_initvec occupancies_impl_(T const &_gmatrix, bool _open) {
         
       std::tuple<t_rmatrix, t_rvector> problem = _open ?
         lstsq_impl_( _gmatrix.laplace_af(0) * _gmatrix.laplace_fa(0) ):
         lstsq_impl_( _gmatrix.laplace_fa(0) * _gmatrix.laplace_af(0) );
     
-      return std::get<0>(problem)
-                  .jacobiSvd(Eigen::ComputeThinU | Eigen::ComputeThinV)
-                  .solve(std::get<1>(problem))
-                  .transpose();
+      Eigen::JacobiSVD<t_rmatrix>
+        svd(std::get<0>(problem), Eigen::ComputeThinU|Eigen::ComputeThinV); 
+      return svd.solve(std::get<1>(problem)).transpose();
     }
+
   }
 
   // Untemplates the templates.
-  t_initvec equilibrium(IdealG const &_idealg, bool _open) {
-    return equilibrium_impl_(_idealg, _open);
+  t_initvec MSWINDOBE occupancies(IdealG const &_idealg, bool _initial) {
+    return occupancies_impl_(_idealg, _initial);
   }
 
+  t_initvec MSWINDOBE occupancies(MissedEventsG const &_missedeventsG, bool _initial) {
+    return occupancies_impl_(_missedeventsG, _initial);
+  }
+
+  t_initvec MSWINDOBE CHS_occupancies(MissedEventsG const &_G, t_real _tcrit, bool _initial) {
+    
+    t_int const nopen = _G.get_qmatrix().nopen;
+    t_rmatrix const Hfa = CHS_matrix_Hfa(_G, _tcrit);
+    if(_initial) {
+      // \f$\phi_F H_{FA}\f$
+      t_initvec const phif_times_Hfa = occupancies(_G, false) * Hfa;
+      // \f$\phi_F H_{FA} / \phi_F H_FA u_A\f$
+      return phif_times_Hfa / phif_times_Hfa.array().sum();
+    } else {
+      // \f$H_{FA} u_A\f$
+      return Hfa.rowwise().sum();
+    }
+  }
 }

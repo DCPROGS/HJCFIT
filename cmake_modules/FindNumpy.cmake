@@ -28,7 +28,6 @@
 #  NUMPY_INCLUDES           = Include path for the header files of NUMPY
 #  NUMPY_MULTIARRAY_LIBRARY = Path to the multiarray shared library
 #  NUMPY_SCALARMATH_LIBRARY = Path to the scalarmath shared library
-#  NUMPY_LIBRARIES          = Link these to use NUMPY
 #  NUMPY_LFLAGS             = Linker flags (optional)
 #  NUMPY_API_VERSION        = API version of the installed and available NumPy
 #                             package
@@ -44,10 +43,6 @@ endif(NOT PYTHONLIBS_FOUND)
 if(NOT PYTHONINTERP_FOUND)
   message(FATAL_ERROR "[Numpy] please find python executable first.")
 endif(NOT PYTHONINTERP_FOUND)
-if(NUMPY_FOUND AND NUMPY_LIBRARIES AND NUMPY_INCLUDES)
-  set(NUMPY_FIND_QUIETLY TRUE)
-endif(NUMPY_FOUND AND NUMPY_LIBRARIES AND NUMPY_INCLUDES)
-
 
 set (TMP_FIND_LIBRARY_PREFIXES ${CMAKE_FIND_LIBRARY_PREFIXES})
 
@@ -110,43 +105,6 @@ find_path (NUMPY_INCLUDES numpy/__multiarray_api.h numpy/multiarray_api.txt
 
 ## -----------------------------------------------------------------------------
 ## Check for the library
-
-if(WIN32) 
-  find_library(NUMPY_LIBRARIES npymath
-    PATHS
-    ${numpy_search_path}
-    ${PYTHON_PKG_DIR}
-    PATH_SUFFIXES
-    numpy/core/lib
-    NO_DEFAULT_PATH
-  )
-  if(NOT NUMPY_LIBRARIES)
-    message(FATAL_ERROR "[Numpy] Could not find ${NUMPY_LIBRARIES} ${PYTHON_PKG_DIR}/numpy/lib")
-  endif(NOT NUMPY_LIBRARIES)
-else(WIN32)
-  macro(find_numpy_component library numpylibout)
-    find_library (${numpylibout} ${library}
-      PATHS
-      ${numpy_search_path}
-      ${PYTHON_PKG_DIR}
-      PATH_SUFFIXES
-      python
-      core
-      python/numpy/core
-      python${PYTHON_VERSION}/site-packages/numpy/core
-      NO_DEFAULT_PATH
-    )
-    if(NOT ${numpylibout})
-      message(FATAL_ERROR "[Numpy] Could not find ${library} ${PYTHON_PKG_DIR}/numpy/lib")
-    endif(NOT ${numpylibout})
-    get_filename_component (${numpylibout} ${${numpylibout}}/${library} ABSOLUTE)
-  endmacro(find_numpy_component)
-
-  find_numpy_component(multiarray.so NUMPY_MULTIARRAY_LIBRARY)
-  find_numpy_component(scalarmath.so NUMPY_SCALARMATH_LIBRARY)
-
-  set(NUMPY_LIBRARIES ${NUMPY_MULTIARRAY_LIBRARY} ${NUMPY_SCALARMATH_LIBRARY})
-endif(WIN32)
 
 ## -----------------------------------------------------------------------------
 ## Try to determine the API version
@@ -273,27 +231,22 @@ numpy_feature_test(DCPROGS_NPY_ENABLEFLAGS
 ## -----------------------------------------------------------------------------
 ## Actions taken when all components have been found
 
-if (NUMPY_INCLUDES AND NUMPY_LIBRARIES)
+if (NUMPY_INCLUDES)
   set (NUMPY_FOUND TRUE CACHE PATH "Says wether Numpy Python was found.")
   set (NUMPY_INCLUDES ${NUMPY_INCLUDES} CACHE PATH "Path to numpy C-API headers.")
-  set (NUMPY_LIBRARIES ${NUMPY_LIBRARIES} CACHE PATH "Path to numpy C-API libraries.")
-else (NUMPY_INCLUDES AND NUMPY_LIBRARIES)
+else (NUMPY_INCLUDES)
   set (NUMPY_FOUND FALSE CACHE PATH "Says wether Numpy Python was found.")
   if (NOT NUMPY_FIND_QUIETLY)
     if (NOT NUMPY_INCLUDES)
       message (STATUS "[NumPy] Unable to find NUMPY header files!")
     endif (NOT NUMPY_INCLUDES)
-    if (NOT NUMPY_LIBRARIES)
-      message (STATUS "[NumPy] Unable to find NUMPY library files!")
-    endif (NOT NUMPY_LIBRARIES)
   endif (NOT NUMPY_FIND_QUIETLY)
-endif (NUMPY_INCLUDES AND NUMPY_LIBRARIES)
+endif (NUMPY_INCLUDES)
 
 if (NUMPY_FOUND)
   if (NOT NUMPY_FIND_QUIETLY)
     message (STATUS "[NumPy] Found components for NUMPY")
     message (STATUS "[NumPy] NUMPY_INCLUDES  = ${NUMPY_INCLUDES}")
-    message (STATUS "[NumPy] NUMPY_LIBRARIES = ${NUMPY_LIBRARIES}")
   endif (NOT NUMPY_FIND_QUIETLY)
 else (NUMPY_FOUND)
   if (NUMPY_FIND_REQUIRED)
@@ -311,7 +264,6 @@ unset(NUMPY_NDARRAYOBJECT_H CACHE)
 unset(NUMPY_VERSION_PY CACHE)
 mark_as_advanced (
   NUMPY_INCLUDES
-  NUMPY_LIBRARIES
   NUMPY_MULTIARRAY_LIBRARY
   NUMPY_SCALARMATH_LIBRARY
   NUMPY_API_VERSION)

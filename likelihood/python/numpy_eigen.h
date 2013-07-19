@@ -2,6 +2,7 @@
 #define DCPROGS_NUMPY_EIGEN
 #include <type_traits>
 #include "../errors.h"
+#include "object.h"
 
 namespace DCProgs {
   namespace numpy {
@@ -52,18 +53,17 @@ namespace DCProgs {
     
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy_(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL)
+      PyObject* wrap_to_numpy_(Eigen::DenseBase<T_DERIVED> const &_in, PyObject *_parent = NULL,
+                               bool _keep2d = false)
       {
         typedef type<typename Eigen::DenseBase<T_DERIVED>::Scalar> t_ScalarType;
         npy_intp dims[2] = { _in.rows(), _in.cols() };
+        npy_int const ndims = (_in.cols() > 1 or _keep2d) ? 2: 1;
         if(_in.rows() == 0 or _in.cols() == 0)
-          return PyArray_ZEROS( _in.cols() > 1? 2: 1, dims, t_ScalarType::value,
-                                _in.IsRowMajor ? 0: 1 );
+          return PyArray_ZEROS(ndims, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1 );
         PyArrayObject *result = _parent == NULL ?
-          (PyArrayObject*) PyArray_ZEROS( _in.cols() > 1? 2: 1, dims,
-                                          t_ScalarType::value, _in.IsRowMajor ? 0: 1 ):
-          (PyArrayObject*) PyArray_SimpleNewFromData( _in.cols() > 1? 2: 1, dims,
-                                                      t_ScalarType::value,
+          (PyArrayObject*) PyArray_ZEROS(ndims, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1):
+          (PyArrayObject*) PyArray_SimpleNewFromData( ndims, dims, t_ScalarType::value,
                                                       (void*)(&_in(0,0)) );
         if(result == NULL) return NULL;
         // If has a parent, do not copy data, just incref it as base.
@@ -102,15 +102,16 @@ namespace DCProgs {
 
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &&_in, PyObject *_parent = NULL) {
-        PyObject* const result = wrap_to_numpy_(_in, _parent);
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> const &_in, bool _keep2d=false) {
+        PyObject* const result = wrap_to_numpy_(_in, NULL, _keep2d);
         PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
-      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &_in, PyObject *_parent = NULL) {
-        PyObject* const result = wrap_to_numpy_(_in, _parent);
+      PyObject* wrap_to_numpy(Eigen::DenseBase<T_DERIVED> &_in, PyObject *_parent = NULL,
+                              bool _keep2d=false) {
+        PyObject* const result = wrap_to_numpy_(_in, _parent, _keep2d);
         PyArray_ENABLEFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }
@@ -144,16 +145,21 @@ namespace DCProgs {
     //! \details It is best to check PyErr_Occurred after a call to this function.
     //! \param[in] _in a numpy array. 
     //! \return An eigen object which is a copy of the numpy input.
-    DCProgs::t_rmatrix map_to_rmatrix(PyArrayObject *_in) {
-       if(not PyArray_Check(_in))
-         throw DCProgs::errors::PythonTypeError("Expected a numpy array as input.");
-       int const type = PyArray_TYPE(_in);
+    DCProgs::t_rmatrix map_to_rmatrix(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
 #      ifdef DCPROGS_MACRO
 #        error DCPROGS_MACRO is already defined.
 #      endif
-#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                              \
-         if(type == NUM_TYPE)                                                            \
-           return details::wrap_to_eigen<TYPE>(_in).cast<t_rmatrix::Scalar>(); 
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
        DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
        else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )

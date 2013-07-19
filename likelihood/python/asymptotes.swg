@@ -1,117 +1,41 @@
-// More translating exception from c++ to python
-%exception DeterminantEq::DeterminantEq(PyObject *_in, int _nopen, double _s, bool _doopen=true) {
-  try { $action }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%exception DeterminantEq::DeterminantEq(StateMatrix *_in, double _s, bool _doopen=true) {
-  try { $action }
-  DCPROGS_CATCH(SWIG_fail);
-}
+%feature("autodoc", "Computes asymptotic values of missed-event G.") Asymptotes;
+class Asymptotes {
+  public:
 
-%feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
-                    "There are several ways to instanciate this object:\n\n"
-                    ">>> DeterminantEq(matrix, nopen, tau, doopen=True)\n\n"
-                    "or,\n\n"
-                    ">>> DeterminantEq(statematrix, tau, doopen=True)\n\n"
-                    "Parameters:\n"
-                    "   matrix: numpy array\n"
-                    "      Transition matrix, where the upper left corner"
-                         " contain open-open transitions\n"  
-                    "   nopen: int\n"
-                    "      Number of open states in the transition matrix.\n"
-                    "   statematrix: StateMatrix\n"
-                    "      State matrix created from a transition matrix "
-                          "and the number of open states\n" 
-                    "   tau: number\n"
-                    "      Max length of missed events.\n"
-                    "   doopen: Boolean\n"
-                    "      Whether to compute AF (True, default) or AF determinant.\n")
-         DeterminantEq;
-//! Adds determinant functor
-class DeterminantEq {
-
-  public: 
-
-  // Rename get_, set_tau so they are hidden (private) in python.
-  %rename(_get_tau) get_tau() const; 
-  %rename(_set_tau) set_tau(DCProgs::t_real); 
-
-  // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    DeterminantEq(PyObject *_in, int _nopen, double _tau, bool _doopen=true) {
-      if(_nopen <= 0)
-        throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
-      if(not PyArray_Check(_in))
-        throw DCProgs::errors::PythonTypeError("Expected a numpy array on input.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix((PyArrayObject*)_in);
-      if(matrix.rows() != matrix.cols())
-        throw DCProgs::errors::PythonValueError("Expected a square matrix on input.");
-      if(matrix.rows() == 0)
-        throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
-      if(_nopen >= matrix.rows())
-        throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( DCProgs::StateMatrix(std::move(matrix), _nopen),
-                                         _tau, _doopen );
-    }
-    DeterminantEq(StateMatrix *_in, double _tau, bool _doopen=true) {
-      if(_in->nopen <= 0) 
-        throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
-      if(_in->matrix.rows() != _in->matrix.cols()) 
-        throw DCProgs::errors::PythonValueError("Expected a square state matrix on input.");
-      if(_in->matrix.rows() == 0)
-        throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
-      if(_in->nopen >= _in->matrix.rows()) 
-        throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( *_in, _tau, _doopen );
-    }
+    Asymptotes(DCProgs::DeterminantEq const &_det, PyObject *_array) {
+       
+       Object<> iterator = steal_ref(PyObject_GetIter(_array));
+       if(not iterator) throw DCProgs::errors::PythonErrorAlreadyThrown();
+       std::vector<DCProgs::Root> roots;
+       while(Object<> item = steal_ref(PyIter_Next(~iterator))) {
+         if(not PySequence_Check(~item))
+           throw DCProgs::errors::PythonTypeError(
+                    "Roots should be a list [(root, multiplicity)].");
+
+         Object<> py_root = steal_ref(PySequence_GetItem(~item, 0));
+         if(not py_root) throw DCProgs::errors::PythonErrorAlreadyThrown();
+         DCProgs::t_real c_root;
+         if(PyFloat_Check(~py_root)) c_root = (DCProgs::t_real)PyFloat_AsDouble(~py_root);
+         else if(PyLong_Check(~py_root)) c_root = (DCProgs::t_real)PyLong_AsLong(~py_root);
+         else if(PyInt_Check(~py_root)) c_root = (DCProgs::t_real)PyInt_AsLong(~py_root);
+         else throw DCProgs::errors::PythonTypeError("Roots should be a real number.");
+
+         Object<> py_mult = steal_ref(PySequence_GetItem(~item, 1));
+         if(not py_mult) throw DCProgs::errors::PythonErrorAlreadyThrown();
+         DCProgs::t_int c_mult;
+         if(PyLong_Check(~py_mult)) c_mult = (DCProgs::t_int)PyLong_AsLong(~py_mult);
+         else if(PyInt_Check(~py_mult)) c_mult = (DCProgs::t_int)PyInt_AsLong(~py_mult);
+         else throw DCProgs::errors::PythonTypeError("Multiplicity should an integer.");
+
+         roots.emplace_back(c_root, c_mult);
+       }
+       if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+       return new DCProgs::Asymptotes(_det, roots);
+    };
   }
 
-  // Converts get_, set_tau to property.
-  DCProgs::t_real get_tau() const;
-  void set_tau(DCProgs::t_real);
-  %pythoncode %{
-    __swig_getmethods__["tau"] = _get_tau
-    __swig_setmethods__["tau"] = _set_tau
-    if _newclass: tau = property(_get_tau, _set_tau, doc="Max length of mixed events.")
-  %}
-
-  // Defines determinant function for a scalar
-  DCProgs::t_real operator()(DCProgs::t_real _s);
-  // Defines determinant function for a scalar + changing tau
-  DCProgs::t_real operator()(DCProgs::t_real _s, DCProgs::t_real _tau);
-  // The following two functions enhance the behavior of the function in python by allowing users to
-  // input numpy arrays and get the determinants for each.
-  %extend { 
-    // Defines determinant function for a numpy array
-    PyObject* operator()(PyObject * _s) {
-      try { return apply_real(_s, *$self); }
-      DCPROGS_CATCH(return NULL;);
-    }
-    // Defines determinant function for a numpy array + changing tau
-    PyObject* operator()(PyObject * _s, DCProgs::t_real _tau) {
-      try {
-        DCProgs::t_real const oldtau = $self->get_tau();
-        $self->set_tau(_tau);
-        PyObject * result;
-        try { result = apply_real(_s, *$self); }
-        catch(...) {
-          $self->set_tau(oldtau); 
-          throw;
-        }
-        $self->set_tau(oldtau); 
-        return result;
-      } DCPROGS_CATCH(return NULL;);
-    }
-  }
-  %pythoncode %{
-    __call__.__doc__ = "Computes determinant W\n\n"                                    \
-                       "Parameters:\n"                                                 \
-                       "  s: scalar, tuple, list, array\n"                             \
-                       "    The laplace scale.\n"                                      \
-                       "  tau: *optional* number\n"                                    \
-                       "    If present, it is the max length of missed events.\n\n"    \
-                       "Returns: If a scalar, returns a scalar. "                      \
-                                "Otherwise returns a numpy array."
-  %}
-                     
+  DCProgs::t_rmatrix operator()(DCProgs::t_real _s) const;
 };
+
+%clear Asymptotes;
