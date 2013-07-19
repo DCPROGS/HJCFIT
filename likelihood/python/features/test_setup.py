@@ -9,13 +9,13 @@ def Matrix(string):
                   [    15,         0, -2065,     50, 2000 ],  
                   [     0,     15000,  4000, -19000,    0 ],  
                   [     0,         0,    10,      0,  -10 ] ])
-  if string == 'CH82': return Matrix('classic') / 1e3
-  if string == 'CB':
+  if string == 'ch82': return Matrix('classic') / 1e3
+  if string == 'cb':
     return array([ [-2,    1,   1,    0], 
                    [ 1, -101,   0,  100], 
                    [50,    0, -50,    0],
                    [ 0,  5.6,   0, -5.6] ])
-  if string == 'CKS': return array([[-1, 1, 0], [19, -29, 10], [0, 0.026, -0.026]])
+  if string == 'cks': return array([[-1, 1, 0], [19, -29, 10], [0, 0.026, -0.026]])
   if string == "empty": return array([])
   if string == "spam": 
     r = identity(5).tolist()
@@ -104,9 +104,14 @@ def QMat(string):
   """ Creates matrices from specific strings """
   from dcprogs.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import QMatrix
-  if string == "classic" or string == "CH82": return QMatrix(Matrix(string), 2)
-  if string == "CB": return QMatrix(Matrix(string), 1)
-  if string == "CKS": return QMatrix(Matrix(string), 1)
+
+  string = string.lower().rstrip().lstrip()
+  if 'transpose' in string:
+    return QMat(string.replace('transpose', '')).transpose()
+
+  if string == "classic" or string == "ch82": return QMatrix(Matrix(string), 2)
+  if string == "cb": return QMatrix(Matrix(string), 1)
+  if string == "cks": return QMatrix(Matrix(string), 1)
   if string == "complex eigenvalues": return QMatrix(Matrix(string), 4)
   if string == "singular matrix": return QMatrix(Matrix(string), 3)
   if string == "random": return random_qmatrix()
@@ -114,19 +119,37 @@ def QMat(string):
   else: raise Exception("Unknown QMatrix {0}".format(string))
 
 def eG(string):
-  """ Creates matrices from specific strings """
+  """ Creates missed-events likelihood from specific strings """
   from dcprogs.likelihood import create_missed_eventsG
+  string = string.lower().rstrip().lstrip()
+  if 'transpose' in string:
+    return eG(string.replace('transpose', '')).transpose()
+
   if string == "classic": return create_missed_eventsG(QMat(string), 1e-4)
-  if string == "CH82": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "CB": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "CKS": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "ch82": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "cb": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "cks": return create_missed_eventsG(QMat(string), 0.2)
+  else: raise Exception("Unknown eG model {0}".format(string))
+
+
+def DetModel(string):
+  from dcprogs.likelihood import DeterminantEq
+  string = string.lower().rstrip().lstrip()
+  if 'transpose' in string:
+    return DetModel(string.replace('transpose', '')).transpose()
+
+  if string == "classic": return DeterminantEq(QMat(string), 1e-4)
+  if string == "ch82": return DeterminantEq(QMat(string), 0.2)
+  if string == "cb": return DeterminantEq(QMat(string), 0.2)
+  if string == "cks": return DeterminantEq(QMat(string), 0.2)
   else: raise Exception("Unknown eG model {0}".format(string))
 
 def register_type(): 
   from behave import matchers
+  import numpy
   matchers.register_type(Integer=lambda x: int(eval(x)))
   matchers.register_type(Float=lambda x: float(eval(x)))
-  matchers.register_type(Eval=lambda x: eval(x))
+  matchers.register_type(Eval=lambda x: eval(x, globals(), numpy.__dict__.copy()))
   matchers.register_type(Bool=lambda x: bool(eval(x)))
   matchers.register_type(Matrix=Matrix)
   matchers.register_type(QMatrix=QMat)

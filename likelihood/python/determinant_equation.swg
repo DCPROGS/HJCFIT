@@ -80,14 +80,12 @@ class DeterminantEq {
   DCProgs::t_real operator()(DCProgs::t_real _s);
   // Defines determinant function for a scalar + changing tau
   DCProgs::t_real operator()(DCProgs::t_real _s, DCProgs::t_real _tau);
-  // The following two functions enhance the behavior of the function in python by allowing users to
-  // input numpy arrays and get the determinants for each.
+  // The following functions enhance the behavior of the function in python by allowing users to
+  // input numpy arrays and get the determinants for each value. 
+  // Unfortunately, It doesn't seem to work with overload for tau.
   %extend { 
     // Defines determinant function for a numpy array
-    PyObject* operator()(PyObject * _s) {
-      try { return apply_real(_s, *$self); }
-      DCPROGS_CATCH(return NULL;);
-    }
+    PyObject* operator()(PyObject * _s) { return apply_real(_s, *$self); }
   }
   %pythoncode %{
     __call__.__doc__ = "Computes determinant W\n\n"                                    \
@@ -104,6 +102,16 @@ class DeterminantEq {
   DCProgs::t_rmatrix H(DCProgs::t_real s, DCProgs::t_real tau);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s, DCProgs::t_real tau);
+  // Add the ability to pass in numpy arrays.
+  // Unfortunately, no tau overload.
+  %extend {
+    PyObject* H(PyObject *_s) {
+      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->H(s); }); 
+    }
+    PyObject* s_derivative(PyObject *_s) {
+      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->s_derivative(s); }); 
+    }
+  }
 
   // Add some printout functions.
   %extend {
