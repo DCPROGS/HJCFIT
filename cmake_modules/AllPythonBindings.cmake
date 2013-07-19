@@ -35,24 +35,10 @@ if(NOT DEFINED PYTHON_PKG_DIR)
   )
   if(PYTHON_PKG_DIR )
     string (STRIP ${PYTHON_PKG_DIR} PYTHON_PKG_DIR)
-    set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH
-        "Python modules will be installed here." )
-  else(PYTHON_PKG_DIR)
-    set( PYTHON_PKG_DIR lib/python${PYTHON_VERSION}/site-packages
-         CACHE PATH "Python modules will be installed here." )
+    set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH "Main python package repository.")
+    mark_as_advanced(PYTHON_PKG_DIR)
   endif(PYTHON_PKG_DIR)
-  mark_as_advanced(PYTHON_PKG_DIR)
-  MESSAGE(STATUS "[Python] installation directory: ${PYTHON_PKG_DIR}")
 endif(NOT DEFINED PYTHON_PKG_DIR)
-if(NOT DEFINED CMAKE_PYINSTALL_PREFIX)
-  if(WIN32)
-    set(CMAKE_PYINSTALL_PREFIX python-pkg/dcprogs)
-  else(WIN32)
-    set(CMAKE_PYINSTALL_PREFIX lib/python${PYTHON_VERSION}/site-packages/dcprogs)
-  endif(WIN32)
-  set(CMAKE_PYINSTALL_PREFIX ${CMAKE_PYINSTALL_PREFIX} CACHE
-      PATH "Installation path of the python package")
-endif(NOT DEFINED CMAKE_PYINSTALL_PREFIX)
 
 # There is an issue on Windows where pyconfig.h defines a macro hypot that screws up swig+c++11
 # Test for issue and add -include cmath otherwise
@@ -88,21 +74,26 @@ set(DCPROGS_PYTHON_BINDINGS True)
 
 if(tests)
   if(NOT DEFINED TEST_INSTALL_DIRECTORY)
-    set(TEST_INSTALL_DIRECTORY ${CMAKE_BINARY_DIR}/tests/install 
-        CACHE PATH "Path of a fake install for testing purposes")
-    mark_as_advanced(TEST_INSTALL_DIRECTORY)
+    set(TEST_INSTALL_DIRECTORY test-results/install)
+    set(TEST_INSTALL_ABSPATH ${CMAKE_BINARY_DIR}/${TEST_INSTALL_DIRECTORY})
   endif(NOT DEFINED TEST_INSTALL_DIRECTORY)
 
   include(${CMAKE_MODULE_PATH}/CTestCustomPreWorkAround.cmake)
 
   # A macro to run tests via behave.
   function(feature_test name filename)
+    if(WIN32)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+    else()
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION})
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
+    endif(WIN32)
     add_test(NAME python_${name} 
-             WORKING_DIRECTORY ${TEST_INSTALL_DIRECTORY}/${CMAKE_PYINSTALL_PREFIX}/..
+             WORKING_DIRECTORY ${WORKINGDIR}
              COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} 
                             --junit --junit-directory ${CMAKE_BINARY_DIR}/test-results/
                             -q ${ARGN})
-    set(ADD_TO_PATH ${TEST_INSTALL_DIRECTORY}/${LIB_INSTALL_DIR}) 
     if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")

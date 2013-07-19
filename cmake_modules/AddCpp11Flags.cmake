@@ -51,7 +51,11 @@ endif(has_stdlib_libcpp)
 if(MSVC) 
   set(MSWINDOBE TRUE)
   add_definitions(/EHsc)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10")
+  # Wd4251 stops MSCrapWare from issuing meaningless warnings. Seems Microsoft engineers don't grok
+  # dynamic libraries yet. Or templates. Or both acting alone or together. In any case, issuing
+  # warning sure is easier on them than fixing  their OS.
+  # Unfortunately, it does disable warnings that may be of interest. Possibly. 
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /D_VARIADIC_MAX=10 /wd4251")
 endif(MSVC)
 
 if(CMAKE_COMPILER_IS_GNUCXX AND WIN32)

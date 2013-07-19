@@ -158,7 +158,7 @@ TEST_P(TestFindIntervals, random_matrix) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(random, TestFindIntervals, ::testing::Range(0, 100));
+INSTANTIATE_TEST_CASE_P(random, TestFindIntervals, ::testing::Range(t_int(0), t_int(100)));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

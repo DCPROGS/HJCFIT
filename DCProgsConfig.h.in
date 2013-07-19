@@ -45,6 +45,7 @@
 #cmakedefine CXX_HAS_STD_ISNAN
 #cmakedefine CXX_HAS_ISNAN
 #cmakedefine CXX_HAS__ISNAN
+#cmakedefine CXX_HAS_FLOAT_H_ISNAN
 #ifdef CXX_HAS_STD_ISNAN
 #  include <cmath>
 #  define DCPROGS_ISNAN(X) std::isnan(X)
@@ -54,9 +55,11 @@
 #elif defined CXX_HAS___ISNAN
 #  include <math.h>
 #  define DCPROGS_ISNAN(X) __isnan(X)
-#else // defined(CXX_HAS__ISNAN)
+#elif defined(CXX_HAS_FLOAT_H_ISNAN)
 #  include <float.h>
 #  define DCPROGS_ISNAN(X) _isnan(X)
+#else
+#  error no macro defined for isnan
 #endif
 
 
@@ -67,7 +70,7 @@ namespace DCProgs {
   //! Complex real type
   typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.
-  typedef int t_int;
+  typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of boolean matrices across DCProgs.

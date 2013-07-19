@@ -42,7 +42,7 @@ def step(context, tau, nmax):
       context.qmatrices[i] = None
       continue
     except:
-      print qmatrix
+      print(qmatrix)
       raise
 
 @when('the {name} CHS occupancies are computed')
@@ -143,7 +143,6 @@ def compute_Hfa(qmatrix, tau, tcrit):
     if result is None: result = -matrix / root * exp( root * (tcrit - tau) )
     else: result += -matrix / root * exp( root * (tcrit - tau) )
   # multiply by Q_{FA} e^{Q_AA} 
-  print "!!!! \n", result
   return dot(result, dot(qmatrix.fa, expm(tau * qmatrix.aa)))
 
 
@@ -162,6 +161,7 @@ def step(context):
         check = phif_Hfa / sum(phif_Hfa[:G.nopen], axis=1)
         assert all(abs(occ - check) < context.tolerance)
         assert any(abs(occ - 2e0*check) > context.tolerance)
+        assert abs(sum(occ) - 1e0) < context.tolerance
       except:
         print(G)
         print("  * occupancies: {0}".format(occ))
@@ -182,7 +182,8 @@ def step(context):
         Hfa = compute_Hfa(qmatrix, G.tau, t)
         check = sum(Hfa[:, :G.nopen], axis=1) 
         assert all(abs(occ - check) < context.tolerance)
-        assert any(abs(occ - 2e0*check) > context.tolerance)
+        if any(2e0*check > context.tolerance): 
+          assert any(abs(occ - 2e0*check) > context.tolerance)
       except:
         print(G)
         print("  * occupancies: {0}".format(occ))

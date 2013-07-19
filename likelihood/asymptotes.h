@@ -35,13 +35,13 @@ namespace DCProgs {
       //! \f$c_i\f$ and \f$r_i\f$ are the left and right eigenvectors of \f$H(s_i)\f$ with
       //! eigenvalue $s_i$. \f$W'(s) = \left.\frac{d W(s)}{d s}\right|_{s=s_i}\f$.
       t_MatrixAndRoot const & operator[](t_int _i) const {
-        if(_i < 0) _i += matrices_and_roots_.size();
-        if(_i < 0 or _i >= matrices_and_roots_.size())
+        if(_i < 0) _i += static_cast<t_int>(matrices_and_roots_.size());
+        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size()))
           throw errors::Index("Index to matrices and roots out-of-range.");
         return matrices_and_roots_[_i]; 
       }
       //! Number of matrices and roots.
-      t_int size() const { return matrices_and_roots_.size(); }
+      t_int size() const { return static_cast<t_int>(matrices_and_roots_.size()); }
     protected:
       //! Holds the weight and the exponent of the exponential functions.
       t_MatricesAndRoots matrices_and_roots_;

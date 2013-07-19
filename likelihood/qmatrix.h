@@ -27,26 +27,26 @@ namespace DCProgs {
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
-    Eigen::Block<t_rmatrix> af() { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
+    Eigen::Block<t_rmatrix> af() { return matrix.topRightCorner(nopen, nshut()); }
     //! Shut to open transitions.
-    Eigen::Block<t_rmatrix> fa() { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
+    Eigen::Block<t_rmatrix> fa() { return matrix.bottomLeftCorner(nshut(), nopen); }
     //! Shut to shut transitions.
     Eigen::Block<t_rmatrix> ff() 
-      { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
+      { return matrix.bottomRightCorner(nshut(), nshut()); }
     //! Open to open transitions.
     Eigen::Block<t_rmatrix const> aa() const 
       { return matrix.topLeftCorner(nopen, nopen); }
     //! Open to shut transitions.
     Eigen::Block<t_rmatrix const> af() const 
-      { return matrix.topRightCorner(nopen, matrix.rows() - nopen); }
+      { return matrix.topRightCorner(nopen, nshut()); }
     //! Shut to open transitions.
     Eigen::Block<t_rmatrix const> fa() const 
-      { return matrix.bottomLeftCorner(matrix.rows() - nopen, nopen); }
+      { return matrix.bottomLeftCorner(nshut(), nopen); }
     //! Shut to shut transitions.
     Eigen::Block<t_rmatrix const> ff() const 
-      { return matrix.bottomRightCorner(matrix.rows() - nopen, matrix.rows() - nopen); }
+      { return matrix.bottomRightCorner(nshut(), nshut()); }
 
-    t_int nshut() const { return matrix.cols() - nopen; }
+    t_int nshut() const { return static_cast<t_int>(matrix.cols()) - nopen; }
 
     //! \brief Returns transpose of state matrix.
     //! \details Means A states become F states, and F states become A states, and the partitionned

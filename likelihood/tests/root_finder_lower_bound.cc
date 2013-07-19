@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
@@ -68,7 +69,7 @@ TEST_P(TestFindLowerBound, non_singular) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(random, TestFindLowerBound, ::testing::Range(0, 300));
+INSTANTIATE_TEST_CASE_P(random, TestFindLowerBound, ::testing::Range(t_int(0), t_int(300)));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

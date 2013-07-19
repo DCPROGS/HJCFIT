@@ -1,3 +1,4 @@
+#include "DCProgsConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
@@ -102,7 +103,7 @@ class TestViaMatrix : public ::testing::TestWithParam<t_int> {
        jay.D.resize(matsize);
        jay.eigvals.resize(matsize);
        for(t_int i(0); i < matsize; ++i) {
-         jay.D(i) = i+1; 
+         jay.D(i) = t_real(i+1); 
          jay.eigvals(i) = 1e-1 * t_real(i+1);
        }
     
@@ -203,7 +204,7 @@ TEST_P(TestViaMatrix, general) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(SingleRecursion, TestViaMatrix, ::testing::Range(0, 300));
+INSTANTIATE_TEST_CASE_P(SingleRecursion, TestViaMatrix, ::testing::Range(t_int(0), t_int(300)));
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

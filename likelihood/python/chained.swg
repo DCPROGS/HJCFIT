@@ -19,7 +19,7 @@
       DCProgs::t_rvector const initial = DCProgs::numpy::map_to_rmatrix(_initial).array();
       DCProgs::t_rvector const final   = DCProgs::numpy::map_to_rmatrix(_final).array();
       int const type = PyArray_TYPE((PyArrayObject*)_intervals);
-      npy_int const size = PyArray_SIZE((PyArrayObject*)_intervals);
+      npy_intp const size = PyArray_SIZE((PyArrayObject*)_intervals);
       void * const first = PyArray_DATA((PyArrayObject*)_intervals);
 
 #     ifdef DCPROGS_MACRO
@@ -27,7 +27,8 @@
 #     endif
 #     define DCPROGS_MACRO(TYPENAME)                                                             \
          if(type == DCProgs::numpy::type<TYPENAME>::value)                                       \
-           return DCProgs::chained_likelihood( (TYPENAME*) first, ((TYPENAME*) first) + size,    \
+           return DCProgs::chained_likelihood( static_cast<TYPENAME*>(first),                    \
+                                               static_cast<TYPENAME*>(first) + size,             \
                                                _g, initial, final ); 
         DCPROGS_MACRO(npy_double);
         DCPROGS_MACRO(npy_float);

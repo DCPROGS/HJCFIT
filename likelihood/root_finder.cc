@@ -49,7 +49,7 @@ namespace DCProgs {
        // Compute matrix
        t_rvector const eigs(getEigenvalues(_det, _s).real());
        // compute number of roots in interval
-       return (eigs.array() >= _s).count();
+       return static_cast<t_int>((eigs.array() >= _s).count());
      }
 
      // Actual bisecting algorithm.
@@ -65,7 +65,8 @@ namespace DCProgs {
        t_cvector const eigenvalues = getEigenvalues(_det, mids);
 
        // compute number of roots
-       t_int const higher_than_mid = (eigenvalues.array().real() >  mids).count();
+       t_int const higher_than_mid 
+         = static_cast<t_int>((eigenvalues.array().real() >  mids).count());
 
        // This functor checks whether to bisect some more or whether an 
        auto check_and_set = [&](t_real _min, t_real _max, t_int _imin, t_int _imax) {

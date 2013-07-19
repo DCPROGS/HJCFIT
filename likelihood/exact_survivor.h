@@ -104,7 +104,7 @@ namespace DCProgs {
         return eigenvalues_(_i);
       }
       //! Returns the number of eigenvalues
-      t_int nbeigvals() const { return eigenvalues_.size(); }
+      t_int nbeigvals() const { return static_cast<t_int>(eigenvalues_.size()); }
 
       //! Reference to eigenvales
       t_rvector const & eigenvalues() const { return eigenvalues_; }
