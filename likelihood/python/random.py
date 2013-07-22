@@ -94,15 +94,15 @@ def qmatrix(*args, **kwargs):
   while not zero_eig(result): result = get_qmatrix()
 
   return result
+# Adds description of parameters and function from the rate_matrix docstring.
+qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
+                                 + rate_matrix.__doc__.splitlines()[1:])
+
 
 def random_idealg(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """
   from .likelihood import IdealG
   return IdealG(qmatrix(*args, **kwargs))
-
-# Adds description of parameters and function from the rate_matrix docstring.
-qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
-                                 + rate_matrix.__doc__.splitlines()[1:])
 
 
 def time_intervals(N=100, n=100, nsmall=3, maxsize=10, tau=1e-4):

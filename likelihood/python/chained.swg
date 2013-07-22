@@ -6,7 +6,7 @@
   //! \param[in] _initial: initial occupancies.
   //! \param[in] _final: final occupancies.
   template<class T_G> 
-    DCProgs::t_real py_chained_likelihood(PyObject *_intervals, T_G const & _g,
+    DCProgs::t_real py_chained_likelihood(T_G const & _g, PyObject *_intervals, 
                                           PyObject *_initial, PyObject *_final) {
       if( (not PyArray_Check(_intervals))
           or (not (PyArray_FLAGS((PyArrayObject*)_intervals) & NPY_ARRAY_C_CONTIGUOUS)) ) {
@@ -14,7 +14,7 @@
           PyArray_FromObject(_intervals, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
         );
         if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
-        return py_chained_likelihood(~convert, _g, _initial, _final);
+        return py_chained_likelihood(_g, ~convert, _initial, _final);
       }
       DCProgs::t_rvector const initial = DCProgs::numpy::map_to_rmatrix(_initial).array();
       DCProgs::t_rvector const final   = DCProgs::numpy::map_to_rmatrix(_final).array();
@@ -54,18 +54,18 @@
     }
   DCProgs::t_real chained_likelihood(PyObject* _intervals, DCProgs::IdealG *_idealg, 
                                      PyObject* _initial, PyObject* _final) {
-    return py_chained_likelihood(_intervals, *_idealg, _initial, _final);
+    return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
   } 
   DCProgs::t_real chained_likelihood(PyObject* _intervals, DCProgs::MissedEventsG *_idealg, 
                                      PyObject* _initial, PyObject* _final) {
-    return py_chained_likelihood(_intervals, *_idealg, _initial, _final);
+    return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
   } 
 %}
 
 %feature("autodoc", "Computes likelihood of a series of time intervals.")
-        chained_likelihood(PyObject *_intervals, IdealG *_idealg, 
+        chained_likelihood(IdealG *_idealg, PyObject *_intervals, 
                            t_rvector const &_initial, t_rvector const &_final);
-DCProgs::t_real chained_likelihood(PyObject* intervals, DCProgs::IdealG *idealg, 
+DCProgs::t_real chained_likelihood(DCProgs::IdealG *idealg, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);
-DCProgs::t_real chained_likelihood(PyObject* intervals, DCProgs::MissedEventsG *g, 
+DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *g, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);
