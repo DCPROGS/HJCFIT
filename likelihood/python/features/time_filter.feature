@@ -13,8 +13,18 @@ Feature: Filtering time series and lists of intervals
     Given 100 random time series with tau=1
      When each time series is filtered
      Then expected filtered time series is obtained
+
+  Scenario: Filter many random time series simultaneously
+    Given 100 random time series with tau=1
+     When all time series are filtered simultaneously
+     Then expected filtered time series is obtained
   
   Scenario: Filter random time intervals
     Given 100 random time intervals with tau=1
      When each list of time intervals is filtered
+     Then expected list of filtered time intervals is obtained
+
+  Scenario: Filter random time intervals simultaneously
+    Given 100 random time intervals with tau=1
+     When all lists of time intervals are filtered simultaneously
      Then expected list of filtered time intervals is obtained

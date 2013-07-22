@@ -22,7 +22,6 @@
     template<class T_FUNC>
       PyObject* filters_impl_(PyObject* _input, DCProgs::t_real _tau, T_FUNC const &_func) {
         using namespace DCProgs;
-        typedef ::Eigen::Map<t_rvector, 0, ::Eigen::InnerStride<>> t_Map;
         if(not PySequence_Check(_input))
           throw errors::PythonTypeError("Expected a sequence on input.");
 
@@ -37,10 +36,9 @@
           Object<> result = steal_ref(PyList_New(N));
           for(Py_ssize_t i(0); i < N; ++i) {
             Object<> item_in = steal_ref(PySequence_GetItem(_input, i));
-            Object<> item_out = steal_ref(filters_impl_(~item_in, _tau, _func)); 
-            PyList_SET_ITEM(~result, i, item_out.release());
+            PyList_SET_ITEM(~result, i, filters_impl_(~item_in, _tau, _func)); 
           }
-          return ~result;
+          return result.release();
         }
 
         return numpy::wrap_to_numpy(_func(numpy::map_to_rmatrix(_input), _tau)); 
