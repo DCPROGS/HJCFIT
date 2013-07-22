@@ -58,8 +58,32 @@ class IdealG {
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;
   DCProgs::t_rmatrix fa(DCProgs::t_real t) const;
+  %extend {
+    PyObject* af(PyObject *t) {
+      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix { return $self->af(_t); };
+      return apply_numpy(t, lambda); 
+    }
+    PyObject* fa(PyObject *t) {
+      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix { return $self->fa(_t); };
+      return apply_numpy(t, lambda); 
+    }
+  }
   DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s) const;
   DCProgs::t_rmatrix laplace_af(DCProgs::t_real s) const;
+  %extend {
+    PyObject* laplace_af(PyObject *t) {
+      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix {
+        return $self->laplace_af(_t); 
+      };
+      return apply_numpy(t, lambda); 
+    }
+    PyObject* laplace_fa(PyObject *t) {
+      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix {
+        return $self->laplace_fa(_t); 
+      };
+      return apply_numpy(t, lambda); 
+    }
+  }
 
   // Add some printout functions.
   %extend {

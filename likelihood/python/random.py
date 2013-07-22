@@ -105,3 +105,67 @@ qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
                                  + rate_matrix.__doc__.splitlines()[1:])
 
 
+def time_intervals(N=100, n=100, nsmall=3, maxsize=10, tau=1e-4):
+  """ Create a set of random time intervals.
+ 
+      :param integer N: 
+        Number of time intervals once intervals smaller than `tau` have been filtered out.
+      :param integer n: 
+        Number of time intervals strictly smaller than :math:`\\tau`
+      :param integer nsmall:
+        When splitting intervals, and in so far as it is possible, will create a cluster of
+        :math:`n \in [0, \mathrm{nsmall}]` small intervals.
+      :param integer maxsize:
+        Maximum size of the large intervals, in units of :math:`\\tau`.
+ 
+      :result: 
+        A 2-tuple, where the first item is the list of intervals after filter, and the second item
+        the intervals including those smaller than :math:`\\tau`.
+  """ 
+  from numpy.random import uniform, randint, shuffle
+  from numpy import where, sum, concatenate
+
+  perfect = uniform(3*tau + 1e-4, maxsize*tau, N)  
+  result = perfect.copy()
+  
+  while len(result) < N + n:
+    # Figure out where small intervals can go
+    indices = where(result > 2 * tau + 1e-8)[0]
+    if len(indices) == 0: raise Exception('No intervals large enough to split...')
+    # Pick one large interval to split
+    index = indices[randint(0, len(indices)-1)]
+    # Compute number of small intervals (< tau ) that will be added
+    nb_small_intervals = min(nsmall, int((result[index] - tau - 1e-8)/tau))
+    nb_small_intervals = min(nb_small_intervals, n - len(result) + N)
+    if nb_small_intervals in [0, 1]: nb_small_intervals = 1
+    else: nb_small_intervals = randint(1, nb_small_intervals) 
+    if nb_small_intervals % 2 == 0: nb_small_intervals += 1
+    # Create split intervals
+    t0 = uniform(tau + 1e-8, result[index] - tau)
+    current_size = result[index] - t0
+    small_intervals = []
+    while len(small_intervals) < nb_small_intervals:
+      small_intervals.append(uniform(0, min(tau, current_size)))
+      current_size -= small_intervals[-1]
+    t1 = result[index] - sum(small_intervals) - t0
+    shuffle(small_intervals)
+    # Put it all back together 
+    result = concatenate(( result[:index],
+                           [t0], 
+                           small_intervals, 
+                           [t1],
+                           result[index+1:] ))
+
+  return perfect, result
+
+def time_series(*args, **kwargs): 
+  """ Create a random time series. """
+  from ._likelihood_methods import intervals_to_series
+  start = kwargs.pop('start', 0)
+  perfect, result = time_intervals(*args, **kwargs)
+  return intervals_to_series(perfect, start), intervals_to_series(result, start)
+
+time_series.__doc__ = "\n".join( time_series.__doc__.splitlines() 
+                                 + time_intervals.__doc__
+                                                 .replace('intervals', 'times')
+                                                 .splitlines()[1:] )

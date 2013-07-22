@@ -67,5 +67,11 @@ namespace {
         T * object_; 
     };
 
+    //! Steals a reference
     template<class T> Object<T> steal_ref(T * const _in) { return Object<T>(_in); }
+    //! Increments ref count of refence. No stealing.
+    template<class T> Object<T> acquire_ref(T * const _in) {
+      Py_XINCREF(_in);
+      return steal_ref<T>(_in); 
+    }
 }

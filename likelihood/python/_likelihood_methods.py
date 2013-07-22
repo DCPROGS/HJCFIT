@@ -1,7 +1,8 @@
 """ Some pure python methods used to access/complement the c++ bindings. """
 __docformat__ = "restructuredtext en"
 __all__ = ['network', 'create_approx_survivor', 'create_missed_eventsG', 'find_roots', 'plot_roots',
-           'missed_events_pdf', 'ideal_pdf']
+           'missed_events_pdf', 'ideal_pdf', 'intervals_to_series', 'series_to_intervals',
+           'plot_time_series', 'plot_time_intervals' ]
  
 def network(qmatrix): 
   """ Creates networkx graph object from a :class:`QMatrix` object.
@@ -223,3 +224,35 @@ def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
       coef = sum(dot(phi, dot(matrix, g.af_factor)))
       results.append(partial(function, coef, root))
   return results
+
+def intervals_to_series(intervals, start=0):
+  """ Converts time intervals to time series. """
+  from numpy import zeros
+  result = zeros(len(intervals)+1, dtype='float64')
+  result[0] = start
+  for i, z in enumerate(intervals): result[i+1] = result[i] + z
+  return result
+
+def series_to_intervals(series, start=0):
+  """ Converts time intervals to time series. """
+  return series[1:] - series[:-1]
+
+def plot_time_series(series, ax=None, **kwargs):
+  """ Plots time series """
+  from numpy import array, min, max, arange
+  from matplotlib.pylab import figure
+  x = [series[0]] + [series[i/2] for i in range(2, 2*len(series)-1)]
+  y = (arange(0, len(x)) % 4 >= 2).astype('int')
+  if ax is None:
+    fig = figure()
+    ax = fig.add_subplot(111)
+  ax.plot(x, 0.1 + array(y), **kwargs)
+  ax.set_xlabel("time")
+  ax.set_ylim((0, 1.2))
+  ax.set_xlim((min(x)-0.1, max(x)+0.1))
+  ax.yaxis.set_visible(False)
+
+def plot_time_intervals(series, start=0, ax = None):
+  """ Plots time intervals """
+  return plot_time_series(series_to_intervals(series, start), ax=ax)
+

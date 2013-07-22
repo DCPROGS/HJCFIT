@@ -37,7 +37,7 @@ class Asymptotes {
 
   DCProgs::t_rmatrix operator()(DCProgs::t_real _s) const;
   %extend {
-    PyObject* operator()(PyObject *t) { return apply_rmatrix(t, *$self); }
+    PyObject* operator()(PyObject *t) { return apply_numpy(t, *$self); }
   }
 };
 
