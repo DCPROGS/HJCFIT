@@ -48,8 +48,7 @@ namespace {
           using DCProgs::numpy::type<T>::value;
           using DCProgs::numpy::type<T>::np_type;
           //! Number of dims of functor output.
-          npy_intp const add_dims = static_cast<DCProgs::t_int>(I != 1)
-                                    + static_cast<DCProgs::t_int>(N != 1);
+          npy_intp const static add_dims;
   
           //! Creates functor.
           NumpyApplySpecialized(PyArrayObject *_in) : input_(acquire_ref(_in)) {
@@ -108,6 +107,10 @@ namespace {
           //! Creates stride for copying to output.
           typename Eigen::Matrix<T, I, N>::Index data_strides_[2];
       };
+    template<class T, int I, int N, size_t reduce>
+      npy_intp const NumpyApplySpecialized<Eigen::Matrix<T, I, N>, reduce> 
+                     :: add_dims = static_cast<DCProgs::t_int>(I != 1)
+                                   + static_cast<DCProgs::t_int>(N != 1);
 
     // \brief Applies functor to an input array.
     // \details The functor should return a scalar or a matrix which always has the same size.
