@@ -21,6 +21,16 @@ def step(context):
   for (filtered, series), tau in context.series: 
     context.filtered.append(time_filter(series, tau))
 
+@when('all time series are filtered simultaneously')
+def step(context):
+  from dcprogs.likelihood import time_filter
+  
+  if not hasattr(context, 'filtered'): context.filtered = []
+  series = []
+  for (filtered, serie), tau in context.series: series.append(serie)
+
+  context.filtered.extend(time_filter(series, tau))
+
 @then('expected filtered time series is obtained')
 def step(context):
   from numpy import all, abs  
@@ -50,6 +60,15 @@ def step(context):
   if not hasattr(context, 'filtered'): context.filtered = []
   for (filtered, intervals), tau in context.intervals: 
     context.filtered.append(interval_filter(intervals, tau))
+
+@when('all lists of time intervals are filtered simultaneously')
+def step(context):
+  from dcprogs.likelihood import interval_filter
+  
+  if not hasattr(context, 'filtered'): context.filtered = []
+  series = []
+  for (filtered, intervals), tau in context.intervals: series.append(intervals)
+  context.filtered.extend(interval_filter(series, tau))
 
 @then('expected list of filtered time intervals is obtained')
 def step(context):
