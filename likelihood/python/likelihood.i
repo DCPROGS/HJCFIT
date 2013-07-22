@@ -34,6 +34,7 @@
 #  include "../approx_survivor.h"
 #  include "../missed_eventsG.h"
 #  include "../likelihood.h"
+#  include "../time_filter.h"
 
 
 #ifdef DCPROGS_CATCH
@@ -141,5 +142,6 @@ namespace DCProgs {
   %include "missed_eventsG.swg"
 
 }
+%include "time_filter.swg"
 %include "chained.swg"
 #undef DCPROGS_CATCH

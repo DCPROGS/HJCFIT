@@ -85,7 +85,7 @@ class DeterminantEq {
   // Unfortunately, It doesn't seem to work with overload for tau.
   %extend { 
     // Defines determinant function for a numpy array
-    PyObject* operator()(PyObject * _s) { return apply_real(_s, *$self); }
+    PyObject* operator()(PyObject * _s) { return apply_numpy(_s, *$self); }
   }
   %pythoncode %{
     __call__.__doc__ = "Computes determinant W\n\n"                                    \
@@ -106,10 +106,10 @@ class DeterminantEq {
   // Unfortunately, no tau overload.
   %extend {
     PyObject* H(PyObject *_s) {
-      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->H(s); }); 
+      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->H(s); }); 
     }
     PyObject* s_derivative(PyObject *_s) {
-      return apply_rmatrix(_s, [$self](DCProgs::t_real s) { return $self->s_derivative(s); }); 
+      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->s_derivative(s); }); 
     }
   }
 

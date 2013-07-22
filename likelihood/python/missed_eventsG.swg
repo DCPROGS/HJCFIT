@@ -35,20 +35,20 @@ class MissedEventsG {
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
   %extend {
     PyObject* af(PyObject *t) {
-      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
     }
     PyObject* fa(PyObject *t) {
-      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
     }
   }
   DCProgs::t_rmatrix laplace_af(DCProgs::t_real t);
   DCProgs::t_rmatrix laplace_fa(DCProgs::t_real t);
   %extend {
     PyObject* laplace_af(PyObject *t) {
-      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->laplace_af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_af(_t); }); 
     }
     PyObject* laplace_fa(PyObject *t) {
-      return apply_rmatrix(t, [$self](DCProgs::t_real _t) { return $self->laplace_fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_fa(_t); }); 
     }
   }
   // Make CHS_occupancies member methods of MissedEventsG. 

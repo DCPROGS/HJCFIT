@@ -86,7 +86,6 @@ namespace DCProgs {
   //! Type of complex vectors.
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
 
-
   // Some functions that come in usefull left and right.
   template<class T>
     auto numpy_io(Eigen::DenseBase<T> const &_matrix)
