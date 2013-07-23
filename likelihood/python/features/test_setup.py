@@ -2,7 +2,7 @@
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
-  from dcprogs.random import rate_matrix as random_rate_matrix
+  from dcprogs.likelihood.random import rate_matrix as random_rate_matrix
   if string == "classic":
     return array([[ -3050,        50,  3000,      0,    0 ], 
                   [ 2./3., -1502./3.,     0,    500,    0 ],  
@@ -102,7 +102,7 @@ def Matrix(string):
 
 def QMat(string):
   """ Creates matrices from specific strings """
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import QMatrix
 
   string = string.lower().rstrip().lstrip()

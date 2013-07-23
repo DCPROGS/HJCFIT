@@ -5,7 +5,7 @@ register_type()
 @given('a list of {n:Integer} random missed-events likelihoods with tau={tau:Float} '             \
        'and nmax={nmax:Integer}')
 def step(context, n, tau, nmax):
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import create_missed_eventsG
   qmatrices, Gs, i = [], [], 10*n
   while len(Gs) != n:

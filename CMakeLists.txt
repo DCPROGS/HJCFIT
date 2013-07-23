@@ -51,3 +51,5 @@ configure_file (
 
 
 add_subdirectory(likelihood)
+add_subdirectory(data)
+add_subdirectory(python)

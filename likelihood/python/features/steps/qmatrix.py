@@ -63,5 +63,5 @@ def step(context, value):
 
 @given('a list of {n:Integer} random q-matrices')
 def step(context, n):
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   context.qmatrices = [random_qmatrix() for u in range(n)]

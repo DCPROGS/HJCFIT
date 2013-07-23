@@ -4,7 +4,7 @@ register_type()
 
 @given('{n:Integer} random time series with tau={tau:Float}')
 def steps(context, n, tau):
-  from dcprogs.random import time_series
+  from dcprogs.likelihood.random import time_series
   from numpy.random import randint
 
   if not hasattr(context, 'series'): context.series = []
@@ -44,7 +44,7 @@ def step(context):
 
 @given('{n:Integer} random time intervals with tau={tau:Float}')
 def steps(context, n, tau):
-  from dcprogs.random import time_intervals
+  from dcprogs.likelihood.random import time_intervals
   from numpy.random import randint
 
   if not hasattr(context, 'intervals'): context.intervals = []

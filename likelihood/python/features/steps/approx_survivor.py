@@ -20,7 +20,7 @@ def steps(context, tau):
 
 @given('a list of {n:Integer} random approximate survivor functions with tau={tau:Float}')
 def step(context, n, tau):
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import create_approx_survivor
   qmatrices, survivors, i = [], [], 10*n
   while len(survivors) != n:

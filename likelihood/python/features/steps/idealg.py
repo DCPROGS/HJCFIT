@@ -5,7 +5,7 @@ register_type()
 
 @given('a list of {n:Integer} random ideal likelihoods')
 def step(context, n):
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import IdealG
   qmatrices, Gs, i = [], [], 10*n
   while len(Gs) != n:

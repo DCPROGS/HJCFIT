@@ -110,3 +110,11 @@ if(tests)
     endif(MSVC OR MSYS)
   endfunction(feature_test)
 endif(tests)
+
+
+
+if(WIN32)
+  set(PYINSTALL_DIRECTORY dcprogs/python-pkg)
+else()
+  set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
+endif(WIN32)

@@ -12,7 +12,7 @@ def step(context, doopen, qmatrix, tau):
 @given('a list of {n:Integer} random determinant equations')
 def step(context, n):
   from dcprogs.likelihood import DeterminantEq
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   context.matrices = []
   context.equations = []
   while len(context.equations) < n:

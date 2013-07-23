@@ -15,14 +15,15 @@ namespace DCProgs {
   //! \param[in] _initial: initial occupancies.
   //! \param[in] _final: final occupancies.
   template<class T_INTERVAL_ITERATOR, class T_G>
-    t_real chained_likelihood(T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
-                              T_G const & _g, t_initvec const &_initial,
-                              t_rvector const &_final ) {
-      t_rvector current = _final;
-      bool is_AF = true;
-      for(; _begin != _end; ++_begin, is_AF = not is_AF)
-        current = is_AF ? _g.af(static_cast<t_real>(*_begin)): _g.fa(static_cast<t_real>(*_begin));
-      return _initial * current;
+    t_real chained_likelihood(T_G const & _g, T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
+                              t_initvec const &_initial, t_rvector const &_final ) {
+      t_initvec current = _initial;
+      for(; _begin != _end; ++_begin) {
+        current = current * _g.af(static_cast<t_real>(*_begin));
+        if(++_begin == _end) break;
+        current = current * _g.fa(static_cast<t_real>(*_begin));
+      }
+      return current * _final;
     }
   //! Computes likelihood of a time series.
   //! \param[in] _intervals: Time intervals, starting and ending with an "open" interval.
@@ -31,10 +32,10 @@ namespace DCProgs {
   //! \param[in] _initial: initial occupancies.
   //! \param[in] _final: final occupancies.
   template<class T_G>
-    t_real chained_likelihood(t_rvector const &_intervals, T_G const & _g,
+    t_real chained_likelihood(T_G const & _g, t_rvector const &_intervals, 
                               t_initvec const &_initial, t_rvector const &_final ) {
-      return chained_likelihood( &_intervals(0), &_intervals(_intervals.size()-1) + 1, 
-                                 _g, _initial, _final );
+      return chained_likelihood( _g, &_intervals(0), &_intervals(_intervals.size()-1) + 1, 
+                                 _initial, _final );
     }
 }
 

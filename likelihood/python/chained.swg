@@ -27,9 +27,9 @@
 #     endif
 #     define DCPROGS_MACRO(TYPENAME)                                                             \
          if(type == DCProgs::numpy::type<TYPENAME>::value)                                       \
-           return DCProgs::chained_likelihood( static_cast<TYPENAME*>(first),                    \
+           return DCProgs::chained_likelihood( _g, static_cast<TYPENAME*>(first),                \
                                                static_cast<TYPENAME*>(first) + size,             \
-                                               _g, initial, final ); 
+                                               initial, final ); 
         DCPROGS_MACRO(npy_double);
         DCPROGS_MACRO(npy_float);
         DCPROGS_MACRO(npy_longlong);
@@ -52,11 +52,11 @@
       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
       return DCProgs::t_real(0);
     }
-  DCProgs::t_real chained_likelihood(PyObject* _intervals, DCProgs::IdealG *_idealg, 
+  DCProgs::t_real chained_likelihood(DCProgs::IdealG *_idealg, PyObject* _intervals, 
                                      PyObject* _initial, PyObject* _final) {
     return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
   } 
-  DCProgs::t_real chained_likelihood(PyObject* _intervals, DCProgs::MissedEventsG *_idealg, 
+  DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *_idealg, PyObject* _intervals, 
                                      PyObject* _initial, PyObject* _final) {
     return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
   } 
