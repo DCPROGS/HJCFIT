@@ -65,6 +65,10 @@ class QMatrix {
   }
 
   QMatrix transpose() const;
+  %pythoncode %{
+    def __getitem__(self, *args): return self.matrix.__getitem__(*args)
+    def __setitem__(self, *args): return self.matrix.__setitem__(*args)
+  %}
 };
 // Translate the convenience functions aa/af/fa/ff to properties in python. 
 // This means we have a natural access to the matrix blocks as "matrix.af", without parenthesis. 

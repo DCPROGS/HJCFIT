@@ -1,3 +1,9 @@
+""" Methods for creating random objects. 
+
+    The difficulty is to create objects that have some structure, and that are not too pathological.
+"""
+__docformat__ = "restructuredtext en"
+__all__ = ['rate_matrix', 'random_idealg', 'time_intervals', 'time_series']
 def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, realeigs=True,
                 tolerance=1e-8):
   """ Creates a random matrix with some structure to it.
@@ -85,10 +91,12 @@ def qmatrix(*args, **kwargs):
     return all(abs(singular) > 1e-8)
 
 
-  def get_qmatrix():
-    matrix = rate_matrix(*args, **kwargs)
-    nopen = randint(2, matrix.shape[0]-2)
-    return QMatrix(matrix, nopen)
+  if 'get_qmatrix' in kwargs: get_qmatrix = kwargs['get_qmatrix']
+  else:
+    def get_qmatrix():
+      matrix = rate_matrix(*args, **kwargs)
+      nopen = randint(2, matrix.shape[0]-2)
+      return QMatrix(matrix, nopen)
 
   result = get_qmatrix()
   while not zero_eig(result): result = get_qmatrix()

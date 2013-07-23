@@ -1,4 +1,6 @@
 """ Subpackage for likelihood optimization. """
+__docformat__ = "restructuredtext en"
+__all__ = ['Likelihood', 'random_starting_point', 'kernel_projection']
 
 class Likelihood(object):
   """ A function that can be optimized via scipy or other. """
@@ -47,8 +49,8 @@ class Likelihood(object):
     nstates = len(graph_matrix)
     if nstates < 2: raise ValueError('graph_matrix should contain two or more states.')
 
-    is_fixed = lambda u: (not isinstance(u, str)) and abs(u) > 1e-12
-    self.fixed_mask = array([ [is_fixed(graph_matrix(i, j)) for j in xrange(nstates)] 
+    is_fixed = lambda u: not isinstance(u, str) 
+    self.fixed_mask = array([ [is_fixed(graph_matrix[i][j]) for j in xrange(nstates)] 
                               for i in xrange(nstates) ])
     """ Components are True if rates are fixed and non-zero.
     
@@ -59,7 +61,7 @@ class Likelihood(object):
 
     if len(intervals) == 0:
       raise ValueError('intervals should a non-empty list of list of intervals.')
-    if not hasattr(intervals[1], '__len__'): intervals = [intervals]
+    if not hasattr(intervals[0], '__len__'): intervals = [intervals]
     self.intervals = [array(u, dtype='float64') for u in intervals]
     """ List of list of open/shut intervals. """
 
@@ -90,19 +92,22 @@ class Likelihood(object):
       for i in xrange(nstates):
         if self.fixed_mask[i, i]:
           raise ValueError('Rate from {0} to {0} cannot be fixed.'.format(i))
+    
+    is_disconnect = lambda u: (not isinstance(graph_matrix[i][j], str)) \
+                              and abs(graph_matrix[i][j]) < 1e-12
     for i in xrange(nstates):
       for j in xrange(i+1, nstates):
-        if self.disconnect_mask[i, j]: 
+        if is_disconnect(graph_matrix[i][j]) != is_disconnect(graph_matrix[j][i]):
           raise ValueError('No reversability for {0} to {1} transformations.'.format(i, j))
 
  
 
     # Private members:
     # A qmatrix object with fixed values already set is created once and for all.
-    qmatrix = QMatrix(zeros(nstates, nstates), nopen)
+    qmatrix = QMatrix(zeros((nstates, nstates), dtype='float64'), nopen)
     if self.fixed_mask is not None:
       get_fixed = lambda u: (u if is_fixed(u) else 0)
-      fixed = array([ [get_fixed(graph_matrix(i, j)) for j in xrange(nstates)] 
+      fixed = array([ [get_fixed(graph_matrix[i][j]) for j in xrange(nstates)] 
                        for i in xrange(nstates) ])
       fixed = fixed[self.fixed_mask].flatten()
       qmatrix.matrix[self.fixed_mask] = fixed
@@ -126,15 +131,15 @@ class Likelihood(object):
 
   def vector(self, x):
     """ Computes likelihood for each interval. """
-    from numpy import array, zeros, count_nonzero
+    from numpy import array, zeros, count_nonzero, bitwise_not
     from .likelihood import create_missed_eventsG, chained_likelihood
 
     x = array(x)
 
     # Figures out whether fixed components have been removed from x or not
     remove_fixed = False
-    if self.fixed_mask is not None and x.size != self.qmatrix.size:
-      if x.size != self.qmatrix.size - count_nonzero(self.fixed_mask):
+    if self.fixed_mask is not None and x.size != self._current_qmatrix.matrix.size:
+      if x.size != self._current_qmatrix.matrix.size - count_nonzero(self.fixed_mask):
         raise ValueError('x input has incorrect size.')
       remove_fixed = True
 
@@ -142,9 +147,10 @@ class Likelihood(object):
     qmatrix = self._current_qmatrix
     # two possibilities here, depending on whether x includes fixed components or not.
     if self.fixed_mask is None: qmatrix.matrix.flat = array(x).flat
-    elif remove_fixed: qmatrix.matrix[not self.fixed_mask].flat = array(x).flat
+    elif remove_fixed: qmatrix.matrix[bitwise_not(self.fixed_mask)].flat = array(x).flat
     else:
-      qmatrix.matrix[not self.fixed_mask] = x.reshape(qmatrix.matrix.shape)[not self.fixed_mask]
+      qmatrix.matrix[bitwise_not(self.fixed_mask)] =                                               \
+        x.reshape(qmatrix.matrix.shape)[bitwise_not(self.fixed_mask)]
 
     # create missed events G function
     missed_eventsG = create_missed_eventsG(qmatrix, self.tau)
@@ -177,39 +183,82 @@ class Likelihood(object):
     results = self.vector(x)
     return sum(log(results)) if self.loglikelihood else prod(results)
 
-  def intrinsic_linear_equalities(self, with_fixed_points=False):
+  def intrinsic_linear_equalities(self, with_fixed=False):
     """ A matrix defining intrinsic linear equality constraints. 
           
         The intrinsic linear constraints enforce that rows sum to zero.
         The fixed components are not removed from the list of variables (otherwise rows would not
         sum to zero)
 
-        :param with_fixed_points:
-          Whether to include rows in the return matrix for each null component. This makes it easier
-          to define fixed components as linear constraints.
+        :param with_fixed:
+          Whether to include rows in the return matrix for each fixed component. This makes it easier
+          to define fixed components as linear constraints. 
     """
     from numpy import zeros, count_nonzero, nonzero
-    if self.fixed_mask is None: with_fixed_points = False
-    nrows = self.nstates * self.nstates
-    ncols = self.nstates 
-    if with_fixed_points: ncols += count_nonzero(self.fixed_mask)
+    if self.fixed_mask is None: with_fixed = False
+    ncols = self.nstates * self.nstates
+    nrows = self.nstates 
+    if with_fixed: nrows += count_nonzero(self.fixed_mask)
     result = zeros((nrows, ncols), dtype='float64')
 
     for i in xrange(self.nstates):
       result[i, i*self.nstates: (i+1)*self.nstates] = 1
 
-    if with_fixed_points:  
-      for j, value in enumerate(nonzero(self.fixed_mask)): result[i+j, value] = 1
+    if with_fixed:  
+      for j, value in enumerate(nonzero(self.fixed_mask.flat)[0]): result[i+j+1, value] = 1
 
     return result
 
+  def intrinsic_linear_inequalities(self, with_fixed=False):
+    """ A matrix defining intrinsic linear inequality constraints. 
+          
+        The intrinsic linear constraints enforce that non-diagonal elements should be positive. In
+        conjunction with the intrinsic linear constraints, this implies that the diagonal elements
+        of the Q-matrix must be negative. However, that constraint is not explicitely included here.
 
-def kernel_projection(likelihood, x0, A=None):
+        :param with_fixed:
+            Whether to include rows for fixed off-diagonal components.
+    """
+    from numpy import identity, arange, bitwise_not
+
+    N = self.nstates*self.nstates
+    keep = arange(N) % self.nstates != arange(N) // self.nstates
+    if not with_fixed: keep &=  bitwise_not(self.fixed_mask.flat)
+    return identity(N, dtype='float64')[keep]
+
+
+  def random_starting_point(self, with_fixed=False):
+    """ Returns a random starting point for the likelihood.
+
+        :param bool with_fixed:
+           If True, the return is the full 2d-matrix. Otherwise, it is a vector corresponding to the
+           flattened full matrix with the fixed components removed.
+
+        :returns: a random starting points with all linear intrinsic constraints satisfied.
+    """
+    from numpy import sum, bitwise_not
+    from . import QMatrix
+    from .random import rate_matrix as random_rate_matrix, qmatrix as random_qmatrix
+
+    def get_qmatrix():
+      result = random_rate_matrix(N=self.nstates, zeroprob=0)
+      result[self.fixed_mask] = self._current_qmatrix[self.fixed_mask]
+      for i in xrange(self.nstates): result[i, i] -= sum(result[i])
+      return QMatrix(result, self.nopen)
+
+    # random_qmatrix tries to ensure that the starting point is not pathological.
+    # *tries* being the operative word.
+    matrix = random_qmatrix(get_qmatrix=get_qmatrix).matrix
+    return matrix if with_fixed else matrix[bitwise_not(self.fixed_mask)]
+
+
+def kernel_projection(likelihood, x0=None, A=None):
   """ Returns a functor that operates in the kernel of linear constraints of the likelihood. """
-  from numpy import array, dot, concatenate, zeros, argsort
+  from numpy import array, dot, concatenate, zeros, argsort, count_nonzero, arange
   from numpy.linalg import svd, norm
   # get linear constraints
-  if isinstance(A, Likelihood): A = likelihood.intrinsic_linear_constraints(True)
+  if A is None: A = likelihood.intrinsic_linear_equalities(True)
+  if x0 is None: x0 = likelihood.random_starting_point(True)
   x0 = array(x0).copy()
   
   # Add missing vectors to get nullspace. 
@@ -222,15 +271,19 @@ def kernel_projection(likelihood, x0, A=None):
   indices = argsort( abs(sings) )
   kernel = right[indices[:N], :] 
   # we now normalize the kernel
-  for r in kernel: r[:] = r[:] / norm(r)
+  for r in kernel:
+    r[:] = r[:] / norm(r)
+    # check sign: we want as many (all?) diagonal elements negative as possible 
+    N = likelihood.nstates
+    diagonals = arange(N*N) % N == arange(N*N) // N
+    if 2 * count_nonzero(r[diagonals] >= 0e0) >= N: r[:] *= -1
 
   # and create to affine transforms to go back and forth between one set of coordinate and the other
-  to_kernel_coords = lambda x: dot(kernel, x - x0)
-  from_kernel_coords = lambda x: dot(x, kernel) + x0
+  non_kernel_vec = (x0.flat - dot(kernel.T, dot(kernel, x0.flat))).reshape(x0.shape)
+  to_kernel_coords = lambda x: dot(kernel, x.flat)
+  from_kernel_coords = lambda x: dot(x, kernel).reshape(x0.shape) + non_kernel_vec
 
-  def kernel_likelihood(x):
-    whole_x = from_kernel_coords(x) 
-    return likelihood(whole_x)
+  def kernel_likelihood(x): return likelihood(from_kernel_coords(x))
 
   kernel_likelihood.to_kernel_coords = to_kernel_coords
   kernel_likelihood.to_kernel_coords.__doc__  \
@@ -238,5 +291,8 @@ def kernel_projection(likelihood, x0, A=None):
   kernel_likelihood.from_kernel_coords = from_kernel_coords
   kernel_likelihood.from_kernel_coords.__doc__ \
       = """ Mapping from kernel back to whole coordinate space. """
+  kernel_likelihood.kernel = kernel
+  kernel_likelihood.start = x0
+  kernel_likelihood.__doc__ = """ Likelihood in kernel coordinates. """
 
   return kernel_likelihood

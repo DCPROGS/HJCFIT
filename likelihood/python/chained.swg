@@ -16,8 +16,8 @@
         if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
         return py_chained_likelihood(_g, ~convert, _initial, _final);
       }
-      DCProgs::t_rvector const initial = DCProgs::numpy::map_to_rmatrix(_initial).array();
-      DCProgs::t_rvector const final   = DCProgs::numpy::map_to_rmatrix(_final).array();
+      DCProgs::t_initvec const initial = DCProgs::numpy::map_to_initvec(_initial).array();
+      DCProgs::t_rvector const final   = DCProgs::numpy::map_to_rvector(_final).array();
       int const type = PyArray_TYPE((PyArrayObject*)_intervals);
       npy_intp const size = PyArray_SIZE((PyArrayObject*)_intervals);
       void * const first = PyArray_DATA((PyArrayObject*)_intervals);

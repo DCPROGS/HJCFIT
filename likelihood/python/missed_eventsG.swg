@@ -22,11 +22,23 @@ class MissedEventsG {
     MissedEventsG(DCProgs::DeterminantEq *_af, PyObject * _roots_af, 
                   DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
                   DCProgs::t_int _nmax=2 ) {
-      if(_nmax < 0) throw DCProgs::errors::Domain("nmax cannot be negative.");
-      if(_nmax > 10)
-        throw DCProgs::errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
-      std::vector<DCProgs::Root> roots_af = convert_to_roots(_roots_af);
-      std::vector<DCProgs::Root> roots_fa = convert_to_roots(_roots_fa);
+      using namespace DCProgs;
+      if(_nmax < 0) throw errors::Domain("nmax cannot be negative.");
+      if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
+      std::vector<Root> roots_af = convert_to_roots(_roots_af);
+      std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
+      if(roots_af.size() < _af->get_nopen()) {
+        std::ostringstream sstr;
+        sstr << "Expected at least " << _af->get_nopen() << " AF roots on input. "
+             << roots_af.size() << " given.";
+        throw errors::Domain(sstr.str());
+      }
+      if(roots_fa.size() < _fa->get_nopen()) {
+        std::ostringstream sstr; 
+        sstr << "Expected at least " << _fa->get_nopen() << " FA roots on input. "
+             << roots_fa.size() << " given.";
+        throw errors::Domain(sstr.str());
+      }
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
     }
   }
@@ -60,7 +72,7 @@ class MissedEventsG {
     DCProgs::t_initvec initial_CHS_occupancies(DCProgs::t_real t_critical) {
       return DCProgs::CHS_occupancies(*$self, t_critical, true); 
     }
-    DCProgs::t_initvec final_CHS_occupancies(DCProgs::t_real t_critical) { 
+    DCProgs::t_rvector final_CHS_occupancies(DCProgs::t_real t_critical) { 
       return DCProgs::CHS_occupancies(*$self, t_critical, false); 
     }
   }
@@ -75,7 +87,7 @@ class MissedEventsG {
   // Add extensions to compute occupancies.
   %extend {
     DCProgs::t_initvec _initial_occupancies() { return DCProgs::occupancies(*$self); }
-    DCProgs::t_initvec _final_occupancies() { return DCProgs::occupancies(*$self, false); }
+    DCProgs::t_rvector _final_occupancies() { return DCProgs::occupancies(*$self, false); }
   }
   // Now go to python and add the properties.
   %pythoncode %{

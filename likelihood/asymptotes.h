@@ -36,8 +36,12 @@ namespace DCProgs {
       //! eigenvalue $s_i$. \f$W'(s) = \left.\frac{d W(s)}{d s}\right|_{s=s_i}\f$.
       t_MatrixAndRoot const & operator[](t_int _i) const {
         if(_i < 0) _i += static_cast<t_int>(matrices_and_roots_.size());
-        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size()))
-          throw errors::Index("Index to matrices and roots out-of-range.");
+        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size())) {
+          std::ostringstream sstr; 
+          sstr << "Index to matrices and roots out-of-range: " << _i
+               << " vs. " << matrices_and_roots_.size() << ".";
+          throw errors::Index(sstr.str());
+        }
         return matrices_and_roots_[_i]; 
       }
       //! Number of matrices and roots.

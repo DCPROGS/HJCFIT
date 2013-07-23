@@ -180,6 +180,109 @@ namespace DCProgs {
        return t_rmatrix();
     }
 
+    //! \brief Converts numpy to an initvec
+    //! \param[in] _in a numpy array. 
+    //! \return An eigen object which is a copy of the numpy input.
+    DCProgs::t_initvec map_to_initvec(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       // Check dimensionality
+       npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
+       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
+       for(npy_intp i(0); i < N - 2; i++, ++dims) 
+          if(*dims > 1)
+            throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+          else if(*dims == 0) 
+            throw DCProgs::errors::PythonValueError("Input array is empty.");
+       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+
+
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
+#      ifdef DCPROGS_MACRO
+#        error DCPROGS_MACRO is already defined.
+#      endif
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
+        
+       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else DCPROGS_MACRO( npy_int,        NPY_INT        )
+       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
+       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
+       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
+       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
+       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef DCPROGS_MACRO
+       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       return t_initvec();
+    }
+    
+    //! \brief Converts numpy to an rvector
+    //! \param[in] _in a numpy array. 
+    //! \return An eigen object which is a copy of the numpy input.
+    DCProgs::t_rvector map_to_rvector(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       
+       // Check dimensionality
+       npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
+       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
+       if(N > 2) {
+         for(npy_intp i(0); i < N - 2; i++, ++dims) 
+            if(*dims > 1)
+              throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+            else if(*dims == 0) 
+              throw DCProgs::errors::PythonValueError("Input array is empty.");
+       } 
+       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+       if(N >= 2) {
+         npy_intp const dima = *dims;
+         npy_intp const dimb = *(dims+1);
+         if((dima == 1 and dimb != 1) or (dima != 1 and dimb == 1))
+           throw DCProgs::errors::PythonValueError("Input array is not a (column) vector.");
+       }
+
+
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
+#      ifdef DCPROGS_MACRO
+#        error DCPROGS_MACRO is already defined.
+#      endif
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rvector::Scalar>(); 
+        
+       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else DCPROGS_MACRO( npy_int,        NPY_INT        )
+       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
+       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
+       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
+       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
+       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef DCPROGS_MACRO
+       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       return t_rvector();
+    }
+
     //! Cast data to given type from array type.
     template<class T> T cast(void *_data, int _type) {
       switch(_type) {

@@ -1,7 +1,8 @@
 """ DCProgs python library. """
+__docformat__ = "restructuredtext en"
 __all__ = ['likelihood', 'random', 'read_idealized_bursts']
+import numpy
 import likelihood
-import random
 
 def read_idealized_bursts(filename, tau, tcrit): 
   """ Reads bursts data from *.scn file. 
