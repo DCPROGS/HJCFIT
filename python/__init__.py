@@ -17,7 +17,7 @@ def read_idealized_bursts(filename, tau, tcrit):
         Critical time, in seconds
 
       :returns: 
-        A list of lists of intervals. Inner lists represent bursts.
+        A list of lists of intervals in milliseconds. Inner lists represent bursts.
   """
   from glob import iglob
   from os.path import exists, dirname, join, abspath, basename, splitext
@@ -43,4 +43,4 @@ def read_idealized_bursts(filename, tau, tcrit):
   time_series.get_open_shut_periods()
   time_series.get_bursts(tcrit)
 
-  return [array(u, dtype='float64') for u in time_series.bursts.itervalues()]
+  return [array(u, dtype='float64') * 1e-3 for u in time_series.bursts.itervalues()]

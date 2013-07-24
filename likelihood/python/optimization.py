@@ -37,10 +37,9 @@ class Likelihood(object):
         :param Float tau:
           Max length of missed events.
 
-        :param tcrit: 
+        :param Float tcrit: 
           If None, uses equilbrium occupancies. Otherwise, computes and uses CHS vectors.
     """
-    from copy import deepcopy
     from numpy import array, zeros, count_nonzero
     from .likelihood import QMatrix
 
@@ -71,14 +70,10 @@ class Likelihood(object):
     self.loglikelihood = True
     """ Whether to compute the log-likelihood. """
 
-    if not hasattr(tcrit, '__len__'): tcrit = [tcrit] * len(self.intervals)
-    if len(tcrit) != len(self.intervals):
-      raise ValueError('Number of tcrit and intervals is different.')
-    self.tcrit = deepcopy(tcrit)
+    self.tcrit = tcrit
     """ Critical time t.
 
-        list of critical times t. These times can be None, in which case the equilibrium occupancies
-        will be used.
+        If None, uses equilbrium occupancies. Otherwise, computes and uses CHS vectors.
     """
 
 
@@ -158,19 +153,16 @@ class Likelihood(object):
     # computes likelihood for each state
     initial_occ, final_occ = None, None
     results = zeros(len(self.intervals), dtype='float64')
-    for i, (intervals, tcrit) in enumerate(zip(self.intervals, self.tcrit)):
 
-      # figure out initial and final states
-      if tcrit is None: 
-        if initial_occ is not None: 
-          initial, final = initial_occ, final_occ
-        else:
-          initial = missed_eventsG.initial_occupancies
-          final = missed_eventsG.final_occupancies
-      else:
-        initial = missed_eventsG.initial_CHS_occupancies(tcrit)
-        final = missed_eventsG.final_CHS_occupancies(tcrit)
+    # figure out initial and final states
+    if self.tcrit is None: 
+      initial = missed_eventsG.initial_occupancies
+      final = missed_eventsG.final_occupancies
+    else:
+      initial = missed_eventsG.initial_CHS_occupancies(self.tcrit)
+      final = missed_eventsG.final_CHS_occupancies(self.tcrit)
 
+    for i, intervals in enumerate(self.intervals):
       results[i] = chained_likelihood(missed_eventsG, intervals, initial, final)
     
     # return result

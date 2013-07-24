@@ -6,6 +6,7 @@
 #  include <DCProgsConfig.h>
 #  include <iostream>
 #  include <sstream>
+#  include <memory>
 
 #  if NUMPY_VERSION_MINOR >= 7 
 #    define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -95,6 +96,7 @@ from ._likelihood_methods import *
 
 // Tells swig that we will deal with exceptions.
 %include "exception.i"
+%include "std_shared_ptr.i"
 %init %{ import_array();  %}
 
 %exception {
