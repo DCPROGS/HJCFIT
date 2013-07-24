@@ -1,28 +1,5 @@
 %{
   namespace {
-    //! Special type for bursts
-    typedef std::vector<DCProgs::t_rvector> t_Bursts;
-    //! \brief Creates a pre-translated (to cpp) lists of bursts.
-    //! \details This could make it a bit faster to call the likelihood when optimizing.
-    //!          It should be used in conjunction with compute_bursts.
-    t_Bursts* create_bursts(PyObject *_bursts) {
-      using namespace DCProgs;
-      if(not PySequence_Check(_bursts))
-        throw errors::PythonTypeError("Expected a sequence on input.");
-      t_Bursts* result(new t_Bursts);
-      if(not result) errors::Runtime("Could not create burst.");
-      Object<> py_iterator = steal_ref(PyObject_GetIter(_bursts));
-      if(not py_iterator) throw errors::PythonErrorAlreadyThrown();
-      while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
-        if(not PySequence_Check(~item))
-          throw errors::PythonTypeError("Expected a sequence of sequences on input.");
-        result->emplace_back(numpy::map_to_rvector(~item));
-      }
-  
-      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
-      return result;
-    }
-  
     //! Computes likelihood of a time series in a numpy array.
     //! \param[in] _intervals: Time intervals, starting and ending with an "open" interval.
     //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
@@ -38,7 +15,6 @@
           Object<PyObject> convert = steal_ref( (PyObject*)
             PyArray_FromObject(_intervals, numpy::type<t_real>::value, 0, 0)
           );
-          std::cout << "AM HERE" << std::endl;
           if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
           return py_chained_likelihood(_g, ~convert, _initial, _final);
         }
@@ -87,6 +63,32 @@
       return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
     } 
     
+    //! Special type for bursts
+    struct Bursts {
+      typedef std::vector<DCProgs::t_rvector> t_container;
+      typedef t_container::const_reference const_reference;
+      t_container bursts;
+    };
+    //! \brief Creates a pre-translated (to cpp) lists of bursts.
+    //! \details This could make it a bit faster to call the likelihood when optimizing.
+    //!          It should be used in conjunction with compute_bursts.
+    Bursts create_bursts(PyObject *_bursts) {
+      using namespace DCProgs;
+      if(not PySequence_Check(_bursts))
+        throw errors::PythonTypeError("Expected a sequence on input.");
+      Bursts result;
+      Object<> py_iterator = steal_ref(PyObject_GetIter(_bursts));
+      if(not py_iterator) throw errors::PythonErrorAlreadyThrown();
+      while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
+        if(not PySequence_Check(~item))
+          throw errors::PythonTypeError("Expected a sequence of sequences on input.");
+        result.bursts.emplace_back(numpy::map_to_rvector(~item));
+      }
+  
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+      return result;
+    }
+  
     //! Computes likelihood of a time series in a pre-translated vector of bursts
     //! \param[in] _bursts: Vector of bursts.
     //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
@@ -94,33 +96,35 @@
     //! \param[in] _initial: initial occupancies.
     //! \param[in] _final: final occupancies.
     template<class T_G> 
-      PyObject* py_compute_bursts(T_G const & _g, t_Bursts *_bursts, 
+      PyObject* py_compute_bursts(T_G const & _g, Bursts const & _bursts, 
                                   PyObject *_initial, PyObject *_final) {
         using namespace DCProgs;
         t_initvec const initial = numpy::map_to_initvec(_initial).array();
         t_rvector const final   = numpy::map_to_rvector(_final).array();
         
-        npy_intp dims[1] = { static_cast<npy_intp>(_bursts->size()) };
+        npy_intp dims[1] = { static_cast<npy_intp>(_bursts.bursts.size()) };
         Object<> result = steal_ref(PyArray_SimpleNew(1, dims, numpy::type<t_real>::value));
         if(not result) throw errors::PythonErrorAlreadyThrown();
         t_real *i_result
             = static_cast<t_real*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(~result)));
-        for(t_Bursts::const_reference burst: *_bursts) {
+        for(Bursts::const_reference burst: _bursts.bursts) {
           *i_result = chained_likelihood(_g, &burst(0), &burst(0) + burst.size(), initial, final); 
           ++i_result;
         }
         return result.release();
       }
-    PyObject* compute_bursts(DCProgs::IdealG *_idealg, t_Bursts* _bursts, 
+    PyObject* compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
                              PyObject* _initial, PyObject* _final) {
       return py_compute_bursts(*_idealg, _bursts, _initial, _final);
     } 
-    PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, t_Bursts* _bursts, 
+    PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
                              PyObject* _initial, PyObject* _final) {
       return py_compute_bursts(*_idealg, _bursts, _initial, _final);
     } 
   }
 %}
+
+class Bursts {}; 
 
 %feature("autodoc", "Computes likelihood of a series of time intervals.\n\n"
          ":param firstArgument: \n"
@@ -152,13 +156,12 @@ DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *g, PyObject* interval
          "   The initial occupancy vector.\n" 
          ":param final:\n"
          "   The final occupancy vector.\n")
-        compute_bursts(DCProgs::IdealG *_idealg, t_Bursts* _bursts, 
+        compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
                        PyObject* _initial, PyObject* _final);
-PyObject* compute_bursts(DCProgs::IdealG *_idealg, t_Bursts* _bursts, 
+PyObject* compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
                          PyObject* _initial, PyObject* _final);
-PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, t_Bursts* _bursts, 
+PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
                          PyObject* _initial, PyObject* _final);
 
 
-%newobject create_bursts(PyObject*);
-t_Bursts* create_bursts(PyObject *_bursts);
+Bursts create_bursts(PyObject *_bursts);
