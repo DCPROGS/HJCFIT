@@ -77,7 +77,7 @@ DCProgs::t_real find_lower_bound_for_roots(DeterminantEq const &det,
 // Despite what it advertises, SWIG doesn't seem to deal well with multiple default arguments in
 // c++.
 %typemap("default") DCProgs::t_real mins { $1 = 1e8; };
-%typemap("default") DCProgs::t_real maxs { $1 = 0e0; };
+%typemap("default") DCProgs::t_real maxs { $1 = 1e1; };
 %typemap("default") DCProgs::t_real tolerance { $1 = 1e-8; };
 std::vector<DCProgs::RootInterval>
    find_root_intervals(DeterminantEq const &det, DCProgs::t_real mins, 

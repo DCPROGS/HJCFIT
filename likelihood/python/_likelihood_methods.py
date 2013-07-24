@@ -82,7 +82,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
        root, value, ierr, numfunc = fminbound(lambda x: -determinant(x), left, right)
        if abs(value) > tolerance: continue
      else:
-       root, value, ierr, numfunc = fminbound(determinant, left, right)
+       root, value, ierr, numfunc = fminbound(determinant, left, right, full_output=True)
        if abs(value) > tolerance: continue
 
      H = determinant.H(root)

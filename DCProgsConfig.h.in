@@ -93,5 +93,13 @@ namespace DCProgs {
       return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n",
                                             "[", "]", "[", "]"));
     }
+
+  template<class T>
+    bool eigen_nan(Eigen::DenseBase<T> const &_matrix) {
+      for(typename Eigen::DenseBase<T>::Index i(0); i < _matrix.rows(); ++i)
+        for(typename Eigen::ArrayBase<T>::Index j(0); j < _matrix.cols(); ++j)
+           if(DCPROGS_ISNAN(_matrix(i, j))) return true;
+      return false;
+    }
 }
 #endif

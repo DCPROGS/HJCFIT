@@ -55,22 +55,31 @@ namespace DCProgs {
   //! \param[in] _tolerance: Minimum size of intervals. Below that, roots are expected to be
   //!                        multiples.
   std::vector<RootInterval> MSWINDOBE
-    find_root_intervals(DeterminantEq const &_det, t_real _mins = 1e8, t_real _maxs = 0e0,
+    find_root_intervals(DeterminantEq const &_det, t_real _mins = 1e8, t_real _maxs = 1e1,
                         t_real _tolerance = 1e-8);
 
-  //! \details Figures out an lower bound for root finding.
-  //! \brief Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than
-  //!        the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at
-  //!        that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is
-  //!        higher than the current bound.
+  //! \brief Figures out an lower bound for root finding.
+  //! \details Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than
+  //!          the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at
+  //!          that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is
+  //!          higher than the current bound. Then it checks that the determinant  is of the correct
+  //!          sign.
   //! \param[in] _det: The determinantal equation
   //! \param[in] _start: Value where to start looking for lower bound.
   //! \param[in] _alpha: factor by which to set new lower bound:
   //!                    \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
   //! \param[in] _itermax: Maximum number of iterations.
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
-                                              t_real _alpha = 5e0, t_int _itermax=100);
+                                              t_real _alpha=5e0, t_int _itermax=100);
 
+  //! \brief Figures out an upper bound for root finding.
+  //! \param[in] _det: The determinantal equation
+  //! \param[in] _start: Value where to start looking for lower bound.
+  //! \param[in] _alpha: factor by which to set new lower bound:
+  //!                    \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
+  //! \param[in] _itermax: Maximum number of iterations.
+  t_real MSWINDOBE find_upper_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
+                                              t_real _alpha=5e0, t_int _itermax=100);
   //! \brief Finds roots via brute force search
   //! \details Computes all values between mins and maxs, for a given resolution.
   //!          If determinant changes sign between two values, or if it comes to within tolerance of
