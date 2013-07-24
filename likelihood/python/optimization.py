@@ -4,7 +4,7 @@ __all__ = ['Likelihood', 'random_starting_point', 'kernel_projection']
 
 class Likelihood(object):
   """ A function that can be optimized via scipy or other. """
-  def __init__(self, nopen, graph_matrix, intervals, tau, tcrit=None):
+  def __init__(self, nopen, graph_matrix, bursts, tau, tcrit=None):
     """ Creates the likelihood functor. 
     
         This functor does not incorporate constraints per se. There are quite a few ways that such
@@ -29,8 +29,8 @@ class Likelihood(object):
            optimized, subject to the intrinsic constraints (sum over each row is zero, diagonal
            elements are negative) and extrinsic contraints (defined below).
 
-        :param intervals: 
-          List of shut and open time intervals. If a list of list is provided, then each defines a
+        :param bursts: 
+          List of shut and open time bursts. If a list of list is provided, then each defines a
           single patch clamp acquisition. The first interval of each list should correspond to an
           open-time event.
 
@@ -41,7 +41,7 @@ class Likelihood(object):
           If None, uses equilbrium occupancies. Otherwise, computes and uses CHS vectors.
     """
     from numpy import array, zeros, count_nonzero
-    from .likelihood import QMatrix
+    from .likelihood import QMatrix, create_bursts
 
 
 
@@ -58,11 +58,11 @@ class Likelihood(object):
     if count_nonzero(self.fixed_mask) == 0: self.fixed_mask = None
     
 
-    if len(intervals) == 0:
-      raise ValueError('intervals should a non-empty list of list of intervals.')
-    if not hasattr(intervals[0], '__len__'): intervals = [intervals]
-    self.intervals = [array(u, dtype='float64') for u in intervals]
-    """ List of list of open/shut intervals. """
+    if len(bursts) == 0:
+      raise ValueError('bursts should a non-empty list of list of intervals.')
+    if not hasattr(bursts[0], '__len__'): bursts = [bursts]
+    self.bursts = create_bursts(bursts)
+    """ List of bursts. """
 
     self.tau = tau
     """ Max length of missed events. """
@@ -126,8 +126,8 @@ class Likelihood(object):
 
   def vector(self, x):
     """ Computes likelihood for each interval. """
-    from numpy import array, zeros, count_nonzero, bitwise_not
-    from .likelihood import create_missed_eventsG, chained_likelihood
+    from numpy import array, count_nonzero, bitwise_not
+    from .likelihood import create_missed_eventsG, compute_bursts
 
     x = array(x)
 
@@ -150,10 +150,6 @@ class Likelihood(object):
     # create missed events G function
     missed_eventsG = create_missed_eventsG(qmatrix, self.tau)
 
-    # computes likelihood for each state
-    initial_occ, final_occ = None, None
-    results = zeros(len(self.intervals), dtype='float64')
-
     # figure out initial and final states
     if self.tcrit is None: 
       initial = missed_eventsG.initial_occupancies
@@ -162,11 +158,7 @@ class Likelihood(object):
       initial = missed_eventsG.initial_CHS_occupancies(self.tcrit)
       final = missed_eventsG.final_CHS_occupancies(self.tcrit)
 
-    for i, intervals in enumerate(self.intervals):
-      results[i] = chained_likelihood(missed_eventsG, intervals, initial, final)
-    
-    # return result
-    return results
+    return compute_bursts(missed_eventsG, self.bursts, initial, final)
 
   def __call__(self, x): 
     """ Computes likelihood for q given input vector x. """
