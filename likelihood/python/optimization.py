@@ -1,6 +1,6 @@
 """ Subpackage for likelihood optimization. """
 __docformat__ = "restructuredtext en"
-__all__ = ['Likelihood', 'random_starting_point', 'kernel_projection']
+__all__ = ['Likelihood', 'kernel_projection', 'minimizer_constraints']
 
 class Likelihood(object):
   """ A function that can be optimized via scipy or other. """
@@ -42,7 +42,8 @@ class Likelihood(object):
     """
     from numpy import array, zeros, count_nonzero
     from .likelihood import QMatrix, create_bursts
-
+    from .. import internal_dtype
+  
 
 
     nstates = len(graph_matrix)
@@ -88,18 +89,19 @@ class Likelihood(object):
         if self.fixed_mask[i, i]:
           raise ValueError('Rate from {0} to {0} cannot be fixed.'.format(i))
     
-    is_disconnect = lambda u: (not isinstance(graph_matrix[i][j], str)) \
-                              and abs(graph_matrix[i][j]) < 1e-12
+    is_disconnect = lambda i, j: (not isinstance(graph_matrix[i][j], str)) \
+                                 and abs(graph_matrix[i][j]) < 1e-12
     for i in xrange(nstates):
       for j in xrange(i+1, nstates):
-        if is_disconnect(graph_matrix[i][j]) != is_disconnect(graph_matrix[j][i]):
-          raise ValueError('No reversability for {0} to {1} transformations.'.format(i, j))
+        if is_disconnect(i, j) != is_disconnect(j, i):
+          raise ValueError( 'No reversability for transformations from states {0} to {1}.'         \
+                            .format(i, j) )
 
  
 
     # Private members:
     # A qmatrix object with fixed values already set is created once and for all.
-    qmatrix = QMatrix(zeros((nstates, nstates), dtype='float64'), nopen)
+    qmatrix = QMatrix(zeros((nstates, nstates), dtype=internal_dtype), nopen)
     if self.fixed_mask is not None:
       get_fixed = lambda u: (u if is_fixed(u) else 0)
       fixed = array([ [get_fixed(graph_matrix[i][j]) for j in xrange(nstates)] 
@@ -162,10 +164,13 @@ class Likelihood(object):
 
   def __call__(self, x): 
     """ Computes likelihood for q given input vector x. """
-    from numpy import sum, prod, log
+    from numpy import sum, prod, log, NaN, any
 
     results = self.vector(x)
-    return sum(log(results)) if self.loglikelihood else prod(results)
+    if self.loglikelihood:
+      if any(results <= 0e0): return NaN
+      return sum(log(results))
+    return prod(results)
 
   def intrinsic_linear_equalities(self, with_fixed=False):
     """ A matrix defining intrinsic linear equality constraints. 
@@ -175,23 +180,31 @@ class Likelihood(object):
         sum to zero)
 
         :param with_fixed:
-          Whether to include rows in the return matrix for each fixed component. This makes it easier
-          to define fixed components as linear constraints. 
+            Whether to include rows in the return matrix for each fixed component. This makes it
+            easier to define fixed components as linear constraints. 
+
+        :returns:
+           `(A, b)` with `A` a matrix and `b` a vector, such that intrinsic equality constraints are
+           satisfied by a parameter vector `x` when :math:`A\cdot x - b = 0`
     """
     from numpy import zeros, count_nonzero, nonzero
+    from .. import internal_dtype
+
     if self.fixed_mask is None: with_fixed = False
     ncols = self.nstates * self.nstates
     nrows = self.nstates 
     if with_fixed: nrows += count_nonzero(self.fixed_mask)
-    result = zeros((nrows, ncols), dtype='float64')
+    A = zeros((nrows, ncols), dtype=internal_dtype)
+    b = zeros(nrows, dtype=internal_dtype)
 
     for i in xrange(self.nstates):
-      result[i, i*self.nstates: (i+1)*self.nstates] = 1
+      A[i, i*self.nstates: (i+1)*self.nstates] = 1
 
     if with_fixed:  
-      for j, value in enumerate(nonzero(self.fixed_mask.flat)[0]): result[i+j+1, value] = 1
+      for j, value in enumerate(nonzero(self.fixed_mask.flat)[0]): A[i+j+1, value] = 1
+      b[i+1:] = self._current_qmatrix[self.fixed_mask].flat
 
-    return result
+    return A, b
 
   def intrinsic_linear_inequalities(self, with_fixed=False):
     """ A matrix defining intrinsic linear inequality constraints. 
@@ -204,11 +217,12 @@ class Likelihood(object):
             Whether to include rows for fixed off-diagonal components.
     """
     from numpy import identity, arange, bitwise_not
+    from .. import internal_dtype
 
     N = self.nstates*self.nstates
     keep = arange(N) % self.nstates != arange(N) // self.nstates
     if not with_fixed: keep &=  bitwise_not(self.fixed_mask.flat)
-    return identity(N, dtype='float64')[keep]
+    return identity(N, dtype=internal_dtype)[keep]
 
 
   def random_starting_point(self, with_fixed=False):
@@ -237,11 +251,38 @@ class Likelihood(object):
 
 
 def kernel_projection(likelihood, x0=None, A=None):
-  """ Returns a functor that operates in the kernel of linear constraints of the likelihood. """
+  """ Creates functor that operates in the kernel of linear constraints of the likelihood.
+  
+  
+      One possibility to hold linear equality constraints true is to optimize only over the 
+      space perpendicular to the constraints, e.g. the nullspace or kernel of the linear equality
+      matrix. This routine creates a functor that reduces the input arguments to likelihood to only
+      those in the kernel.
+
+      :param likelihood: 
+         A likelihood functor, likely an instance of :class:`Likelihood`
+      :param x0:
+         A starting point that satisfies the constraints. If None, then it is initialized by calling
+         the `random_starting_point` of `likelihood`.
+      :param A: 
+         A matrix of linear constraints. If None, then it is initialized by calling the
+         `intrinsic_linear_equalities` of `likelihood` with an argument of `True` (e.g. includes
+         fixed components a linear equality constraints).
+      
+      :result:
+
+         A functor object that takes as  argument a numpy array with the dimensions of the
+         nullspace and returns the likelihood.  Additionally, the functor contains two attributes:
+
+         - `to_kernel_coords` takes a numpy array as input and maps the configuration space to the
+            reduced reduced dimension space
+         - `from_kernel_coods` does the opposite, taking a reduced-dimension vector and returns the
+            whole vector, with the missing components initialized to those of `x0`.
+  """
   from numpy import array, dot, concatenate, zeros, argsort, count_nonzero, arange
   from numpy.linalg import svd, norm
   # get linear constraints
-  if A is None: A = likelihood.intrinsic_linear_equalities(True)
+  if A is None: A, b = likelihood.intrinsic_linear_equalities(True)
   if x0 is None: x0 = likelihood.random_starting_point(True)
   x0 = array(x0).copy()
   
@@ -280,3 +321,63 @@ def kernel_projection(likelihood, x0=None, A=None):
   kernel_likelihood.__doc__ = """ Likelihood in kernel coordinates. """
 
   return kernel_likelihood
+
+
+def minimizer_constraints(likelihood, A=None, b=None, infinity=1e5):
+  """ Constructs constraints for scipy.optimize.minimize. 
+  
+      Converts equality constraints and bounds constraints to something scipy.optimize.minimize
+      understands.
+
+      :param likelihood:
+         An instance of :class:`likelihood`
+      :param eq:
+         A matrix giving additional equality constraints. It should be of dimension n by m, with n
+         the number of constraints and m the size of the problem (ie number of elements in
+         Q-matrix). Ignored if None.
+      :param b:
+         A vector defining additional equality constraints. It should sport the same number of
+         elements as there are rows in `A`. It requires `A`. However, if `A` is given and `b` is
+         not, `b` will default to vector of zeros of appropriate size.
+      :param float infinity: 
+         Upper bound for components of the Q-matrix. Can also be numpy.infty (or equivalently,
+         None), although that will most likely have violent consequences.
+      :returns: `(equalities, bounds)`, where equalities is a dictionary identifying the linear
+                equality constraints, and 
+  """
+  from numpy import zeros, infty
+  from itertools import chain
+  if infinity is None: infinity = infty
+  equalities = []
+  if A is None and b is not None:
+    raise ValueError('b requires A on input to minimizer_contraints.')
+  if A is not None and b is None: b = zeros(A.shape[0])
+
+
+  Aintrinsic, bintrinsic = likelihood.intrinsic_linear_equalities(True)
+  if A is not None and A.shape[1] != Aintrinsic.shape[1]:
+    raise ValueError('A has incorrect number of columns')
+    
+  def eq_function(x, vector, value, *args, **kwargs):
+    from numpy import dot
+    return dot(vector, x) - value
+  def eq_jacobian(x, vector, *args, **kwargs): return vector
+
+  iterator = zip(Aintrinsic, bintrinsic)
+  if A is not None: iterator = chain(zip(A, b), iterator)
+  for row, value in iterator:
+    equalities.append({ 'type':'eq', 
+                        'fun':eq_function, 
+                        'jac':eq_jacobian, 
+                        'args':[row.copy(), value] }) 
+
+  N = likelihood.nstates
+  bounds = []
+  for i, fixed in enumerate(likelihood.fixed_mask.flat):
+    if fixed: bounds.append((-infinity, infinity))
+    elif i % N == i // N: bounds.append((-infinity, 0))
+    else: bounds.append((-infinity, infinity))
+  return equalities, bounds
+  
+
+

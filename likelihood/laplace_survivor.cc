@@ -34,9 +34,11 @@ namespace DCProgs {
     t_cvector const alpha = ff_eigenvalues_.array() - _s;
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
     for(t_int i(0); i < ff_eigenvalues_.size(); ++i) 
-      diagonal(i, i) = std::abs(alpha(i)) > ZERO ?  (std::exp(alpha(i) * _tau) - 1e0) / alpha(i): _tau; 
+      diagonal(i, i) = std::abs(alpha(i)) > ZERO ? 
+                         (std::exp(alpha(i) * _tau) - t_real(1e0)) / alpha(i):
+                         _tau; 
     t_cmatrix const result = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
-    if((result.imag().array().abs() > 1e-8).any())
+    if((result.imag().array().abs() > t_real(1e-8)).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
     return result.real();
   }
@@ -47,13 +49,13 @@ namespace DCProgs {
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
     for(t_int i(0); i < ff_eigenvalues_.size(); ++i) {
       if(std::abs(alpha(i)) > ZERO) {
-        t_complex const invalpha = 1e0 / alpha(i);
+        t_complex const invalpha = t_real(1e0) / alpha(i);
         diagonal(i, i) = invalpha * ((invalpha - _tau) * std::exp(alpha(i)*_tau) - invalpha);
-      } else diagonal(i, i) = -_tau * _tau * 0.5;
+      } else diagonal(i, i) = -_tau * _tau * t_real(0.5);
     }
 
     t_cmatrix const integral = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
-    if((integral.imag().array().abs() > 1e-8).any())
+    if((integral.imag().array().abs() > t_real(1e-8)).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
     return this->id_() - qmatrix_.af() * integral.real() * qmatrix_.fa(); 
   }

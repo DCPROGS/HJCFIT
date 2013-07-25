@@ -17,7 +17,12 @@ namespace DCProgs {
 
        // checks that it is valid.
        // If condition below is true, then means at least one element is NaN.
-       if(not (H.array() == H.array()).all()) throw errors::NaN("when computing matrix H.");
+       if(eigen_nan(H)) {
+         std::ostringstream sstr;
+         sstr << "when computing matrix H(" << _s << "):\n"
+              << numpy_io(H) << "\n" << _det;
+         throw errors::NaN(sstr.str());
+       }
 
        // Computes eigenvalues of midpoint.
        Eigen::EigenSolver<t_rmatrix> eigsolver(H);
@@ -111,7 +116,7 @@ namespace DCProgs {
              if(std::abs(root) < 1e-1) {
                std::ostringstream sstr;
                sstr << "when computing matrix H(" << root << "):\n"
-                    << numpy_io(H) << std::endl;
+                    << numpy_io(H) << "\n" << _det;
                throw errors::NaN(sstr.str());
              }
              root = 0.9 * root;

@@ -228,7 +228,8 @@ def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
 def intervals_to_series(intervals, start=0):
   """ Converts time intervals to time series. """
   from numpy import zeros
-  result = zeros(len(intervals)+1, dtype='float64')
+  from .. import internal_dtype
+  result = zeros(len(intervals)+1, dtype=internal_dtype)
   result[0] = start
   for i, z in enumerate(intervals): result[i+1] = result[i] + z
   return result

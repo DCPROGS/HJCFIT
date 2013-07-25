@@ -79,7 +79,7 @@ namespace DCProgs {
 
     // Initializes recursion formula for m == l == 0
     t_rmatrix const eigenvectors = eigsolver.eigenvectors().real();
-    t_rmatrix const eigenvectors_inv = eigenvectors.inverse();
+    t_rmatrix const eigenvectors_inv = eigsolver.eigenvectors().inverse().real();
     for(t_int i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).head(transitions.nopen);

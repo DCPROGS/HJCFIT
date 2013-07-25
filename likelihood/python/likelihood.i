@@ -109,12 +109,44 @@ from ._likelihood_methods import *
 // more difficult for swig to understand our code.
 %apply int { t_int }; 
 %apply int { DCProgs::t_int }; 
+// %typemap(in) DCProgs::t_real {
+//   using namespace DCProgs;
+//   if(PyArray_CheckScalar($input)) {
+//     double longuest[4];
+//     PyArray_ScalarAsCtype($input, static_cast<void*>(longuest));
+//     $1 = numpy::cast<t_real>(
+//            static_cast<void*>(longuest),
+//            PyArray_TYPE(reinterpret_cast<PyArrayObject*>($input))
+//     );
+//   } else if(PyFloat_Check($input)) 
+//     $1 = static_cast<t_real>(PyFloat_AS_DOUBLE($input));
+//   else if(PyLong_Check($input)) 
+//     $1 = static_cast<t_real>(PyLong_AsDouble($input));
+//   else if(PyInt_Check($input)) 
+//     $1 = static_cast<t_real>(PyInt_AS_LONG($input));
+//   else throw errors::PythonTypeError("Expected a number or numpy scalar");
+// };
+// %typemap(out) DCProgs::t_real {
+//   $result = PyFloat_FromDouble(static_cast<double>($1));
+// }
+// %typemap(typecheck) DCProgs::t_real {
+//   $1 = ( PyInt_Check($input)
+//          or PyLong_Check($input)
+//          or PyFloat_Check($input)
+//          or PyArray_CheckScalar($input) ) ? 1: 0;
+// }
+// %typemap(typecheck) t_real {
+//   $1 = ( PyInt_Check($input)
+//          or PyLong_Check($input)
+//          or PyFloat_Check($input)
+//          or PyArray_CheckScalar($input) ) ? 1: 0;
+// }
 %apply double { t_real }; 
 %apply double { DCProgs::t_real }; 
-%typemap(typecheck) DCProgs::t_int = int;
-%typemap(typecheck) t_int = int;
 %typemap(typecheck) DCProgs::t_real = double;
 %typemap(typecheck) t_real = double;
+%typemap(typecheck) DCProgs::t_int = int;
+%typemap(typecheck) t_int = int;
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);
@@ -146,4 +178,12 @@ namespace DCProgs {
 }
 %include "time_filter.swg"
 %include "chained.swg"
+
+%{
+  PyObject* _dcprogs_dtype() {
+    return PyArray_TypeObjectFromType(DCProgs::numpy::type<DCProgs::t_real>::value);
+  }
+%}
+PyObject* _dcprogs_dtype();
+
 #undef DCPROGS_CATCH

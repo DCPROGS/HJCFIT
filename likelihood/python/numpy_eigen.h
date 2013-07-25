@@ -21,6 +21,7 @@ namespace DCProgs {
     };                                                           \
     DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
 
+    DCPROGS_MACRO(npy_longdouble,    NPY_LONGDOUBLE);
     DCPROGS_MACRO(npy_double,    NPY_DOUBLE);
     DCPROGS_MACRO(npy_float,     NPY_FLOAT);
     DCPROGS_MACRO(npy_longlong,  NPY_LONGLONG);
@@ -165,6 +166,7 @@ namespace DCProgs {
            return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
        DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
        else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
        else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
        else DCPROGS_MACRO( npy_int,        NPY_INT        )
@@ -288,6 +290,7 @@ namespace DCProgs {
       switch(_type) {
 #       define DCPROGS_MACRO(TYPENAME)                                                             \
           case type<TYPENAME>::value: return static_cast<T>(*(static_cast<TYPENAME*>(_data)));
+          DCPROGS_MACRO(npy_longdouble);
           DCPROGS_MACRO(npy_double);
           DCPROGS_MACRO(npy_float);
           DCPROGS_MACRO(npy_longlong);

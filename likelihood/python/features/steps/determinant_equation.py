@@ -50,9 +50,10 @@ def step(context, s):
 def step(context, nopen):
   from numpy import array
   from dcprogs.likelihood import QMatrix
+  from dcprogs import internal_dtype
 
   matrix = context.text.lstrip().rstrip().splitlines()
-  matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype='float64')
+  matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype=internal_dtype)
   context.qmatrix = QMatrix(matrix, nopen)
 
 

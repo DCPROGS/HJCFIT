@@ -1,8 +1,17 @@
 """ DCProgs python library. """
 __docformat__ = "restructuredtext en"
-__all__ = ['likelihood', 'random', 'read_idealized_bursts']
+__all__ = ['likelihood', 'random', 'read_idealized_bursts', 'internal_dtype']
 import numpy
 import likelihood
+from likelihood._likelihood import _dcprogs_dtype
+
+internal_dtype = _dcprogs_dtype()
+""" Type of the numpy array used internally. 
+
+    Using this type should make some conversion from python to c++ faster or even unnecessary.
+
+    >>> array([0, 1], dtype=internal_dtype)
+"""
 
 def read_idealized_bursts(filename, tau, tcrit): 
   """ Reads bursts data from *.scn file. 
@@ -43,4 +52,6 @@ def read_idealized_bursts(filename, tau, tcrit):
   time_series.get_open_shut_periods()
   time_series.get_bursts(tcrit)
 
-  return [array(u, dtype='float64') * 1e-3 for u in time_series.bursts.itervalues()]
+  return [array(u, dtype=internal_dtype) * 1e-3 for u in time_series.bursts.itervalues()]
+
+

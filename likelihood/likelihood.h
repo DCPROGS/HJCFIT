@@ -17,11 +17,12 @@ namespace DCProgs {
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_likelihood(T_G const & _g, T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
                               t_initvec const &_initial, t_rvector const &_final ) {
-      t_initvec current = _initial;
-      for(; _begin != _end; ++_begin) {
-        current = current * _g.af(static_cast<t_real>(*_begin));
-        if(++_begin == _end) break;
+      if( (_end - _begin) % 2 != 1 )
+        throw errors::Domain("Expected a burst with odd number of intervals");
+      t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
+      while(++_begin != _end) {
         current = current * _g.fa(static_cast<t_real>(*_begin));
+        current = current * _g.af(static_cast<t_real>(*(++_begin)));
       }
       return current * _final;
     }
