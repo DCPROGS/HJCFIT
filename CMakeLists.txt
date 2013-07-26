@@ -16,17 +16,6 @@ include(${CMAKE_MODULE_PATH}/AddCpp11Flags.cmake)
 include(${CMAKE_MODULE_PATH}/CheckCXX11Features.cmake)
 include(${CMAKE_MODULE_PATH}/CheckIsNaNStatus.cmake)
 
-if(NOT HAS_CXX11_NOEXCEPT)
-  set(noexcept TRUE)
-endif()
-if(NOT HAS_CXX11_NOEXCEPT)
-  set(constexpr TRUE)
-endif()
-
-configure_file (
- "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
- "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
-)
 
 find_package(eigen REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
@@ -43,12 +32,15 @@ endif(pythonBindings)
 if(NOT HAS_CXX11_NOEXCEPT)
   set(noexcept TRUE)
 endif()
+if(NOT DCPROGS_LONG_DOUBLE) 
+  set(DCPROGS_LONG_DOUBLE False CACHE BOOL
+      "If True, will use long doubles rather than simple doubles.")
+endif(NOT DCPROGS_LONG_DOUBLE)
+
 configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
 )
-
-
 
 add_subdirectory(likelihood)
 add_subdirectory(data)
