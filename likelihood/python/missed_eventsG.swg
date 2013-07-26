@@ -27,20 +27,14 @@ class MissedEventsG {
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
       std::vector<Root> roots_af = convert_to_roots(_roots_af);
       std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
-      if(roots_af.size() < _af->get_nopen()) {
+      if(roots_af.size() == 0) {
         std::ostringstream sstr;
-        sstr << *_af << "\n\n"
-             << "Expected at least " << _af->get_nopen() << " AF roots on input. "
-             << roots_af.size() << " given.\n";
-        for(Root const &root: roots_af) sstr << "   " << root.root << " -- " << root.multiplicity << "\n";
+        sstr << "No AF roots given  on input.\n\n" << *_af << "\n";
         throw errors::Domain(sstr.str());
       }
-      if(roots_fa.size() < _fa->get_nopen()) {
+      if(roots_fa.size() == 0) {
         std::ostringstream sstr; 
-        sstr << *_fa << "\n\n"
-             << "Expected at least " << _fa->get_nopen() << " FA roots on input. "
-             << roots_fa.size() << " given.\n";
-        for(Root const &root: roots_fa) sstr << "   " << root.root << " -- " << root.multiplicity << "\n";
+        sstr << "No FA roots given  on input.\n\n" << *_fa << "\n";
         throw errors::Domain(sstr.str());
       }
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);

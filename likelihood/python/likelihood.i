@@ -90,9 +90,6 @@
     }
 %}
 
-%pythoncode %{
-from ._likelihood_methods import *
-%}
 
 // Tells swig that we will deal with exceptions.
 %include "exception.i"
@@ -107,7 +104,6 @@ from ._likelihood_methods import *
 // Tells swig about our type hierarchy. 
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
-%apply int { t_int }; 
 %apply int { DCProgs::t_int }; 
 // %typemap(in) DCProgs::t_real {
 //   using namespace DCProgs;
@@ -141,12 +137,9 @@ from ._likelihood_methods import *
 //          or PyFloat_Check($input)
 //          or PyArray_CheckScalar($input) ) ? 1: 0;
 // }
-%apply double { t_real }; 
 %apply double { DCProgs::t_real }; 
 %typemap(typecheck) DCProgs::t_real = double;
-%typemap(typecheck) t_real = double;
 %typemap(typecheck) DCProgs::t_int = int;
-%typemap(typecheck) t_int = int;
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);

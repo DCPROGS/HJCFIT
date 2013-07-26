@@ -20,6 +20,28 @@ DCProgs::t_real find_lower_bound_for_roots(DeterminantEq const &det,
                                            DCProgs::t_real alpha = 2e0, 
                                            DCProgs::t_int itermax = 100);
 
+%feature("autodoc", "Figures out upper bound for root.\n\n"
+         "Lower bound is obtained by iteratively checking the "
+         "largest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
+         "where :math:`s_i` is the guess at iteration :math:`i`. If the "
+         "lower eigenvalue is lower than :math:`s_i`, than "
+         ":math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` "
+         "is created.\n\n"
+         ":param DeterminantEq det: \n"
+         "     Function for which to guess bound for lower root.\n"
+         ":param Number start:\n"
+         "     Starting point. Defaults to zero.\n"
+         ":param Number alpha:\n"
+         "     Factor from which to determine next best guess.\n"
+         ":param Integer itermax:\n"
+         "     Maximum number of iterations before bailing out.\n")
+         find_upper_bound_for_roots(DeterminantEq const &det);
+
+DCProgs::t_real find_upper_bound_for_roots(DeterminantEq const &det,
+                                           DCProgs::t_real start = 1e8,
+                                           DCProgs::t_real alpha = 2e0, 
+                                           DCProgs::t_int itermax = 100);
+
 
 // Creates a typemap to convert std::vector<RootInterval> to a python list.
 // Each item is a "((a, b), multiplicity)".

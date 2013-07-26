@@ -127,9 +127,9 @@ class Likelihood(object):
 
 
   def vector(self, x):
-    """ Computes likelihood for each interval. """
+    """ Computes log10-likelihood for each interval. """
     from numpy import array, count_nonzero, bitwise_not
-    from .likelihood import create_missed_eventsG, compute_bursts
+    from . import create_missed_eventsG, compute_log10_bursts
 
     x = array(x)
 
@@ -160,17 +160,14 @@ class Likelihood(object):
       initial = missed_eventsG.initial_CHS_occupancies(self.tcrit)
       final = missed_eventsG.final_CHS_occupancies(self.tcrit)
 
-    return compute_bursts(missed_eventsG, self.bursts, initial, final)
+    return compute_log10_bursts(missed_eventsG, self.bursts, initial, final)
 
   def __call__(self, x): 
-    """ Computes likelihood for q given input vector x. """
-    from numpy import sum, prod, log, NaN, any
+    """ Computes likelihood or log-likelihood for q given input vector x. """
+    from numpy import sum, log, exp
 
-    results = self.vector(x)
-    if self.loglikelihood:
-      if any(results <= 0e0): return NaN
-      return sum(log(results))
-    return prod(results)
+    results = sum(self.vector(x))
+    return results * log(10) if self.loglikelihood else exp(results) * 10e0
 
   def intrinsic_linear_equalities(self, with_fixed=False):
     """ A matrix defining intrinsic linear equality constraints. 

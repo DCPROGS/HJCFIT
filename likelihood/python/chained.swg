@@ -95,9 +95,12 @@
     //!                member function, where the argument is the length of an open or shut interval.
     //! \param[in] _initial: initial occupancies.
     //! \param[in] _final: final occupancies.
-    template<class T_G> 
-      PyObject* py_compute_bursts(T_G const & _g, Bursts const & _bursts, 
-                                  PyObject *_initial, PyObject *_final) {
+    //! \param[in] _chained_likelihood: The function to call, wether chained_likelihood or
+    //!                                 chained_log10_likelihood
+    template<class T_G, class T_FUNCTION> 
+      PyObject* py_compute_bursts( T_G const & _g, Bursts const & _bursts, 
+                                   PyObject *_initial, PyObject *_final, 
+                                   T_FUNCTION * const  _chained_likelihood ) {
         using namespace DCProgs;
         t_initvec const initial = numpy::map_to_initvec(_initial).array();
         t_rvector const final   = numpy::map_to_rvector(_final).array();
@@ -108,18 +111,46 @@
         t_real *i_result
             = static_cast<t_real*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(~result)));
         for(Bursts::const_reference burst: _bursts.bursts) {
-          *i_result = chained_likelihood(_g, &burst(0), &burst(0) + burst.size(), initial, final); 
+          *i_result = (*_chained_likelihood)(_g, &burst(0), &burst(0) + burst.size(), initial, final); 
           ++i_result;
         }
         return result.release();
       }
-    PyObject* compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                             PyObject* _initial, PyObject* _final) {
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final);
+
+    PyObject* compute_bursts( DCProgs::IdealG *_idealg, Bursts const & _bursts, 
+                              PyObject* _initial, PyObject* _final ) {
+      
+      // Seems taking the address of a template function is more complicated then it should be.
+      using namespace DCProgs;
+      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
+      t_real (*function)(IdealG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
+         =  &DCProgs::chained_likelihood<t_ptr, IdealG>;
+      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function );
     } 
-    PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
-                             PyObject* _initial, PyObject* _final) {
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final);
+    PyObject* compute_bursts( DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
+                              PyObject* _initial, PyObject* _final ) {
+      using namespace DCProgs;
+      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
+      t_real (*function)(MissedEventsG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
+         =  &DCProgs::chained_likelihood<t_ptr, MissedEventsG>;
+      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
+    } 
+
+    PyObject* compute_log10_bursts( DCProgs::IdealG *_idealg, Bursts const & _bursts, 
+                                    PyObject* _initial, PyObject* _final ) {
+      using namespace DCProgs;
+      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
+      t_real (*function)(IdealG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
+         =  &DCProgs::chained_log10_likelihood<t_ptr, IdealG>;
+      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
+    } 
+    PyObject* compute_log10_bursts( DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
+                                    PyObject* _initial, PyObject* _final ) {
+      using namespace DCProgs;
+      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
+      t_real (*function)(MissedEventsG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
+         =  &DCProgs::chained_log10_likelihood<t_ptr, MissedEventsG>;
+      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
     } 
   }
 %}
@@ -146,7 +177,7 @@ DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *g, PyObject* interval
          "A slightly faster form of computing the likelihood over a list of bursts. "
          "The list is pre-translated to a c++ object over which we can loop in c++, "
          "without going back to python. We may then be able to apply parallelization " 
-         "methods. Without parallelization, it does not seem to be better than 10\% faster.\n\n"
+         "methods. Without parallelization, it does not seem to be better than 15\% faster.\n\n"
          ":param firstArgument: \n"
          "   Can be either an :class:`IdealG` or and :class:`MissedEventsG` instance.\n"
          ":param bursts:\n"
@@ -163,5 +194,33 @@ PyObject* compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts,
 PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
                          PyObject* _initial, PyObject* _final);
 
+%feature("autodoc", "Computes log10-likelihood of an opaque of bursts.\n\n"
+         "A slightly faster form of computing the likelihood over a list of bursts. "
+         "The list is pre-translated to a c++ object over which we can loop in c++, "
+         "without going back to python. We may then be able to apply parallelization " 
+         "methods. Without parallelization, it does not seem to be better than 15\% faster. "
+         "This version returns log10 values. It may handle exponents a bit better and be "
+         "slightly less prone to under/over flow.\n\n"
+         ":param firstArgument: \n"
+         "   Can be either an :class:`IdealG` or and :class:`MissedEventsG` instance.\n"
+         ":param bursts:\n"
+         "   This must be the opaque object returned by :meth:`create_bursts`. "
+            "It contains the bursts in c++ form.\n"
+         ":param initial:\n"
+         "   The initial occupancy vector.\n" 
+         ":param final:\n"
+         "   The final occupancy vector.\n")
+        compute_log10_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
+                             PyObject* _initial, PyObject* _final);
+PyObject* compute_log10_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
+                               PyObject* _initial, PyObject* _final);
+PyObject* compute_log10_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
+                               PyObject* _initial, PyObject* _final);
 
+%feature("autodoc", "Creates an opaque list of bursts.\n\n"
+         "The opaque list of bursts is a pre-translated c++ object. "
+         "It cannot be modified or even inspected from python. \n\n" 
+         ":param bursts:\n"
+         "   A list of lists of intervals. The inner lists are bursts.\n"
+         ":result: An opaque object that is the c++ equivalent of the input.\n");
 Bursts create_bursts(PyObject *_bursts);

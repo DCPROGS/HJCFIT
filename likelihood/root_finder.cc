@@ -179,17 +179,13 @@ namespace DCProgs {
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
                                               t_real _alpha, t_int _itermax) {
 
-    t_real root = find_eigs_bound(
+    return find_eigs_bound(
         _det, _start, _itermax,
         [](t_cvector const &_eigs) { return _eigs.real().minCoeff(); },
         [](t_real _a, t_real _b) { return _a > _b; },
         [_alpha](t_real _value, t_real _root) {
           return _value - _alpha * std::min(_root - _value, 0.1 * std::abs(_value));
         } 
-    );
-    return change_bound_till_sign(
-        _det, root, _det.get_nopen() % 2 == 0 ? 1: -1, _itermax,
-        [&_alpha](t_int root) { return root *= _alpha; }
     );
   }
  
@@ -209,7 +205,7 @@ namespace DCProgs {
     );
     return change_bound_till_sign(
         _det, root, 1, _itermax,
-        [&_alpha](t_int root) { return root *= _alpha; }
+        [&_alpha](t_int root) { return root *= 1.1; }
     );
   }
 

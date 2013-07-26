@@ -168,7 +168,7 @@ def time_intervals(N=100, n=100, nsmall=3, maxsize=10, tau=1e-4):
 
 def time_series(*args, **kwargs): 
   """ Create a random time series. """
-  from ._likelihood_methods import intervals_to_series
+  from ._methods import intervals_to_series
   start = kwargs.pop('start', 0)
   perfect, result = time_intervals(*args, **kwargs)
   return intervals_to_series(perfect, start), intervals_to_series(result, start)

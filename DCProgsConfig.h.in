@@ -66,7 +66,7 @@
 
 namespace DCProgs {
   //! Types of reals across DCProgs.
-  typedef long double t_real;
+  typedef double t_real;
   //! Complex real type
   typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.

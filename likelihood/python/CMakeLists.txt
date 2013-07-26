@@ -13,7 +13,7 @@ if(pythonBindings)
 
   
   install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
-  install(FILES  random.py _likelihood_methods.py optimization.py
+  install(FILES  random.py _methods.py optimization.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
           DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
 endif(pythonBindings)

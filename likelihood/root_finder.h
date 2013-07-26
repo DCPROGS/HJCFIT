@@ -41,12 +41,6 @@ namespace DCProgs {
   };
 
   //! \brief Figures out interval where roots can be found.
-  //! \details It starts from reasonable interval.
-  //!          If that interval does not contain all eigenvalues of H, then it tries and increase
-  //!          it until an overlapping interval is found.
-  //!          It then proceeds by bisecting the interval until all roots are isolated.
-  //!          If a bisection falls below a given convergence criteria, the root is deemed
-  //!          degenerate.
   //! \param[in] _det: The determinantal equation
   //! \param[in] _mins: A valid lower bound. All roots should be above that lower bound. 
   //!                   If _mins > _maxs, then tries to determine the lower bound using
@@ -62,8 +56,7 @@ namespace DCProgs {
   //! \details Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than
   //!          the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at
   //!          that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is
-  //!          higher than the current bound. Then it checks that the determinant  is of the correct
-  //!          sign.
+  //!          higher than the current bound.
   //! \param[in] _det: The determinantal equation
   //! \param[in] _start: Value where to start looking for lower bound.
   //! \param[in] _alpha: factor by which to set new lower bound:
