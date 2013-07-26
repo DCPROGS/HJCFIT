@@ -82,6 +82,14 @@ namespace DCProgs {
                       nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
+      //! Move constructor.
+      MissedEventsG   ( MissedEventsG && _c) 
+                    : ExactSurvivor(std::move(_c)), ApproxSurvivor(std::move(_c)),
+                      laplace_a_(std::move(_c.laplace_a_)),
+                      laplace_f_(std::move(_c.laplace_f_)),
+                      nmax_(_c.nmax_), tmax_(_c.tmax_), 
+                      af_factor_(std::move(_c.af_factor_)),
+                      fa_factor_(std::move(_c.fa_factor_)) {}
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const {
@@ -152,6 +160,12 @@ namespace DCProgs {
 
   //! Dumps Missed-Events likelihood to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const &_self);
+
+  //! Creates missed events object.
+  MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
+                                       t_int _nmax=2,
+                                       t_real _xtol = 1e-8, t_real _rtol = 1e-8,
+                                       t_int _itermax = 100 );
 }
 
 #endif 

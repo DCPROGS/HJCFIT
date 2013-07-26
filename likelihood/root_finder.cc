@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "root_finder.h"
+#include "brentq.h"
 
 namespace DCProgs {
 
@@ -297,5 +298,20 @@ namespace DCProgs {
  
     // return result.
     return intervals;
+  }
+
+  // Finds root using brentq and find_root_intervals.
+  std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
+                                          t_real _xtol, t_real _rtol, t_int _itermax) {
+    std::vector<RootInterval> intervals = find_root_intervals(_det, 1e8, 1e1, _xtol);
+    std::vector<Root> result; result.reserve(intervals.size());
+    for(RootInterval const &interval: intervals) 
+      if(interval.multiplicity == 2)
+        result.emplace_back((interval.start+interval.end)*0.5, interval.multiplicity);
+      else {
+        auto root_results = brentq(_det, interval.start, interval.end, _xtol, _rtol, _itermax);
+        result.emplace_back(std::get<0>(root_results), 1);
+      }
+    return result;
   }
 }

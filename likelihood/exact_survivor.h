@@ -49,7 +49,11 @@ namespace DCProgs {
       template<class T>
         ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_int _nopen, t_real _tau)
           { set(QMatrix(_qmatrix, _nopen), _tau); }
-
+      //! Move constructor
+      ExactSurvivor   (ExactSurvivor &&_c) 
+                    : recursion_af_(std::move(_c.recursion_af_)),
+                      recursion_fa_(std::move(_c.recursion_fa_)),
+                      tau_(_c.tau_) {}
 
       //! Sets the values for which to compute exact g.
       void set(QMatrix const &_qmatrix, t_real _tau);

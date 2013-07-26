@@ -111,6 +111,12 @@ namespace DCProgs {
                                     t_real _mins = 1e8,
                                     t_real _maxs   = 0e0,
                                     t_real _tolerance = 1e-1);
+
+  //! Finds root using brentq and find_root_intervals.
+  std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
+                                          t_real _xtol = 1e-8,
+                                          t_real _rtol = 1e-8,
+                                          t_int _itermax = 100 );
 }
 
 #endif
