@@ -171,12 +171,6 @@ namespace DCProgs {
 }
 %include "time_filter.swg"
 %include "chained.swg"
-
-%{
-  PyObject* _dcprogs_dtype() {
-    return PyArray_TypeObjectFromType(DCProgs::numpy::type<DCProgs::t_real>::value);
-  }
-%}
-PyObject* _dcprogs_dtype();
+%include "math.swg"
 
 #undef DCPROGS_CATCH

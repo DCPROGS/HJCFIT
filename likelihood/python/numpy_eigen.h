@@ -21,22 +21,29 @@ namespace DCProgs {
     };                                                           \
     DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
 
-    DCPROGS_MACRO(npy_longdouble,    NPY_LONGDOUBLE);
-    DCPROGS_MACRO(npy_double,    NPY_DOUBLE);
-    DCPROGS_MACRO(npy_float,     NPY_FLOAT);
-    DCPROGS_MACRO(npy_longlong,  NPY_LONGLONG);
-    DCPROGS_MACRO(npy_ulonglong, NPY_ULONGLONG);
-    DCPROGS_MACRO(npy_long,      NPY_LONG);
-    DCPROGS_MACRO(npy_ulong,     NPY_ULONG);
-    DCPROGS_MACRO(npy_int,       NPY_INT);
-    DCPROGS_MACRO(npy_uint,      NPY_UINT);
-    DCPROGS_MACRO(npy_short,     NPY_SHORT);
-    DCPROGS_MACRO(npy_ushort,    NPY_USHORT);
-    DCPROGS_MACRO(npy_byte,      NPY_BYTE);
-    DCPROGS_MACRO(npy_ubyte,     NPY_UBYTE);
+    DCPROGS_MACRO(npy_cdouble,     NPY_CDOUBLE);
+    DCPROGS_MACRO(npy_double,      NPY_DOUBLE);
+    DCPROGS_MACRO(npy_float,       NPY_FLOAT);
+    DCPROGS_MACRO(npy_longlong,    NPY_LONGLONG);
+    DCPROGS_MACRO(npy_ulonglong,   NPY_ULONGLONG);
+    DCPROGS_MACRO(npy_long,        NPY_LONG);
+    DCPROGS_MACRO(npy_ulong,       NPY_ULONG);
+    DCPROGS_MACRO(npy_int,         NPY_INT);
+    DCPROGS_MACRO(npy_uint,        NPY_UINT);
+    DCPROGS_MACRO(npy_short,       NPY_SHORT);
+    DCPROGS_MACRO(npy_ushort,      NPY_USHORT);
+    DCPROGS_MACRO(npy_byte,        NPY_BYTE);
+    DCPROGS_MACRO(npy_ubyte,       NPY_UBYTE);
 
-#   ifdef DCPROGS_NPY_HAS_LONG_DOUBLE
+#   ifdef DCPROGS_NPY_LONG_DOUBLE
       DCPROGS_MACRO(npy_longdouble, NPY_LONGDOUBLE);
+      DCPROGS_MACRO(npy_clongdouble, NPY_CLONGDOUBLE);
+      template<> struct type< std::complex<npy_longdouble> > {
+        /*! Original Type */
+        typedef npy_clongdouble np_type;
+        /*! Associated  number */
+        DCPROGS_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
+      };
 #   endif
 #   ifdef DCPROGS_NPY_HAS_BOOL
       DCPROGS_MACRO(npy_bool, NPY_BOOL);
@@ -49,6 +56,13 @@ namespace DCProgs {
       };
       DCPROGS_DECL_CONSTEXPR(int type<bool>::value, NPY_BOOL);
 #   endif 
+      template<> struct type< std::complex<npy_double> > {
+        /*! Original Type */
+        typedef npy_cdouble np_type;
+        /*! Associated  number */
+        DCPROGS_INIT_CONSTEXPR(int value, NPY_CDOUBLE); 
+      };
+      
 
 #   undef DCPROGS_MACRO
     
@@ -116,6 +130,38 @@ namespace DCProgs {
         PyArray_ENABLEFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
         return result;
       }
+
+    PyObject* wrap_to_numpy(t_cvector const &_in) {
+
+      typedef type<t_cvector::Scalar> t_ScalarType;
+      npy_intp dims[1] = { _in.size() };
+      Object<PyArrayObject> result = steal_ref(reinterpret_cast<PyArrayObject*>(
+          PyArray_SimpleNew(1, dims, t_ScalarType::value)
+      )); 
+      if(not result) throw errors::PythonErrorAlreadyThrown();
+      
+      t_real const *i_data = reinterpret_cast<const t_real(&)[2]>(_in(0));
+      std::copy(i_data, i_data + 2 * _in.size(), static_cast<t_real*>(PyArray_DATA(~result)));
+      if(PyArray_FLAGS(~result) & NPY_ARRAY_C_CONTIGUOUS and not _in.IsRowMajor) 
+        PyArray_CLEARFLAGS(~result, NPY_ARRAY_C_CONTIGUOUS);
+      return reinterpret_cast<PyObject*>(result.release());
+    }
+    PyObject* wrap_to_numpy(t_cmatrix const &_in) {
+
+      typedef type<t_rmatrix::Scalar> t_ScalarType;
+      npy_intp dims[2] = { _in.rows(), _in.cols() };
+      Object<PyArrayObject> result = steal_ref(reinterpret_cast<PyArrayObject*>(
+          PyArray_ZEROS(2, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1)
+      )); 
+      if(not result) throw errors::PythonErrorAlreadyThrown();
+
+      t_real const *i_data = reinterpret_cast<const t_real(&)[2]>(_in(0));
+      std::copy(i_data, i_data + 2 * _in.size(), static_cast<t_real*>(PyArray_DATA(~result)));
+      if(PyArray_FLAGS(~result) & NPY_ARRAY_C_CONTIGUOUS and not _in.IsRowMajor) 
+        PyArray_CLEARFLAGS(~result, NPY_ARRAY_C_CONTIGUOUS);
+
+      return reinterpret_cast<PyObject*>(result.release());
+    }
 
     namespace { namespace details {
       template<class T>
@@ -290,7 +336,6 @@ namespace DCProgs {
       switch(_type) {
 #       define DCPROGS_MACRO(TYPENAME)                                                             \
           case type<TYPENAME>::value: return static_cast<T>(*(static_cast<TYPENAME*>(_data)));
-          DCPROGS_MACRO(npy_longdouble);
           DCPROGS_MACRO(npy_double);
           DCPROGS_MACRO(npy_float);
           DCPROGS_MACRO(npy_longlong);
@@ -303,7 +348,7 @@ namespace DCProgs {
           DCPROGS_MACRO(npy_ushort);
           DCPROGS_MACRO(npy_byte);
           DCPROGS_MACRO(npy_ubyte);
-#         ifdef DCPROGS_NPY_HAS_LONG_DOUBLE
+#         ifdef DCPROGS_NPY_LONG_DOUBLE
             DCPROGS_MACRO(npy_longdouble);
 #         endif
 #         ifdef DCPROGS_NPY_HAS_BOOL

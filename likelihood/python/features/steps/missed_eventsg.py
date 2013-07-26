@@ -81,7 +81,7 @@ def step(context, name, start, end):
 @then('{name} can be found from ExactSurvivor if t is between {start:Float} and {end:Float}')
 def step(context, name, start, end): 
   from numpy import abs, any, dot
-  from scipy.linalg import expm
+  from dcprogs.likelihood import expm
   times = context.times
   times = times[times < end] 
   times = times[times > start]
@@ -108,7 +108,7 @@ def step(context, name, start, end):
 @then('{name} can be found from ApproxSurvivor if t is larger than {start:Float}')
 def step(context, name, start): 
   from numpy import abs, any, dot
-  from scipy.linalg import expm
+  from dcprogs.likelihood import expm
   times = context.times
   times = times[times > start]
   for approx, missed_events_G, qmatrix in zip(context.approx_survivors,
@@ -133,7 +133,7 @@ def step(context, name, start):
 
 def compute_Hfa(qmatrix, tau, tcrit):
   from dcprogs.likelihood import create_approx_survivor
-  from scipy.linalg import expm
+  from dcprogs.likelihood import expm
   from numpy import exp, dot
 
   approx = create_approx_survivor(qmatrix, tau)

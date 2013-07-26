@@ -59,7 +59,7 @@ def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True
     return matrix
 
   def zero_eig(result): 
-    from numpy.linalg import svd
+    from dcprogs.likelihood import svd
     from numpy import sum, abs
     try: U, sing, V = svd(result)
     except: return False
@@ -81,7 +81,7 @@ def qmatrix(*args, **kwargs):
   
   def zero_eig(result):
     """ Qff and Qaa cannot be singular. """
-    from numpy.linalg import svd
+    from dcprogs.likelihood import svd
     from numpy import all, any, abs
     try: singular = svd(result.aa)[1]
     except: return False

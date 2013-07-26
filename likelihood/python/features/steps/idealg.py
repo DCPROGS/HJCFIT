@@ -48,7 +48,7 @@ def step(context, name):
 @then('computing af for each time yields exp(t Q_AA) Q_AF')
 def step(context):
   from numpy import abs, all, dot
-  from scipy.linalg import expm
+  from dcprogs.likelihood import expm
   for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for t in context.times:
       value = dot(expm(t * matrix.aa), matrix.af)
@@ -61,7 +61,7 @@ def step(context):
 @then('computing fa for each time yields exp(t Q_FF) Q_FA')
 def step(context):
   from numpy import abs, all, dot
-  from scipy.linalg import expm
+  from dcprogs.likelihood import expm
   for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for t in context.times:
       value = dot(expm(t * matrix.ff), matrix.fa)
@@ -74,7 +74,7 @@ def step(context):
 @then('computing laplace_af for each scale yields (sI - Q_AA)^-1 Q_AF')
 def step(context):
   from numpy import abs, all, dot, identity
-  from numpy.linalg import inv
+  from dcprogs.likelihood import inv
   for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for scale in context.scales:
       value = dot(inv(scale * identity(matrix.aa.shape[0]) - matrix.aa), matrix.af)
@@ -87,7 +87,7 @@ def step(context):
 @then('computing laplace_fa for each scale yields (sI - Q_FF)^-1 Q_FA')
 def step(context):
   from numpy import abs, all, dot, identity
-  from numpy.linalg import inv
+  from dcprogs.likelihood import inv
   for idealg, matrix in zip(context.idealgs, context.qmatrices):
     for scale in context.scales:
       value = dot(inv(scale * identity(matrix.ff.shape[0]) - matrix.ff), matrix.fa)
@@ -99,7 +99,7 @@ def step(context):
 
 @then('the initial occupancies exists and is the kernel of I - laplace_af * laplace_fa')
 def step(context):
-  from numpy.linalg import inv, svd
+  from dcprogs.likelihood import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.qmatrices, context.idealgs):
     occupancies = idealg.initial_occupancies
@@ -118,7 +118,7 @@ def step(context):
     
 @then('the final occupancies exists and is the kernel of I - laplace_fa * laplace_af')
 def step(context):
-  from numpy.linalg import inv, svd
+  from dcprogs.likelihood import inv, svd
   from numpy import abs, all, dot, identity
   for matrix, idealg in zip(context.qmatrices, context.idealgs):
     occupancies = idealg.final_occupancies
@@ -137,7 +137,7 @@ def step(context):
 
 @then('the {name} equilibrium occupancies are the only solution to the equilibrium equations')
 def step(context, name):
-  from numpy.linalg import svd
+  from dcprogs.likelihood import svd
   from numpy import dot, identity, abs, all
   for qmatrix, G, occ in zip(context.qmatrices, context.likelihoods, context.occupancies):
     eqmatrix = dot(G.laplace_af(0), G.laplace_fa(0)) if name == "initial"                         \

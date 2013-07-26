@@ -276,8 +276,8 @@ def kernel_projection(likelihood, x0=None, A=None):
          - `from_kernel_coods` does the opposite, taking a reduced-dimension vector and returns the
             whole vector, with the missing components initialized to those of `x0`.
   """
-  from numpy import array, dot, concatenate, zeros, argsort, count_nonzero, arange
-  from numpy.linalg import svd, norm
+  from numpy import array, dot, concatenate, zeros, argsort, count_nonzero, arange, sum, multiply
+  from likelihood.dcprogs import svd
   # get linear constraints
   if A is None: A, b = likelihood.intrinsic_linear_equalities(True)
   if x0 is None: x0 = likelihood.random_starting_point(True)
@@ -294,7 +294,7 @@ def kernel_projection(likelihood, x0=None, A=None):
   kernel = right[indices[:N], :] 
   # we now normalize the kernel
   for r in kernel:
-    r[:] = r[:] / norm(r)
+    r[:] = r[:] / sum(multiply(r, r))
     # check sign: we want as many (all?) diagonal elements negative as possible 
     N = likelihood.nstates
     diagonals = arange(N*N) % N == arange(N*N) // N

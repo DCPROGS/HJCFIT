@@ -67,8 +67,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
    """
    from scipy.optimize import brentq, fminbound
    from numpy import abs, count_nonzero
-   from numpy.linalg import eig
-   from .likelihood import find_root_intervals
+   from .likelihood import find_root_intervals, eig
 
    if intervals is None:
      intervals = [u[0] for u in find_root_intervals(determinant)]
@@ -87,6 +86,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
 
      H = determinant.H(root)
      if len(H) > 1:
+       # Use Eigen's eigenvalue pb so that we can do 128 bit reals. 
        eigenvalues = eig(determinant.H(root))[0]
        multiplicity = count_nonzero(abs(eigenvalues - root) < tolerance)
      else: multiplicity = 1
