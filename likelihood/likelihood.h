@@ -79,26 +79,49 @@ namespace DCProgs {
     }
 
 
-// //! \brief A functor with which to optimize a QMatrix
-// //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
-// //!          bursts. It is, in practice, a convenience object with which to perform likelihood
-// //!          optimization.
-// class Likelihood {
-//   public:
-//     //! Set of bursts for which to compute the likelihood.
-//     std::vector< std:::vector<t_real> > busts;
-//     //! Resolution/Max length of missed events
-//     t_uint nmax;
-//     //! 
-//
-//     //! Constructor
-//     Likelihood   ( std::vector< std::vector<t_real> > const &_bursts, 
-//                    t_real _tau, t_real _tcritical = -1e0 ) 
-//                : bursts(_bursts), tau(_tau), tcritical(_tcritical),
-//                  nmax(_nmax), xtol(_xtol), rtol(_rtol), maxiter(_maxiter) {}
-//
-//
-// };
+  //! \brief A functor with which to optimize a QMatrix
+  //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
+  //!          bursts. It is, in practice, a convenience object with which to perform likelihood
+  //!          optimization.
+  class Log10Likelihood {
+    public:
+      //! Set of bursts for which to compute the likelihood.
+      std::vector< std:::vector<t_real> > busts;
+      //! Number of open states.
+      t_uint nopen;
+      //! Max length of missed events
+      t_real tau;
+      //! \brief tcrit. 
+      //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
+      t_real tcritical;
+      //! Number of intervals for which to compute exact result.
+      t_uint nmax;
+      //! Tolerance for root finding.
+      t_real xtol;
+      //! Tolerance for root finding.
+      t_real rtol;
+      //! Maximum number of iterations for root finding.
+      t_uint itermax;
+
+
+      //! Constructor
+      Likelihood   ( std::vector< std::vector<t_real> > const &_bursts, 
+                     t_uint _nopen, t_real _tau, t_real _tcritical = -1e0, t_uint _nmax = 2,
+                     t_real _xtol = 1e-10, t_real _rtol = 1e-10, t_uint _itermax = 100 ) 
+                 : bursts(_bursts), nopen(_nopne), tau(_tau), tcritical(_tcritical),
+                   nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}
+
+      //! Computes likelihood for each burst in separate value.
+      t_rvector vector(t_rmatrix const &_Q) const { return vector()(QMatrix(_Q, nopen); }
+      //! Computes likelihood for each burst in separate value.
+      t_rvector vector(QMatrix const &_Q) const;
+      //! Log-likelihood 
+      t_real operator(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen); }
+      //! Log-likelihood 
+      t_real operator(QMatrix const &_Q) const;
+  };
+  //! Dumps likelihood to stream.
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self) {
 }
 
 #endif 
