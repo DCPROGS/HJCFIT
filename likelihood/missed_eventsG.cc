@@ -49,7 +49,7 @@ namespace DCProgs {
     DeterminantEq const determinant_af(_matrix, _tau);
     DeterminantEq const determinant_fa = determinant_af.transpose(); 
     std::vector<Root> const roots_af = find_roots(determinant_af, _xtol, _rtol, _itermax);
-    std::vector<Root> const roots_fa = find_roots(determinant_af, _xtol, _rtol, _itermax);
+    std::vector<Root> const roots_fa = find_roots(determinant_fa, _xtol, _rtol, _itermax);
     return MissedEventsG(determinant_af, roots_af, determinant_fa, roots_fa);
   }
 }

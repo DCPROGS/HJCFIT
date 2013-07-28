@@ -51,6 +51,10 @@ namespace DCProgs {
       //!                        This function should take a DeterminantEq as its sole argument and
       //!                        return a std::vector<RootIntervals>
       ApproxSurvivor(QMatrix const &_matrix, t_real _tau, t_RootFinder const &_findroots);
+      //! Move constructor
+      ApproxSurvivor   (ApproxSurvivor &&_c) 
+                     : asymptotes_af_(std::move(_c.asymptotes_af_)),
+                       asymptotes_fa_(std::move(_c.asymptotes_fa_)) {}
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }

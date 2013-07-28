@@ -146,7 +146,7 @@ class Likelihood(object):
   def vector(self, x):
     """ Computes log10-likelihood for each interval. """
     from numpy import array, count_nonzero, bitwise_not
-    from . import create_missed_eventsG, compute_log10_bursts
+    from . import MissedEventsG, compute_log10_bursts
 
     x = array(x)
 
@@ -167,7 +167,7 @@ class Likelihood(object):
         x.reshape(qmatrix.matrix.shape)[bitwise_not(self.fixed_mask)]
 
     # create missed events G function
-    missed_eventsG = create_missed_eventsG(qmatrix, self.tau)
+    missed_eventsG = MissedEventsG(qmatrix, self.tau)
 
     # figure out initial and final states
     if self.tcrit is None: 

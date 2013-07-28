@@ -126,23 +126,11 @@
 // more difficult for swig to understand our code.
 %apply int { DCProgs::t_int }; 
 %apply double { DCProgs::t_real }; 
-%typemap(typecheck) DCProgs::t_real = double;
-%typemap(typecheck) DCProgs::t_int = int;
-%typemap(out) DCProgs::t_rvector { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%typemap(out) DCProgs::t_initvec { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%typemap(out) DCProgs::t_rmatrix { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1, NULL, true); }
-  DCPROGS_CATCH(SWIG_fail);
-};
 
 
-
+// Adds some standard converters for eigen, 
+// + bindings for svd, eig, ... in case we are compiling with t_real > double.
+%include "math.swg"
 // These macros help us translate from C++ exceptions to python exceptions
 //! General namespace for all things DCProgs.
 namespace DCProgs {
@@ -159,6 +147,5 @@ namespace DCProgs {
 }
 %include "time_filter.swg"
 %include "chained.swg"
-%include "math.swg"
 
 #undef DCPROGS_CATCH

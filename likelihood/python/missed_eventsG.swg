@@ -20,7 +20,41 @@
 
 %feature("autodoc", "Computes missed-events likelihood.\n\n"
          "Exact calculations take place for times smaller than `nmax * tau`. "
-         "Asymptotic calculations take over for larger times." ) MissedEventsG;
+         "Asymptotic calculations take over for larger times.\n\n"
+         "There are three possible ways to instantiate this object:\n\n"
+         ">>> MissedEvents(determinant_af, roots_af, determinant_fa, roots_fa[, nmax])\n"
+         ">>> MissedEvents(qmatrix, tau, [nmax, xtol, rtol, itermax])\n"
+         "The parameters bewteen brackets are optional. The last two versions will try "
+         "and calculate the roots of the determinantal equations automatically.\n\n"
+         ":param determinant_af:\n"
+         "   A :class:`DeterminantEq` instance, specifically for the af block.\n"
+         ":param roots_af:\n"
+         "  The roots of the af determinantal equation. The should come in the format "
+            "`[(root, multiplicity), (root, multiplicity), ...]`.\n" 
+         ":param determinant_fa:\n"
+         "   A :class:`DeterminantEq` instance, specifically for the fa block. "
+            "It should the transpose of `determinant_af`. It is required so "
+            "it need not be recomputed, since it most likely already exists.\n"
+         ":param roots_fa:\n"
+         "  The roots of the fa determinantal equation. The should come in the format "
+            "`[(root, multiplicity), (root, multiplicity), ...]`.\n" 
+         ":param qmatrix: \n"
+         "   A :class:`QMatrix` instance. \n"
+         ":param int nmax: \n"
+         "   The exact missed event likelihood will be computed for times "
+            ":math:`t \\in [0, n_{\\mathrm{max}} \\tau`. It defaults to 2.\n"
+         ":param float xtol: \n"
+         "   Tolerance criteria when computing roots using "
+            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 1e-10.\n"
+         ":param float rtol: \n"
+         "   Tolerance criteria when computing roots using "
+            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 1e-10\n"
+         ":param float itermax: \n"
+         "   Maximum number of iterations when computing roots using "
+            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 100.\n"
+        ) MissedEventsG;
+
+
 %feature("autodoc", "Open to close transitions\n\n") MissedEventsG::af;
 %feature("autodoc", "Closed to open transitions") MissedEventsG::fa;
 %feature("autodoc", "Exact missed-events G in Laplace space.\n\\"
@@ -58,6 +92,13 @@ class MissedEventsG {
         throw errors::Domain(sstr.str());
       }
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
+    }
+    MissedEventsG( QMatrix const * const _matrix, DCProgs::t_real _tau, 
+                   DCProgs::t_int _nmax=2, DCProgs::t_real _xtol = 1e-10,
+                   DCProgs::t_real _rtol = 1e-10, DCProgs::t_int _itermax = 100 ) {
+      return new DCProgs::MissedEventsG(
+          DCProgs::create_missed_eventsG( *_matrix, _tau, _nmax, _xtol, _rtol, _itermax)
+      );
     }
   }
 

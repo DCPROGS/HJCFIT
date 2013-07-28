@@ -17,7 +17,7 @@
 
 """ Some pure python methods used to access/complement the c++ bindings. """
 __docformat__ = "restructuredtext en"
-__all__ = ['network', 'create_approx_survivor', 'create_missed_eventsG', 'find_roots', 'plot_roots',
+__all__ = ['network', 'find_roots', 'plot_roots',
            'missed_events_pdf', 'ideal_pdf', 'intervals_to_series', 'series_to_intervals',
            'plot_time_series', 'plot_time_intervals' ]
  
@@ -46,26 +46,6 @@ def network(qmatrix):
         graph[i][j]['k+'] = qmatrix.matrix[i, j]
         graph[i][j]['k-'] = qmatrix.matrix[j, i]
   return graph
-
-def _input_to_cpp_wrappers(qmatrix, tau): 
-  """ Creates the input we need to create MissedEvents and ApproxSurvivor. """
-  from .likelihood import DeterminantEq
-  determinant_af = DeterminantEq(qmatrix, tau) 
-  determinant_fa = DeterminantEq(qmatrix.transpose(), tau) 
-  roots_af = find_roots(determinant_af)
-  roots_fa = find_roots(determinant_fa)
-  return determinant_af, roots_af, determinant_fa, roots_fa
-
-def create_approx_survivor(qmatrix, tau):
-  """ Creates a ApproxSurvivor function from knowledge of rate matrix. """
-  from .likelihood import ApproxSurvivor
-  return ApproxSurvivor(*_input_to_cpp_wrappers(qmatrix, tau))
-
-def create_missed_eventsG(qmatrix, tau, nmax=2):
-  """ Creates a MissedEvents function from knowledge of rate matrix. """
-  from .likelihood import MissedEventsG
-  args = list(_input_to_cpp_wrappers(qmatrix, tau)) + [nmax]
-  return MissedEventsG(*args)
 
 def find_roots(determinant, intervals=None, tolerance=1e-8):
    """ Computes roots for each interval. 
@@ -189,7 +169,8 @@ def _create_pdf(phi, g, shut):
 
 def missed_events_pdf(qmatrix, tau, nmax=2, shut=False, tcrit=None):
   """ A function to compute missed-events pdf """
-  g = create_missed_eventsG(qmatrix, tau, nmax)
+  from .likelihood import MissedEventsG
+  g = MissedEventsG(qmatrix, tau, nmax)
 
   if tcrit is not None:
     phi = g.final_CHS_occupancies(tcrit) if shut else g.initial_CHS_occupancies(tcrit) 
@@ -214,19 +195,19 @@ def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
   from operator import itemgetter
   from functools import partial
   from numpy import dot, sum, exp
-  from dcprogs.likelihood import create_missed_eventsG, create_approx_survivor
+  from .likelihood import MissedEventsG, ApproxSurvivor
     
 
-  g = create_missed_eventsG(qmatrix, tau) 
+  g = MissedEventsG(qmatrix, tau) 
   if tcrit is not None:
     phi = g.final_CHS_occupancies(tcrit) if shut else g.initial_CHS_occupancies(tcrit) 
   else: 
     phi = g.final_occupancies if shut else g.initial_occupancies
 
   if shut: 
-    components = create_approx_survivor(qmatrix, tau).fa_components
+    components = ApproxSurvivor(qmatrix, tau).fa_components
   else:
-    components = create_approx_survivor(qmatrix, tau).af_components
+    components = ApproxSurvivor(qmatrix, tau).af_components
   components = sorted(components, key=itemgetter(1))
 
   def function(coef, root, t): return coef * exp(root * (t-tau))

@@ -23,13 +23,13 @@ register_type()
        'and nmax={nmax:Integer}')
 def step(context, n, tau, nmax):
   from dcprogs.likelihood.random import qmatrix as random_qmatrix
-  from dcprogs.likelihood import create_missed_eventsG
+  from dcprogs.likelihood import MissedEventsG
   qmatrices, Gs, i = [], [], 10*n
   while len(Gs) != n:
     i -= 1
     if i == 0: raise AssertionError('Could not instanciate enough likelihoods.')
     qmatrix = random_qmatrix()
-    try: G = create_missed_eventsG(qmatrix, tau, nmax)
+    try: G = MissedEventsG(qmatrix, tau, nmax)
     except: continue
     else:
       Gs.append(G)
@@ -48,12 +48,12 @@ def step(context, model):
 @when('MissedEventsG objects are instantiated with the q-matrices and tau={tau:Float}'             \
       'and nmax={nmax:Integer}')
 def step(context, tau, nmax):
-  from dcprogs.likelihood import create_missed_eventsG
+  from dcprogs.likelihood import MissedEventsG
   if not hasattr(context, "likelihoods"): context.likelihoods = []
   for i, qmatrix in enumerate(context.qmatrices):
     if qmatrix is None: context.likelihoods.append(None); continue
     try: 
-      context.likelihoods.append(create_missed_eventsG(qmatrix, tau, nmax))
+      context.likelihoods.append(MissedEventsG(qmatrix, tau, nmax))
     except ArithmeticError: 
       context.likelihoods.append(None)
       context.qmatrices[i] = None
@@ -146,14 +146,14 @@ def step(context, name, start):
         print("{name}({t}*tau): \n{value}".format(name=name, t=t/tau, value=value))
         print("approx.af({t}*tau) * factor: \n{value}".format(name=name, t=(t-tau)/tau, value=check))
         print("factor:\n{factor}".format(factor=factor))
-        raise AssertionError()
+        raise 
 
 def compute_Hfa(qmatrix, tau, tcrit):
-  from dcprogs.likelihood import create_approx_survivor
+  from dcprogs.likelihood import ApproxSurvivor
   from dcprogs.likelihood import expm
   from numpy import exp, dot
 
-  approx = create_approx_survivor(qmatrix, tau)
+  approx = ApproxSurvivor(qmatrix, tau)
   result = None
   # This sums ^{F}R_i tau_i e^(-(tcrit - tau) / tau_i )
   for matrix, root in approx.fa_components: 
@@ -175,7 +175,7 @@ def step(context):
       try:  
         Hfa = compute_Hfa(qmatrix, G.tau, t)
         phif_Hfa = dot(phif, Hfa)
-        check = phif_Hfa / sum(phif_Hfa[:G.nopen], axis=1)
+        check = phif_Hfa / sum(phif_Hfa[:G.nopen])
         assert all(abs(occ - check) < context.tolerance)
         assert any(abs(occ - 2e0*check) > context.tolerance)
         assert abs(sum(occ) - 1e0) < context.tolerance
@@ -183,7 +183,7 @@ def step(context):
         print(G)
         print("  * occupancies: {0}".format(occ))
         print("  * check: {0}".format(check))
-        print("  * Hfa shape: {0}".format(Hfa))
+        print("  * Hfa shape: {0}".format(Hfa.shape))
         raise
 
       didloop = True

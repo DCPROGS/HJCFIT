@@ -48,6 +48,8 @@ namespace DCProgs {
   QMatrix nonnan_qmatrix(int nmin = 5, int nmax = 20, t_real large=0.5, t_real zeroprob=0.3);
   //! Computes a fake_Qmatrix that is not singular.
   QMatrix nonsingular_qmatrix(int nmin = 5, int nmax = 20, t_real large=0.5, t_real zeroprob=0.3);
+  //! Vector of random numbers 
+  t_rvector random_vector(int nmin=5, int nmax=20);
 }
 
 #endif

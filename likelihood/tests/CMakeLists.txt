@@ -34,5 +34,8 @@ if(tests)
            "root_finder_lower_bound.cc;random_matrix.h;random_matrix.cc"
            likelihood)
   cxx_test(asymptotes asymptotes.cc likelihood)
+  cxx_test(brentq
+           "brentq.cc;random_matrix.h;random_matrix.cc"
+           likelihood)
 
 endif(tests)

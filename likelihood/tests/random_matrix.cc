@@ -97,4 +97,14 @@ namespace DCProgs {
      t_rmatrix matrix = nonsingular_rate_matrix(nmin, nmax, large, zeroprob);
      return QMatrix(matrix, t_idist(2, matrix.rows()-2)(global_mersenne()));
   }
+  t_rvector random_vector(int nmin, int nmax) {
+    std::mt19937& mersenne = global_mersenne();
+    typedef std::uniform_int_distribution<t_int> t_idist;
+    typedef std::uniform_real_distribution<t_real> t_rdist;
+    t_rdist rdist(0, 1);
+    t_int const N = t_idist(nmin, nmax)(mersenne);
+    t_rvector result = t_rvector::Zero(N);
+    for(t_int i(0); i < N; ++i) result(i) = rdist(mersenne);
+    return result;
+  }
 }

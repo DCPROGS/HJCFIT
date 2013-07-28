@@ -106,4 +106,3 @@ class QMatrix {
                                setattr(self, "nopen", self.matrix.shape[0] - value),
                            doc=""" Number of shut states. """);
 %}
-

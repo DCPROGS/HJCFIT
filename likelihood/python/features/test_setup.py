@@ -137,15 +137,15 @@ def QMat(string):
 
 def eG(string):
   """ Creates missed-events likelihood from specific strings """
-  from dcprogs.likelihood import create_missed_eventsG
+  from dcprogs.likelihood import MissedEventsG
   string = string.lower().rstrip().lstrip()
   if 'transpose' in string:
     return eG(string.replace('transpose', '')).transpose()
 
-  if string == "classic": return create_missed_eventsG(QMat(string), 1e-4)
-  if string == "ch82": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "cb": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "cks": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "classic": return MissedEventsG(QMat(string), 1e-4)
+  if string == "ch82": return MissedEventsG(QMat(string), 0.2)
+  if string == "cb": return MissedEventsG(QMat(string), 0.2)
+  if string == "cks": return MissedEventsG(QMat(string), 0.2)
   else: raise Exception("Unknown eG model {0}".format(string))
 
 

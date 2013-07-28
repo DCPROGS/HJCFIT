@@ -58,7 +58,7 @@ Feature: Check Missed Events G functionality
 
 
 
-  Scenario Outline: Test CHS vector for CH82 model against prior calculation.
+  Scenario Outline: Test CHS vector for different models against prior calculation.
     Given the <model> missed-events likelihood
       And a parameter tolerance=1e-10
      When we compute the <which> CHS occupancies with tcrit=<tcrit>

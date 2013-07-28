@@ -160,3 +160,24 @@ std::vector<DCProgs::RootInterval>
 %clear DCProgs::t_real tolerance;
 
 
+%{
+  // Helper function to convert output of root finding objects to cpp
+  std::vector<DCProgs::Root> convert_to_roots(PyObject *_in) {
+    Object<> iterator = steal_ref(PyObject_GetIter(_in)); 
+    if(not iterator) throw DCProgs::errors::PythonErrorAlreadyThrown();
+
+    std::vector<DCProgs::Root> result;
+    while(Object<> item = steal_ref(PyIter_Next(~iterator))) {
+
+      double root;
+      int multiplicity;
+
+      if(not PyArg_ParseTuple(~item, "di", &root, &multiplicity))
+        throw DCProgs::errors::PythonErrorAlreadyThrown();
+      result.emplace_back(DCProgs::t_real(root), DCProgs::t_int(multiplicity));
+    }
+    if(PyErr_Occurred() != NULL) throw DCProgs::errors::PythonErrorAlreadyThrown();
+    
+    return result;
+  }
+%}

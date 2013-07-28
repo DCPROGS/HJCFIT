@@ -145,3 +145,20 @@ class DeterminantEq {
     }
   }
 };
+
+// adds some conversion function for PyArg_Parse... functions
+%{
+  namespace {
+    Py_ssize_t convert_determinant(PyObject *_object, void* _result) {
+      try {
+        int const tryconv = SWIG_ConvertPtr( _object, &_result, 
+                                             SWIGTYPE_p_DCProgs__DeterminantEq, 0 );
+        if (!SWIG_IsOK(tryconv)) {
+          PyErr_SetString(PyExc_TypeError, "Input is not a DeterminantEq.");
+          return 0;
+        }
+      } DCPROGS_CATCH(return 0;);
+      return 1;
+    }
+  }
+%}

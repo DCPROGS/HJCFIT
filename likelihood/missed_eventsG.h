@@ -164,7 +164,7 @@ namespace DCProgs {
   //! Creates missed events object.
   MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
                                        t_int _nmax=2,
-                                       t_real _xtol = 1e-8, t_real _rtol = 1e-8,
+                                       t_real _xtol = 1e-12, t_real _rtol = 1e-12,
                                        t_int _itermax = 100 );
 }
 
