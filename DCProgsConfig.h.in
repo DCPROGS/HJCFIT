@@ -96,6 +96,8 @@ namespace DCProgs {
   typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.
   typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
+  //! Types of unsigned integers across DCProgs.
+  typedef t_int unsigned t_uint;
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of boolean matrices across DCProgs.

@@ -72,7 +72,7 @@ TEST_F(IdealGTest, initialize){
 // EXPECT_THROW(idealg.set(Q, -1), errors::Domain); 
  
   // Tests row constraints.
-  for(t_int i(0); i < Q.rows(); ++i)
+  for(t_rmatrix::Index i(0); i < Q.rows(); ++i)
     EXPECT_DOUBLE_EQ(std::abs(idealg.get_matrix().row(i).sum()), 0e0);
  
   // Test that row constraints always works.

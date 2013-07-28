@@ -29,7 +29,7 @@
 namespace DCProgs {
 
   namespace {
-    template<class T> std::tuple<std::vector<t_real>, t_int>
+    template<class T> std::tuple<std::vector<t_real>, t_rvector::Index>
       interval_filter_impl(Eigen::DenseBase<T> const & _intervals, t_real _tau) {
       
         typename Eigen::DenseBase<T>::Index i(0);
@@ -41,7 +41,7 @@ namespace DCProgs {
         if(i == nbIntervals - 1) return std::make_tuple(std::vector<t_real>(), nbIntervals); 
   
         // Save i index
-        t_int const initial = i;
+        t_rvector::Index const initial = i;
         // Now construct filtered time series
         std::vector<t_real> result;
         result.reserve(_intervals.size()-i);
@@ -67,7 +67,7 @@ namespace DCProgs {
 
   t_rvector MSWINDOBE time_filter(t_rvector const & _series, t_real _tau) {
     t_rvector::Index const n(_series.size());
-    std::tuple<std::vector<t_real>, t_int> const intervals(
+    std::tuple<std::vector<t_real>, t_rvector::Index> const intervals(
         interval_filter_impl(_series.tail(n-1) - _series.head(n-1), _tau)
     );
     if(std::get<0>(intervals).size() == 0) return t_rvector::Zero(0);
@@ -82,7 +82,7 @@ namespace DCProgs {
   // Filters an incoming list of intervals.
   t_rvector MSWINDOBE interval_filter(t_rvector const & _intervals, t_real _tau) {
     t_rvector::Index const n(_intervals.size());
-    std::tuple<std::vector<t_real>, t_int> const intervals
+    std::tuple<std::vector<t_real>, t_rvector::Index> const intervals
        = interval_filter_impl(_intervals, _tau);
 
     t_rvector result;

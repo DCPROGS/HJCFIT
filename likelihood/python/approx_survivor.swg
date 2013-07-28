@@ -66,8 +66,8 @@ class ApproxSurvivor {
       return new ApproxSurvivor(_af, roots_af, _fa, roots_fa);
     }
     ApproxSurvivor( QMatrix const * const _matrix, DCProgs::t_real _tau, 
-                    DCProgs::t_int _nmax=2, DCProgs::t_real _xtol = 1e-10,
-                    DCProgs::t_real _rtol = 1e-10, DCProgs::t_int _itermax = 100 ) {
+                    DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol = 1e-10,
+                    DCProgs::t_real _rtol = 1e-10, DCProgs::t_uint _itermax = 100 ) {
       using namespace DCProgs;
       DeterminantEq const determinant_af(*_matrix, _tau);
       DeterminantEq const determinant_fa = determinant_af.transpose(); 

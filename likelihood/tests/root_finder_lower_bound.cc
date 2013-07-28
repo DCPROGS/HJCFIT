@@ -71,7 +71,7 @@ class TestFindLowerBound : public ::testing::TestWithParam<t_int> {
 
 TEST_P(TestFindLowerBound, non_singular) {
 
-  typedef std::uniform_int_distribution<t_int> t_idist;
+  typedef std::uniform_int_distribution<t_uint> t_idist;
   
   QMatrix Qmatrix;
   try {

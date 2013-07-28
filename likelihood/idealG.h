@@ -52,22 +52,22 @@ namespace DCProgs {
       //! \param[in] _nopen: Number of open states. 
       //! \throws errors::Domain if input has incorrect values or size.
       template<class T>
-        IdealG(Eigen::DenseBase<T> const &_matrix, t_int _nopen);
+        IdealG(Eigen::DenseBase<T> const &_matrix, t_uint _nopen);
       //! Destructor 
       virtual ~IdealG() {}; 
   
       //! \brief Sets Q matrix and the number of open states.
       //! \details Enforces \f[Q{ii} = -\sum_{j\neqi} Q{ij}]\f.
       //!          It is expected that open states are the top rows [0, _nopen].
-      void set(t_rmatrix const &_Q, t_int const &_nopen);
+      void set(t_rmatrix const &_Q, t_uint const &_nopen);
       //! Sets state matrix on which to act.
       void set(QMatrix const &_in) { set(_in.matrix, _in.nopen); }
       //! Gets Q matrix. 
       t_rmatrix const & get_matrix() const { return this->matrix; }
       //! Gets the number of open states
-      t_int get_nopen() const { return this->nopen; }
+      t_uint get_nopen() const { return this->nopen; }
       //! Gets the number of open states
-      t_int get_nshut() const { return this->nshut(); }
+      t_uint get_nshut() const { return this->nshut(); }
 
       //! Shut to open transitions.
       t_time_result fa(t_real t) const 
@@ -83,7 +83,7 @@ namespace DCProgs {
   };
 
   template<class T>
-    IdealG :: IdealG(Eigen::DenseBase<T> const &_matrix, t_int _nopen) : QMatrix() {
+    IdealG :: IdealG(Eigen::DenseBase<T> const &_matrix, t_uint _nopen) : QMatrix() {
       try { this->set(_matrix, _nopen); }
       catch(...) {
         this->matrix.resize(0, 0);

@@ -125,6 +125,7 @@
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
 %apply int { DCProgs::t_int }; 
+%apply unsigned int { DCProgs::t_uint }; 
 %apply double { DCProgs::t_real }; 
 
 

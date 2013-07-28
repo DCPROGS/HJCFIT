@@ -56,7 +56,7 @@ namespace DCProgs {
                        std::vector<Root> const &_roots_af, 
                        DeterminantEq const &_fa,
                        std::vector<Root> const &_roots_fa,
-                       t_int _nmax=2 )
+                       t_uint _nmax=2 )
                     : ExactSurvivor(_af.get_qmatrix(), _af.get_tau()),
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
                       laplace_a_(new LaplaceSurvivor(_af.get_qmatrix())),
@@ -74,7 +74,7 @@ namespace DCProgs {
       //!                        This function should take a DeterminantEq as its sole argument and
       //!                        return a std::vector<RootIntervals>
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
-                        t_RootFinder const &_findroots, t_int _nmax=2 )
+                        t_RootFinder const &_findroots, t_uint _nmax=2 )
                     : ExactSurvivor(_qmatrix, _tau),
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       laplace_a_(new LaplaceSurvivor(_qmatrix)),
@@ -109,12 +109,12 @@ namespace DCProgs {
       }
 
       //! Sets \f$t\geq n_{\mathrm{max}}\tau\f$
-      void  set_nmax(t_int _n) { 
-        if(_n <= 0) throw errors::Domain("n should be strictly positive.");
+      void  set_nmax(t_uint _n) { 
+        if(_n == 0u) throw errors::Domain("n should be strictly positive.");
         nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); 
       }
       //! When to switch to asymptotic values
-      t_int  get_nmax() const { return nmax_; }
+      t_uint  get_nmax() const { return nmax_; }
       //! Gets the value of missed event resolution;
       t_real get_tau() const { return ExactSurvivor::get_tau(); }
       //! Tmax is the maximum time after which to switch to approximate calculations.
@@ -149,7 +149,7 @@ namespace DCProgs {
       //! Laplace Survivor function \f$^{F}R(s)\f$.
       t_LaplacePtr laplace_f_;
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
-      t_int nmax_;
+      t_uint nmax_;
       //! Max length of missed events.
       t_real tmax_;
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
@@ -163,9 +163,9 @@ namespace DCProgs {
 
   //! Creates missed events object.
   MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
-                                       t_int _nmax=2,
+                                       t_uint _nmax=2,
                                        t_real _xtol = 1e-12, t_real _rtol = 1e-12,
-                                       t_int _itermax = 100 );
+                                       t_uint _itermax = 100 );
 }
 
 #endif 

@@ -61,15 +61,21 @@ namespace DCProgs {
       //! Close to open transitions
       t_rmatrix fa(t_real _t) const { return asymptotes_fa_->operator()(_t); }
       //! Number of exponential components for af
-      t_int nb_af_components() const { return asymptotes_af_->size(); }
+      t_uint nb_af_components() const { return static_cast<t_uint>(asymptotes_af_->size()); }
       //! Number of exponential components for fa
-      t_int nb_fa_components() const { return asymptotes_fa_->size(); }
+      t_uint nb_fa_components() const { return static_cast<t_uint>(asymptotes_fa_->size()); }
       //! AF exponential components
       Asymptotes::t_MatrixAndRoot const & get_af_components(t_int i) const {
+        if(i < 0) i += nb_af_components();
+        if(i < 0 or i >= nb_af_components())
+          throw errors::Index("AF component index out of range.");
         return (*asymptotes_af_)[i]; 
       }
       //! FA exponential components
       Asymptotes::t_MatrixAndRoot const & get_fa_components(t_int i) const {
+        if(i < 0) i += nb_fa_components();
+        if(i < 0 or i >= nb_fa_components())
+          throw errors::Index("FA component index out of range.");
         return (*asymptotes_fa_)[i]; 
       }
     protected:

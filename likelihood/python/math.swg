@@ -18,8 +18,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-%typemap(typecheck) DCProgs::t_real = double;
-%typemap(typecheck) DCProgs::t_int = int;
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);

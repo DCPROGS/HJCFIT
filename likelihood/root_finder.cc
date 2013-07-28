@@ -57,11 +57,11 @@ namespace DCProgs {
      }
      
      //! Count the number of roots at a given point.
-     t_int getMultiplicity(DeterminantEq const &_det, t_real _s, t_real _tolerance) {
+     t_uint getMultiplicity(DeterminantEq const &_det, t_real _s, t_real _tolerance) {
        t_cvector const eigenvalues = getEigenvalues(_det, _s);
        // NOTE: Newer versions of eigen have and "and" operator, so the
        // following could be simplified in the future.
-       t_int result(0);
+       t_uint result(0);
        t_cvector::Scalar const * i_data = &eigenvalues(0);
        t_cvector::Scalar const * const i_data_end = i_data + eigenvalues.size();
        for(; i_data != i_data_end; ++i_data) 
@@ -71,11 +71,11 @@ namespace DCProgs {
      }
      
      // Compute number of roots above input
-     t_int getUpper(DeterminantEq const &_det, t_real _s) {
+     t_uint getUpper(DeterminantEq const &_det, t_real _s) {
        // Compute matrix
        t_rvector const eigs(getEigenvalues(_det, _s).real());
        // compute number of roots in interval
-       return static_cast<t_int>((eigs.array() >= _s).count());
+       return static_cast<t_uint>((eigs.array() >= _s).count());
      }
 
      // Actual bisecting algorithm.
@@ -84,27 +84,27 @@ namespace DCProgs {
      // was found.
      void step_(DeterminantEq const &_det, 
                 t_real _mins, t_real _maxs, t_real const _tolerance,
-                t_int _higher_than_min, t_int _higher_than_max,
+                t_uint _higher_than_min, t_uint _higher_than_max,
                 std::vector<RootInterval> &_intervals) {
        
        t_real const mids = (_maxs + _mins) * 0.5;
        t_cvector const eigenvalues = getEigenvalues(_det, mids);
 
        // compute number of roots
-       t_int const higher_than_mid 
-         = static_cast<t_int>((eigenvalues.array().real() >  mids).count());
+       t_uint const higher_than_mid 
+         = static_cast<t_uint>((eigenvalues.array().real() >  mids).count());
 
        // This functor checks whether to bisect some more or whether an 
-       auto check_and_set = [&](t_real _min, t_real _max, t_int _imin, t_int _imax) {
+       auto check_and_set = [&](t_real _min, t_real _max, t_uint _imin, t_uint _imax) {
 
-         t_int const nroots = _imin - _imax;
+         t_uint const nroots = _imin - _imax;
          if(nroots == 1) {
            if(_det(_min) * _det(_max) <= 0e0) _intervals.emplace_back(_min, _max, 1);
          } else if(nroots != 0) {
            if(_max - _min < _tolerance) {
              t_real const s = (_min + _max) * 0.5;
              // count number of eigenvalues that are equal to s *and* real.
-             t_int const multiplicity = getMultiplicity(_det, s, _tolerance);
+             t_uint const multiplicity = getMultiplicity(_det, s, _tolerance);
              // Multiplicity == 0 corresponds to complex poles? 
              if(multiplicity != 0) _intervals.emplace_back(_min, _max, multiplicity);
            } else step_(_det, _min, _max, _tolerance, _imin, _imax, _intervals);
@@ -120,14 +120,14 @@ namespace DCProgs {
     // The upper bound should always be such that the root is positive. 
     template<class T_SELECT_EIG, class T_COMPARE, class T_CHANGE> 
       t_real MSWINDOBE find_eigs_bound( DeterminantEq const &_det, 
-                                        t_real _start, t_int _itermax,
+                                        t_real _start, t_uint _itermax,
                                         T_SELECT_EIG const &_select_eig,
                                         T_COMPARE const & _compare_func, 
                                         T_CHANGE const &_change_func ) {
     
         // First look for bound such that all eigenvalues are smaller 
         t_real root = _start; 
-        for(t_int i(0); i < _itermax; ++i) {
+        for(t_uint i(0); i < _itermax; ++i) {
         
            t_rmatrix const H(_det.H(root));
         
@@ -163,10 +163,10 @@ namespace DCProgs {
    // The upper bound should always be such that the root is positive. 
    template<class T_CHANGE>
      t_real change_bound_till_sign( DeterminantEq const &_det, t_real _start, 
-                                    t_int const _sign, t_int const _itermax, 
+                                    t_int const _sign, t_uint const _itermax, 
                                     T_CHANGE const &_change) {
        t_real root = _start;
-       for(t_int i(0); i < _itermax; ++i) {
+       for(t_uint i(0); i < _itermax; ++i) {
        
          t_real const determinant = _det(root);
          if(DCPROGS_ISNAN(determinant)) {
@@ -198,7 +198,7 @@ namespace DCProgs {
   }
 
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
-                                              t_real _alpha, t_int _itermax) {
+                                              t_real _alpha, t_uint _itermax) {
 
     return find_eigs_bound(
         _det, _start, _itermax,
@@ -213,7 +213,7 @@ namespace DCProgs {
   // Computes trial upper bound for result
   // The upper bound should always be such that the root is positive. 
   t_real MSWINDOBE find_upper_bound_for_roots(DeterminantEq const &_det, t_real _start,
-                                              t_real _alpha, t_int _itermax) {
+                                              t_real _alpha, t_uint _itermax) {
   
     // First look for bound such that all eigenvalues are smaller 
     t_real root = find_eigs_bound(
@@ -226,7 +226,7 @@ namespace DCProgs {
     );
     return change_bound_till_sign(
         _det, root, 1, _itermax,
-        [&_alpha](t_int root) { return root *= 1.1; }
+        [&_alpha](t_real root) { return root * 1.1; }
     );
   }
 
@@ -255,7 +255,7 @@ namespace DCProgs {
           // Tries and figures out the multiplicity.
           // It should be at least one and odd. Hence, falls back to one if result is even.
           t_cvector const eigenvalues = getEigenvalues(_det, s - half_step); 
-          t_int const multiplicity = getMultiplicity(_det, s - half_step, _resolution);
+          t_uint const multiplicity = getMultiplicity(_det, s - half_step, _resolution);
           intervals.emplace_back(s - _resolution, s, multiplicity % 2 == 1 ? multiplicity: 1);
  
         } else if( std::abs(current) < _root_tolerance) {
@@ -278,11 +278,11 @@ namespace DCProgs {
           
           // If we crossed we want to add it as a potential root.
           if(crossed) {
-            t_int const multiplicity = getMultiplicity(_det, s_next - half_step, _resolution);
+            t_uint const multiplicity = getMultiplicity(_det, s_next - half_step, _resolution);
             intervals.emplace_back( s_next - half_step, s_next + half_step, 
                                     multiplicity % 2 == 0 ? multiplicity: 1);
           } else if(skimmed_out) {
-            t_int const multiplicity = getMultiplicity(_det, minimum_s, 2*_resolution);
+            t_uint const multiplicity = getMultiplicity(_det, minimum_s, 2*_resolution);
             intervals.emplace_back( minimum_s - _resolution, minimum_s + _resolution, 
                                     multiplicity % 2 == 1 ? multiplicity: 1 );
           }
@@ -302,7 +302,7 @@ namespace DCProgs {
 
   // Finds root using brentq and find_root_intervals.
   std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
-                                          t_real _xtol, t_real _rtol, t_int _itermax) {
+                                          t_real _xtol, t_real _rtol, t_uint _itermax) {
     std::vector<RootInterval> intervals = find_root_intervals(_det, 1e8, 1e1, _xtol);
     std::vector<Root> result; result.reserve(intervals.size());
     for(RootInterval const &interval: intervals) 

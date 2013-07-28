@@ -75,7 +75,7 @@ class MissedEventsG {
   %extend {
     MissedEventsG(DCProgs::DeterminantEq *_af, PyObject * _roots_af, 
                   DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
-                  DCProgs::t_int _nmax=2 ) {
+                  DCProgs::t_uint _nmax=2 ) {
       using namespace DCProgs;
       if(_nmax < 0) throw errors::Domain("nmax cannot be negative.");
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
@@ -94,8 +94,8 @@ class MissedEventsG {
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
     }
     MissedEventsG( QMatrix const * const _matrix, DCProgs::t_real _tau, 
-                   DCProgs::t_int _nmax=2, DCProgs::t_real _xtol = 1e-10,
-                   DCProgs::t_real _rtol = 1e-10, DCProgs::t_int _itermax = 100 ) {
+                   DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol = 1e-10,
+                   DCProgs::t_real _rtol = 1e-10, DCProgs::t_uint _itermax = 100 ) {
       return new DCProgs::MissedEventsG(
           DCProgs::create_missed_eventsG( *_matrix, _tau, _nmax, _xtol, _rtol, _itermax)
       );
@@ -178,24 +178,24 @@ class MissedEventsG {
   // Some more properties
   %extend { 
     DCProgs::t_real const tmax; 
-    DCProgs::t_int nmax; 
-    DCProgs::t_int const nopen;
-    DCProgs::t_int const nshut;
+    DCProgs::t_uint nmax; 
+    DCProgs::t_uint const nopen;
+    DCProgs::t_uint const nshut;
   }
   %{
     DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
       return _in->get_tmax();
     }
-    DCProgs::t_int DCProgs_MissedEventsG_nmax_get(DCProgs::MissedEventsG *_in) {
+    DCProgs::t_uint DCProgs_MissedEventsG_nmax_get(DCProgs::MissedEventsG *_in) {
       return _in->get_nmax();
     }
-    void DCProgs_MissedEventsG_nmax_set(DCProgs::MissedEventsG *_in, DCProgs::t_int _n) {
+    void DCProgs_MissedEventsG_nmax_set(DCProgs::MissedEventsG *_in, DCProgs::t_uint _n) {
       _in->set_nmax(_n);
     }
-    DCProgs::t_int DCProgs_MissedEventsG_nopen_get(DCProgs::MissedEventsG *_in) {
+    DCProgs::t_uint DCProgs_MissedEventsG_nopen_get(DCProgs::MissedEventsG *_in) {
       return _in->get_qmatrix().nopen;
     }
-    DCProgs::t_int DCProgs_MissedEventsG_nshut_get(DCProgs::MissedEventsG *_in) {
+    DCProgs::t_uint DCProgs_MissedEventsG_nshut_get(DCProgs::MissedEventsG *_in) {
       return _in->get_qmatrix().nshut();
     }
   %}

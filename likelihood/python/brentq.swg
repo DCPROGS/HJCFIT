@@ -62,14 +62,14 @@
     PyObject* function;
     double a, b;
     double xtol = 1e-8, rtol = 1e-8;
-    int intermax = 100;
+    unsigned int intermax = 100;
     static char *kwlist[] = { const_cast<char*>("function"),
                               const_cast<char*>("a"),
                               const_cast<char*>("b"),
                               const_cast<char*>("xtol"),
                               const_cast<char*>("rtol"),
                               const_cast<char*>("itermax"), NULL};
-    if(not PyArg_ParseTupleAndKeywords( _args, _kwargs, "O|ddddi:brentq", kwlist,
+    if(not PyArg_ParseTupleAndKeywords( _args, _kwargs, "O|ddddI:brentq", kwlist,
                                         &function, &a, &b, &xtol, &rtol, &itermax) )
       return NULL;
     if(xtol <= 0) throw errors::PythonValueError("xtol should be strictly positive");
@@ -82,7 +82,7 @@
     // call brentq
     auto c_result = brentq( callback, static_cast<t_real>(a), static_cast<t_real>(b),
                             static_cast<t_real>(xtol), static_cast<t_real>(rtol),
-                            static_cast<t_int>(a) );
+                            static_cast<t_uint>(a) );
 
     // convert result back to python
     Object<> py_x = steal_ref( PyFloat_FromDouble(static_cast<double>(std::get<0>(c_result))) );

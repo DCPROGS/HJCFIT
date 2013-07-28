@@ -38,10 +38,10 @@ namespace DCProgs {
     t_real end;
     //! Number of roots in interval.
     //! This is likely just a guess.
-    t_int multiplicity;
+    t_uint multiplicity;
 
     //! Constructor.
-    RootInterval   (t_real _start, t_real _end, t_int _mult) noexcept
+    RootInterval   (t_real _start, t_real _end, t_uint _mult) noexcept
                  : start(_start), end(_end), multiplicity(_mult) {}
     //! Default Constructor.
     RootInterval() noexcept : start(0), end(0), multiplicity(0) {};
@@ -52,10 +52,10 @@ namespace DCProgs {
     //! Start of the interval (lower value).
     t_real root;
     //! Number of roots in interval.
-    t_int multiplicity;
+    t_uint multiplicity;
 
     //! Constructor.
-    Root(t_real _root, t_int _mult) noexcept : root(_root), multiplicity(_mult) {}
+    Root(t_real _root, t_uint _mult) noexcept : root(_root), multiplicity(_mult) {}
     //! Default Constructor.
     Root() noexcept : root(0), multiplicity(0) {};
   };
@@ -83,7 +83,7 @@ namespace DCProgs {
   //!                    \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
   //! \param[in] _itermax: Maximum number of iterations.
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
-                                              t_real _alpha=5e0, t_int _itermax=100);
+                                              t_real _alpha=5e0, t_uint _itermax=100);
 
   //! \brief Figures out an upper bound for root finding.
   //! \param[in] _det: The determinantal equation
@@ -92,7 +92,7 @@ namespace DCProgs {
   //!                    \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
   //! \param[in] _itermax: Maximum number of iterations.
   t_real MSWINDOBE find_upper_bound_for_roots(DeterminantEq const &_det, t_real _start=0e0,
-                                              t_real _alpha=5e0, t_int _itermax=100);
+                                              t_real _alpha=5e0, t_uint _itermax=100);
   //! \brief Finds roots via brute force search
   //! \details Computes all values between mins and maxs, for a given resolution.
   //!          If determinant changes sign between two values, or if it comes to within tolerance of
@@ -116,7 +116,7 @@ namespace DCProgs {
   std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
                                           t_real _xtol = 1e-8,
                                           t_real _rtol = 1e-8,
-                                          t_int _itermax = 100 );
+                                          t_uint _itermax = 100 );
 }
 
 #endif

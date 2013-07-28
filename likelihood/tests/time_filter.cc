@@ -28,7 +28,7 @@
 #include "../time_filter.h"
 using namespace DCProgs;
 
-t_int  const Nmax[2] = {6, 100};
+t_uint  const Nmax[2] = {6, 100};
 t_real const tau = 1;
 t_real const alpha = 10;
 
@@ -54,7 +54,7 @@ class TestTimeFilter : public ::testing::TestWithParam<t_int> {
 //! \param[in] _alpha: _alpha*_tau is the max interval between events
 //! \param[in] _rng: random number generator engine.
 template<class T>
-  t_rvector fake_time_series(t_int _N, t_int _n, t_real _tau, t_real _alpha, T && _rng) {
+  t_rvector fake_time_series(t_uint _N, t_uint _n, t_real _tau, t_real _alpha, T && _rng) {
   
     typedef std::uniform_real_distribution<t_real> t_rdist;
     t_rdist __supercrit(_tau*1.01, _tau*_alpha);
@@ -68,24 +68,24 @@ template<class T>
 
     t_rvector result(_N+1);
     result(0) = 0e0;
-    for(t_int i(0); i < _N; ++i) result[i+1] = result[i] + intervals[i];
+    for(t_uint i(0); i < _N; ++i) result[i+1] = result[i] + intervals[i];
     return result;
   }
 
-t_int nbfiltered(t_rvector const &_vector, t_real _tau) {
+t_uint nbfiltered(t_rvector const &_vector, t_real _tau) {
  
   t_rvector intervals = _vector.tail(_vector.size()-1) - _vector.head(_vector.size()-1);
   // Check special case where time series disappears.
   if(intervals(0) < _tau) { 
-    t_int i(2);
+    t_uint i(2);
     for(; i < intervals.size() and intervals(i) < _tau; i += 2);
     if(i >= intervals.size()) return 0;
   }
-  t_int i = 0;
-  t_int result = (intervals.array() >= _tau).count();
-  for(t_int i(0); i < intervals.size(); ++i) 
+  t_uint i = 0;
+  t_uint result = (intervals.array() >= _tau).count();
+  for(t_uint i(0); i < intervals.size(); ++i) 
     if(intervals(i) < _tau) {
-      t_int sub = 0;
+      t_uint sub = 0;
       for(; i < intervals.size() and intervals(i) < _tau; ++i, ++sub);
       if(i != intervals.size() and sub % 2 == 1) --result;
     }  
@@ -94,9 +94,9 @@ t_int nbfiltered(t_rvector const &_vector, t_real _tau) {
 
 
 TEST_P(TestTimeFilter, nbfiltered) {
-  typedef std::uniform_int_distribution<t_int> t_idist;
-  t_int const n = t_idist(Nmax[0], Nmax[1])(this->mersenne);
-  t_int const N = t_idist(Nmax[0], Nmax[1])(this->mersenne) + n;
+  typedef std::uniform_int_distribution<t_uint> t_idist;
+  t_uint const n = t_idist(Nmax[0], Nmax[1])(this->mersenne);
+  t_uint const N = t_idist(Nmax[0], Nmax[1])(this->mersenne) + n;
   t_rvector const series = fake_time_series(N, n, tau, alpha, this->mersenne); 
   t_rvector const intervals = series.tail(N) - series.head(N);
   EXPECT_EQ(series.size(), N+1);
@@ -107,7 +107,7 @@ TEST_P(TestTimeFilter, nbfiltered) {
     << " sub-resolution intervals, rather than "
     << n << "."; 
   t_rvector const filtered = time_filter(series, tau);
-  t_int const nf = filtered.size();
+  t_uint const nf = filtered.size();
   if(nf > 1) {
     EXPECT_TRUE(((filtered.tail(nf-1) - filtered.head(nf-1)).array() > tau).all());
   }

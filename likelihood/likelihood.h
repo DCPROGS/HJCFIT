@@ -77,6 +77,28 @@ namespace DCProgs {
       }
       return std::log10(current * _final) + exponent;
     }
+
+
+// //! \brief A functor with which to optimize a QMatrix
+// //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
+// //!          bursts. It is, in practice, a convenience object with which to perform likelihood
+// //!          optimization.
+// class Likelihood {
+//   public:
+//     //! Set of bursts for which to compute the likelihood.
+//     std::vector< std:::vector<t_real> > busts;
+//     //! Resolution/Max length of missed events
+//     t_uint nmax;
+//     //! 
+//
+//     //! Constructor
+//     Likelihood   ( std::vector< std::vector<t_real> > const &_bursts, 
+//                    t_real _tau, t_real _tcritical = -1e0 ) 
+//                : bursts(_bursts), tau(_tau), tcritical(_tcritical),
+//                  nmax(_nmax), xtol(_xtol), rtol(_rtol), maxiter(_maxiter) {}
+//
+//
+// };
 }
 
 #endif 

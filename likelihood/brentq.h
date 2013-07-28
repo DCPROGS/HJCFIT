@@ -37,8 +37,8 @@ namespace DCProgs {
   //!    \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\matrm{current}} = \frac{|x_a - x_b|}{2}\f$.
   //! \param[in] _itermax: maximum number of iterations.
   //! \results: A tuple (x, iterations, function calls)
-  std::tuple<t_real, t_int, t_int>
+  std::tuple<t_real, t_uint, t_uint>
     brentq( std::function<t_real(t_real)> const &_function, t_real _xstart, t_real _xend,
-            t_real _xtol=1e-8, t_real _rtol=1e-8, t_int _itermax=100 );
+            t_real _xtol=1e-8, t_real _rtol=1e-8, t_uint _itermax=100 );
 }
 #endif

@@ -123,7 +123,7 @@ class TestFindIntervals : public ::testing::TestWithParam<t_int> {
 
 TEST_P(TestFindIntervals, random_matrix) {
 
-  typedef std::uniform_int_distribution<t_int> t_idist;
+  typedef std::uniform_int_distribution<t_uint> t_idist;
   
   QMatrix qmatrix;
   try {
@@ -143,7 +143,7 @@ TEST_P(TestFindIntervals, random_matrix) {
               [](RootInterval const &_a, RootInterval const &_b)
               { return _a.start < _b.end; });
 
-    t_int nroots = 0;
+    t_uint nroots = 0;
     // A few tests:
     //   - multiplicity should never be zero. What would be the point of an interval without
     //     roots ?

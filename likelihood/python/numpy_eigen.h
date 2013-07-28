@@ -196,11 +196,12 @@ namespace DCProgs {
             int const ndim = PyArray_NDIM(_in);
             npy_intp const * const strides = PyArray_STRIDES(_in);
             npy_intp const * const dims = PyArray_DIMS(_in);
-            t_int realdims[2] = { static_cast<t_int>(dims[0]),
-                                  ndim == 2 ? static_cast<t_int>(dims[1]): 1 };
-            t_int realstrides[2] = {
-              static_cast<t_int>(strides[0]),
-              static_cast<t_int>(ndim == 2 ? strides[1]: strides[0] * dims[0]) 
+            t_rvector::Index realdims[2] = { static_cast<t_rvector::Index>(dims[0]),
+                                             ndim == 2 ? 
+                                                static_cast<t_rvector::Index>(dims[1]): 1 };
+            t_rvector::Index realstrides[2] = {
+              static_cast<t_rvector::Index>(strides[0]),
+              static_cast<t_rvector::Index>(ndim == 2 ? strides[1]: strides[0] * dims[0]) 
             };
             
             t_Map result( (T*)PyArray_DATA(_in), realdims[0], realdims[1], 

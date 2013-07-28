@@ -59,10 +59,10 @@ class ExactSurvivor {
     }
   }
 
-  DCProgs::t_rmatrix recursion_af(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;
-  DCProgs::t_rmatrix recursion_fa(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;
-  DCProgs::t_rmatrix D_af(DCProgs::t_int _i) const;
-  DCProgs::t_rmatrix D_fa(DCProgs::t_int _i) const;
+  DCProgs::t_rmatrix recursion_af(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
+  DCProgs::t_rmatrix recursion_fa(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
+  DCProgs::t_rmatrix D_af(DCProgs::t_uint _i) const;
+  DCProgs::t_rmatrix D_fa(DCProgs::t_uint _i) const;
 
   // Renames some values so we can make it a property.
   %rename(_get_tau) get_tau() const; 

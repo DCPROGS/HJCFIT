@@ -66,7 +66,7 @@ namespace DCProgs {
       //! ranging implications.
       QMatrix const &get_qmatrix() const { return qmatrix_; }
       //! Get expected number of open-states.
-      t_int get_nopen() const { return qmatrix_.nopen; }
+      t_uint get_nopen() const { return qmatrix_.nopen; }
 
 
       //! Returns \f$^{F}R(s)\f$.

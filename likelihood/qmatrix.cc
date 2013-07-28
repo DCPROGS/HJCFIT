@@ -25,7 +25,7 @@ namespace DCProgs {
   QMatrix QMatrix::transpose() const {
   
     QMatrix result;
-    t_int const nclosed(nshut());
+    t_uint const nclosed(nshut());
     result.nopen = nclosed;
     result.matrix.resize(matrix.rows(), matrix.cols());
     result.matrix.topLeftCorner(nclosed, nclosed) = matrix.bottomRightCorner(nclosed, nclosed);

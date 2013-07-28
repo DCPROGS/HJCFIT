@@ -45,17 +45,17 @@
 
 namespace DCProgs {
 
-  std::tuple<t_real, t_int, t_int>
+  std::tuple<t_real, t_uint, t_uint>
     brentq( std::function<t_real(t_real)> const &_function, 
             t_real _xstart, t_real _xend,
-            t_real _xtol, t_real _rtol, t_int _itermax ) {
+            t_real _xtol, t_real _rtol, t_uint _itermax ) {
 
     t_real xpre = _xstart, xcur = _xend;
     t_real xblk = 0.0, fpre, fcur, fblk = 0.0, spre = 0.0, scur = 0.0, sbis, tol;
     t_real stry, dpre, dblk;
-    t_int i;
+    t_uint i;
 
-    t_int function_calls = 0, iterations = 0;
+    t_uint function_calls = 0, iterations = 0;
 
     fpre = _function(xpre);
     fcur = _function(xcur);

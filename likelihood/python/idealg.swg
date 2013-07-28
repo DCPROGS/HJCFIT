@@ -47,7 +47,7 @@ class IdealG {
     IdealG(DCProgs::QMatrix const &states) {
       return new DCProgs::IdealG(states.matrix, states.nopen); 
     }
-    IdealG(PyObject* _py_matrix, int _nopen) {
+    IdealG(PyObject* _py_matrix, DCProgs::t_uint _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
@@ -62,8 +62,8 @@ class IdealG {
   %extend {
     DCProgs::t_initvec const initial_occupancies;
     DCProgs::t_initvec const final_occupancies;
-    DCProgs::t_int const nopen;
-    DCProgs::t_int const nshut;
+    DCProgs::t_uint const nopen;
+    DCProgs::t_uint const nshut;
   }
   %{
     DCProgs::t_initvec DCProgs_IdealG_initial_occupancies_get(DCProgs::IdealG *_in) {
@@ -72,8 +72,8 @@ class IdealG {
     DCProgs::t_initvec DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
       return DCProgs::occupancies(*_in, false);
     }
-    DCProgs::t_int DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
-    DCProgs::t_int DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
+    DCProgs::t_uint DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
+    DCProgs::t_uint DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
   %}
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;

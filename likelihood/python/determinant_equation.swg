@@ -58,7 +58,7 @@ class DeterminantEq {
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    DeterminantEq(PyObject *_in, int _nopen, double _tau) {
+    DeterminantEq(PyObject *_in, DCProgs::t_uint _nopen, DCProgs::t_real _tau) {
       if(_nopen <= 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
@@ -70,7 +70,7 @@ class DeterminantEq {
         throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
       return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
     }
-    DeterminantEq(QMatrix *_in, double _tau) {
+    DeterminantEq(QMatrix *_in, DCProgs::t_real _tau) {
       if(_in->nopen <= 0) 
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 
@@ -145,20 +145,3 @@ class DeterminantEq {
     }
   }
 };
-
-// adds some conversion function for PyArg_Parse... functions
-%{
-  namespace {
-    Py_ssize_t convert_determinant(PyObject *_object, void* _result) {
-      try {
-        int const tryconv = SWIG_ConvertPtr( _object, &_result, 
-                                             SWIGTYPE_p_DCProgs__DeterminantEq, 0 );
-        if (!SWIG_IsOK(tryconv)) {
-          PyErr_SetString(PyExc_TypeError, "Input is not a DeterminantEq.");
-          return 0;
-        }
-      } DCPROGS_CATCH(return 0;);
-      return 1;
-    }
-  }
-%}

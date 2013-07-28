@@ -53,7 +53,7 @@ namespace DCProgs {
  
     t_cvector const alpha = ff_eigenvalues_.array() - _s;
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) 
+    for(t_cvector::Index i(0); i < ff_eigenvalues_.size(); ++i) 
       diagonal(i, i) = std::abs(alpha(i)) > ZERO ? 
                          (std::exp(alpha(i) * _tau) - t_real(1e0)) / alpha(i):
                          _tau; 
@@ -67,7 +67,7 @@ namespace DCProgs {
 
     t_cvector const alpha = ff_eigenvalues_.array() - _s;
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) {
+    for(t_cvector::Index i(0); i < ff_eigenvalues_.size(); ++i) {
       if(std::abs(alpha(i)) > ZERO) {
         t_complex const invalpha = t_real(1e0) / alpha(i);
         diagonal(i, i) = invalpha * ((invalpha - _tau) * std::exp(alpha(i)*_tau) - invalpha);
