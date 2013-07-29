@@ -58,12 +58,6 @@ def reduce_likelihood(likelihood, graph_matrix):
          Furthermore, it should not explicitely depend on the diagonal components. Those components
          have not yet been constrained to have rows sum to zero.
 
-     .. note::
-     
-       These arguments are deep-copied. So modifying it after the call will have no impact on the
-       return functor.
-
-  
      :returns:
      
         A callable from which the fixed components have been abstracted.
@@ -77,10 +71,7 @@ def reduce_likelihood(likelihood, graph_matrix):
   import numpy
   from numpy import array, zeros
   from .likelihood import QMatrix
-  from copy import deepcopy
   
-  likelihood = deepcopy(likelihood)
-
   nstates = len(graph_matrix)
   """ Number of states in mechanism. """
   if any(len(u) != nstates for u in graph_matrix):
