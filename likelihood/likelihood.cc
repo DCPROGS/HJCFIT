@@ -23,61 +23,67 @@
 #include <sstream>
 
 #include "likelihood.h"
+#include "occupancies.h"
+#include "missed_eventsG.h"
 
 namespace DCProgs {
+
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, t_Bursts const & _self) {
+    _stream << "Bursts:\n"
+            << "-------\n"
+            << "  [ ";
+    for(t_int i(0); i < _self.size() - 1; ++i) _stream << _self[i] << ",\n    ";
+    _stream << _self.back() << " ]\n";
+    return _stream;
+  }
+
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, t_Burst const & _self) {
+    Eigen::Map<const t_initvec> vector(&(_self[0]), _self.size());
+    return _stream << vector.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ",", ",\n",
+                                                    "", "", "[", "]" )); 
+  }
 
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self) {
     
     _stream << "Log10 Likelihood:\n"
-            << "=====================\n\n" 
-            << "  * Number of open states:\n" << _self.nopen << "\n";
+            << "=================n\n" 
+            << "  * Number of open states: " << _self.nopen << "\n"
             << "  * Resolution time tau: " << _self.tau << "\n";
-    if(_self.tcrit > 0e0) 
-      _stream << "  * Using equilibrium occupancies.\n"
-    else _stream << "  * Using CHS occupancies with tcri: "  << _self.tcrit << "\n";
-    _stream << "  * Number of intervals for which to compute exact likelihood: "
-            << _self.nmax << "\n"
-            << "Root Finding:\n"
+    if(_self.tcritical <= 0e0) _stream << "  * Using equilibrium occupancies.\n";
+    else _stream << "  * Using CHS occupancies with tcrit: "  << _self.tcritical << "\n";
+    _stream << "  * Exact events computed for: t < "
+            << _self.nmax << " tau\n\n"
+            << _self.bursts
+            << "\nRoot Finding:\n"
             << "-------------\n"
             << "  * Tolerance criteria: " << _self.xtol << ", " << _self.rtol << "\n"
             << "  * Maximum number of iterations: " << _self.itermax << "\n";
-    _stream << "Bursts:\n"
-            << "-------\n  [ ";
-
-    auto lambda = [&_stream]( std::vector<t_real> const & _burst) {
-      t_rvector burst(_burst.size());
-      for(t_rvector::Index i(0); i < burst.size(); ++i) burst[i] = _burst[i];
-      return numpy_io(t_rvector);
-    };
-    for(t_int i(0); i < _self.bursts.size() - 1; ++i)
-      _stream << lambda(_self.bursts[i]) << ",\n    ";
-    _stream << lambda(_self.bursts.back()) << " ]"
     return _stream;
   }
 
-  t_real Log10Likelihood::operator()(QMatrix const &_matrix) {
-    MissedEventsG const eG = create_missed_events(_matrix, tau, nmax, xtol, rtol, itermax);
-    t_rvector const final = self.tcritical > 0 ?
-                              occupancies(eG, false).transpose():
-                              CHS_occupancies(eG, tcritical, false).transpose();
-    t_initvec const initial = self.tcritical > 0 ? occupancies(eG): CHS_occupancies(eG, tcritical);
+  t_real Log10Likelihood::operator()(QMatrix const &_matrix) const {
+    MissedEventsG const eG = create_missed_eventsG(_matrix, tau, nmax, xtol, rtol, itermax);
+    t_rvector const final = tcritical > 0 ?
+                              CHS_occupancies(eG, tcritical, false).transpose():
+                              occupancies(eG, false).transpose();
+    t_initvec const initial = tcritical > 0 ? CHS_occupancies(eG, tcritical): occupancies(eG);
                                 
     t_real result(0);
-    for(std::vector<t_real> const &burst: bursts) 
+    for(t_Burst const &burst: bursts) 
       result += chained_log10_likelihood(eG, burst.begin(), burst.end(), initial, final);
     return result;
   }
-  t_rvector Log10Likelihood::vector(QMatrix const &_matrix) {
-    MissedEventsG const eG = create_missed_events(_matrix, tau, nmax, xtol, rtol, itermax);
-    t_rvector const final = self.tcritical > 0 ?
-                              occupancies(eG, false).transpose():
-                              CHS_occupancies(eG, tcritical, false).transpose();
-    t_initvec const initial = self.tcritical > 0 ? occupancies(eG): CHS_occupancies(eG, tcritical);
+  t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
+    MissedEventsG const eG = create_missed_eventsG(_matrix, tau, nmax, xtol, rtol, itermax);
+    t_rvector const final = tcritical > 0 ?
+                              CHS_occupancies(eG, tcritical, false).transpose():
+                              occupancies(eG, false).transpose();
+    t_initvec const initial = tcritical > 0 ? CHS_occupancies(eG, tcritical): occupancies(eG);
                                 
     t_rvector result(bursts.size());
     t_int i(0);
-    for(std::vector<t_real> const &burst: bursts) {
-      result(i) = chained_log10_likelihood(eG, burst.begin(), burst.end(), initial, final);
+    for(t_Burst const &burst: bursts) {
+      result(i++) = chained_log10_likelihood(eG, burst.begin(), burst.end(), initial, final);
     }
     return result;
   }

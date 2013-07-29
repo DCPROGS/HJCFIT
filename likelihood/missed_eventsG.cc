@@ -27,7 +27,7 @@ namespace DCProgs {
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const & _self) {
     
     return _stream << "Missed-Event Likelihood:\n"
-                   << "=======================\n\n" 
+                   << "========================\n\n" 
                    << "  * Transition Rate matrix:\n" << numpy_io(_self.get_qmatrix().matrix) << "\n"
                    << "  * Number of 'A' states: " << _self.get_qmatrix().nopen << "\n"
                    << "  * Resolution time tau: " << _self.get_tau() << "\n"

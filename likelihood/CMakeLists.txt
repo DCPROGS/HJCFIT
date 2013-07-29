@@ -20,7 +20,7 @@ add_library(likelihood SHARED qmatrix.h qmatrix.cc errors.h idealG.h idealG.cc
             exact_survivor.h exact_survivor.cc root_finder.h root_finder.cc determinant_equation.h
             determinant_equation.cc asymptotes.h asymptotes.cc approx_survivor.h approx_survivor.cc
             missed_eventsG.h missed_eventsG.cc laplace_survivor.h laplace_survivor.cc likelihood.h
-            brentq.cc brentq.h)
+            brentq.cc brentq.h likelihood.cc)
 
 # Windows + Visual studio specifics.
 if(MSVC)

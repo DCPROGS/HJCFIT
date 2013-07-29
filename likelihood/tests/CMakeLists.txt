@@ -37,5 +37,6 @@ if(tests)
   cxx_test(brentq
            "brentq.cc;random_matrix.h;random_matrix.cc"
            likelihood)
+  cxx_test(likelihood likelihood.cc likelihood)
 
 endif(tests)

@@ -23,7 +23,11 @@
 
 #include <DCProgsConfig.h>
 
+#include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
+
+#include "qmatrix.h"
+#include "errors.h"
 
 namespace DCProgs {
 
@@ -83,10 +87,10 @@ namespace DCProgs {
   //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
   //!          bursts. It is, in practice, a convenience object with which to perform likelihood
   //!          optimization.
-  class Log10Likelihood {
+  class MSWINDOBE Log10Likelihood {
     public:
       //! Set of bursts for which to compute the likelihood.
-      std::vector< std:::vector<t_real> > busts;
+      t_Bursts bursts;
       //! Number of open states.
       t_uint nopen;
       //! Max length of missed events
@@ -105,23 +109,27 @@ namespace DCProgs {
 
 
       //! Constructor
-      Likelihood   ( std::vector< std::vector<t_real> > const &_bursts, 
-                     t_uint _nopen, t_real _tau, t_real _tcritical = -1e0, t_uint _nmax = 2,
-                     t_real _xtol = 1e-10, t_real _rtol = 1e-10, t_uint _itermax = 100 ) 
-                 : bursts(_bursts), nopen(_nopne), tau(_tau), tcritical(_tcritical),
-                   nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}
-
+      Log10Likelihood   ( t_Bursts const &_bursts, t_uint _nopen, t_real _tau,
+                          t_real _tcritical=-1e0, t_uint _nmax=2, t_real _xtol=1e-10,
+                          t_real _rtol=1e-10, t_uint _itermax=100 ) 
+                      : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
+                        nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}
+     
       //! Computes likelihood for each burst in separate value.
-      t_rvector vector(t_rmatrix const &_Q) const { return vector()(QMatrix(_Q, nopen); }
+      t_rvector vector(t_rmatrix const &_Q) const { return vector(QMatrix(_Q, nopen)); }
       //! Computes likelihood for each burst in separate value.
       t_rvector vector(QMatrix const &_Q) const;
       //! Log-likelihood 
-      t_real operator(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen); }
+      t_real operator()(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen)); }
       //! Log-likelihood 
-      t_real operator(QMatrix const &_Q) const;
+      t_real operator()(QMatrix const &_Q) const;
   };
   //! Dumps likelihood to stream.
-  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self) {
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self);
+  //! Dumps burst to stream.
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, t_Burst const & _self);
+  //! Dumps bursts to stream.
+  MSWINDOBE std::ostream& operator<<(std::ostream& _stream, t_Bursts const & _self);
 }
 
 #endif 

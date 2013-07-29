@@ -82,100 +82,8 @@
                                        PyObject* _initial, PyObject* _final) {
       return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
     } 
-    
-    //! Special type for bursts
-    struct Bursts {
-      typedef std::vector<DCProgs::t_rvector> t_container;
-      typedef t_container::const_reference const_reference;
-      t_container bursts;
-    };
-    //! \brief Creates a pre-translated (to cpp) lists of bursts.
-    //! \details This could make it a bit faster to call the likelihood when optimizing.
-    //!          It should be used in conjunction with compute_bursts.
-    Bursts create_bursts(PyObject *_bursts) {
-      using namespace DCProgs;
-      if(not PySequence_Check(_bursts))
-        throw errors::PythonTypeError("Expected a sequence on input.");
-      Bursts result;
-      Object<> py_iterator = steal_ref(PyObject_GetIter(_bursts));
-      if(not py_iterator) throw errors::PythonErrorAlreadyThrown();
-      while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
-        if(not PySequence_Check(~item))
-          throw errors::PythonTypeError("Expected a sequence of sequences on input.");
-        result.bursts.emplace_back(numpy::map_to_rvector(~item));
-      }
-  
-      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
-      return result;
-    }
-  
-    //! Computes likelihood of a time series in a pre-translated vector of bursts
-    //! \param[in] _bursts: Vector of bursts.
-    //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
-    //!                member function, where the argument is the length of an open or shut interval.
-    //! \param[in] _initial: initial occupancies.
-    //! \param[in] _final: final occupancies.
-    //! \param[in] _chained_likelihood: The function to call, wether chained_likelihood or
-    //!                                 chained_log10_likelihood
-    template<class T_G, class T_FUNCTION> 
-      PyObject* py_compute_bursts( T_G const & _g, Bursts const & _bursts, 
-                                   PyObject *_initial, PyObject *_final, 
-                                   T_FUNCTION * const  _chained_likelihood ) {
-        using namespace DCProgs;
-        t_initvec const initial = numpy::map_to_initvec(_initial).array();
-        t_rvector const final   = numpy::map_to_rvector(_final).array();
-        
-        npy_intp dims[1] = { static_cast<npy_intp>(_bursts.bursts.size()) };
-        Object<> result = steal_ref(PyArray_SimpleNew(1, dims, numpy::type<t_real>::value));
-        if(not result) throw errors::PythonErrorAlreadyThrown();
-        t_real *i_result
-            = static_cast<t_real*>(PyArray_DATA(reinterpret_cast<PyArrayObject*>(~result)));
-        for(Bursts::const_reference burst: _bursts.bursts) {
-          *i_result = (*_chained_likelihood)(_g, &burst(0), &burst(0) + burst.size(), initial, final); 
-          ++i_result;
-        }
-        return result.release();
-      }
-
-    PyObject* compute_bursts( DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                              PyObject* _initial, PyObject* _final ) {
-      
-      // Seems taking the address of a template function is more complicated then it should be.
-      using namespace DCProgs;
-      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
-      t_real (*function)(IdealG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
-         =  &DCProgs::chained_likelihood<t_ptr, IdealG>;
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function );
-    } 
-    PyObject* compute_bursts( DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
-                              PyObject* _initial, PyObject* _final ) {
-      using namespace DCProgs;
-      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
-      t_real (*function)(MissedEventsG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
-         =  &DCProgs::chained_likelihood<t_ptr, MissedEventsG>;
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
-    } 
-
-    PyObject* compute_log10_bursts( DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                                    PyObject* _initial, PyObject* _final ) {
-      using namespace DCProgs;
-      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
-      t_real (*function)(IdealG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
-         =  &DCProgs::chained_log10_likelihood<t_ptr, IdealG>;
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
-    } 
-    PyObject* compute_log10_bursts( DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
-                                    PyObject* _initial, PyObject* _final ) {
-      using namespace DCProgs;
-      typedef Bursts::t_container::value_type::Scalar const* t_ptr;
-      t_real (*function)(MissedEventsG const &, t_ptr, t_ptr, t_initvec const &, t_rvector const & ) 
-         =  &DCProgs::chained_log10_likelihood<t_ptr, MissedEventsG>;
-      return py_compute_bursts(*_idealg, _bursts, _initial, _final, function);
-    } 
   }
 %}
-
-class Bursts {}; 
 
 %feature("autodoc", "Computes likelihood of a series of time intervals.\n\n"
          ":param firstArgument: \n"
@@ -193,54 +101,146 @@ DCProgs::t_real chained_likelihood(DCProgs::IdealG *idealg, PyObject* intervals,
 DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *g, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);
 
-%feature("autodoc", "Computes likelihood of an opaque of bursts.\n\n"
-         "A slightly faster form of computing the likelihood over a list of bursts. "
-         "The list is pre-translated to a c++ object over which we can loop in c++, "
-         "without going back to python. We may then be able to apply parallelization " 
-         "methods. Without parallelization, it does not seem to be better than 15\% faster.\n\n"
-         ":param firstArgument: \n"
-         "   Can be either an :class:`IdealG` or and :class:`MissedEventsG` instance.\n"
-         ":param bursts:\n"
-         "   This must be the opaque object returned by :meth:`create_bursts`. "
-            "It contains the bursts in c++ form.\n"
-         ":param initial:\n"
-         "   The initial occupancy vector.\n" 
-         ":param final:\n"
-         "   The final occupancy vector.\n")
-        compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                       PyObject* _initial, PyObject* _final);
-PyObject* compute_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                         PyObject* _initial, PyObject* _final);
-PyObject* compute_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
-                         PyObject* _initial, PyObject* _final);
 
-%feature("autodoc", "Computes log10-likelihood of an opaque of bursts.\n\n"
-         "A slightly faster form of computing the likelihood over a list of bursts. "
-         "The list is pre-translated to a c++ object over which we can loop in c++, "
-         "without going back to python. We may then be able to apply parallelization " 
-         "methods. Without parallelization, it does not seem to be better than 15\% faster. "
-         "This version returns log10 values. It may handle exponents a bit better and be "
-         "slightly less prone to under/over flow.\n\n"
-         ":param firstArgument: \n"
-         "   Can be either an :class:`IdealG` or and :class:`MissedEventsG` instance.\n"
-         ":param bursts:\n"
-         "   This must be the opaque object returned by :meth:`create_bursts`. "
-            "It contains the bursts in c++ form.\n"
-         ":param initial:\n"
-         "   The initial occupancy vector.\n" 
-         ":param final:\n"
-         "   The final occupancy vector.\n")
-        compute_log10_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                             PyObject* _initial, PyObject* _final);
-PyObject* compute_log10_bursts(DCProgs::IdealG *_idealg, Bursts const & _bursts, 
-                               PyObject* _initial, PyObject* _final);
-PyObject* compute_log10_bursts(DCProgs::MissedEventsG *_idealg, Bursts const & _bursts, 
-                               PyObject* _initial, PyObject* _final);
 
-%feature("autodoc", "Creates an opaque list of bursts.\n\n"
-         "The opaque list of bursts is a pre-translated c++ object. "
-         "It cannot be modified or even inspected from python. \n\n" 
-         ":param bursts:\n"
-         "   A list of lists of intervals. The inner lists are bursts.\n"
-         ":result: An opaque object that is the c++ equivalent of the input.\n");
-Bursts create_bursts(PyObject *_bursts);
+%{
+
+  namespace {
+    DCProgs::t_Burst convert_pyburst(PyObject *_burst) {
+      using namespace DCProgs;
+      if(not PySequence_Check(_burst))
+        throw errors::PythonTypeError("Expected a sequence on input.");
+      t_Burst result;
+      Object<> py_iterator = steal_ref(PyObject_GetIter(_burst));
+      if(not py_iterator) throw errors::PythonErrorAlreadyThrown();
+      while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
+          if(PyFloat_Check(~item)) 
+            result.emplace_back(static_cast<t_real>(PyFloat_AS_DOUBLE(~item)));
+          else if(PyInt_Check(~item))
+            result.emplace_back(static_cast<t_real>(PyInt_AS_LONG(~item)));
+          else if(PyLong_Check(~item))
+            result.emplace_back(static_cast<t_real>(PyLong_AsDouble(~item)));
+          else throw errors::PythonTypeError("Unexpected type in burst.");
+      }
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+      return result;
+    }
+    DCProgs::t_Bursts convert_pybursts(PyObject *_bursts) {
+      using namespace DCProgs;
+      if(not PySequence_Check(_bursts))
+        throw errors::PythonTypeError("Expected a sequence on input.");
+      t_Bursts result;
+      Object<> py_iterator = steal_ref(PyObject_GetIter(_bursts));
+      if(not py_iterator) throw errors::PythonErrorAlreadyThrown();
+      while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
+        if(not PySequence_Check(~item))
+          throw errors::PythonTypeError("Expected a sequence of sequences on input.");
+
+        t_Burst burst = convert_pyburst(~item);
+        if(burst.size() == 0) continue;
+        if(burst.size() % 2 != 1)  
+          throw errors::PythonValueError("Each burst must have an odd number of intervals.");
+        result.emplace_back(std::move(burst));
+      }
+  
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+      return result;
+    }
+  }
+%}
+
+namespace DCProgs {
+  class Log10Likelihood {
+    public:
+      //! Number of open states.
+      DCProgs::t_uint nopen;
+      //! Max length of missed events
+      DCProgs::t_real tau;
+      //! \brief tcrit. 
+      //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
+      DCProgs::t_real tcritical;
+      //! Number of intervals for which to compute exact result.
+      DCProgs::t_uint nmax;
+      //! Tolerance for root finding.
+      DCProgs::t_real xtol;
+      //! Tolerance for root finding.
+      DCProgs::t_real rtol;
+      //! Maximum number of iterations for root finding.
+      DCProgs::t_uint itermax;
+
+      // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
+      // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
+      %typemap(out) DCProgs::t_Burst & { 
+        try {
+          Eigen::Map<DCProgs::t_rvector> map(result->data(), result->size());
+          $result = DCProgs::numpy::wrap_to_numpy(map, $self); 
+        } DCPROGS_CATCH(SWIG_fail);
+      }
+      //! Constructor
+      %extend {
+        Log10Likelihood   ( PyObject *_bursts, DCProgs::t_uint _nopen,
+                            DCProgs::t_real _tau, DCProgs::t_real _tcritical=-1e0,
+                            DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol=1e-10,
+                            DCProgs::t_real _rtol=1e-10, DCProgs::t_uint _itermax=100 )  {
+          using namespace DCProgs;
+          return new Log10Likelihood( convert_pybursts(_bursts), _nopen, _tau, _tcritical,
+                                      _nmax, _xtol, _rtol, _itermax );
+        }
+
+        DCProgs::t_Burst & __getitem__(int i) {
+          using namespace DCProgs;
+          if(i < 0) i += $self->bursts.size();
+          if(i < 0 or i >= $self->bursts.size())
+            throw errors::Index("Index to burst is out of range.");
+          return $self->bursts[i];
+        }
+        void __setitem__(int i, PyObject* _burst) {
+          using namespace DCProgs;
+          if(i < 0) i += $self->bursts.size();
+          if(i < 0 or i >= $self->bursts.size())
+            throw errors::Index("Index to burst is out of range.");
+          t_Burst burst = convert_pyburst(_burst);
+          if(burst.size() == 0) return;
+          if(burst.size() % 2 != 1)  
+            throw errors::PythonValueError("Each burst must have an odd number of intervals.");
+          $self->bursts.insert($self->bursts.begin() + i, burst);
+        }
+        PyObject* __delitem__(int i) {
+          using namespace DCProgs;
+          if(i < 0) i += $self->bursts.size();
+          if(i < 0 or i >= $self->bursts.size())
+            throw errors::Index("Index to burst is out of range.");
+          t_Burst out = *$self->bursts.erase($self->bursts.begin() + i);
+          Eigen::Map<t_rvector> map(out.data(), out.size());
+          return numpy::wrap_to_numpy(map);
+        }
+        int __len__() { return $self->bursts.size(); }
+        void append(PyObject* _in) {
+          using namespace DCProgs;
+          
+          t_Burst burst = convert_pyburst(_in);
+          if(burst.size() == 0) return;
+          if(burst.size() % 2 != 1)  
+            throw errors::PythonValueError("Each burst must have an odd number of intervals.");
+          $self->bursts.emplace_back(std::move(burst));
+        }
+        PyObject* __str__() {
+          std::ostringstream sstr; sstr << *($self);
+          return PyString_FromString(sstr.str().c_str());
+        }
+        PyObject* __repr__() {
+          std::ostringstream sstr; sstr << *($self);
+          return PyString_FromString(sstr.str().c_str());
+        }
+      }
+     
+      //! Computes likelihood for each burst in separate value.
+      DCProgs::t_rvector vector(DCProgs::t_rmatrix const &_Q) const;
+      //! Computes likelihood for each burst in separate value.
+      DCProgs::t_rvector vector(QMatrix const &_Q) const;
+      //! Log-likelihood 
+      DCProgs::t_real operator()(DCProgs::t_rmatrix const &_Q) const;
+      //! Log-likelihood 
+      DCProgs::t_real operator()(QMatrix const &_Q) const;
+  };
+}
