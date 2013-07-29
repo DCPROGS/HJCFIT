@@ -45,5 +45,7 @@ if(pythonBindings AND tests)
   feature_test(idealg features/idealg.feature)
   feature_test(missed_eventsG features/missed_eventsG.feature)
   feature_test(approx_survivor features/approx_survivor.feature)
+  feature_test(reduce_likelihood features/reduce_likelihood.feature)
+  feature_test(time_filter features/time_filter.feature)
   
 endif(pythonBindings AND tests)
