@@ -24,7 +24,7 @@ if(pythonBindings)
   set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg chained.swg time_filter.swg
-                                        math.swg brentq.swg )
+                                        math.swg brentq.swg log10likelihood.swg )
   swig_add_module(likelihood python likelihood.i)
   set_target_properties(_likelihood PROPERTIES LINKER_LANGUAGE CXX)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)

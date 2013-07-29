@@ -24,6 +24,7 @@
          QMatrix::transpose;
 %feature("autodoc", "Transition matrix itself.") QMatrix::matrix;
 %feature("autodoc", "Number of open states.") QMatrix::nopen;
+
 // Now we define the bindings for the QMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.

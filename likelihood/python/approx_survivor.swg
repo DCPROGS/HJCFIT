@@ -53,6 +53,7 @@
             "py:meth:`dcprogs.likelihood.brentq`. Defaults to 100.\n") ApproxSurvivor;
 %feature("autodoc", "Open to close transitions") ApproxSurvivor::af;
 %feature("autodoc", "Closed to open transitions") ApproxSurvivor::fa;
+
 class ApproxSurvivor {
   public:
   

@@ -35,23 +35,24 @@
          "    *Optional*. If present, it is the max length of missed events.\n\n"
          ":returns: a numpy array.") DeterminantEq::s_derivative(DeterminantEq const *, DCProgs::t_real s);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
-                    "There are several ways to instanciate this object:\n\n"
-                    ">>> DeterminantEq(matrix, nopen, tau)\n\n"
-                    "or,\n\n"
-                    ">>> DeterminantEq(qmatrix, tau)\n\n"
-                    "Parameters:\n"
-                    "   matrix: numpy array\n"
-                    "      Transition matrix, where the upper left corner"
-                         " contain open-open transitions\n"  
-                    "   nopen: int\n"
-                    "      Number of open states in the transition matrix.\n"
-                    "   qmatrix: QMatrix\n"
-                    "      State matrix created from a transition matrix "
-                          "and the number of open states\n" 
-                    "   tau: number\n"
-                    "      Max length of missed events.\n")
+         "There are several ways to instanciate this object:\n\n"
+         ">>> DeterminantEq(matrix, nopen, tau)\n\n"
+         "or,\n\n"
+         ">>> DeterminantEq(qmatrix, tau)\n\n"
+         "Parameters:\n"
+         "   matrix: numpy array\n"
+         "      Transition matrix, where the upper left corner"
+         " contain open-open transitions\n"  
+         "   nopen: int\n"
+         "      Number of open states in the transition matrix.\n"
+         "   qmatrix: QMatrix\n"
+         "      State matrix created from a transition matrix "
+               "and the number of open states\n" 
+         "   tau: number\n"
+         "      Max length of missed events.\n")
          DeterminantEq;
-//! Adds determinant functor
+
+// Adds determinant functor
 class DeterminantEq {
 
   public: 

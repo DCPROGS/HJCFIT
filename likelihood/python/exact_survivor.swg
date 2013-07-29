@@ -18,7 +18,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-%feature("autodoc", "Computes exact missed-event survivor function.") ExactSurvivor;
+%feature("autodoc", "Computes exact missed-event survivor function.\n\n"
+         ":param qmatrix:\n"
+         "   The Q-matrix for which to compute the exact likelihood. \n"
+         ":param float double:\n"
+         "   The maximum length of missed events.\n" ) ExactSurvivor;
 %feature("autodoc", "Open to close transitions") ExactSurvivor::af;
 %feature("autodoc", "Closed to open transitions") ExactSurvivor::fa;
 %feature("autodoc", "Probability of no shut times detected between 0 and t.") ExactSurvivor::R_af;
@@ -29,6 +33,7 @@
 %feature("autodoc", ":math:`D_i` matrices for fa.") ExactSurvivor::D_fa;
 %feature("autodoc", "Eigenvalues in af basis.") ExactSurvivor::eigenvalues_af;
 %feature("autodoc", "Eigenvalues in fa basis.") ExactSurvivor::eigenvalues_fa;
+
 class ExactSurvivor {
   public:
 

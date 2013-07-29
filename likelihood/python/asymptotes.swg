@@ -18,7 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-%feature("autodoc", "Computes asymptotic values of missed-event G.") Asymptotes;
+%feature("autodoc", "Computes asymptotic values of missed-event G.\n\n"
+         "This function tkaes on input a value or an array of values in laplace space "
+         "and returns the asymptotic likelihood.\n\n"
+         ":param determinant:\n"
+         "   A :class:`DeterminantEq` instance from which to compute "
+            "asymptotic values.\n"
+         ":param roots:\n"
+         "   A sequence of `(root, multiplicity)` tuples.\n" ) Asymptotes;
+
 class Asymptotes {
   public:
 

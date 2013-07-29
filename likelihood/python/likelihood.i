@@ -144,6 +144,7 @@ namespace DCProgs {
   %include "exact_survivor.swg"
   %include "approx_survivor.swg"
   %include "missed_eventsG.swg"
+  %include "log10likelihood.swg"
 
 }
 %include "time_filter.swg"

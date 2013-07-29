@@ -69,6 +69,7 @@
          "e^{Q_{AA}t}\\partial t Q_{AF}]^{-1}`.") MissedEventsG::laplace_af;
 %feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::initial_CHS_occupancies;
 %feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::final_CHS_occupancies;
+
 class MissedEventsG {
   public:
 
@@ -182,7 +183,7 @@ class MissedEventsG {
     DCProgs::t_uint const nopen;
     DCProgs::t_uint const nshut;
   }
-  %{
+  %{ namespace {
     DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
       return _in->get_tmax();
     }
@@ -198,7 +199,7 @@ class MissedEventsG {
     DCProgs::t_uint DCProgs_MissedEventsG_nshut_get(DCProgs::MissedEventsG *_in) {
       return _in->get_qmatrix().nshut();
     }
-  %}
+  }%}
 };
 
 %clear MissedEventsG;
