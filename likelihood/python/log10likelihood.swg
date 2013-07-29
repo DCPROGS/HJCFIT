@@ -34,7 +34,12 @@
             result.emplace_back(static_cast<t_real>(PyInt_AS_LONG(~item)));
           else if(PyLong_Check(~item))
             result.emplace_back(static_cast<t_real>(PyLong_AsDouble(~item)));
-          else throw errors::PythonTypeError("Unexpected type in burst.");
+          else if(PyArray_CheckScalar(~item))  {
+            Object<> dtype = steal_ref(_dcprogs_dtype());
+            result.push_back(0);
+            PyArray_CastScalarToCtype(~item, static_cast<void*>(&result.back()), 
+                                      reinterpret_cast<PyArray_Descr*>(~dtype));
+          } else throw errors::PythonTypeError("Unexpected type in burst.");
       }
       if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
       return result;
