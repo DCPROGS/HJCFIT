@@ -105,8 +105,10 @@ namespace {
           template<class T_DATA_ITERATOR, class T_DERIVED>
             void set_element( T_DATA_ITERATOR  _data_itr,
                               Eigen::DenseBase<T_DERIVED> const &_item ) const {
+              // Strides are inverted because Eigen does fortran style and numpy does C style by
+              // default. 
               t_Map( _data_itr, out_sizes_[0], out_sizes_[1],
-                     t_Stride(data_strides_[0], data_strides_[1]) ) = _item.transpose(); 
+                     t_Stride(data_strides_[1], data_strides_[0]) ) = _item;
             }
           template<class T_DATA>
             void increment_data_pointer(T_DATA & _data_itr) const { 
