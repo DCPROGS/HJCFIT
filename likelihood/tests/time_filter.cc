@@ -77,13 +77,12 @@ t_uint nbfiltered(t_rvector const &_vector, t_real _tau) {
   t_rvector intervals = _vector.tail(_vector.size()-1) - _vector.head(_vector.size()-1);
   // Check special case where time series disappears.
   if(intervals(0) < _tau) { 
-    t_uint i(2);
+    t_rvector::Index i(2);
     for(; i < intervals.size() and intervals(i) < _tau; i += 2);
     if(i >= intervals.size()) return 0;
   }
-  t_uint i = 0;
-  t_uint result = (intervals.array() >= _tau).count();
-  for(t_uint i(0); i < intervals.size(); ++i) 
+  t_rvector::Index result = (intervals.array() >= _tau).count();
+  for(t_rvector::Index i(0); i < intervals.size(); ++i) 
     if(intervals(i) < _tau) {
       t_uint sub = 0;
       for(; i < intervals.size() and intervals(i) < _tau; ++i, ++sub);

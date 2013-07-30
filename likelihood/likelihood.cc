@@ -32,7 +32,7 @@ namespace DCProgs {
     _stream << "Bursts:\n"
             << "-------\n"
             << "  [ ";
-    for(t_int i(0); i < _self.size() - 1; ++i) _stream << _self[i] << ",\n    ";
+    for(t_Bursts::size_type i(0); i + 1 < _self.size(); ++i) _stream << _self[i] << ",\n    ";
     _stream << _self.back() << " ]\n";
     return _stream;
   }

@@ -57,7 +57,7 @@ namespace DCProgs {
 
       t_rvector const abs_singval( svd.singularValues().array().abs() );
 
-      if(abs_singval.size() < root.multiplicity) 
+      if(static_cast<t_uint>(abs_singval.size()) < root.multiplicity) 
         throw errors::Mass("Requesting more roots than there are singular values.");
 
       // Figures out lowest singular values

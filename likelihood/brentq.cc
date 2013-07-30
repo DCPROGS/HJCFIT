@@ -45,7 +45,7 @@
 
 namespace DCProgs {
 
-  std::tuple<t_real, t_uint, t_uint>
+  MSWINDOBE std::tuple<t_real, t_uint, t_uint>
     brentq( std::function<t_real(t_real)> const &_function, 
             t_real _xstart, t_real _xend,
             t_real _xtol, t_real _rtol, t_uint _itermax ) {

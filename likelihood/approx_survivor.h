@@ -67,14 +67,14 @@ namespace DCProgs {
       //! AF exponential components
       Asymptotes::t_MatrixAndRoot const & get_af_components(t_int i) const {
         if(i < 0) i += nb_af_components();
-        if(i < 0 or i >= nb_af_components())
+        if(i < 0 or static_cast<t_uint>(i) >= nb_af_components())
           throw errors::Index("AF component index out of range.");
         return (*asymptotes_af_)[i]; 
       }
       //! FA exponential components
       Asymptotes::t_MatrixAndRoot const & get_fa_components(t_int i) const {
         if(i < 0) i += nb_fa_components();
-        if(i < 0 or i >= nb_fa_components())
+        if(i < 0 or static_cast<t_uint>(i) >= nb_fa_components())
           throw errors::Index("FA component index out of range.");
         return (*asymptotes_fa_)[i]; 
       }

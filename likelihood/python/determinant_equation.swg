@@ -60,27 +60,29 @@ class DeterminantEq {
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
     DeterminantEq(PyObject *_in, DCProgs::t_uint _nopen, DCProgs::t_real _tau) {
-      if(_nopen <= 0)
-        throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
+      using namespace DCProgs;
+      if(_nopen == 0)
+        throw errors::PythonValueError("Number of open states cannot be negative or zero.");
+      t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
       if(matrix.rows() != matrix.cols())
-        throw DCProgs::errors::PythonValueError("Expected a square matrix on input.");
+        throw errors::PythonValueError("Expected a square matrix on input.");
       if(matrix.rows() == 0)
-        throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
-      if(_nopen >= matrix.rows())
-        throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
+        throw errors::PythonValueError("Expected a non-empty square matrix on input.");
+      if(_nopen >= static_cast<t_uint>(matrix.rows()))
+        throw errors::PythonValueError("Number of closed states cannot be zero.");
+      return new DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
     }
     DeterminantEq(QMatrix *_in, DCProgs::t_real _tau) {
-      if(_in->nopen <= 0) 
-        throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
+      using namespace DCProgs;
+      if(_in->nopen == 0) 
+        throw errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 
-        throw DCProgs::errors::PythonValueError("Expected a square state matrix on input.");
+        throw errors::PythonValueError("Expected a square state matrix on input.");
       if(_in->matrix.rows() == 0)
-        throw DCProgs::errors::PythonValueError("Expected a non-empty square matrix on input.");
-      if(_in->nopen >= _in->matrix.rows()) 
-        throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DCProgs::DeterminantEq( *_in, _tau );
+        throw errors::PythonValueError("Expected a non-empty square matrix on input.");
+      if(_in->nopen >= static_cast<t_uint>(_in->matrix.rows())) 
+        throw errors::PythonValueError("Number of closed states cannot be zero.");
+      return new DeterminantEq( *_in, _tau );
     }
   }
 

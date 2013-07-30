@@ -162,10 +162,10 @@ namespace DCProgs {
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const &_self);
 
   //! Creates missed events object.
-  MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
-                                       t_uint _nmax=2,
-                                       t_real _xtol = 1e-12, t_real _rtol = 1e-12,
-                                       t_uint _itermax = 100 );
+  MSWINDOBE MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
+                                                 t_uint _nmax=2,
+                                                 t_real _xtol = 1e-12, t_real _rtol = 1e-12,
+                                                 t_uint _itermax = 100 );
 }
 
 #endif 

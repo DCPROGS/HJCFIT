@@ -57,13 +57,12 @@ class QMatrix {
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
     QMatrix(PyObject *_py_matrix, DCProgs::t_uint _nopen) {
-      if(_nopen < 0)
-        throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
-      DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
-      if(_nopen > std::max(matrix.rows(), matrix.cols()) )
-        throw DCProgs::errors::PythonValueError(
+      using namespace DCProgs;
+      t_rmatrix const matrix = numpy::map_to_rmatrix(_py_matrix);
+      if(_nopen > static_cast<t_uint>(std::max(matrix.rows(), matrix.cols())) )
+        throw errors::PythonValueError(
                 "Number of open states cannot be larger than the number states.");
-      return new DCProgs::QMatrix(std::move(matrix), _nopen);
+      return new QMatrix(std::move(matrix), _nopen);
     }
   }
 

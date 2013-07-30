@@ -134,14 +134,14 @@ class Log10Likelihood {
       DCProgs::t_Burst & __getitem__(int i) {
         using namespace DCProgs;
         if(i < 0) i += $self->bursts.size();
-        if(i < 0 or i >= $self->bursts.size())
+        if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
         return $self->bursts[i];
       }
       void __setitem__(int i, PyObject* _burst) {
         using namespace DCProgs;
         if(i < 0) i += $self->bursts.size();
-        if(i < 0 or i >= $self->bursts.size())
+        if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
         t_Burst burst = convert_pyburst(_burst);
         if(burst.size() == 0) return;
@@ -152,7 +152,7 @@ class Log10Likelihood {
       PyObject* __delitem__(int i) {
         using namespace DCProgs;
         if(i < 0) i += $self->bursts.size();
-        if(i < 0 or i >= $self->bursts.size())
+        if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
         t_Burst out = *$self->bursts.erase($self->bursts.begin() + i);
         Eigen::Map<t_rvector> map(out.data(), out.size());
