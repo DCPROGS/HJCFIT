@@ -64,7 +64,7 @@ namespace DCProgs {
         /*! Associated  number */
         DCPROGS_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
       };
-      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_double> >::value, NPY_CLONGDOUBLE);
+      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_longdouble> >::value, NPY_CLONGDOUBLE);
 #   endif
 #   ifdef DCPROGS_NPY_HAS_BOOL
       DCPROGS_MACRO(npy_bool, NPY_BOOL);
