@@ -113,7 +113,6 @@
 
 // Tells swig that we will deal with exceptions.
 %include "exception.i"
-%include "std_shared_ptr.i"
 %init %{ import_array();  %}
 
 %exception {

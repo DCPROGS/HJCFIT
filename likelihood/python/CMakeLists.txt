@@ -20,7 +20,11 @@ if(pythonBindings)
   set(CMAKE_SWIG_FLAGS "")
 
   set_source_files_properties(likelihood.i PROPERTIES CPLUSPLUS ON)
-  set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
+  if(PYTHON_VERSION VERSION_LESS "3.0.0")
+    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
+  else(PYTHON_VERSION VERSION_LESS "3.0.0")
+    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall;-py3" )
+  endif(PYTHON_VERSION VERSION_LESS "3.0.0")
   set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg chained.swg time_filter.swg
