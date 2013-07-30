@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include <DCProgsConfig.h>
 
 #include <sstream>
@@ -33,10 +53,12 @@ namespace DCProgs {
  
     t_cvector const alpha = ff_eigenvalues_.array() - _s;
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) 
-      diagonal(i, i) = std::abs(alpha(i)) > ZERO ?  (std::exp(alpha(i) * _tau) - 1e0) / alpha(i): _tau; 
+    for(t_cvector::Index i(0); i < ff_eigenvalues_.size(); ++i) 
+      diagonal(i, i) = std::abs(alpha(i)) > ZERO ? 
+                         (std::exp(alpha(i) * _tau) - t_real(1e0)) / alpha(i):
+                         _tau; 
     t_cmatrix const result = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
-    if((result.imag().array().abs() > 1e-8).any())
+    if((result.imag().array().abs() > t_real(1e-8)).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
     return result.real();
   }
@@ -45,15 +67,15 @@ namespace DCProgs {
 
     t_cvector const alpha = ff_eigenvalues_.array() - _s;
     t_cmatrix diagonal = t_cmatrix::Zero(ff_eigenvalues_.size(), ff_eigenvalues_.size());
-    for(t_int i(0); i < ff_eigenvalues_.size(); ++i) {
+    for(t_cvector::Index i(0); i < ff_eigenvalues_.size(); ++i) {
       if(std::abs(alpha(i)) > ZERO) {
-        t_complex const invalpha = 1e0 / alpha(i);
+        t_complex const invalpha = t_real(1e0) / alpha(i);
         diagonal(i, i) = invalpha * ((invalpha - _tau) * std::exp(alpha(i)*_tau) - invalpha);
-      } else diagonal(i, i) = -_tau * _tau * 0.5;
+      } else diagonal(i, i) = -_tau * _tau * t_real(0.5);
     }
 
     t_cmatrix const integral = ff_eigenvectors_ * diagonal * ff_eigenvectors_inv_;
-    if((integral.imag().array().abs() > 1e-8).any())
+    if((integral.imag().array().abs() > t_real(1e-8)).any())
       throw errors::ComplexEigenvalues("Integral calculation yielded complex values.\n");
     return this->id_() - qmatrix_.af() * integral.real() * qmatrix_.fa(); 
   }

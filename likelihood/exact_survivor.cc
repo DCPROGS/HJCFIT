@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include <DCProgsConfig.h>
 
 #include <sstream>
@@ -79,8 +99,8 @@ namespace DCProgs {
 
     // Initializes recursion formula for m == l == 0
     t_rmatrix const eigenvectors = eigsolver.eigenvectors().real();
-    t_rmatrix const eigenvectors_inv = eigenvectors.inverse();
-    for(t_int i(0); i < eigenvalues_.size(); ++i) {
+    t_rmatrix const eigenvectors_inv = eigsolver.eigenvectors().inverse().real();
+    for(t_rvector::Index i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).head(transitions.nopen);
       coeff_map_[ std::make_tuple(i, 0, 0) ] = left * right;
@@ -88,7 +108,7 @@ namespace DCProgs {
 
     // Computes all Di values
     t_rmatrix const exponential_factor = (_tau * transitions.ff()).exp() * transitions.fa();
-    for(t_int i(0); i < eigenvalues_.size(); ++i) {
+    for(t_rvector::Index i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).tail(transitions.nshut());
       dvalues_.push_back((left * right) * exponential_factor);
@@ -99,7 +119,7 @@ namespace DCProgs {
 
   // Recursion element i, m, l.
   ExactSurvivor::RecursionInterface::t_element
-    ExactSurvivor::RecursionInterface::operator()(t_int _i, t_int _m, t_int _l) {
+    ExactSurvivor::RecursionInterface::operator()(t_uint _i, t_uint _m, t_uint _l) {
 
       assert(_i >= 0 and _m >= 0 and _l >= 0);
       assert(_i < nbeigvals());
@@ -110,7 +130,7 @@ namespace DCProgs {
       if(i_found != coeff_map_.end()) return i_found->second;
 
       // Otherwise compute it from recursion
-      t_int const NOPEN = this->nopen;
+      t_uint const NOPEN = this->nopen;
       return recursion_formula(*this, _i, _m, _l);
     }
 
@@ -119,19 +139,19 @@ namespace DCProgs {
     //! \brief Computes \f$B_{im}(t) = \sum_{r=0}^m C_{imr}t^r\f$
     //! \details See Theorem below equation 3.12
     template<class T> 
-      typename T::t_element B_im_of_t(T &_C, t_int _i, t_int _m, t_real _t) {
+      typename T::t_element B_im_of_t(T &_C, t_uint _i, t_uint _m, t_real _t) {
         t_rmatrix result = _C(_i, _m, 0);
         t_real t(_t);
-        for(t_int r(1); r <= _m; ++r, t *= _t) result += _C(_i, _m, r) * t;
+        for(t_uint r(1); r <= _m; ++r, t *= _t) result += _C(_i, _m, r) * t;
         return result;
       }
     //! \brief Computes \f$M_m(t) = \sum_{i=1}^k B_{im}(t) e^{-\lambda_i t}\f$
     //! \details See Theorem below equation 3.12
     template<class T> 
-      typename T::t_element M_m_of_t(T &_C, t_int _m, t_real _t) {
+      typename T::t_element M_m_of_t(T &_C, t_uint _m, t_real _t) {
 
         t_rmatrix result = B_im_of_t(_C, 0, _m, _t) * std::exp(-_C.get_eigvals(0)*_t);
-        for(t_int i(1); i < _C.nbeigvals(); ++i)
+        for(t_uint i(1); i < _C.nbeigvals(); ++i)
           result += B_im_of_t(_C, i, _m, _t) * std::exp(-_C.get_eigvals(i)*_t);
         return result;
       }
@@ -143,7 +163,7 @@ namespace DCProgs {
 
         t_real current_t(_t);
         t_rmatrix result = M_m_of_t(_C, 0, _t);
-        t_int m=1;
+        t_uint m=1;
         
         for(current_t -= _tau; current_t > 0; current_t -= _tau, ++m)  {
           if(m % 2 == 0) result += M_m_of_t(_C, m, current_t);
@@ -163,32 +183,34 @@ namespace DCProgs {
     return R_of_t(*recursion_fa_, _t, tau_);
   }
 
-  t_rmatrix ExactSurvivor :: recursion_af(t_int _i, t_int _m, t_int _l) const {
-    if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
+  t_rmatrix ExactSurvivor :: recursion_af(t_uint _i, t_uint _m, t_uint _l) const {
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     return  recursion_af_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactSurvivor :: recursion_fa(t_int _i, t_int _m, t_int _l) const {
-    if(_i < 0 or _m < 0 or _l <0) throw errors::Index("Indices should be positive.");
+  t_rmatrix ExactSurvivor :: recursion_fa(t_uint _i, t_uint _m, t_uint _l) const {
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     return  recursion_fa_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactSurvivor :: D_af(t_int _i) const {
-    if(_i < 0) throw errors::Index("Indices should be positive.");
+  t_rmatrix ExactSurvivor :: D_af(t_uint _i) const {
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_af_->getD(_i);
   }
-  t_rmatrix ExactSurvivor :: D_fa(t_int _i) const {
-    if(_i < 0) throw errors::Index("Indices should be positive.");
+  t_rmatrix ExactSurvivor :: D_fa(t_uint _i) const {
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_fa_->getD(_i);
   }
   t_rvector ExactSurvivor::eigenvalues_af() const { return recursion_af_->eigenvalues(); }
   t_rvector ExactSurvivor::eigenvalues_fa() const { return recursion_af_->eigenvalues(); }
+
+  bool ExactSurvivor :: operator=(ExactSurvivor &&_c) {
+    recursion_af_ = std::move(_c.recursion_af_);
+    recursion_fa_ = std::move(_c.recursion_fa_);
+    tau_ = _c.tau_;
+  }
 }

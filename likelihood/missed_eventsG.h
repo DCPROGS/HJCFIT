@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_LIKELIHOOD_MISSED_EVENT_H
 #define DCPROGS_LIKELIHOOD_MISSED_EVENT_H
 
@@ -36,7 +56,7 @@ namespace DCProgs {
                        std::vector<Root> const &_roots_af, 
                        DeterminantEq const &_fa,
                        std::vector<Root> const &_roots_fa,
-                       t_int _nmax=2 )
+                       t_uint _nmax=2 )
                     : ExactSurvivor(_af.get_qmatrix(), _af.get_tau()),
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
                       laplace_a_(new LaplaceSurvivor(_af.get_qmatrix())),
@@ -54,7 +74,7 @@ namespace DCProgs {
       //!                        This function should take a DeterminantEq as its sole argument and
       //!                        return a std::vector<RootIntervals>
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
-                        t_RootFinder const &_findroots, t_int _nmax=2 )
+                        t_RootFinder const &_findroots, t_uint _nmax=2 )
                     : ExactSurvivor(_qmatrix, _tau),
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       laplace_a_(new LaplaceSurvivor(_qmatrix)),
@@ -62,6 +82,14 @@ namespace DCProgs {
                       nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
+      //! Move constructor.
+      MissedEventsG   ( MissedEventsG && _c) 
+                    : ExactSurvivor(std::move(_c)), ApproxSurvivor(std::move(_c)),
+                      laplace_a_(std::move(_c.laplace_a_)),
+                      laplace_f_(std::move(_c.laplace_f_)),
+                      nmax_(_c.nmax_), tmax_(_c.tmax_), 
+                      af_factor_(std::move(_c.af_factor_)),
+                      fa_factor_(std::move(_c.fa_factor_)) {}
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const {
@@ -81,12 +109,12 @@ namespace DCProgs {
       }
 
       //! Sets \f$t\geq n_{\mathrm{max}}\tau\f$
-      void  set_nmax(t_int _n) { 
-        if(_n <= 0) throw errors::Domain("n should be strictly positive.");
+      void  set_nmax(t_uint _n) { 
+        if(_n == 0u) throw errors::Domain("n should be strictly positive.");
         nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); 
       }
       //! When to switch to asymptotic values
-      t_int  get_nmax() const { return nmax_; }
+      t_uint  get_nmax() const { return nmax_; }
       //! Gets the value of missed event resolution;
       t_real get_tau() const { return ExactSurvivor::get_tau(); }
       //! Tmax is the maximum time after which to switch to approximate calculations.
@@ -121,7 +149,7 @@ namespace DCProgs {
       //! Laplace Survivor function \f$^{F}R(s)\f$.
       t_LaplacePtr laplace_f_;
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
-      t_int nmax_;
+      t_uint nmax_;
       //! Max length of missed events.
       t_real tmax_;
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
@@ -132,6 +160,12 @@ namespace DCProgs {
 
   //! Dumps Missed-Events likelihood to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const &_self);
+
+  //! Creates missed events object.
+  MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
+                                       t_uint _nmax=2,
+                                       t_real _xtol = 1e-12, t_real _rtol = 1e-12,
+                                       t_uint _itermax = 100 );
 }
 
 #endif 

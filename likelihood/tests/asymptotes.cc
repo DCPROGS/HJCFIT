@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include "DCProgsConfig.h"
 #include "DCProgsConfig.h"
 #include <iostream>
@@ -54,7 +74,7 @@ TEST_P(TestAsymptotes, correct_size) {
 // Checks that left and right apply leave matrix untouched
 TEST_P(TestAsymptotes, is_projection_matrix) {
 
-  t_int const nopen = std::get<0>(GetParam()) ? 2: 3;
+  t_uint const nopen = std::get<0>(GetParam()) ? 2: 3;
   QMatrix qmatrix = std::get<0>(GetParam()) ? QMatrix(Q, 2): QMatrix(Q, 2).transpose();
   DeterminantEq equation(qmatrix, 1e-4);
 
@@ -65,7 +85,7 @@ TEST_P(TestAsymptotes, is_projection_matrix) {
     std::vector<Root> roots(1, root);
     Asymptotes asymptotes(equation, roots);
   
-    for(t_int i(0); i < 1; ++i) {
+    for(t_int i(0); i < 3; ++i) {
       // Following tests imply that asymptotes is a factor of the projection matrix of H for the
       // eigenvalue root.root. The loop over different times ensure this is the case for more than
       // one time, eg time independent result.

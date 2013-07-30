@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_STATE_MATRIX_H
 #define DCPROGS_STATE_MATRIX_H
 
@@ -14,7 +34,7 @@ namespace DCProgs {
   struct MSWINDOBE QMatrix {
  
     //! Number of open states.
-    t_int nopen; 
+    t_uint nopen; 
     //! The matrix itself.
     t_rmatrix matrix; 
  
@@ -22,7 +42,7 @@ namespace DCProgs {
     QMatrix() : matrix(0,0), nopen(0) {}
     //! Constructor
     template<class T>
-      QMatrix(Eigen::DenseBase<T> const &_c, t_int _nopen = 0) : matrix(_c), nopen(_nopen) {}
+      QMatrix(Eigen::DenseBase<T> const &_c, t_uint _nopen = 0) : matrix(_c), nopen(_nopen) {}
   
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
@@ -46,7 +66,7 @@ namespace DCProgs {
     Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(nshut(), nshut()); }
 
-    t_int nshut() const { return static_cast<t_int>(matrix.cols()) - nopen; }
+    t_uint nshut() const { return static_cast<t_uint>(matrix.cols()) - nopen; }
 
     //! \brief Returns transpose of state matrix.
     //! \details Means A states become F states, and F states become A states, and the partitionned

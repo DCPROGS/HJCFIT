@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 %feature("autodoc", "Computes the matrix H\n\n" 
          "H is defined as  :math:`"
          "Q_{AA} + Q_{AF}\ \\int_0^\\tau e^{-st}e^{Q_{FF}t}\\partial\,t\ Q_{FA}`."
@@ -15,30 +35,31 @@
          "    *Optional*. If present, it is the max length of missed events.\n\n"
          ":returns: a numpy array.") DeterminantEq::s_derivative(DeterminantEq const *, DCProgs::t_real s);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
-                    "There are several ways to instanciate this object:\n\n"
-                    ">>> DeterminantEq(matrix, nopen, tau)\n\n"
-                    "or,\n\n"
-                    ">>> DeterminantEq(qmatrix, tau)\n\n"
-                    "Parameters:\n"
-                    "   matrix: numpy array\n"
-                    "      Transition matrix, where the upper left corner"
-                         " contain open-open transitions\n"  
-                    "   nopen: int\n"
-                    "      Number of open states in the transition matrix.\n"
-                    "   qmatrix: QMatrix\n"
-                    "      State matrix created from a transition matrix "
-                          "and the number of open states\n" 
-                    "   tau: number\n"
-                    "      Max length of missed events.\n")
+         "There are several ways to instanciate this object:\n\n"
+         ">>> DeterminantEq(matrix, nopen, tau)\n\n"
+         "or,\n\n"
+         ">>> DeterminantEq(qmatrix, tau)\n\n"
+         "Parameters:\n"
+         "   matrix: numpy array\n"
+         "      Transition matrix, where the upper left corner"
+         " contain open-open transitions\n"  
+         "   nopen: int\n"
+         "      Number of open states in the transition matrix.\n"
+         "   qmatrix: QMatrix\n"
+         "      State matrix created from a transition matrix "
+               "and the number of open states\n" 
+         "   tau: number\n"
+         "      Max length of missed events.\n")
          DeterminantEq;
-//! Adds determinant functor
+
+// Adds determinant functor
 class DeterminantEq {
 
   public: 
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    DeterminantEq(PyObject *_in, int _nopen, double _tau) {
+    DeterminantEq(PyObject *_in, DCProgs::t_uint _nopen, DCProgs::t_real _tau) {
       if(_nopen <= 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
@@ -50,7 +71,7 @@ class DeterminantEq {
         throw DCProgs::errors::PythonValueError("Number of closed states cannot be zero.");
       return new DCProgs::DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
     }
-    DeterminantEq(QMatrix *_in, double _tau) {
+    DeterminantEq(QMatrix *_in, DCProgs::t_real _tau) {
       if(_in->nopen <= 0) 
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 

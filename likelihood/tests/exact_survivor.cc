@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include "DCProgsConfig.h"
 #include <iostream>
 #include <type_traits>
@@ -7,6 +27,13 @@
 
 #include "../exact_survivor.h"
 using namespace DCProgs;
+#ifdef HAS_CXX11_TYPETRAITS
+  static_assert( std::is_move_constructible<ExactSurvivor>::value,
+         	       "ExactSurvivor is not move constructible." );  
+  static_assert( std::is_move_assignable<ExactSurvivor>::value, 
+  	             "ExactSurvivor is not move assignable." );  
+#endif
+
 
 // Sets up test with parameters from CH82, 1e-7 nM.
 class ExactSurvivorTest : public ::testing::Test {
@@ -31,23 +58,23 @@ class ExactSurvivorTest : public ::testing::Test {
   }
 
   t_rmatrix N0(t_real _t, t_real _tau, bool _a = true)  {
-    t_int const N = _a ? nopen: nclose;
+    t_uint const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
-    for(t_int i(0); i < eigenvalues.size(); ++i) 
+    for(t_rvector::Index i(0); i < eigenvalues.size(); ++i) 
       result += get_ci00(i, _a) * std::exp(-eigenvalues(i)*_t);
     return result;
   }
   t_rmatrix N1(t_real _t, t_real _tau, bool _a = true)  {
     t_real const t(_t - _tau);
-    t_int const N = _a ? nopen: nclose;
+    t_uint const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
-    for(t_int i(0); i < eigenvalues.size(); ++i) 
+    for(t_rvector::Index i(0); i < eigenvalues.size(); ++i) 
       result += (get_ci10(i, _tau, _a)  + get_ci11(i, _tau, _a) * _t) 
                 * std::exp(-eigenvalues(i)*_t);
     return result;
   }
 
-  t_rmatrix get_di(t_int _i, t_real _tau, bool _a = true) {
+  t_rmatrix get_di(t_uint _i, t_real _tau, bool _a = true) {
     t_rvector const left = _a ? eigenvectors.col(_i).head(nopen): eigenvectors.col(_i).tail(nclose);
     t_rvector const right = _a ? eigenvectors_inv.row(_i).tail(nclose):
                                  eigenvectors_inv.row(_i).head(nopen);
@@ -57,17 +84,17 @@ class ExactSurvivorTest : public ::testing::Test {
                                   Q.topRightCorner(nopen, nclose);
     return (left * right.transpose()) * (_tau * exponent).exp() * endvec;
   }
-  t_rmatrix get_ci00(t_int _i, bool _a = true) {
+  t_rmatrix get_ci00(t_uint _i, bool _a = true) {
     t_rvector const left = _a ? eigenvectors.col(_i).head(nopen):
                                 eigenvectors.col(_i).tail(nclose);
     t_rvector const right = _a ? eigenvectors_inv.row(_i).head(nopen):
                                  eigenvectors_inv.row(_i).tail(nclose);
     return left * right.transpose();
   }
-  t_rmatrix get_ci10(t_int _i, t_real _tau, bool _a = true) {
-    t_int const N = _a ? nopen: nclose;
+  t_rmatrix get_ci10(t_uint _i, t_real _tau, bool _a = true) {
+    t_uint const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
-    for(t_int j(0); j < eigenvalues.size(); ++j) {
+    for(t_rvector::Index j(0); j < eigenvalues.size(); ++j) {
       t_real const delta(eigenvalues(j) - eigenvalues(_i));
       if(std::abs(delta) > 1e-8) {
         result += (get_di(_i, _tau, _a) * get_ci00(j, _a) + get_di(j, _tau, _a) * get_ci00(_i, _a)) 
@@ -76,11 +103,11 @@ class ExactSurvivorTest : public ::testing::Test {
     }
     return result;
   }
-  t_rmatrix get_ci11(t_int _i, t_real _tau, bool _a = true) {
+  t_rmatrix get_ci11(t_uint _i, t_real _tau, bool _a = true) {
     return get_di(_i, _tau, _a) * get_ci00(_i, _a);
   }
   protected:
-    t_int nopen, nclose;
+    t_uint nopen, nclose;
     t_rmatrix Q;
     t_rvector eigenvalues;
     t_rmatrix eigenvectors;
@@ -169,8 +196,6 @@ TEST_F(ExactSurvivorTest, out_of_range_Ciml_matrices) {
   EXPECT_THROW(survivor.recursion_fa(5, 0, 0), errors::Index);
   EXPECT_THROW(survivor.recursion_af(0, 0, -1), errors::Index);
   EXPECT_THROW(survivor.recursion_fa(0, 0, -1), errors::Index);
-  EXPECT_THROW(survivor.recursion_af(0, -1, 0), errors::Index);
-  EXPECT_THROW(survivor.recursion_fa(0, -1, 0), errors::Index);
   EXPECT_THROW(survivor.recursion_af(0, 0, 1), errors::Index);
   EXPECT_THROW(survivor.recursion_fa(0, 0, 1), errors::Index);
   EXPECT_THROW(survivor.recursion_af(0, 1, 2), errors::Index);

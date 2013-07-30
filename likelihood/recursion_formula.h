@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_LIKELIHOOD_RECURSION_FORMULA_H
 #define DCPROGS_LIKELIHOOD_RECURSION_FORMULA_H
 
@@ -9,9 +29,9 @@ namespace DCProgs {
 
   namespace details {
     template<class T> 
-      typename T::t_element general(T & _C, t_int _i, t_int _m, t_int _l);
+      typename T::t_element general(T & _C, t_uint _i, t_uint _m, t_uint _l);
     template<class T> 
-      typename T::t_element lzero(T & _C, t_int _i, t_int _m);
+      typename T::t_element lzero(T & _C, t_uint _i, t_uint _m);
   }
 
   //! \brief Obtains _C[_i, _m, _l] if prior terms are known.
@@ -28,13 +48,13 @@ namespace DCProgs {
   //!        typedef t_element;
   //!
   //!        //! Returns (prior) element in recursion
-  //!        t_element operator()(t_int _i, t_int _j, t_int _m);
+  //!        t_element operator()(t_uint _i, t_uint _j, t_uint _m);
   //!        //! \brief Returns D objects, e.g. \f$A_{iAF}e^{Q_{FF}\tau}Q_{FA}\f$.
-  //!        t_element getD(t_int _i) const;
+  //!        t_element getD(t_uint _i) const;
   //!        //! Returns specific eigenvalue of \f$Q\f$.
-  //!        t_real get_eigval(t_int _i) const;
+  //!        t_real get_eigval(t_uint _i) const;
   //!        //! Returns number of eigenvalues.
-  //!        t_int nbeigval(t_int _i) const;
+  //!        t_uint nbeigval(t_uint _i) const;
   //!      };
   //!    \endcode
   //! \param _C: The object over which the recursion is perfomed.
@@ -42,7 +62,7 @@ namespace DCProgs {
   //! \param _m: An integer
   //! \param _l: An integer
   template<class T> 
-    typename T::t_element recursion_formula(T & _C, t_int _i, t_int _m, t_int _l) {
+    typename T::t_element recursion_formula(T & _C, t_uint _i, t_uint _m, t_uint _l) {
       
       assert(_m >= 0);
       assert(_i >= 0);
@@ -70,7 +90,7 @@ namespace DCProgs {
     template<class T> 
       class LZero {
         public:
-          LZero   (T &_C, t_int _i, t_int _m, t_real _tolerance=1e-8) 
+          LZero   (T &_C, t_uint _i, t_uint _m, t_real _tolerance=1e-8) 
                 : C_(_C), i_(_i), m_(_m), j_(-1), r_(_m), tolerance_(_tolerance) {}
           bool next() {
             // This is outer loop over eigenvalues.
@@ -108,14 +128,14 @@ namespace DCProgs {
           };
         protected:
           T & C_;
-          t_int i_, m_, j_, r_;
+          t_uint i_, m_, j_, r_;
           t_real tolerance_;
           t_real inv_diff_lambda_;
           t_real factor_;
       };
     //! Recursion formula for l = 0
     template<class T> 
-      typename T::t_element lzero(T & _C, t_int _i, t_int _m) {
+      typename T::t_element lzero(T & _C, t_uint _i, t_uint _m) {
 
         LZero<T> functor(_C, _i, _m); 
         if(not functor.next()) throw errors::Runtime("Expected to have something to do.");
@@ -126,10 +146,10 @@ namespace DCProgs {
 
     //! Recursion formula for l != 0 and l != m
     template<class T> 
-      typename T::t_element general(T & _C, t_int _i, t_int _m, t_int _l) {
+      typename T::t_element general(T & _C, t_uint _i, t_uint _m, t_uint _l) {
 
         typename T::t_element result(_C.getD(_i) * _C(_i, _m-1, _l-1) / t_real(_l));
-        for(t_int j(0); j < _C.nbeigvals(); ++j) {
+        for(t_uint j(0); j < _C.nbeigvals(); ++j) {
           if(_i == j) continue;
  
           t_real const diff_lambda(_C.get_eigvals(_i)-_C.get_eigvals(j));
@@ -138,7 +158,7 @@ namespace DCProgs {
           t_real const diff_lambda_inv(1e0/diff_lambda); 
           t_real factor(diff_lambda_inv); 
           typename T::t_element intermediate = _C(_i, _m-1, _l) * factor;
-          for(t_int r(_l+1); r < _m; ++r) {
+          for(t_uint r(_l+1); r < _m; ++r) {
             factor *= diff_lambda_inv * r;
             intermediate += _C(_i, _m-1, r) * factor;
           }

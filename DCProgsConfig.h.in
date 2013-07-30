@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_CONFIG_H
 #define DCPROGS_CONFIG_H
 
@@ -62,15 +82,22 @@
 #  error no macro defined for isnan
 #endif
 
-
+#cmakedefine DCPROGS_LONG_DOUBLE
 
 namespace DCProgs {
-  //! Types of reals across DCProgs.
-  typedef double t_real;
+# ifdef DCPROGS_LONG_DOUBLE
+    //! Types of reals across DCProgs.
+    typedef long double t_real;
+# else
+    //! Types of reals across DCProgs.
+    typedef double t_real;
+# endif
   //! Complex real type
   typedef std::complex<t_real> t_complex;
   //! Types of integers across DCProgs.
   typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
+  //! Types of unsigned integers across DCProgs.
+  typedef t_int unsigned t_uint;
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of boolean matrices across DCProgs.
@@ -86,12 +113,25 @@ namespace DCProgs {
   //! Type of complex vectors.
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
 
+  //! Type of a burst
+  typedef std::vector<t_real> t_Burst;
+  //! Type holding the bursts.
+  typedef std::vector<t_Burst> t_Bursts;
+
   // Some functions that come in usefull left and right.
   template<class T>
     auto numpy_io(Eigen::DenseBase<T> const &_matrix)
                    -> decltype(_matrix.format(Eigen::IOFormat()))  {
       return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n",
                                             "[", "]", "[", "]"));
+    }
+
+  template<class T>
+    bool eigen_nan(Eigen::DenseBase<T> const &_matrix) {
+      for(typename Eigen::DenseBase<T>::Index i(0); i < _matrix.rows(); ++i)
+        for(typename Eigen::ArrayBase<T>::Index j(0); j < _matrix.cols(); ++j)
+           if(DCPROGS_ISNAN(_matrix(i, j))) return true;
+      return false;
     }
 }
 #endif

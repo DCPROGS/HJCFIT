@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_LIKELIHOOD_ASYMPTOTES_H
 #define DCPROGS_LIKELIHOOD_ASYMPTOTES_H
 
@@ -36,8 +56,12 @@ namespace DCProgs {
       //! eigenvalue $s_i$. \f$W'(s) = \left.\frac{d W(s)}{d s}\right|_{s=s_i}\f$.
       t_MatrixAndRoot const & operator[](t_int _i) const {
         if(_i < 0) _i += static_cast<t_int>(matrices_and_roots_.size());
-        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size()))
-          throw errors::Index("Index to matrices and roots out-of-range.");
+        if(_i < 0 or _i >= static_cast<t_int>(matrices_and_roots_.size())) {
+          std::ostringstream sstr; 
+          sstr << "Index to matrices and roots out-of-range: " << _i
+               << " vs. " << matrices_and_roots_.size() << ".";
+          throw errors::Index(sstr.str());
+        }
         return matrices_and_roots_[_i]; 
       }
       //! Number of matrices and roots.

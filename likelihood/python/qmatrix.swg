@@ -1,9 +1,30 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 %feature("autodoc", "Transition rate matrix.\n\n"
          "Open-open transitions should be located in the top-left corner.") QMatrix;
 %feature("autodoc", "Swaps AA block with FF, AF block with FA, nopen with nshut.\n\n")
          QMatrix::transpose;
 %feature("autodoc", "Transition matrix itself.") QMatrix::matrix;
 %feature("autodoc", "Number of open states.") QMatrix::nopen;
+
 // Now we define the bindings for the QMatrix
 // \brief State matrix that can  be partitioned into open/shut states.
 // \details In practice, this is a two tuple with some helper functions to get corners.
@@ -35,7 +56,7 @@ class QMatrix {
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    QMatrix(PyObject *_py_matrix, int _nopen) {
+    QMatrix(PyObject *_py_matrix, DCProgs::t_uint _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
@@ -65,6 +86,10 @@ class QMatrix {
   }
 
   QMatrix transpose() const;
+  %pythoncode %{
+    def __getitem__(self, *args): return self.matrix.__getitem__(*args)
+    def __setitem__(self, *args): return self.matrix.__setitem__(*args)
+  %}
 };
 // Translate the convenience functions aa/af/fa/ff to properties in python. 
 // This means we have a natural access to the matrix blocks as "matrix.af", without parenthesis. 
@@ -82,4 +107,3 @@ class QMatrix {
                                setattr(self, "nopen", self.matrix.shape[0] - value),
                            doc=""" Number of shut states. """);
 %}
-

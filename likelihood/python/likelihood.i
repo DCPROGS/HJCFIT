@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 // Starts the likelihood sub-package
 %module(package="dcprogs") likelihood
 // C++ definitions that are needed to compile the python bindings.
@@ -6,6 +26,7 @@
 #  include <DCProgsConfig.h>
 #  include <iostream>
 #  include <sstream>
+#  include <memory>
 
 #  if NUMPY_VERSION_MINOR >= 7 
 #    define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
@@ -89,12 +110,10 @@
     }
 %}
 
-%pythoncode %{
-from ._likelihood_methods import *
-%}
 
 // Tells swig that we will deal with exceptions.
 %include "exception.i"
+%include "std_shared_ptr.i"
 %init %{ import_array();  %}
 
 %exception {
@@ -105,29 +124,14 @@ from ._likelihood_methods import *
 // Tells swig about our type hierarchy. 
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
-%apply int { t_int }; 
 %apply int { DCProgs::t_int }; 
-%apply double { t_real }; 
+%apply unsigned int { DCProgs::t_uint }; 
 %apply double { DCProgs::t_real }; 
-%typemap(typecheck) DCProgs::t_int = int;
-%typemap(typecheck) t_int = int;
-%typemap(typecheck) DCProgs::t_real = double;
-%typemap(typecheck) t_real = double;
-%typemap(out) DCProgs::t_rvector { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%typemap(out) DCProgs::t_initvec { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
-}
-%typemap(out) DCProgs::t_rmatrix { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1, NULL, true); }
-  DCPROGS_CATCH(SWIG_fail);
-};
 
 
-
+// Adds some standard converters for eigen, 
+// + bindings for svd, eig, ... in case we are compiling with t_real > double.
+%include "math.swg"
 // These macros help us translate from C++ exceptions to python exceptions
 //! General namespace for all things DCProgs.
 namespace DCProgs {
@@ -140,8 +144,10 @@ namespace DCProgs {
   %include "exact_survivor.swg"
   %include "approx_survivor.swg"
   %include "missed_eventsG.swg"
+  %include "log10likelihood.swg"
 
 }
 %include "time_filter.swg"
 %include "chained.swg"
+
 #undef DCPROGS_CATCH

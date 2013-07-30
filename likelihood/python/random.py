@@ -1,3 +1,26 @@
+########################
+#   DCProgs computes missed-events likelihood as described in
+#   Hawkes, Jalali and Colquhoun (1990, 1992)
+#
+#   Copyright (C) 2013  University College London
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#########################
+
+""" Methods for creating random objects. 
+
+    The difficulty is to create objects that have some structure, and that are not too pathological.
+"""
+__docformat__ = "restructuredtext en"
+__all__ = ['rate_matrix', 'random_idealg', 'time_intervals', 'time_series']
 def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True, realeigs=True,
                 tolerance=1e-8):
   """ Creates a random matrix with some structure to it.
@@ -53,7 +76,7 @@ def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True
     return matrix
 
   def zero_eig(result): 
-    from numpy.linalg import svd
+    from dcprogs.likelihood import svd
     from numpy import sum, abs
     try: U, sing, V = svd(result)
     except: return False
@@ -75,7 +98,7 @@ def qmatrix(*args, **kwargs):
   
   def zero_eig(result):
     """ Qff and Qaa cannot be singular. """
-    from numpy.linalg import svd
+    from dcprogs.likelihood import svd
     from numpy import all, any, abs
     try: singular = svd(result.aa)[1]
     except: return False
@@ -85,24 +108,26 @@ def qmatrix(*args, **kwargs):
     return all(abs(singular) > 1e-8)
 
 
-  def get_qmatrix():
-    matrix = rate_matrix(*args, **kwargs)
-    nopen = randint(2, matrix.shape[0]-2)
-    return QMatrix(matrix, nopen)
+  if 'get_qmatrix' in kwargs: get_qmatrix = kwargs['get_qmatrix']
+  else:
+    def get_qmatrix():
+      matrix = rate_matrix(*args, **kwargs)
+      nopen = randint(2, matrix.shape[0]-2)
+      return QMatrix(matrix, nopen)
 
   result = get_qmatrix()
   while not zero_eig(result): result = get_qmatrix()
 
   return result
+# Adds description of parameters and function from the rate_matrix docstring.
+qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
+                                 + rate_matrix.__doc__.splitlines()[1:])
+
 
 def random_idealg(*args, **kwargs):
   """ Creates a random state matrix with some structure to it. """
   from .likelihood import IdealG
   return IdealG(qmatrix(*args, **kwargs))
-
-# Adds description of parameters and function from the rate_matrix docstring.
-qmatrix.__doc__ = "\n".join(qmatrix.__doc__.splitlines()
-                                 + rate_matrix.__doc__.splitlines()[1:])
 
 
 def time_intervals(N=100, n=100, nsmall=3, maxsize=10, tau=1e-4):
@@ -160,7 +185,7 @@ def time_intervals(N=100, n=100, nsmall=3, maxsize=10, tau=1e-4):
 
 def time_series(*args, **kwargs): 
   """ Create a random time series. """
-  from ._likelihood_methods import intervals_to_series
+  from ._methods import intervals_to_series
   start = kwargs.pop('start', 0)
   perfect, result = time_intervals(*args, **kwargs)
   return intervals_to_series(perfect, start), intervals_to_series(result, start)

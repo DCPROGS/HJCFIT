@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include "DCProgsConfig.h"
 #include <iostream>
 #include <type_traits>
@@ -103,7 +123,7 @@ class TestFindIntervals : public ::testing::TestWithParam<t_int> {
 
 TEST_P(TestFindIntervals, random_matrix) {
 
-  typedef std::uniform_int_distribution<t_int> t_idist;
+  typedef std::uniform_int_distribution<t_uint> t_idist;
   
   QMatrix qmatrix;
   try {
@@ -123,7 +143,7 @@ TEST_P(TestFindIntervals, random_matrix) {
               [](RootInterval const &_a, RootInterval const &_b)
               { return _a.start < _b.end; });
 
-    t_int nroots = 0;
+    t_uint nroots = 0;
     // A few tests:
     //   - multiplicity should never be zero. What would be the point of an interval without
     //     roots ?

@@ -1,4 +1,28 @@
-%feature("autodoc", "Computes exact missed-event survivor function.") ExactSurvivor;
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
+%feature("autodoc", "Computes exact missed-event survivor function.\n\n"
+         ":param qmatrix:\n"
+         "   The Q-matrix for which to compute the exact likelihood. \n"
+         ":param float double:\n"
+         "   The maximum length of missed events.\n" ) ExactSurvivor;
 %feature("autodoc", "Open to close transitions") ExactSurvivor::af;
 %feature("autodoc", "Closed to open transitions") ExactSurvivor::fa;
 %feature("autodoc", "Probability of no shut times detected between 0 and t.") ExactSurvivor::R_af;
@@ -9,6 +33,7 @@
 %feature("autodoc", ":math:`D_i` matrices for fa.") ExactSurvivor::D_fa;
 %feature("autodoc", "Eigenvalues in af basis.") ExactSurvivor::eigenvalues_af;
 %feature("autodoc", "Eigenvalues in fa basis.") ExactSurvivor::eigenvalues_fa;
+
 class ExactSurvivor {
   public:
 
@@ -39,10 +64,10 @@ class ExactSurvivor {
     }
   }
 
-  DCProgs::t_rmatrix recursion_af(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;
-  DCProgs::t_rmatrix recursion_fa(DCProgs::t_int i, DCProgs::t_int m, DCProgs::t_int l) const;
-  DCProgs::t_rmatrix D_af(DCProgs::t_int _i) const;
-  DCProgs::t_rmatrix D_fa(DCProgs::t_int _i) const;
+  DCProgs::t_rmatrix recursion_af(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
+  DCProgs::t_rmatrix recursion_fa(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
+  DCProgs::t_rmatrix D_af(DCProgs::t_uint _i) const;
+  DCProgs::t_rmatrix D_fa(DCProgs::t_uint _i) const;
 
   // Renames some values so we can make it a property.
   %rename(_get_tau) get_tau() const; 

@@ -1,15 +1,32 @@
+########################
+#   DCProgs computes missed-events likelihood as described in
+#   Hawkes, Jalali and Colquhoun (1990, 1992)
+#
+#   Copyright (C) 2013  University College London
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#########################
+
 from behave import when
 from test_setup import register_type
 register_type()
 
 @when('ApproxSurvivor objects are instantiated with the q-matrices and tau={tau:Float}')
 def steps(context, tau):
-  from dcprogs.likelihood import create_approx_survivor
+  from dcprogs.likelihood import ApproxSurvivor
   if not hasattr(context, "approx_survivors"): context.approx_survivors = []
   for i, qmatrix in enumerate(context.qmatrices):
     if qmatrix is None: context.approx_survivors.append(None); continue
     try: 
-      context.approx_survivors.append(create_approx_survivor(qmatrix, tau))
+      context.approx_survivors.append(ApproxSurvivor(qmatrix, tau))
     except ArithmeticError: 
       context.approx_survivors.append(None)
       context.qmatrices[i] = None
@@ -20,14 +37,14 @@ def steps(context, tau):
 
 @given('a list of {n:Integer} random approximate survivor functions with tau={tau:Float}')
 def step(context, n, tau):
-  from dcprogs.random import qmatrix as random_qmatrix
-  from dcprogs.likelihood import create_approx_survivor
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood import ApproxSurvivor
   qmatrices, survivors, i = [], [], 10*n
   while len(survivors) != n:
     i -= 1
     if i == 0: raise AssertionError('Could not instanciate enough survivor functions.')
     qmatrix = random_qmatrix()
-    try: survivor = create_approx_survivor(qmatrix, tau)
+    try: survivor = ApproxSurvivor(qmatrix, tau)
     except: continue
     else: survivors.append(survivor)
   if not hasattr(context, 'qmatrices'): context.qmatrices = []

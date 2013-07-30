@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
 #define DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
 
@@ -27,9 +47,13 @@ namespace DCProgs {
       //! \param[in] _nopen: Number of open states. 
       //! \param[in] _tau: Missed event cutoff time.
       template<class T>
-        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_int _nopen, t_real _tau)
+        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau)
           { set(QMatrix(_qmatrix, _nopen), _tau); }
-
+      //! Move constructor
+      ExactSurvivor   (ExactSurvivor &&_c) 
+                    : recursion_af_(std::move(_c.recursion_af_)),
+                      recursion_fa_(std::move(_c.recursion_fa_)),
+                      tau_(_c.tau_) {}
 
       //! Sets the values for which to compute exact g.
       void set(QMatrix const &_qmatrix, t_real _tau);
@@ -43,17 +67,20 @@ namespace DCProgs {
       t_real get_tau() const { return tau_; }
   
       //! Returns recursion matrix for af
-      t_rmatrix recursion_af(t_int _i, t_int _m, t_int _l) const;
+      t_rmatrix recursion_af(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns recursion matrix for af
-      t_rmatrix recursion_fa(t_int _i, t_int _m, t_int _l) const;
+      t_rmatrix recursion_fa(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns Di  matrix for af
-      t_rmatrix D_af(t_int _i) const;
+      t_rmatrix D_af(t_uint _i) const;
       //! Returns Di matrix for af
-      t_rmatrix D_fa(t_int _i) const;
+      t_rmatrix D_fa(t_uint _i) const;
       //! Returns eigenvalues for af matrix
       t_rvector eigenvalues_af() const;
       //! Returns eigenvalues for fa matrix
       t_rvector eigenvalues_fa() const;
+
+      //! Move assignment.
+      bool operator=(ExactSurvivor &&_c);
 
     protected:
       //! \brief Implementation of recursion for exact missed-event Survivor function
@@ -91,20 +118,20 @@ namespace DCProgs {
       RecursionInterface(QMatrix const & _qmatrix, t_real _tau, bool _doAF=true);
   
       //! Recursion element i, m, l.
-      t_element operator()(t_int _i, t_int _m, t_int _l);
+      t_element operator()(t_uint _i, t_uint _m, t_uint _l);
   
       //! Returns D values.
-      t_element const & getD(t_int _i) const {
-        assert(_i >= 0 and _i <= nbeigvals());
+      t_element const & getD(t_uint _i) const {
+        assert(_i <= nbeigvals());
         return dvalues_[_i]; 
       }
       //! Returns ith eigenvalue.
-      t_real get_eigvals(t_int _i) const {
-        assert(_i >= 0 and _i <= nbeigvals());
+      t_real get_eigvals(t_uint _i) const {
+        assert(_i <= nbeigvals());
         return eigenvalues_(_i);
       }
       //! Returns the number of eigenvalues
-      t_int nbeigvals() const { return static_cast<t_int>(eigenvalues_.size()); }
+      t_uint nbeigvals() const { return static_cast<t_uint>(eigenvalues_.size()); }
 
       //! Reference to eigenvales
       t_rvector const & eigenvalues() const { return eigenvalues_; }
@@ -114,7 +141,7 @@ namespace DCProgs {
     protected:
   
       //! Key of the map where coefficient matrices are stored.
-      typedef std::tuple<t_int, t_int, t_int> t_key;
+      typedef std::tuple<t_uint, t_uint, t_uint> t_key;
       //! Map where coefficients are stored.
       std::map<t_key, t_element> coeff_map_;
       //! D matrices (See equation 3.16)
@@ -122,7 +149,7 @@ namespace DCProgs {
       //! Eigenvalues of the transition rate matrix.
       t_rvector eigenvalues_;
       //! Number of open states.
-      t_int nopen;
+      t_uint nopen;
   };
 }
 

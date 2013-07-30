@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 %feature("autodoc", "Figures out lower bound for root.\n\n"
          "Lower bound is obtained by iteratively checking the "
          "lowest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
@@ -16,6 +36,28 @@
          find_lower_bound_for_roots(DeterminantEq const &det);
 
 DCProgs::t_real find_lower_bound_for_roots(DeterminantEq const &det,
+                                           DCProgs::t_real start = 1e8,
+                                           DCProgs::t_real alpha = 2e0, 
+                                           DCProgs::t_int itermax = 100);
+
+%feature("autodoc", "Figures out upper bound for root.\n\n"
+         "Lower bound is obtained by iteratively checking the "
+         "largest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
+         "where :math:`s_i` is the guess at iteration :math:`i`. If the "
+         "lower eigenvalue is lower than :math:`s_i`, than "
+         ":math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` "
+         "is created.\n\n"
+         ":param DeterminantEq det: \n"
+         "     Function for which to guess bound for lower root.\n"
+         ":param Number start:\n"
+         "     Starting point. Defaults to zero.\n"
+         ":param Number alpha:\n"
+         "     Factor from which to determine next best guess.\n"
+         ":param Integer itermax:\n"
+         "     Maximum number of iterations before bailing out.\n")
+         find_upper_bound_for_roots(DeterminantEq const &det);
+
+DCProgs::t_real find_upper_bound_for_roots(DeterminantEq const &det,
                                            DCProgs::t_real start = 1e8,
                                            DCProgs::t_real alpha = 2e0, 
                                            DCProgs::t_int itermax = 100);
@@ -77,7 +119,7 @@ DCProgs::t_real find_lower_bound_for_roots(DeterminantEq const &det,
 // Despite what it advertises, SWIG doesn't seem to deal well with multiple default arguments in
 // c++.
 %typemap("default") DCProgs::t_real mins { $1 = 1e8; };
-%typemap("default") DCProgs::t_real maxs { $1 = 0e0; };
+%typemap("default") DCProgs::t_real maxs { $1 = 1e1; };
 %typemap("default") DCProgs::t_real tolerance { $1 = 1e-8; };
 std::vector<DCProgs::RootInterval>
    find_root_intervals(DeterminantEq const &det, DCProgs::t_real mins, 
@@ -118,3 +160,24 @@ std::vector<DCProgs::RootInterval>
 %clear DCProgs::t_real tolerance;
 
 
+%{
+  // Helper function to convert output of root finding objects to cpp
+  std::vector<DCProgs::Root> convert_to_roots(PyObject *_in) {
+    Object<> iterator = steal_ref(PyObject_GetIter(_in)); 
+    if(not iterator) throw DCProgs::errors::PythonErrorAlreadyThrown();
+
+    std::vector<DCProgs::Root> result;
+    while(Object<> item = steal_ref(PyIter_Next(~iterator))) {
+
+      double root;
+      int multiplicity;
+
+      if(not PyArg_ParseTuple(~item, "di", &root, &multiplicity))
+        throw DCProgs::errors::PythonErrorAlreadyThrown();
+      result.emplace_back(DCProgs::t_real(root), DCProgs::t_int(multiplicity));
+    }
+    if(PyErr_Occurred() != NULL) throw DCProgs::errors::PythonErrorAlreadyThrown();
+    
+    return result;
+  }
+%}

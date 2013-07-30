@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 namespace {
 
     //! \brief Helps out applying functor to a function.
@@ -84,8 +104,10 @@ namespace {
           template<class T_DATA_ITERATOR, class T_DERIVED>
             void set_element( T_DATA_ITERATOR  _data_itr,
                               Eigen::DenseBase<T_DERIVED> const &_item ) const {
+              // Strides are inverted because Eigen does fortran style and numpy does C style by
+              // default. 
               t_Map( _data_itr, out_sizes_[0], out_sizes_[1],
-                     t_Stride(data_strides_[0], data_strides_[1]) ) = _item.transpose(); 
+                     t_Stride(data_strides_[1], data_strides_[0]) ) = _item;
             }
           template<class T_DATA>
             void increment_data_pointer(T_DATA & _data_itr) const { 

@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #ifndef DCPROGS_NUMPY_EIGEN
 #define DCPROGS_NUMPY_EIGEN
 #include <type_traits>
@@ -21,21 +41,29 @@ namespace DCProgs {
     };                                                           \
     DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
 
-    DCPROGS_MACRO(npy_double,    NPY_DOUBLE);
-    DCPROGS_MACRO(npy_float,     NPY_FLOAT);
-    DCPROGS_MACRO(npy_longlong,  NPY_LONGLONG);
-    DCPROGS_MACRO(npy_ulonglong, NPY_ULONGLONG);
-    DCPROGS_MACRO(npy_long,      NPY_LONG);
-    DCPROGS_MACRO(npy_ulong,     NPY_ULONG);
-    DCPROGS_MACRO(npy_int,       NPY_INT);
-    DCPROGS_MACRO(npy_uint,      NPY_UINT);
-    DCPROGS_MACRO(npy_short,     NPY_SHORT);
-    DCPROGS_MACRO(npy_ushort,    NPY_USHORT);
-    DCPROGS_MACRO(npy_byte,      NPY_BYTE);
-    DCPROGS_MACRO(npy_ubyte,     NPY_UBYTE);
+    DCPROGS_MACRO(npy_cdouble,     NPY_CDOUBLE);
+    DCPROGS_MACRO(npy_double,      NPY_DOUBLE);
+    DCPROGS_MACRO(npy_float,       NPY_FLOAT);
+    DCPROGS_MACRO(npy_longlong,    NPY_LONGLONG);
+    DCPROGS_MACRO(npy_ulonglong,   NPY_ULONGLONG);
+    DCPROGS_MACRO(npy_long,        NPY_LONG);
+    DCPROGS_MACRO(npy_ulong,       NPY_ULONG);
+    DCPROGS_MACRO(npy_int,         NPY_INT);
+    DCPROGS_MACRO(npy_uint,        NPY_UINT);
+    DCPROGS_MACRO(npy_short,       NPY_SHORT);
+    DCPROGS_MACRO(npy_ushort,      NPY_USHORT);
+    DCPROGS_MACRO(npy_byte,        NPY_BYTE);
+    DCPROGS_MACRO(npy_ubyte,       NPY_UBYTE);
 
-#   ifdef DCPROGS_NPY_HAS_LONG_DOUBLE
+#   ifdef DCPROGS_NPY_LONG_DOUBLE
       DCPROGS_MACRO(npy_longdouble, NPY_LONGDOUBLE);
+      DCPROGS_MACRO(npy_clongdouble, NPY_CLONGDOUBLE);
+      template<> struct type< std::complex<npy_longdouble> > {
+        /*! Original Type */
+        typedef npy_clongdouble np_type;
+        /*! Associated  number */
+        DCPROGS_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
+      };
 #   endif
 #   ifdef DCPROGS_NPY_HAS_BOOL
       DCPROGS_MACRO(npy_bool, NPY_BOOL);
@@ -48,6 +76,13 @@ namespace DCProgs {
       };
       DCPROGS_DECL_CONSTEXPR(int type<bool>::value, NPY_BOOL);
 #   endif 
+      template<> struct type< std::complex<npy_double> > {
+        /*! Original Type */
+        typedef npy_cdouble np_type;
+        /*! Associated  number */
+        DCPROGS_INIT_CONSTEXPR(int value, NPY_CDOUBLE); 
+      };
+      
 
 #   undef DCPROGS_MACRO
     
@@ -116,6 +151,38 @@ namespace DCProgs {
         return result;
       }
 
+    PyObject* wrap_to_numpy(t_cvector const &_in) {
+
+      typedef type<t_cvector::Scalar> t_ScalarType;
+      npy_intp dims[1] = { _in.size() };
+      Object<PyArrayObject> result = steal_ref(reinterpret_cast<PyArrayObject*>(
+          PyArray_SimpleNew(1, dims, t_ScalarType::value)
+      )); 
+      if(not result) throw errors::PythonErrorAlreadyThrown();
+      
+      t_real const *i_data = reinterpret_cast<const t_real(&)[2]>(_in(0));
+      std::copy(i_data, i_data + 2 * _in.size(), static_cast<t_real*>(PyArray_DATA(~result)));
+      if(PyArray_FLAGS(~result) & NPY_ARRAY_C_CONTIGUOUS and not _in.IsRowMajor) 
+        PyArray_CLEARFLAGS(~result, NPY_ARRAY_C_CONTIGUOUS);
+      return reinterpret_cast<PyObject*>(result.release());
+    }
+    PyObject* wrap_to_numpy(t_cmatrix const &_in) {
+
+      typedef type<t_rmatrix::Scalar> t_ScalarType;
+      npy_intp dims[2] = { _in.rows(), _in.cols() };
+      Object<PyArrayObject> result = steal_ref(reinterpret_cast<PyArrayObject*>(
+          PyArray_ZEROS(2, dims, t_ScalarType::value, _in.IsRowMajor ? 0: 1)
+      )); 
+      if(not result) throw errors::PythonErrorAlreadyThrown();
+
+      t_real const *i_data = reinterpret_cast<const t_real(&)[2]>(_in(0));
+      std::copy(i_data, i_data + 2 * _in.size(), static_cast<t_real*>(PyArray_DATA(~result)));
+      if(PyArray_FLAGS(~result) & NPY_ARRAY_C_CONTIGUOUS and not _in.IsRowMajor) 
+        PyArray_CLEARFLAGS(~result, NPY_ARRAY_C_CONTIGUOUS);
+
+      return reinterpret_cast<PyObject*>(result.release());
+    }
+
     namespace { namespace details {
       template<class T>
         Eigen::Map< Eigen::Matrix<T, Eigen::Dynamic, Eigen::Dynamic>, 0,
@@ -129,11 +196,12 @@ namespace DCProgs {
             int const ndim = PyArray_NDIM(_in);
             npy_intp const * const strides = PyArray_STRIDES(_in);
             npy_intp const * const dims = PyArray_DIMS(_in);
-            t_int realdims[2] = { static_cast<t_int>(dims[0]),
-                                  ndim == 2 ? static_cast<t_int>(dims[1]): 1 };
-            t_int realstrides[2] = {
-              static_cast<t_int>(strides[0]),
-              static_cast<t_int>(ndim == 2 ? strides[1]: strides[0] * dims[0]) 
+            t_rvector::Index realdims[2] = { static_cast<t_rvector::Index>(dims[0]),
+                                             ndim == 2 ? 
+                                                static_cast<t_rvector::Index>(dims[1]): 1 };
+            t_rvector::Index realstrides[2] = {
+              static_cast<t_rvector::Index>(strides[0]),
+              static_cast<t_rvector::Index>(ndim == 2 ? strides[1]: strides[0] * dims[0]) 
             };
             
             t_Map result( (T*)PyArray_DATA(_in), realdims[0], realdims[1], 
@@ -165,6 +233,7 @@ namespace DCProgs {
            return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
        DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
        else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
        else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
        else DCPROGS_MACRO( npy_int,        NPY_INT        )
@@ -178,6 +247,109 @@ namespace DCProgs {
 #      undef DCPROGS_MACRO
        throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
        return t_rmatrix();
+    }
+
+    //! \brief Converts numpy to an initvec
+    //! \param[in] _in a numpy array. 
+    //! \return An eigen object which is a copy of the numpy input.
+    DCProgs::t_initvec map_to_initvec(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       // Check dimensionality
+       npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
+       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
+       for(npy_intp i(0); i < N - 2; i++, ++dims) 
+          if(*dims > 1)
+            throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+          else if(*dims == 0) 
+            throw DCProgs::errors::PythonValueError("Input array is empty.");
+       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+
+
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
+#      ifdef DCPROGS_MACRO
+#        error DCPROGS_MACRO is already defined.
+#      endif
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
+        
+       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else DCPROGS_MACRO( npy_int,        NPY_INT        )
+       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
+       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
+       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
+       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
+       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef DCPROGS_MACRO
+       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       return t_initvec();
+    }
+    
+    //! \brief Converts numpy to an rvector
+    //! \param[in] _in a numpy array. 
+    //! \return An eigen object which is a copy of the numpy input.
+    DCProgs::t_rvector map_to_rvector(PyObject *_in) {
+       if(not PyArray_Check(_in)) {
+          Object<> convert = steal_ref( 
+            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+          );
+          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          return map_to_rmatrix(~convert);
+       }
+       
+       // Check dimensionality
+       npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
+       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
+       if(N > 2) {
+         for(npy_intp i(0); i < N - 2; i++, ++dims) 
+            if(*dims > 1)
+              throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+            else if(*dims == 0) 
+              throw DCProgs::errors::PythonValueError("Input array is empty.");
+       } 
+       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+       if(N >= 2) {
+         npy_intp const dima = *dims;
+         npy_intp const dimb = *(dims+1);
+         if((dima == 1 and dimb != 1) or (dima != 1 and dimb == 1))
+           throw DCProgs::errors::PythonValueError("Input array is not a (column) vector.");
+       }
+
+
+       int const type = PyArray_TYPE((PyArrayObject*)_in);
+#      ifdef DCPROGS_MACRO
+#        error DCPROGS_MACRO is already defined.
+#      endif
+#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+         if(type == NUM_TYPE)                                                                      \
+           return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rvector::Scalar>(); 
+        
+       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
+       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
+       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else DCPROGS_MACRO( npy_int,        NPY_INT        )
+       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
+       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
+       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
+       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
+       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef DCPROGS_MACRO
+       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       return t_rvector();
     }
 
     //! Cast data to given type from array type.
@@ -197,7 +369,7 @@ namespace DCProgs {
           DCPROGS_MACRO(npy_ushort);
           DCPROGS_MACRO(npy_byte);
           DCPROGS_MACRO(npy_ubyte);
-#         ifdef DCPROGS_NPY_HAS_LONG_DOUBLE
+#         ifdef DCPROGS_NPY_LONG_DOUBLE
             DCPROGS_MACRO(npy_longdouble);
 #         endif
 #         ifdef DCPROGS_NPY_HAS_BOOL

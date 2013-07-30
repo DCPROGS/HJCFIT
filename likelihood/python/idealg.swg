@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 %feature("autodoc", "Ideal Likelihood.\n\n"
          "This object can be instantiated one of several way:\n\n"
          "   - With a matrix and an integer\n\n"
@@ -27,7 +47,7 @@ class IdealG {
     IdealG(DCProgs::QMatrix const &states) {
       return new DCProgs::IdealG(states.matrix, states.nopen); 
     }
-    IdealG(PyObject* _py_matrix, int _nopen) {
+    IdealG(PyObject* _py_matrix, DCProgs::t_uint _nopen) {
       if(_nopen < 0)
         throw DCProgs::errors::PythonValueError("Number of open states cannot be negative.");
       DCProgs::t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
@@ -42,8 +62,8 @@ class IdealG {
   %extend {
     DCProgs::t_initvec const initial_occupancies;
     DCProgs::t_initvec const final_occupancies;
-    DCProgs::t_int const nopen;
-    DCProgs::t_int const nshut;
+    DCProgs::t_uint const nopen;
+    DCProgs::t_uint const nshut;
   }
   %{
     DCProgs::t_initvec DCProgs_IdealG_initial_occupancies_get(DCProgs::IdealG *_in) {
@@ -52,8 +72,8 @@ class IdealG {
     DCProgs::t_initvec DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
       return DCProgs::occupancies(*_in, false);
     }
-    DCProgs::t_int DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
-    DCProgs::t_int DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
+    DCProgs::t_uint DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
+    DCProgs::t_uint DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
   %}
 
   DCProgs::t_rmatrix af(DCProgs::t_real t) const;

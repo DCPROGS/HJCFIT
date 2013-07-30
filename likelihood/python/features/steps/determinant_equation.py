@@ -1,3 +1,20 @@
+########################
+#   DCProgs computes missed-events likelihood as described in
+#   Hawkes, Jalali and Colquhoun (1990, 1992)
+#
+#   Copyright (C) 2013  University College London
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#########################
+
 from behave import given, when, then
 from test_setup import register_type
 register_type()
@@ -50,9 +67,10 @@ def step(context, s):
 def step(context, nopen):
   from numpy import array
   from dcprogs.likelihood import QMatrix
+  from dcprogs import internal_dtype
 
   matrix = context.text.lstrip().rstrip().splitlines()
-  matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype='float64')
+  matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype=internal_dtype)
   context.qmatrix = QMatrix(matrix, nopen)
 
 

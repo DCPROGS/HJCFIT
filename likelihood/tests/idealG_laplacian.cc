@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include "DCProgsConfig.h"
 #include <random>
 #include <memory>
@@ -13,7 +33,7 @@ std::mt19937& rng() {
 // Max exponential time is 5*t (t=1)
 size_t const nexponents = 5;
 // Random matrix have zero if n in [zeros[0], zeros[1][ is > zeros[2]
-t_int const zeros[3] = {0, 5, 2}; 
+t_uint const zeros[3] = {0, 5, 2}; 
 // Min max size of random matrices.
 size_t const matsizes[2] = {2, 10};
 // Min max numbers in random matrices.
@@ -40,7 +60,7 @@ TEST_P(Laplacian, af) {
 
   t_rmatrix const aa = GetParam().aa();
   t_rmatrix const af = GetParam().af();
-  t_int const nrows = aa.rows();
+  t_uint const nrows = aa.rows();
   t_rmatrix const id = t_rmatrix::Identity(nrows, nrows); 
   for(size_t i(0); i < nscales; ++i) {
     t_real const s(rnumbers()); 
@@ -66,7 +86,7 @@ TEST_P(Laplacian, fa) {
 
   t_rmatrix const ff = GetParam().ff();
   t_rmatrix const fa = GetParam().fa();
-  t_int const nrows = ff.rows();
+  t_uint const nrows = ff.rows();
   t_rmatrix const id = t_rmatrix::Identity(nrows, nrows); 
   for(size_t i(0); i < nscales; ++i) {
     t_real const s(rnumbers()); 
@@ -90,7 +110,7 @@ void add_data(std::vector<QMatrix> &_container, t_rmatrix const &_matrix) {
 }
 t_rmatrix random_matrix() {
   typedef std::uniform_real_distribution<t_real> t_rdist;
-  typedef std::uniform_int_distribution<t_int> t_idist;
+  typedef std::uniform_int_distribution<t_uint> t_idist;
   t_rdist __rnumbers(randreal[0], randreal[1]);
   t_idist __matsize(matsizes[0], matsizes[1]);
   t_idist __isnotzero(zeros[0], zeros[1]);
@@ -99,10 +119,10 @@ t_rmatrix random_matrix() {
   auto isnotzero = [&] { return __isnotzero(rng()) < zeros[2]; };
   auto rnumbers = [&] { return isnotzero() ? __rnumbers(rng()): 0; };
 
-  t_int N = matsize();
+  t_uint N = matsize();
   t_rmatrix Q(N, N);
-  for(t_int i(0); i < N; ++i) {
-    for(t_int j(0); j < N; ++j) 
+  for(t_uint i(0); i < N; ++i) {
+    for(t_uint j(0); j < N; ++j) 
       Q(i, j) = rnumbers();
     Q(i, i) = 0e0;
     Q(i, i) = -Q.row(i).sum();

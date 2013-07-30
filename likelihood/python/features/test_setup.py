@@ -1,8 +1,25 @@
+########################
+#   DCProgs computes missed-events likelihood as described in
+#   Hawkes, Jalali and Colquhoun (1990, 1992)
+#
+#   Copyright (C) 2013  University College London
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#########################
+
 """ Holds some general setup for behave. """
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
-  from dcprogs.random import rate_matrix as random_rate_matrix
+  from dcprogs.likelihood.random import rate_matrix as random_rate_matrix
   if string == "classic":
     return array([[ -3050,        50,  3000,      0,    0 ], 
                   [ 2./3., -1502./3.,     0,    500,    0 ],  
@@ -102,7 +119,7 @@ def Matrix(string):
 
 def QMat(string):
   """ Creates matrices from specific strings """
-  from dcprogs.random import qmatrix as random_qmatrix
+  from dcprogs.likelihood.random import qmatrix as random_qmatrix
   from dcprogs.likelihood import QMatrix
 
   string = string.lower().rstrip().lstrip()
@@ -120,15 +137,15 @@ def QMat(string):
 
 def eG(string):
   """ Creates missed-events likelihood from specific strings """
-  from dcprogs.likelihood import create_missed_eventsG
+  from dcprogs.likelihood import MissedEventsG
   string = string.lower().rstrip().lstrip()
   if 'transpose' in string:
     return eG(string.replace('transpose', '')).transpose()
 
-  if string == "classic": return create_missed_eventsG(QMat(string), 1e-4)
-  if string == "ch82": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "cb": return create_missed_eventsG(QMat(string), 0.2)
-  if string == "cks": return create_missed_eventsG(QMat(string), 0.2)
+  if string == "classic": return MissedEventsG(QMat(string), 1e-4)
+  if string == "ch82": return MissedEventsG(QMat(string), 0.2)
+  if string == "cb": return MissedEventsG(QMat(string), 0.2)
+  if string == "cks": return MissedEventsG(QMat(string), 0.2)
   else: raise Exception("Unknown eG model {0}".format(string))
 
 

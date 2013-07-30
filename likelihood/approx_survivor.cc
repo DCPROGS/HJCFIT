@@ -1,3 +1,23 @@
+/***********************
+    DCProgs computes missed-events likelihood as described in
+    Hawkes, Jalali and Colquhoun (1990, 1992)
+
+    Copyright (C) 2013  University College London
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+************************/
+
 #include <DCProgsConfig.h>
 
 #include <unsupported/Eigen/MatrixFunctions>
@@ -36,9 +56,9 @@ namespace DCProgs {
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, ApproxSurvivor const &_self) {
 
     t_rvector af_roots(_self.nb_af_components()), fa_roots(_self.nb_fa_components());
-    for(t_int i(0); i < af_roots.size(); ++i) 
+    for(t_rvector::Index i(0); i < af_roots.size(); ++i) 
       af_roots(i) = std::get<1>(_self.get_af_components(i));
-    for(t_int i(0); i < fa_roots.size(); ++i) 
+    for(t_rvector::Index i(0); i < fa_roots.size(); ++i) 
       fa_roots(i) = std::get<1>(_self.get_fa_components(i));
 
     return _stream << "Approximate Survivor function:\n"
