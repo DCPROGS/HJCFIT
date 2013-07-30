@@ -22,6 +22,8 @@
 #define DCPROGS_CONFIG_H
 
 #include <iso646.h>
+#include <vector>
+#include <type_traits>
 #include <Eigen/Dense>
 
 #cmakedefine HAS_CXX11_TYPETRAITS
@@ -97,7 +99,7 @@ namespace DCProgs {
   //! Types of integers across DCProgs.
   typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
   //! Types of unsigned integers across DCProgs.
-  typedef t_int unsigned t_uint;
+  typedef std::make_unsigned<t_int>::type t_uint;
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of boolean matrices across DCProgs.
