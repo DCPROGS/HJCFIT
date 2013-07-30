@@ -69,7 +69,7 @@ def reduce_likelihood(likelihood, graph_matrix):
         It also sports a  `to_full_coords` coords that maps back to the whole space.
   """
   import numpy
-  from numpy import array, zeros
+  from numpy import array, zeros, sum
   from .likelihood import QMatrix
   
   nstates = len(graph_matrix)
@@ -120,7 +120,9 @@ def reduce_likelihood(likelihood, graph_matrix):
         local_dict['i'] = i
         local_dict['j'] = j
         qmatrix.matrix[i, j] = eval(expression, global_dict, local_dict)
-    for i, row in enumerate(qmatrix.matrix): row[i] -= sum(row)
+    for i, row in enumerate(qmatrix.matrix):
+      row[i] = 0
+      row[i] = -sum(row)
     return qmatrix.matrix
 
   def reduced_likelihood(vector):
