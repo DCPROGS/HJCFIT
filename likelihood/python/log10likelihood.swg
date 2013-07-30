@@ -38,7 +38,8 @@
             Object<> dtype = steal_ref(_dcprogs_dtype());
             result.push_back(0);
             PyArray_CastScalarToCtype(~item, static_cast<void*>(&result.back()), 
-                                      reinterpret_cast<PyArray_Descr*>(~dtype));
+                                      PyArray_DescrFromType(numpy::type<t_real>::value));
+            if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
           } else throw errors::PythonTypeError("Unexpected type in burst.");
       }
       if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
@@ -177,12 +178,17 @@ class Log10Likelihood {
       }
     }
    
-    //! Computes likelihood for each burst in separate value.
-    DCProgs::t_rvector vector(DCProgs::t_rmatrix const &_Q) const;
+    %extend {
+      //! Computes likelihood for each burst in separate value.
+      DCProgs::t_rvector vector(PyObject* _Q) const {
+        return $self->vector(DCProgs::numpy::map_to_rmatrix(_Q));
+      }
+      DCProgs::t_real operator()(PyObject* _Q) const {
+        return $self->operator()(DCProgs::numpy::map_to_rmatrix(_Q));
+      }
+    }
     //! Computes likelihood for each burst in separate value.
     DCProgs::t_rvector vector(QMatrix const &_Q) const;
-    //! Log-likelihood 
-    DCProgs::t_real operator()(DCProgs::t_rmatrix const &_Q) const;
     //! Log-likelihood 
     DCProgs::t_real operator()(QMatrix const &_Q) const;
 };
