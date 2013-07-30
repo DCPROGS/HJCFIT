@@ -48,7 +48,7 @@ def read_idealized_bursts(filename, tau, tcrit):
   from glob import iglob
   from os.path import exists, dirname, join, abspath, basename, splitext
   from numpy import array
-  from dcpyps.dataset import TimeSeries
+  from dcpyps.dataset import SCRecord
 
   if not exists(filename):
     # Check that we are not trying to read a sample data
@@ -63,12 +63,12 @@ def read_idealized_bursts(filename, tau, tcrit):
     filename = join(module_data_dir, '{0}.scn'.format(filename))
 
 
-  time_series = TimeSeries()
+  time_series = SCRecord()
   time_series.load_from_file(filename)
   time_series.impose_resolution(tau)
   time_series.get_open_shut_periods()
   time_series.get_bursts(tcrit)
 
-  return [array(u, dtype=internal_dtype) * 1e-3 for u in time_series.bursts.itervalues()]
+  return [array(u, dtype=internal_dtype) * 1e-3 for u in time_series.bursts]
 
 
