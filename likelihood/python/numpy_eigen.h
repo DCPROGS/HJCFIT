@@ -32,13 +32,13 @@ namespace DCProgs {
 #   ifdef DCPROGS_MACRO
 #     error DCPROGS_MACRO already defined
 #   endif
-#   define DCPROGS_MACRO(TYPE_NAME, TYPE_NUMBER)                 \
-    template<> struct type<TYPE_NAME> {                          \
-      /*! Original Type */                                       \
-      typedef TYPE_NAME np_type;                                 \
-      /*! Associated  number */                                  \
-      DCPROGS_INIT_CONSTEXPR(int value, TYPE_NUMBER);            \
-    };                                                           \
+#   define DCPROGS_MACRO(TYPE_NAME, TYPE_NUMBER)                     \
+    template<> struct type<TYPE_NAME> {                              \
+      /*! Original Type */                                           \
+      typedef TYPE_NAME np_type;                                     \
+      /*! Associated  number */                                      \
+      DCPROGS_INIT_CONSTEXPR(int value, TYPE_NUMBER);                \
+    };                                                               \
     DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
 
     DCPROGS_MACRO(npy_cdouble,     NPY_CDOUBLE);
@@ -64,6 +64,7 @@ namespace DCProgs {
         /*! Associated  number */
         DCPROGS_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
       };
+      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_double> >::value, NPY_CLONGDOUBLE);
 #   endif
 #   ifdef DCPROGS_NPY_HAS_BOOL
       DCPROGS_MACRO(npy_bool, NPY_BOOL);
@@ -82,6 +83,7 @@ namespace DCProgs {
         /*! Associated  number */
         DCPROGS_INIT_CONSTEXPR(int value, NPY_CDOUBLE); 
       };
+      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_double> >::value, NPY_CDOUBLE);
       
 
 #   undef DCPROGS_MACRO
