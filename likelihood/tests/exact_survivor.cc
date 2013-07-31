@@ -65,7 +65,6 @@ class ExactSurvivorTest : public ::testing::Test {
     return result;
   }
   t_rmatrix N1(t_real _t, t_real _tau, bool _a = true)  {
-    t_real const t(_t - _tau);
     t_uint const N = _a ? nopen: nclose;
     t_rmatrix result = t_rmatrix::Zero(N, N);
     for(t_rvector::Index i(0); i < eigenvalues.size(); ++i) 
@@ -155,7 +154,6 @@ TEST_F(ExactSurvivorTest, second_interval) {
   QMatrix qmatrix(Q, 2);
   ExactSurvivor survivor(qmatrix, 1e-4);
 
-  auto aG0 = [&](t_real _t, t_real _tau) { return N0(_t, _tau, true); };
   auto aG1 = [&](t_real _t, t_real _tau) -> t_rmatrix {
     return N0(_t, _tau, true) - N1(_t - _tau, _tau, true); 
   };

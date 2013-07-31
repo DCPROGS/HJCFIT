@@ -130,7 +130,6 @@ namespace DCProgs {
       if(i_found != coeff_map_.end()) return i_found->second;
 
       // Otherwise compute it from recursion
-      t_uint const NOPEN = this->nopen;
       return recursion_formula(*this, _i, _m, _l);
     }
 

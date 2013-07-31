@@ -39,10 +39,10 @@ namespace DCProgs {
     t_rmatrix matrix; 
  
     //! Constructor
-    QMatrix() : matrix(0,0), nopen(0) {}
+    QMatrix() : nopen(0), matrix(0,0) {}
     //! Constructor
     template<class T>
-      QMatrix(Eigen::DenseBase<T> const &_c, t_uint _nopen = 0) : matrix(_c), nopen(_nopen) {}
+      QMatrix(Eigen::DenseBase<T> const &_c, t_uint _nopen = 0) : nopen(_nopen), matrix(_c) {}
   
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }

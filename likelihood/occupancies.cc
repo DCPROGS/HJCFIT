@@ -73,7 +73,6 @@ namespace DCProgs {
 
   t_initvec MSWINDOBE CHS_occupancies(MissedEventsG const &_G, t_real _tcrit, bool _initial) {
     
-    t_uint const nopen = _G.get_qmatrix().nopen;
     t_rmatrix const Hfa = CHS_matrix_Hfa(_G, _tcrit);
     if(_initial) {
       // \f$\phi_F H_{FA}\f$

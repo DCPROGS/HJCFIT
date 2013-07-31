@@ -62,7 +62,7 @@ TEST_F(IdealGTest, initialize){
   idealg.set(Q, 2);
   Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic> diff = (Q - idealg.get_matrix()).array().abs();
   EXPECT_TRUE((diff < 1e-8).all());
-  EXPECT_EQ(idealg.get_nopen(), 2);
+  EXPECT_EQ(idealg.get_nopen(), t_uint(2));
 
   { t_rmatrix qq(5, 3);
     EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }

@@ -82,15 +82,15 @@ namespace DCProgs {
     //! Input error to a math problem
     class Domain : public Math, virtual public std::domain_error {
       public:
-        explicit Domain(char const *_message) noexcept : Math(), std::domain_error(_message) {};
-        explicit Domain(std::string const &_message) noexcept : Math(), std::domain_error(_message) {};
+        explicit Domain(char const *_message) noexcept : std::domain_error(_message), Math()  {};
+        explicit Domain(std::string const &_message) noexcept : std::domain_error(_message), Math() {};
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
     //! Index error
     class Index : public Root, public virtual std::out_of_range {
       public:
-        explicit Index(char const *_message) noexcept : Root(), std::out_of_range(_message) {};
-        explicit Index(std::string const &_message) noexcept : Root(), std::out_of_range(_message) {};
+        explicit Index(char const *_message) noexcept : std::out_of_range(_message), Root() {};
+        explicit Index(std::string const &_message) noexcept : std::out_of_range(_message), Root() {};
         virtual char const* what() const noexcept { return this->std::out_of_range::what(); }
     };
 
@@ -99,9 +99,9 @@ namespace DCProgs {
     class NotInvertible : public Domain {
       public:
         NotInvertible   (char const *_message) noexcept
-                      : Domain(_message), std::domain_error(_message) {};
+                      : std::domain_error(_message), Domain(_message) {};
         NotInvertible   (std::string const &_message) noexcept 
-                      : Domain(_message), std::domain_error(_message) {};
+                      : std::domain_error(_message), Domain(_message) {};
     };
 
     //! Runtime error which carries a message.
