@@ -55,8 +55,8 @@ def step(context):
   for ((check, series), tau), filtered in zip(context.series, context.filtered):
     try: assert all(abs(check - filtered) < 1e-8)
     except: 
-      print repr(check)
-      print repr(series)
+      print(repr(check))
+      print(repr(series))
       raise
 
 @given('{n:Integer} random time intervals with tau={tau:Float}')
@@ -94,7 +94,7 @@ def step(context):
   for ((check, intervals), tau), filtered in zip(context.intervals, context.filtered):
     try: assert all(abs(check - filtered) < 1e-8)
     except: 
-      print repr(intervals)
-      print repr(check)
-      print repr(filtered)
+      print(repr(intervals))
+      print(repr(check))
+      print(repr(filtered))
       raise

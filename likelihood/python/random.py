@@ -65,14 +65,14 @@ def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True
 
   def generate_matrix():
     matrix = random((N, N))
-    for i in xrange(N):
-      for j in xrange(i+1, N):
+    for i in range(N):
+      for j in range(i+1, N):
         if random(1) < zeroprob: 
           matrix[i, j] = 0
           matrix[j, i] = 0
         elif random(1) > large:
           matrix[(i, j) if random(1) > 0.5  else (j, i)] *= factor 
-    for i in xrange(matrix.shape[0]): matrix[i, i] -= sum(matrix[i, :])
+    for i in range(matrix.shape[0]): matrix[i, i] -= sum(matrix[i, :])
     return matrix
 
   def zero_eig(result): 

@@ -124,9 +124,28 @@
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
 %apply int { DCProgs::t_int }; 
-%apply unsigned int { DCProgs::t_uint }; 
 %apply double { DCProgs::t_real }; 
-
+// unsigned should be checked for negative values. Otherwise swig comes out with a truly unhelpfull
+// message. Also checks for numpy scalar at the same type.
+%typemap(in) DCProgs::t_uint {
+  try {
+    using namespace DCProgs;
+    long integer;
+    if(PyLong_Check($input)) integer = PyLong_AsLong($input);
+#   ifndef DCPROGS_PYTHON3
+      else if(PyInt_Check($input)) integer = PyInt_AsLong($input);
+#   endif
+    else if(PyArray_CheckScalar($input))  {
+      PyArray_CastScalarToCtype($input, static_cast<void*>(&integer), 
+                                PyArray_DescrFromType(numpy::type<long>::value));
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+    } else throw errors::PythonTypeError("Unexpected type in burst.");
+    if(integer < 0) throw errors::PythonValueError("Input integer cannot be negative.");
+    $1 = static_cast<t_uint>(integer);
+  } DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(out) DCProgs::t_uint = unsigned int;
+%typemap(typecheck) DCProgs::t_uint = int;
 
 // Adds some standard converters for eigen, 
 // + bindings for svd, eig, ... in case we are compiling with t_real > double.

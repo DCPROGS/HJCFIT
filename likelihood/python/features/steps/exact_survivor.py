@@ -31,5 +31,5 @@ def steps(context, tau):
       context.qmatrices[i] = None
       continue
     except:
-      print qmatrix
+      print(qmatrix)
       raise

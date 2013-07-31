@@ -1,4 +1,4 @@
-########################
+#######################
 #   DCProgs computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
@@ -36,11 +36,11 @@ def network(qmatrix):
   from networkx import Graph
 
   graph = Graph()
-  for i in xrange(qmatrix.nopen): graph.add_node(i, open=True)
-  for j in xrange(qmatrix.nshut): graph.add_node(i+j, open=False)
+  for i in range(qmatrix.nopen): graph.add_node(i, open=True)
+  for j in range(qmatrix.nshut): graph.add_node(i+j, open=False)
 
-  for i in xrange(qmatrix.matrix.shape[0]):
-    for j in xrange(i, qmatrix.matrix.shape[1]):
+  for i in range(qmatrix.matrix.shape[0]):
+    for j in range(i, qmatrix.matrix.shape[1]):
       if abs(qmatrix.matrix[i,j]) > 1e-8:
         graph.add_edge(i, j)
         graph[i][j]['k+'] = qmatrix.matrix[i, j]

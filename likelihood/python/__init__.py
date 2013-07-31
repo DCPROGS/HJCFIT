@@ -16,7 +16,7 @@
 #########################
 
 """ Likelihood sub-package. """
-from likelihood import *
+from .likelihood import *
 from ._methods import *
-import random
-import optimization
+from . import random
+from . import optimization

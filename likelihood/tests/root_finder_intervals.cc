@@ -82,7 +82,7 @@ TEST_F(RootFinderIntervalsTest, open) {
   DeterminantEq det(qmatrix, 1e-4); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
-  EXPECT_EQ(intervals.size(), 2);
+  EXPECT_EQ(intervals.size(), std::vector<RootInterval>::size_type(2));
 
   std::sort(intervals.begin(), intervals.end(),
             [](RootInterval const &_a, RootInterval const &_b) { return _a.start < _b.end; });
@@ -100,7 +100,7 @@ TEST_F(RootFinderIntervalsTest, closed) {
   DeterminantEq det(qmatrix.transpose(), 1e-4); 
   
   std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
-  EXPECT_EQ(intervals.size(), 3);
+  EXPECT_EQ(intervals.size(), std::vector<RootInterval>::size_type(3));
 
   std::sort(intervals.begin(), intervals.end(),
             [](RootInterval const &_a, RootInterval const &_b) { return _a.start < _b.end; });
@@ -169,7 +169,7 @@ TEST_P(TestFindIntervals, random_matrix) {
                       start_sign == end_sign:
                       start_sign != end_sign );
     }
-    EXPECT_EQ(qmatrix.aa().rows(), det.get_nopen()) << qmatrix;
+    EXPECT_EQ(static_cast<t_uint>(qmatrix.aa().rows()), det.get_nopen()) << qmatrix;
     EXPECT_TRUE(nroots > 0) << qmatrix;
   } catch(...) {
     std::cerr.precision(15);

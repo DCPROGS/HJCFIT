@@ -32,7 +32,7 @@ def steps(context, tau):
       context.qmatrices[i] = None
       continue
     except:
-      print qmatrix
+      print(qmatrix)
       raise
 
 @given('a list of {n:Integer} random approximate survivor functions with tau={tau:Float}')
@@ -67,6 +67,6 @@ def step(context):
     try: 
       assert all(abs(value - identity(value.shape[0])) < context.tolerance)
     except:
-      print survivor
-      print qmatrix
+      print(survivor)
+      print(qmatrix)
       raise

@@ -39,7 +39,7 @@ namespace DCProgs {
       /*! Associated  number */                                      \
       DCPROGS_INIT_CONSTEXPR(int value, TYPE_NUMBER);                \
     };                                                               \
-    DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER);
+    DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER)
 
     DCPROGS_MACRO(npy_cdouble,     NPY_CDOUBLE);
     DCPROGS_MACRO(npy_double,      NPY_DOUBLE);

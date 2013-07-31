@@ -19,8 +19,8 @@
 __docformat__ = "restructuredtext en"
 __all__ = ['likelihood', 'random', 'read_idealized_bursts', 'internal_dtype']
 import numpy
-import likelihood
-from likelihood._likelihood import _dcprogs_dtype
+from . import likelihood
+from .likelihood._likelihood import _dcprogs_dtype
 
 internal_dtype = _dcprogs_dtype()
 """ Type of the numpy array used internally. 

@@ -72,7 +72,7 @@ template<class T>
     return result;
   }
 
-t_uint nbfiltered(t_rvector const &_vector, t_real _tau) {
+t_rvector::Index nbfiltered(t_rvector const &_vector, t_real _tau) {
  
   t_rvector intervals = _vector.tail(_vector.size()-1) - _vector.head(_vector.size()-1);
   // Check special case where time series disappears.
@@ -94,8 +94,8 @@ t_uint nbfiltered(t_rvector const &_vector, t_real _tau) {
 
 TEST_P(TestTimeFilter, nbfiltered) {
   typedef std::uniform_int_distribution<t_uint> t_idist;
-  t_uint const n = t_idist(Nmax[0], Nmax[1])(this->mersenne);
-  t_uint const N = t_idist(Nmax[0], Nmax[1])(this->mersenne) + n;
+  t_rvector::Index const n = t_idist(Nmax[0], Nmax[1])(this->mersenne);
+  t_rvector::Index const N = t_idist(Nmax[0], Nmax[1])(this->mersenne) + n;
   t_rvector const series = fake_time_series(N, n, tau, alpha, this->mersenne); 
   t_rvector const intervals = series.tail(N) - series.head(N);
   EXPECT_EQ(series.size(), N+1);

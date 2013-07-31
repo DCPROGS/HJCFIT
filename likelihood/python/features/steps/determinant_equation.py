@@ -42,7 +42,7 @@ def step(context):
   from sys import exc_info
   from dcprogs.likelihood import DeterminantEq
 
-  print context.matrix
+  print(context.matrix)
   try: context.determinant = DeterminantEq(context.matrix, context.nopen, context.tau)
   except: context.initialization_exception = exc_info() 
 
@@ -98,6 +98,6 @@ def step(context, output):
   output = array(eval(output, globals(), context.output))
 
   assert all(context.H.shape == output.shape)
-  print abs(context.H - output) <= 1e-8 * abs(output) + 1e-8
-  print context.H
+  print(abs(context.H - output) <= 1e-8 * abs(output) + 1e-8)
+  print(context.H)
   assert all(abs(context.H - output) <= 1e-8 * abs(output) + 1e-8) 
