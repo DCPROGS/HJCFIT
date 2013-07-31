@@ -24,7 +24,7 @@ def step(context, doopen, qmatrix, tau):
   from dcprogs.likelihood import DeterminantEq
   context.equation = DeterminantEq(qmatrix, tau)
   if doopen != "open": context.equation = context.equation.transpose()
-  print context.equation
+  print(context.equation)
 
 @given('a list of {n:Integer} random determinant equations')
 def step(context, n):

@@ -85,6 +85,7 @@
 #endif
 
 #cmakedefine DCPROGS_LONG_DOUBLE
+#cmakedefine DCPROGS_PYTHON3
 
 namespace DCProgs {
 # ifdef DCPROGS_LONG_DOUBLE

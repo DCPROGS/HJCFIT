@@ -30,12 +30,13 @@
       while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
           if(PyFloat_Check(~item)) 
             result.emplace_back(static_cast<t_real>(PyFloat_AS_DOUBLE(~item)));
-          else if(PyInt_Check(~item))
-            result.emplace_back(static_cast<t_real>(PyInt_AS_LONG(~item)));
+#         ifndef DCPROGS_PYTHON3
+            else if(PyInt_Check(~item))
+              result.emplace_back(static_cast<t_real>(PyInt_AS_LONG(~item)));
+#         endif
           else if(PyLong_Check(~item))
             result.emplace_back(static_cast<t_real>(PyLong_AsDouble(~item)));
           else if(PyArray_CheckScalar(~item))  {
-            Object<> dtype = steal_ref(_dcprogs_dtype());
             result.push_back(0);
             PyArray_CastScalarToCtype(~item, static_cast<void*>(&result.back()), 
                                       PyArray_DescrFromType(numpy::type<t_real>::value));
