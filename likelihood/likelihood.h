@@ -32,12 +32,12 @@
 namespace DCProgs {
 
   //! Computes likelihood of a time series.
-  //! \param[in] _begin: First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end: One past last interval.
-  //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
+  //! \param[in] _end One past last interval.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial: initial occupancies.
-  //! \param[in] _final: final occupancies.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
                                t_initvec const &_initial, t_rvector const &_final ) {
@@ -53,12 +53,12 @@ namespace DCProgs {
 
   //! \brief Computes log10-likelihood of a time series.
   //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
-  //! \param[in] _begin: First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end: One past last interval.
-  //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
+  //! \param[in] _end One past last interval.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial: initial occupancies.
-  //! \param[in] _final: final occupancies.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_log10_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin,
                                      T_INTERVAL_ITERATOR _end, 
@@ -96,7 +96,8 @@ namespace DCProgs {
       //! Max length of missed events
       t_real tau;
       //! \brief tcrit. 
-      //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
+      //! \details If negative or null, will use equilibrium occupancies rather than CHS
+      //!          occupancies.
       t_real tcritical;
       //! Number of intervals for which to compute exact result.
       t_uint nmax;

@@ -28,15 +28,19 @@
 namespace DCProgs {
 
 
-  //! A functor to compute asymptotic missed event G.
-  //! \detail From the knowledged of roots and eigenvectors, figures out how to compute the
-  //!         asymptotic values of missed events R.
+  //! \brief A functor to compute asymptotic missed event G.
+  //! \details From the knowledged of roots and eigenvectors, figures out how to compute the
+  //!          asymptotic values of missed events R.
   class MSWINDOBE Asymptotes {
     
     public:
-      //! Holds a pair defining each exponential function.
+      //! \brief Holds a pair defining each exponential function.
+      //! \details - The first item is the weigh (as an matrix) of the exponential.
+      //! - The second item is the exponent of the exponential.
       typedef std::pair<t_rmatrix, t_real> t_MatrixAndRoot;
-      //| Holds all data relating to this functor.
+
+      //| \typedef  std::vector<t_MatrixAndRoot> t_MatricesAndRoots
+      //! \brief Container holding the parameters for each exponential
       typedef std::vector<t_MatrixAndRoot> t_MatricesAndRoots;
 
       //! Constructor. 

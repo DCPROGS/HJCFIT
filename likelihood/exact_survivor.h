@@ -39,13 +39,13 @@ namespace DCProgs {
   class MSWINDOBE ExactSurvivor {
     public:
       //! Initializes exact survivor functor.
-      //! \param[in] _qmatrix: Partitionned matrix with open states in top left corner.
-      //! \param[in] _tau: Missed event cutoff time.
+      //! \param[in] _qmatrix Partitionned matrix with open states in top left corner.
+      //! \param[in] _tau Missed event cutoff time.
       ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) { set(_qmatrix, _tau); }
       //! Initializes exact survivor functor.
-      //! \param[in] _qmatrix: A transition matrix with open states in top left corner
-      //! \param[in] _nopen: Number of open states. 
-      //! \param[in] _tau: Missed event cutoff time.
+      //! \param[in] _qmatrix A transition matrix with open states in top left corner
+      //! \param[in] _nopen Number of open states. 
+      //! \param[in] _tau Missed event cutoff time.
       template<class T>
         ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau)
           { set(QMatrix(_qmatrix, _nopen), _tau); }
@@ -83,12 +83,10 @@ namespace DCProgs {
       bool operator=(ExactSurvivor &&_c);
 
     protected:
-      //! \brief Implementation of recursion for exact missed-event Survivor function
-      //! \details This is an interface to the function recursion_formula.  In practice, this object
-      //!          needs not be called directly. Rather the public interface (which is about
-      //!          computing the likelihood for an event of duration t) is in the containing class
-      //!          ExactSurvivor.
+      //! \cond 
+      // See outside definition
       class MSWINDOBE RecursionInterface;
+      //! \endcond 
 
 #     ifndef HAS_CXX11_UNIQUE_PTR
         //! Type of the pointers holding recursion interfaces.
@@ -106,15 +104,21 @@ namespace DCProgs {
   };
 
 
+  //! \brief Implementation of recursion for exact missed-event Survivor function
+  //! \details This is an interface to the function recursion_formula.  In practice, this object
+  //!          needs not be called directly. Rather the public interface (which is about
+  //!          computing the likelihood for an event of duration t) is in the containing class
+  //!          ExactSurvivor.
   class MSWINDOBE ExactSurvivor::RecursionInterface {
   
     public:
       //! Element on which to perform recursion.
       typedef t_rmatrix t_element;
       //! Constructor. 
-      //! \param[in] _qmatrix: The transition state matrix for which to compute
+      //! \param[in] _qmatrix The transition state matrix for which to compute
       //!                     \f$^eR_{AF}(t\rightarrow\infty)\f$
-      //! \param[in] _doAF: Whether to do AF (true) or FA.
+      //! \param[in] _tau Maximum length of missed events
+      //! \param[in] _doAF Whether to do AF (true) or FA
       RecursionInterface(QMatrix const & _qmatrix, t_real _tau, bool _doAF=true);
   
       //! Recursion element i, m, l.

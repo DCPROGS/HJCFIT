@@ -121,7 +121,7 @@ namespace DCProgs {
   //! Type holding the bursts.
   typedef std::vector<t_Burst> t_Bursts;
 
-  // Some functions that come in usefull left and right.
+  //! Dumps eigen array in format we can copy/paste to python
   template<class T>
     auto numpy_io(Eigen::DenseBase<T> const &_matrix)
                    -> decltype(_matrix.format(Eigen::IOFormat()))  {
@@ -129,6 +129,7 @@ namespace DCProgs {
                                             "[", "]", "[", "]"));
     }
 
+  //! Checks whether a numpy array has any NaN.
   template<class T>
     bool eigen_nan(Eigen::DenseBase<T> const &_matrix) {
       for(typename Eigen::DenseBase<T>::Index i(0); i < _matrix.rows(); ++i)

@@ -62,3 +62,5 @@ configure_file (
 add_subdirectory(likelihood)
 add_subdirectory(data)
 add_subdirectory(python)
+
+include(${CMAKE_MODULE_PATH}/documentation.cmake)

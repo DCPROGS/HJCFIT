@@ -65,12 +65,12 @@ namespace DCProgs {
     }
 #  endif
 
-  void ExactSurvivor :: set(QMatrix const &_matrix, t_real _tau) {
+  void ExactSurvivor :: set(QMatrix const &_qmatrix, t_real _tau) {
     if(_tau <= 0e0) throw errors::Domain("The resolution time tau cannot be zero or negative.");
 
     // Two step process. Otherwise, reset would catch any exception thrown. 
-    RecursionInterface afinterface(_matrix, _tau, true);
-    RecursionInterface fainterface(_matrix, _tau, false);
+    RecursionInterface afinterface(_qmatrix, _tau, true);
+    RecursionInterface fainterface(_qmatrix, _tau, false);
     recursion_af_.reset(new RecursionInterface(std::move(afinterface)));
     if(not recursion_af_.get()) throw errors::Runtime("Could not initialize unique_ptr");
     recursion_fa_.reset(new RecursionInterface(std::move(fainterface)));
@@ -80,11 +80,11 @@ namespace DCProgs {
   }
 
 
-  ExactSurvivor :: RecursionInterface::RecursionInterface( QMatrix const & _matrix,
+  ExactSurvivor :: RecursionInterface::RecursionInterface( QMatrix const & _qmatrix,
                                                            t_real _tau, bool _doAF ) {
                    
     // Sets matrix depending on whether this is AF or FA stuff.
-    QMatrix const transitions = _doAF ? _matrix: _matrix.transpose();
+    QMatrix const transitions = _doAF ? _qmatrix: _qmatrix.transpose();
 
     // Solves eigenvalue problem
     Eigen::EigenSolver<t_rmatrix> eigsolver(transitions.matrix);

@@ -61,13 +61,13 @@ namespace DCProgs {
   };
 
   //! \brief Figures out interval where roots can be found.
-  //! \param[in] _det: The determinantal equation
-  //! \param[in] _mins: A valid lower bound. All roots should be above that lower bound. 
-  //!                   If _mins > _maxs, then tries to determine the lower bound using
-  //!                   find_lower_bound_for_root.
-  //! \param[in] _maxs: A valid upper bound. All roots should be below that upper bound. 
-  //! \param[in] _tolerance: Minimum size of intervals. Below that, roots are expected to be
-  //!                        multiples.
+  //! \param[in] _det The determinantal equation
+  //! \param[in] _mins A valid lower bound. All roots should be above that lower bound. 
+  //!                  If _mins > _maxs, then tries to determine the lower bound using
+  //!                  find_lower_bound_for_root.
+  //! \param[in] _maxs A valid upper bound. All roots should be below that upper bound. 
+  //! \param[in] _tolerance Minimum size of intervals. Below that, roots are expected to be
+  //!                       multiples.
   std::vector<RootInterval> MSWINDOBE
     find_root_intervals(DeterminantEq const &_det, t_real _mins = 1e8, t_real _maxs = 1e1,
                         t_real _tolerance = 1e-8);

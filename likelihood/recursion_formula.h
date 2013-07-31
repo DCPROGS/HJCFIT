@@ -27,12 +27,14 @@
 
 namespace DCProgs {
 
+  //| \cond
   namespace details {
     template<class T> 
       typename T::t_element general(T & _C, t_uint _i, t_uint _m, t_uint _l);
     template<class T> 
       typename T::t_element lzero(T & _C, t_uint _i, t_uint _m);
   }
+  //| \endcond
 
   //! \brief Obtains _C[_i, _m, _l] if prior terms are known.
   //! \details This function implements the recursion with as few requirements as possible. The
@@ -41,26 +43,26 @@ namespace DCProgs {
   //!          arbitrary precision types.
   //!
   //!          Implements eq 3.18 from Hawkes, Jalali, Colquhoun (1990).
-  //! \tparam T: A type with the following form:
+  //! \tparam T A type with the following form:
   //!    \code{.cpp}
   //!      class T {
-  //!        //! Type of the element
+  //!        // Type of the element
   //!        typedef t_element;
   //!
-  //!        //! Returns (prior) element in recursion
+  //!        // Returns (prior) element in recursion
   //!        t_element operator()(t_uint _i, t_uint _j, t_uint _m);
-  //!        //! \brief Returns D objects, e.g. \f$A_{iAF}e^{Q_{FF}\tau}Q_{FA}\f$.
+  //!        // Returns D objects, e.g. $A_{iAF}e^{Q_{FF}\tau}Q_{FA}$.
   //!        t_element getD(t_uint _i) const;
-  //!        //! Returns specific eigenvalue of \f$Q\f$.
+  //!        // Returns specific eigenvalue of $Q$.
   //!        t_real get_eigval(t_uint _i) const;
-  //!        //! Returns number of eigenvalues.
+  //!        // Returns number of eigenvalues.
   //!        t_uint nbeigval(t_uint _i) const;
   //!      };
   //!    \endcode
-  //! \param _C: The object over which the recursion is perfomed.
-  //! \param _i: An integer
-  //! \param _m: An integer
-  //! \param _l: An integer
+  //! \param _C The object over which the recursion is perfomed.
+  //! \param _i An integer
+  //! \param _m An integer
+  //! \param _l An integer
   template<class T> 
     typename T::t_element recursion_formula(T & _C, t_uint _i, t_uint _m, t_uint _l) {
       
@@ -81,6 +83,7 @@ namespace DCProgs {
 
 
 
+  //| \cond
   namespace details {
 
     // This is basically an iterator that loops simultaneously over r and eigenvalues terms in
@@ -168,5 +171,6 @@ namespace DCProgs {
         return result;
       }
   }
+  //| \endcond
 }
 #endif 

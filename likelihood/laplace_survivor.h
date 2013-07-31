@@ -33,9 +33,8 @@ namespace DCProgs {
     
     public:
       //! Constructor. 
-      //! \param[in] _qmatrix: The transition state matrix for which to compute
+      //! \param[in] _qmatrix The transition state matrix for which to compute
       //!                     \f$^eG_{AF}(t\rightarrow\infty)\f$
-      //! \param[in] _tau: Missed event resolution.
       LaplaceSurvivor(QMatrix const & _qmatrix);
       //! Copy constructor
       LaplaceSurvivor   (LaplaceSurvivor const & _c)
@@ -44,21 +43,26 @@ namespace DCProgs {
                         ff_eigenvectors_inv_(_c.ff_eigenvectors_inv_) {}
 
       //! Computes \f$sI - Q_{AA} - Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\f$
-      //! \param[in] _s: Value of the laplacian scale.
+      //! \param[in] _s Value of the laplacian scale
+      //! \param[in] _tau Maximum length of missed events
       t_rmatrix H(t_real _s, t_real _tau) const {
         return qmatrix_.aa() + qmatrix_.af() * this->integral_(_s, _tau) * qmatrix_.fa();
       }
       //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
-      //! \param[in] _s: Value of the laplacian scale.
+      //! \param[in] _s Value of the laplacian scale
+      //! \param[in] _tau Maximum length of missed events
       t_rmatrix operator()(t_real _s, t_real _tau) const {
         return (_s * id_() - H(_s, _tau)).inverse(); 
       }
       //! Computes the matrix \f$W=\mathrm{det}(sI - H(s, \tau))\f$
-      //! \param[in] _s: Value of the laplacian scale.
+      //! \param[in] _s Value of the laplacian scale
+      //! \param[in] _tau Maximum length of missed events
       t_rmatrix W(t_real _s, t_real _tau) const {
         return _s * this->id_() - LaplaceSurvivor::H(_s, _tau);
       }
       //! Derivative along of W along s
+      //! \param[in] _s Value of the laplacian scale
+      //! \param[in] _tau Maximum length of missed events
       t_rmatrix s_derivative(t_real _s, t_real _tau) const;
 
       //! \brief Returns the Q matrix.

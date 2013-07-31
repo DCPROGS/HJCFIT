@@ -34,7 +34,7 @@ namespace DCProgs {
 
   //! CHS matrices \f$H_{FA}\f$
   t_rmatrix CHS_matrix_Hfa(MissedEventsG const &, t_real);
-  //! CHS matrices \f$H_{AF}\f$
+  //! CHS matrlikeLTD \f$H_{AF}\f$
   t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
 
 
@@ -47,11 +47,11 @@ namespace DCProgs {
       friend t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
     public:
       //! Initializes missed events G functor.
-      //! \param[in] _af: Determinant equation for af.
-      //! \param[in] _fa: Determinant equation for af.
-      //! \param[in] _roots_af: Roots of determinant equation for af
-      //! \param[in] _roots_fa: Roots of determinant equation for fa
-      //! \param[in] _nmax: Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$.
+      //! \param[in] _af Determinant equation for af.
+      //! \param[in] _fa Determinant equation for af.
+      //! \param[in] _roots_af Roots of determinant equation for af
+      //! \param[in] _roots_fa Roots of determinant equation for fa
+      //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG  ( DeterminantEq const &_af,
                        std::vector<Root> const &_roots_af, 
                        DeterminantEq const &_fa,
@@ -68,11 +68,12 @@ namespace DCProgs {
                       fa_factor_( _fa.get_qmatrix().af()
                                   * (_af.get_tau() * _fa.get_qmatrix().ff()).exp() ) {}
       //! Initializes missed events functor.
-      //! \param[in] _qmatrix: Transition matrix
-      //! \param[in] _tau: resolution/max length missed events
-      //! \param[in] _findroots: A functor with which to find all roots.
-      //!                        This function should take a DeterminantEq as its sole argument and
-      //!                        return a std::vector<RootIntervals>
+      //! \param[in] _qmatrix Transition matrix
+      //! \param[in] _tau resolution/max length missed events
+      //! \param[in] _findroots A functor with which to find all roots.
+      //!                       This function should take a DeterminantEq as its sole argument and
+      //!                       return a std::vector<RootIntervals>
+      //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
                         t_RootFinder const &_findroots, t_uint _nmax=2 )
                     : ExactSurvivor(_qmatrix, _tau),

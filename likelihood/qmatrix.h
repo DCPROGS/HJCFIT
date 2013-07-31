@@ -66,6 +66,7 @@ namespace DCProgs {
     Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(nshut(), nshut()); }
 
+    //! Number of shut states
     t_uint nshut() const { return static_cast<t_uint>(matrix.cols()) - nopen; }
 
     //! \brief Returns transpose of state matrix.
