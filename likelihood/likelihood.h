@@ -83,10 +83,10 @@ namespace DCProgs {
     }
 
 
-  //! \brief A functor with which to optimize a QMatrix
+  //! \brief Likelihood of a set of bursts
   //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
-  //!          bursts. It is, in practice, a convenience object with which to perform likelihood
-  //!          optimization.
+  //!          bursts and maximum missed-event length. It is, in practice, a convenience object with
+  //!          which to perform likelihood maximization.
   class MSWINDOBE Log10Likelihood {
     public:
       //! Set of bursts for which to compute the likelihood.
@@ -110,15 +110,31 @@ namespace DCProgs {
 
 
       //! Constructor
+      //! \param[in] _bursts A vector of bursts. Each burst is a vector of intervals, starting with
+      //!            an open interval. The intervals should be prefiltered for the maximum
+      //!            missed-event length.
+      //! \param[in] _nopen Number of open states. The open states must be in the top left corner of
+      //!            the Q-matrix.
+      //! \param[in] _tau Maximum length of the missed events
+      //! \param[in] _tcritical Parameter for CHS vectors (see \cite colquhoun:1996) if positive. If
+      //!            negative, then equilibrium occupancies will be used as initial and final
+      //!            states (as in \cite colquhoun:1982)
+      //! \param[in] _nmax The exact missed-event likelihood will be computed for 
+      //!            \f$ t < n_{\mathrm{max}} \tau\f$
+      //! \param[in] _xtol Tolerance criteria for brentq().
+      //! \param[in] _rtol Tolerance criteria for brentq().
+      //! \param[in] _itermax Maximum number of iteration when calling brentq().
       Log10Likelihood   ( t_Bursts const &_bursts, t_uint _nopen, t_real _tau,
                           t_real _tcritical=-1e0, t_uint _nmax=2, t_real _xtol=1e-10,
                           t_real _rtol=1e-10, t_uint _itermax=100 ) 
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}
      
-      //! Computes likelihood for each burst in separate value.
+      //! \brief Computes likelihood for each burst
+      //! \return a DCProgs::t_rvector 
       t_rvector vector(t_rmatrix const &_Q) const { return vector(QMatrix(_Q, nopen)); }
-      //! Computes likelihood for each burst in separate value.
+      //! \brief Computes likelihood for each burst
+      //! \return a DCProgs::t_rvector 
       t_rvector vector(QMatrix const &_Q) const;
       //! Log-likelihood 
       t_real operator()(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen)); }

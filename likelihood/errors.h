@@ -37,13 +37,13 @@ namespace DCProgs {
     //! Math error which carries a message.
     class Mass : public Math {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         Mass(std::string const &_message) noexcept : Math() {
           try { message_ = _message; }
           catch(...) { try { message_ = ""; } catch(...) {} }
         }
-        //! Describes the expression
+        //! Describes the exception
         virtual char const * what() const noexcept {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
@@ -57,13 +57,13 @@ namespace DCProgs {
     //! Found unexpected complex eigenvalues. 
     class ComplexEigenvalues : public Mass {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         ComplexEigenvalues(std::string const &_message) noexcept : Mass(_message) {
           try { message_ = _message; }
           catch(...) { try { message_ = ""; } catch(...) {} }
         }
-        //! Describes the expression
+        //! Describes the exception
         virtual char const * what() const noexcept {
           try {
             return ("Found complex eigenvalues: " + message_).c_str(); 
@@ -76,13 +76,13 @@ namespace DCProgs {
     //! Found a Not a Number 
     class NaN : public Mass { 
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         NaN(std::string const &_message) noexcept : Mass(_message) {
           try { message_ = _message; }
           catch(...) { try { message_ = ""; } catch(...) {} }
         }
-        //! Describes the expression
+        //! Describes the exception
         virtual char const * what() const noexcept {
           try {
             return ("Found Not a Number: " + message_).c_str(); 
@@ -95,25 +95,25 @@ namespace DCProgs {
     //! Input error to a math problem
     class Domain : public Math, virtual public std::domain_error {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         explicit Domain(char const *_message) noexcept : std::domain_error(_message), Math()  {};
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         explicit Domain(std::string const &_message) noexcept : std::domain_error(_message), Math() {};
-        //! Describes the expression
+        //! Describes the exception
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
     //! Index error
     class Index : public Root, public virtual std::out_of_range {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         explicit Index(char const *_message) noexcept : std::out_of_range(_message), Root() {};
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         explicit Index(std::string const &_message) noexcept : std::out_of_range(_message), Root() {};
-        //! Describes the expression
+        //! Describes the exception
         virtual char const* what() const noexcept { return this->std::out_of_range::what(); }
     };
 
@@ -121,11 +121,11 @@ namespace DCProgs {
     //! Matrix is not invertible
     class NotInvertible : public Domain {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         NotInvertible   (char const *_message) noexcept
                       : std::domain_error(_message), Domain(_message) {};
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         NotInvertible   (std::string const &_message) noexcept 
                       : std::domain_error(_message), Domain(_message) {};
@@ -134,13 +134,13 @@ namespace DCProgs {
     //! Runtime error which carries a message.
     class Runtime : public Root {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         Runtime(std::string const &_message) noexcept : Root() {
           try { message_ = _message; }
           catch(...) { try { message_ = ""; } catch(...) {} }
         }
-        //! Describes the expression
+        //! Describes the exception
         virtual char const * what() const noexcept {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
@@ -153,13 +153,13 @@ namespace DCProgs {
     //! NotImplemented error which carries a message.
     class NotImplemented : public Root {
       public:
-        //! Constructor
+        //! \brief Constructor
         //! \param[in] _message A message to carry with the exception
         NotImplemented(std::string const &_message) noexcept : Root() {
           try { message_ = _message; }
           catch(...) { try { message_ = ""; } catch(...) {} }
         }
-        //! Describes the expression
+        //! Describes the exception
         virtual char const * what() const noexcept {
           try { return message_.c_str(); } catch(...) { return ""; }
         }
@@ -174,13 +174,13 @@ namespace DCProgs {
       //! Exception thrown in python modules 
       class Python : public Root {
         public:
-          //! Constructor
+          //! \brief Constructor
           //! \param[in] _message A message to carry with the exception
           Python(std::string const &_message) noexcept : Root() {
             try { message_ = _message; }
             catch(...) { try { message_ = ""; } catch(...) {} }
           }
-          //! Describes the expression
+          //! Describes the exception
           virtual char const * what() const noexcept {
             try { return message_.c_str(); } catch(...) { return ""; }
           }
@@ -193,20 +193,20 @@ namespace DCProgs {
       //! Exception was thrown by python API.
       class PythonErrorAlreadyThrown : public Python {
         public:
-          //! Constructor
+          //! \brief Constructor
           PythonErrorAlreadyThrown() noexcept: Python("") {};
       };
       //! Exception thrown in python module when converting to C types.
       class PythonTypeError : public Python { 
         public:
-          //! Constructor
+          //! \brief Constructor
           //! \param[in] _message A message to carry with the exception
           PythonTypeError(std::string const &_message) noexcept: Python(_message) {};
       };
       //! Exception thrown in python module when converting to C types.
       class PythonValueError : public Python {
         public:
-          //! Constructor
+          //! \brief Constructor
           //! \param[in] _message A message to carry with the exception
           PythonValueError(std::string const &_message) noexcept: Python(_message) {};
       };

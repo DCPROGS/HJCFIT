@@ -60,9 +60,9 @@ namespace DCProgs {
   //!      };
   //!    \endcode
   //! \param _C The object over which the recursion is perfomed.
-  //! \param _i An integer
-  //! \param _m An integer
-  //! \param _l An integer
+  //! \param _i Index to the eigenvalues
+  //! \param _m Index to the time interval \f$(m-1)\tau < t < m\tau\f$
+  //! \param _l An integer \f$0 \leq l \leq m\f$
   template<class T> 
     typename T::t_element recursion_formula(T & _C, t_uint _i, t_uint _m, t_uint _l) {
       

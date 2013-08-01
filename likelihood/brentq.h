@@ -34,7 +34,7 @@ namespace DCProgs {
   //! \param[in] _xtol Tolerance for interval size
   //! \param[in] _rtol Tolerance for interval size. The convergence criteria is an affine function
   //!    of the root:
-  //!    \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\matrm{current}} = \frac{|x_a - x_b|}{2}\f$.
+  //!    \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\f$.
   //! \param[in] _itermax maximum number of iterations.
   //! \returns A tuple (x, iterations, function calls)
   MSWINDOBE std::tuple<t_real, t_uint, t_uint> 

@@ -31,28 +31,28 @@ PROJECT_NAME           = "DCProgs"
 # The PROJECT_NUMBER tag can be used to enter a project or revision number.
 # This could be handy for archiving the generated documentation or
 # if some version control system is used.
-
+likeLTD
 PROJECT_NUMBER         =  0.9
 
 # Using the PROJECT_BRIEF tag one can provide an optional one line description
 # for a project that appears at the top of each page and should give viewer
 # a quick idea about the purpose of the project. Keep the description short.
 
-PROJECT_BRIEF          = "Likelihoods of missed events"
+PROJECT_BRIEF          = "Ion channels software suite"
 
 # With the PROJECT_LOGO tag one can specify an logo or icon that is
 # included in the documentation. The maximum height of the logo should not
 # exceed 55 pixels and the maximum width should not exceed 200 pixels.
 # Doxygen will copy the logo to the output directory.
 
-PROJECT_LOGO           = @PROJECT_SOURCE_DIR@/logo.gif
+PROJECT_LOGO           = @PROJECT_SOURCE_DIR@/documentation/logo.gif
 
 # The OUTPUT_DIRECTORY tag is used to specify the (relative or absolute)
 # base path where the generated documentation will be put.
 # If a relative path is entered, it will be relative to the location
 # where doxygen was started. If left blank the current directory will be used.
 
-OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/Documentation
+OUTPUT_DIRECTORY       = @PROJECT_BINARY_DIR@/documentation
 
 # If the CREATE_SUBDIRS tag is set to YES, then doxygen will create
 # 4096 sub-directories (in 2 levels) under the output directory of each output
@@ -606,7 +606,7 @@ LAYOUT_FILE            =
 # feature you need bibtex and perl available in the search path. Do not use
 # file names with spaces, bibtex cannot handle them.
 
-CITE_BIB_FILES         = @PROJECT_SOURCE_DIR@/bibliography.bib
+CITE_BIB_FILES         = @SPHINX_SOURCE_DIR@/bibliography.bib
 
 #---------------------------------------------------------------------------
 # configuration options related to warning and progress messages
@@ -1463,7 +1463,7 @@ MAN_LINKS              = NO
 # generate an XML file that captures the structure of
 # the code including all documentation.
 
-GENERATE_XML           = NO
+GENERATE_XML           = @GENERATE_XML@
 
 # The XML_OUTPUT tag is used to specify where the XML pages will be put.
 # If a relative path is entered the value of OUTPUT_DIRECTORY will be
