@@ -23,7 +23,33 @@ if(SPHINX_FOUND)
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
-    WORKING_DIRECTORY ${WORKINGDIR}
-    DEPENDS doxydocs )
+    WORKING_DIRECTORY ${WORKINGDIR} 
+    DEPENDS )
+#   DEPENDS doxydocs )
 
 endif(SPHINX_FOUND)
+
+if(compileDocs)
+
+  set(CXX_SOURCE_FILES source/manual/code/init_log10.cc)
+  set(PY_SOURCE_FILES source/manual/code/init_log10.py)
+
+  foreach(pathfile ${CXX_SOURCE_FILES})
+    get_filename_component(pathname ${pathfile} NAME_WE)
+    add_executable(doc_cxx_${pathname} ${pathfile})
+    target_link_libraries(doc_cxx_${pathname} likelihood)
+    include_directories(${PROJECT_SOURCE_DIR})
+  endforeach()
+
+  if(tests)
+    foreach(pathfile ${CXX_SOURCE_FILES})
+      get_filename_component(pathname ${pathfile} NAME_WE)
+      add_test(doctest_cxx_${pathname} doc_cxx_${pathname})
+    endforeach()
+
+    foreach(pathfile ${PY_SOURCE_FILES})
+      get_filename_component(pathname ${pathfile} NAME_WE)
+      python_test(doctest_py_${pathname} ${pathfile})
+    endforeach()
+  endif(tests)
+endif(compileDocs)

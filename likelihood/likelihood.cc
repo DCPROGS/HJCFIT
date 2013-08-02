@@ -46,7 +46,7 @@ namespace DCProgs {
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self) {
     
     _stream << "Log10 Likelihood:\n"
-            << "=================n\n" 
+            << "=================\n\n" 
             << "  * Number of open states: " << _self.nopen << "\n"
             << "  * Resolution time tau: " << _self.tau << "\n";
     if(_self.tcritical <= 0e0) _stream << "  * Using equilibrium occupancies.\n";

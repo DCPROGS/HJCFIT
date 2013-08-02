@@ -109,6 +109,33 @@ if(tests)
                            "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH}")
     endif(MSVC OR MSYS)
   endfunction(feature_test)
+
+  function(python_test name filename)
+    if(WIN32)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+    else()
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
+    endif(WIN32)
+    add_test(NAME ${name} 
+             WORKING_DIRECTORY ${WORKINGDIR}
+             COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/${filename})
+    if(MSVC OR MSYS) 
+      set_tests_properties(${name} PROPERTIES CONFIGURATIONS Release)
+      set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
+      STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
+      STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
+      set_tests_properties(${name} PROPERTIES ENVIRONMENT
+                           "PATH=${PATH_STRING}")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+      set_tests_properties(${name} PROPERTIES ENVIRONMENT
+                           "DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH}")
+    elseif(UNIX)
+      set_tests_properties(${name} PROPERTIES ENVIRONMENT
+                           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH}")
+    endif(MSVC OR MSYS)
+  endfunction(python_test)
 endif(tests)
 
 

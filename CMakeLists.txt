@@ -18,8 +18,9 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
 PROJECT(DCProgs)
 
-option(tests          "Enable testing."               on)
-option(pythonBindings "Enable python bindings."       on)
+option(tests          "Enable testing."                         on)
+option(pythonBindings "Enable python bindings."                 on)
+option(compileDocs    "Compile c++11 documentation examples."   on)
 
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)

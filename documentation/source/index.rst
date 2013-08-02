@@ -3,8 +3,9 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+###################################
 Welcome to DCProgs's documentation!
-===================================
+###################################
 
 The goal of DCProgs is to provide a collection of tools for scientific research on ion channels. The
 package is derived from the DCPROGS_ suite and will consist of a Python port and wrap of Fortran
@@ -19,10 +20,13 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
-   cpp/index.rst
+   manual.rst
+
+   api.rst
 
 Indices and tables
 ==================
+
 
 * :ref:`genindex`
 * :ref:`modindex`
