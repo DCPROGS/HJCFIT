@@ -207,9 +207,10 @@ namespace DCProgs {
   t_rvector ExactSurvivor::eigenvalues_af() const { return recursion_af_->eigenvalues(); }
   t_rvector ExactSurvivor::eigenvalues_fa() const { return recursion_af_->eigenvalues(); }
 
-  bool ExactSurvivor :: operator=(ExactSurvivor &&_c) {
-    return (recursion_af_ = std::move(_c.recursion_af_))
-           and (recursion_fa_ = std::move(_c.recursion_fa_))
-           and (tau_ = _c.tau_);
+  ExactSurvivor& ExactSurvivor :: operator=(ExactSurvivor &&_c) {
+    recursion_af_ = std::move(_c.recursion_af_);
+    recursion_fa_ = std::move(_c.recursion_fa_);
+    tau_ = _c.tau_;
+    return *this;
   }
 }
