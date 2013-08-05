@@ -69,8 +69,7 @@ def read_idealized_bursts(filename, tau, tcrit):
   time_series.get_open_shut_periods()
   time_series.get_bursts(tcrit)
 
-  # not sure impose_tresolution works...
-  result = [array(u, dtype=internal_dtype) * 1e-3 for u in time_series.bursts]
-  return [u for u in result if all(abs(u) > tau)]
+  return [array(u, dtype=internal_dtype) for u in time_series.bursts]
+ 
 
 
