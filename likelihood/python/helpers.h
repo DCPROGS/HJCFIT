@@ -29,7 +29,7 @@ namespace {
     template<class T, size_t reduce=0>
       class NumpyApplySpecialized : public DCProgs::numpy::type<T> {
         public:
-          using DCProgs::numpy::type<T>::value;
+          using typename DCProgs::numpy::type<T>::value;
           using DCProgs::numpy::type<T>::np_type;
        
           //! Creates functor.
