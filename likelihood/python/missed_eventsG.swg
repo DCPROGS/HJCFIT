@@ -78,7 +78,6 @@ class MissedEventsG {
                   DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
                   DCProgs::t_uint _nmax=2 ) {
       using namespace DCProgs;
-      if(_nmax < 0) throw errors::Domain("nmax cannot be negative.");
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
       std::vector<Root> roots_af = convert_to_roots(_roots_af);
       std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
