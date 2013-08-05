@@ -31,8 +31,8 @@ endif(SPHINX_FOUND)
 
 if(compileDocs)
 
-  set(CXX_SOURCE_FILES source/manual/code/init_log10.cc)
-  set(PY_SOURCE_FILES source/manual/code/init_log10.py)
+  file(GLOB CXX_SOURCE_FILES code/*.cc)
+  file(GLOB PY_SOURCE_FILES code/*.py)
 
   foreach(pathfile ${CXX_SOURCE_FILES})
     get_filename_component(pathname ${pathfile} NAME_WE)
@@ -49,6 +49,7 @@ if(compileDocs)
 
     foreach(pathfile ${PY_SOURCE_FILES})
       get_filename_component(pathname ${pathfile} NAME_WE)
+      get_filename_component(pathfile ${pathfile} ABSOLUTE)
       python_test(doctest_py_${pathname} ${pathfile})
     endforeach()
   endif(tests)

@@ -22,14 +22,14 @@ A callable object :math:`L(Q)` exists in both :ref:`c++ <cpp_log10_section>` and
 
 :python: 
 
-  .. literalinclude:: code/init_log10.py
+  .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 2-15
 
 
 :c++11:
 
-  .. literalinclude:: code/init_log10.cc
+  .. literalinclude:: ../../code/log10.cc
      :language: c++
      :lines: 1-14, 27-
 
@@ -41,8 +41,9 @@ Once the objects are initialized, the input attributes can be accessed (and modi
 '.' operator: `likelihood.nopen = 2`. 
 
 It is required that the bursts have been pre-filtered so that there are no intervals smaller than
-the resolution :math:`\tau`. This can be done using :c:func:`time_filter` (:py:func:`time_filter` or
-:cpp:func:`interval_filter` (:cpp:func:`interval_filter`).
+the resolution :math:`\tau`. This can be done using :cpp:func:`time_filter` (:cpp:func:`c++
+<time_filter>`, :py:func:`python <time_filter>`) or :cpp:func:`interval_filter`
+(:cpp:func:`c++ <interval_filter>`, :py:func:`python <interval_filter>`).
 
 
 The likelihood for any Q-matrix can then be computed by calling the `likelihood` objects as though
@@ -50,7 +51,7 @@ they were function. The following snippets are inserted at the tail end of the p
 
 :python:
 
-  .. literalinclude:: code/init_log10.py
+  .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 15, 15-25 
   
@@ -59,7 +60,7 @@ they were function. The following snippets are inserted at the tail end of the p
 
 :c++11:
 
-  .. literalinclude:: code/init_log10.cc
+  .. literalinclude:: ../../code/log10.cc
      :language: c++
      :lines: 14-25
 
@@ -74,7 +75,7 @@ implemented.
 
 :python:
 
-  .. literalinclude:: code/init_log10.py
+  .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 1, 26-
 
