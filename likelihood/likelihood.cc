@@ -62,7 +62,7 @@ namespace DCProgs {
   }
 
   t_real Log10Likelihood::operator()(QMatrix const &_matrix) const {
-    MissedEventsG const eG = create_missed_eventsG(_matrix, tau, nmax, xtol, rtol, itermax);
+    MissedEventsG const eG = MissedEventsG(_matrix, tau, nmax, xtol, rtol, itermax);
     t_rvector const final = tcritical > 0 ?
                               CHS_occupancies(eG, tcritical, false).transpose():
                               occupancies(eG, false).transpose();
@@ -74,7 +74,7 @@ namespace DCProgs {
     return result;
   }
   t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
-    MissedEventsG const eG = create_missed_eventsG(_matrix, tau, nmax, xtol, rtol, itermax);
+    MissedEventsG const eG = MissedEventsG(_matrix, tau, nmax, xtol, rtol, itermax);
     t_rvector const final = tcritical > 0 ?
                               CHS_occupancies(eG, tcritical, false).transpose():
                               occupancies(eG, false).transpose();

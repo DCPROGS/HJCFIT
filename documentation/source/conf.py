@@ -291,3 +291,10 @@ breathe_projects = {
     "@PROJECT_NAME@": os.path.join('@PROJECT_BINARY_DIR@', "documentation", "xml"),
 }
 breathe_default_project = "@PROJECT_NAME@"
+
+rst_epilog = """
+.. _scipy: http://www.scipy.org/
+.. _matplotlib: http://matplotlib.sourceforge.net/
+.. _ipython: http://ipython.org/
+.. _eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
+"""

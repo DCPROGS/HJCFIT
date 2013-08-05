@@ -46,7 +46,7 @@ namespace DCProgs {
       friend t_rmatrix CHS_matrix_Hfa(MissedEventsG const &, t_real);
       friend t_rmatrix CHS_matrix_Haf(MissedEventsG const &, t_real);
     public:
-      //! Initializes missed events G functor.
+      //! \brief Initializes missed events G functor.
       //! \param[in] _af Determinant equation for af.
       //! \param[in] _fa Determinant equation for af.
       //! \param[in] _roots_af Roots of determinant equation for af
@@ -67,7 +67,8 @@ namespace DCProgs {
                       // _fa is already transpose of _af, so it is indeed _fa.matrix.af * e^...
                       fa_factor_( _fa.get_qmatrix().af()
                                   * (_af.get_tau() * _fa.get_qmatrix().ff()).exp() ) {}
-      //! Initializes missed events functor.
+      //! \brief Initializes missed events functor.
+      //! \details Uses input root finding funtion to determine roots.
       //! \param[in] _qmatrix Transition matrix
       //! \param[in] _tau resolution/max length missed events
       //! \param[in] _findroots A functor with which to find all roots.
@@ -75,7 +76,7 @@ namespace DCProgs {
       //!                       return a std::vector<RootIntervals>
       //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
-                        t_RootFinder const &_findroots, t_uint _nmax=2 )
+                        t_RootFinder const &_findroots, t_uint _nmax=2 ) 
                     : ExactSurvivor(_qmatrix, _tau),
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       laplace_a_(new LaplaceSurvivor(_qmatrix)),
@@ -83,6 +84,20 @@ namespace DCProgs {
                       nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
+      //! \brief Initializes missed-events functor.
+      //! \param[in] _qmatrix Transition matrix
+      //! \param[in] _tau resolution/max length missed events
+      //! \param[in] _findroots A functor with which to find all roots.
+      //!                       This function should take a DeterminantEq as its sole argument and
+      //!                       return a std::vector<RootIntervals>
+      //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
+      MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau,
+                        t_uint _nmax=2, t_real _xtol = 1e-12, t_real _rtol = 1e-12,
+                        t_uint _itermax = 100 )
+                    : MissedEventsG( _qmatrix, _tau,
+                                     [_xtol, _rtol, _itermax](DeterminantEq const &_c) {
+                                      return find_roots(_c, _xtol, _rtol, _itermax); 
+                                     }, _nmax) {}
       //! Move constructor.
       MissedEventsG   ( MissedEventsG && _c) 
                     : ExactSurvivor(std::move(_c)), ApproxSurvivor(std::move(_c)),
@@ -162,11 +177,6 @@ namespace DCProgs {
   //! Dumps Missed-Events likelihood to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, MissedEventsG const &_self);
 
-  //! Creates missed events object.
-  MSWINDOBE MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau,
-                                                 t_uint _nmax=2,
-                                                 t_real _xtol = 1e-12, t_real _rtol = 1e-12,
-                                                 t_uint _itermax = 100 );
 }
 
 #endif 

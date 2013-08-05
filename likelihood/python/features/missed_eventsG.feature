@@ -8,7 +8,7 @@ Feature: Check Missed Events G functionality
       And a list of 10 random times between 1e-4 and 3e-4
       And a list of 10 random times between 0e-4 and 1e-4
       And a list of 10 random times between 3e-4 and 4e-4
-      And a parameter tolerance=1e-8
+      And a parameter tolerance=1e-6
      When MissedEventsG objects are instantiated with the q-matrices and tau=1e-4 and nmax=2
       And ExactSurvirvor objects are instantiated with the q-matrices and tau=1e-4
       And ApproxSurvivor objects are instantiated with the q-matrices and tau=1e-4
@@ -28,7 +28,7 @@ Feature: Check Missed Events G functionality
  
   Scenario Outline: Computation of equilibrium occupancy
     Given a list of 100 random missed-events likelihoods with tau=1e-4 and nmax=2
-      And a parameter tolerance=1e-8
+      And a parameter tolerance=1e-6
      When the <name> equilibrium occupancies are computed 
      Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
       And the components of the <name> equilibrium occupancies sum to one
@@ -45,7 +45,7 @@ Feature: Check Missed Events G functionality
   Scenario Outline: Computation of CHS vectors
     Given a list of 10 random missed-events likelihoods with tau=1e-4 and nmax=2
       And a list of 10 random times between 1e-3 and 3e-3
-      And a parameter tolerance=1e-8
+      And a parameter tolerance=1e-6
      When the <name> CHS occupancies are computed 
      Then the <name> CHS occupancies are the solutions to the CHS equations
  

@@ -109,7 +109,7 @@ TEST_F(TestLikelihood, manual_check) {
   likelihood->bursts = t_Bursts(1, t_Burst(1, 1.5e-4) );
 
   likelihood->tcritical = -1e0;
-  MissedEventsG eG(create_missed_eventsG(qmatrix, 1e-4));
+  MissedEventsG eG(qmatrix, 1e-4);
   t_initvec const initial = occupancies(eG);
   t_rvector const final = occupancies(eG, false).transpose();
 
@@ -137,7 +137,7 @@ TEST_F(TestLikelihood, manual_check_CHS) {
   likelihood->bursts = t_Bursts(1, t_Burst(1, 1.5e-4) );
 
   likelihood->tcritical = 1e-3;
-  MissedEventsG eG(create_missed_eventsG(qmatrix, 1e-4));
+  MissedEventsG eG(qmatrix, 1e-4);
   t_initvec const initial_eq = occupancies(eG);
   t_rvector const final_eq = occupancies(eG, false).transpose();
   t_initvec const initial = CHS_occupancies(eG, likelihood->tcritical);

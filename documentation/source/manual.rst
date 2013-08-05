@@ -28,5 +28,5 @@ either language.
 
    manual/qmatrix.rst
    manual/likelihood_of_Q.rst
-
+   manual/missedeventsG.rst
 

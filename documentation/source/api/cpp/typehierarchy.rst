@@ -1,5 +1,5 @@
-Type Hierarchy:
----------------
+Type Hierarchy
+--------------
 
 It is often convenient to express all types in a software from a few starting points. This is called
 a type hierarchy. The advantage is that it is then fairly easy to swich, say, from using `double` to
@@ -10,15 +10,15 @@ names of more complex types will start with ``i``, ``r``, ``c``, ``b`` for integ
 and bool.
 
 
-Basic types:
-++++++++++++
+Basic types
++++++++++++
 
 .. doxygentypedef:: DCProgs::t_real
 .. doxygentypedef:: DCProgs::t_int
 .. doxygentypedef:: DCProgs::t_uint
 
-Eigen/Math types:
-+++++++++++++++++
+Eigen/Math types
+++++++++++++++++
 
 .. doxygentypedef:: DCProgs::t_complex
 

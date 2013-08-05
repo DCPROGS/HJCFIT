@@ -19,6 +19,7 @@
 ************************/
 
 #include <iostream>
+#include <sstream>
 #include "qmatrix.h"
 
 namespace DCProgs {
@@ -48,7 +49,10 @@ namespace DCProgs {
   }
 
   MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat) {
-    return _stream << "Transition matrix with " << _mat.nopen
-                   << " open states:\n" << DCProgs::numpy_io(_mat.matrix) << "\n";
+    std::ostringstream sstr;
+    sstr << "Transition matrix with " << _mat.nopen << " open states:";
+    _stream << sstr.str() << "\n";
+    for(std::string::size_type i(0); i < sstr.str().size(); ++i) _stream << '-';
+    return _stream << "\n" << DCProgs::numpy_io(_mat.matrix) << "\n";
   }
 }

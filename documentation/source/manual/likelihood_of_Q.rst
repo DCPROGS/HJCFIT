@@ -1,7 +1,7 @@
-Likelihood :math:`L(Q)`: 
-========================
+Likelihood :math:`L(Q)`
+=======================
 
-The callable objects :math:`L_{\log10}(Q)` are an interface designed for obtaining the
+The callable object :math:`L_{\log10}(Q)` provides an interface designed to compute the
 log10-likelihood as a function of the rates, from the knowledge of the observed open and shut time
 intervals and the (type of) initial and final occupancies. This object is especially suited for
 maximizing the likelihood of a given mechanism. It is defined as 
@@ -41,9 +41,9 @@ Once the objects are initialized, the input attributes can be accessed (and modi
 '.' operator: `likelihood.nopen = 2`. 
 
 It is required that the bursts have been pre-filtered so that there are no intervals smaller than
-the resolution :math:`\tau`. This can be done using :cpp:func:`time_filter` (:cpp:func:`c++
-<time_filter>`, :py:func:`python <time_filter>`) or :cpp:func:`interval_filter`
-(:cpp:func:`c++ <interval_filter>`, :py:func:`python <interval_filter>`).
+the resolution :math:`\tau`. This can be done using :cpp:func:`time_filter`
+(:py:func:`python <time_filter>`) or :cpp:func:`interval_filter`
+(:py:func:`python <interval_filter>`).
 
 
 The likelihood for any Q-matrix can then be computed by calling the `likelihood` objects as though
@@ -66,8 +66,9 @@ they were function. The following snippets are inserted at the tail end of the p
 
   
 The return is the log-likelihood associated with the bursts and the input Q-matrix. In both python
-and c++, the functions accepts either a matrix or an actual :cpp:class:`QMatrix` (:py:class:`QMatrix`)
-object. In the former case, the number of open states is set to `nopen`.
+and c++, the functions accepts either a matrix or an actual :cpp:class:`DCProgs::QMatrix`
+(:py:class:`python <dcprogs.likelihood.QMatrix>`) object. In the former case, the number of open
+states is set to `nopen`.
 
 Finally, it should be noted that the python the bursts are accessed in python directly from the
 likelihood using normal sequence operations. Only a small subset of sequence operations where
@@ -78,6 +79,10 @@ implemented.
   .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 1, 26-
+
+:c++11:
+
+  :cpp:member:`DCProgs::Log10Likelihood::bursts` is a public member and can be accessed directly.  
 
 .. _initializerlist: https://en.wikipedia.org/wiki/C++11#Initializer_lists
 .. _uniforminit: https://en.wikipedia.org/wiki/C++11#Uniform_initialization

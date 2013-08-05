@@ -138,6 +138,7 @@
 %feature("autodoc", "Inserts a burst at given index.\n") Log10Likelihood::insert;
 
         
+// The following makes it possible to use keyword arguments in the constructor.
 %feature("shadow") Log10Likelihood::Log10Likelihood %{
   def __init__( self, bursts, nopen, tau, tcritical=None, nmax=2, xtol=1e-10, rtol=1e-10,
                 itermax=100 ):

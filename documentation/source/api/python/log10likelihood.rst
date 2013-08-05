@@ -1,11 +1,11 @@
 .. _python_log10_section:
 
-Log10Likelihood:
-----------------
+Log10Likelihood
+---------------
 
 .. include:: ../cpp/log10likelihood.rst
-   :start-line: 5
-   :end-line: 9
+   :start-after: General Description Start
+   :end-before: General Description End
 
 .. currentmodule:: dcprogs.likelihood 
 

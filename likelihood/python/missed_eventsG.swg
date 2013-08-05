@@ -19,12 +19,12 @@
 ************************/
 
 %feature("autodoc", "Computes missed-events likelihood.\n\n"
-         "Exact calculations take place for times smaller than `nmax * tau`. "
+         "Exact calculations take place for times smaller than `nmax * tau`.\n"
          "Asymptotic calculations take over for larger times.\n\n"
-         "There are three possible ways to instantiate this object:\n\n"
+         "There are two possible ways to instantiate this object:\n\n"
          ">>> MissedEvents(determinant_af, roots_af, determinant_fa, roots_fa[, nmax])\n"
-         ">>> MissedEvents(qmatrix, tau, [nmax, xtol, rtol, itermax])\n"
-         "The parameters bewteen brackets are optional. The last two versions will try "
+         ">>> MissedEvents(qmatrix, tau, [nmax, xtol, rtol, itermax])\n\n"
+         "The parameters bewteen brackets are optional. The last two versions will try\n"
          "and calculate the roots of the determinantal equations automatically.\n\n"
          ":param determinant_af:\n"
          "   A :class:`DeterminantEq` instance, specifically for the af block.\n"
@@ -45,28 +45,38 @@
             ":math:`t \\in [0, n_{\\mathrm{max}} \\tau`. It defaults to 2.\n"
          ":param float xtol: \n"
          "   Tolerance criteria when computing roots using "
-            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 1e-10.\n"
+            ":py:func:`dcprogs.likelihood.brentq`. Defaults to 1e-10.\n"
          ":param float rtol: \n"
          "   Tolerance criteria when computing roots using "
-            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 1e-10\n"
+            ":py:func:`dcprogs.likelihood.brentq`. Defaults to 1e-10\n"
          ":param float itermax: \n"
          "   Maximum number of iterations when computing roots using "
-            "py:meth:`dcprogs.likelihood.brentq`. Defaults to 100.\n"
+            ":py:func:`dcprogs.likelihood.brentq`. Defaults to 100.\n"
         ) MissedEventsG;
 
 
-%feature("autodoc", "Open to close transitions\n\n") MissedEventsG::af;
-%feature("autodoc", "Closed to open transitions") MissedEventsG::fa;
-%feature("autodoc", "Exact missed-events G in Laplace space.\n\\"
+%feature("autodoc", "Open to close transitions\n\n") MissedEventsG::af(PyObject*);
+%feature("autodoc", "Closed to open transitions") MissedEventsG::fa(PyObject*);
+%feature("autodoc", "Exact missed-events G in Laplace space.\n\n"
          "The exact expression is "
-         ":math:`^{e}G_{AF}(s) = {}^AR(s) e^{-s\\tau}Q_{AF}e^{Q_{FF}\\tau}`, "
-         "with :math:{}^AR(s) = [sI - Q_{AA} - Q_{AF} \\int_0^\\taue^{-st}"
-         "e^{Q_{FF}t}\\partial t Q_{FA}]^{-1}`.") MissedEventsG::laplace_af;
-%feature("autodoc", "Exact missed-events G in Laplace space.\n\\"
+         ":math:`^{e}G_{AF}(s) = {}^AR(s) e^{-s\\\\tau}Q_{AF}e^{Q_{FF}\\\\tau}`, "
+         "with :math:`{}^AR(s) = [sI - Q_{AA} - Q_{AF} \\\\int_0^\\\\tau e^{-st}"
+         "e^{Q_{FF}t}\\\\partial t Q_{FA}]^{-1}`.\n\n"  
+         ":param s:\n"
+         "  The laplace scale. A real scalar or something convertible to a numpy array.\n\n"
+         ":returns:\n"
+         "  A matrix if the input is scalar, an array of matrices otherwise, \n"
+         "  with the shape of the input.") MissedEventsG::laplace_af(PyObject*);
+%feature("autodoc", "Exact missed-events G in Laplace space.\n\n"
          "The exact expression is "
-         ":math:`^{e}G_{FA}(s) = {}^FR(s) e^{-s\\tau}Q_{FA}e^{Q_{AA}\\tau}`, "
-         "with :math:{}^FR(s) = [sI - Q_{FF} - Q_{FA} \\int_0^\\taue^{-st}"
-         "e^{Q_{AA}t}\\partial t Q_{AF}]^{-1}`.") MissedEventsG::laplace_af;
+         ":math:`^{e}G_{FA}(s) = {}^FR(s) e^{-s\\\\tau}Q_{FA}e^{Q_{AA}\\\\tau}`, "
+         "with :math:`{}^FR(s) = [sI - Q_{FF} - Q_{FA} \\\\int_0^\\\\tau e^{-st}"
+         "e^{Q_{AA}t}\\\\partial t Q_{AF}]^{-1}`.\n\n"
+         ":param s:\n"
+         "  The laplace scale. A real scalar or something convertible to a numpy array.\n\n"
+         ":returns:\n"
+         "  A matrix if the input is scalar, an array of matrices otherwise, \n"
+         "  with the shape of the input.") MissedEventsG::laplace_fa(PyObject*);
 %feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::initial_CHS_occupancies;
 %feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::final_CHS_occupancies;
 
@@ -94,33 +104,29 @@ class MissedEventsG {
       }
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
     }
-    MissedEventsG( QMatrix const * const _matrix, DCProgs::t_real _tau, 
-                   DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol = 1e-10,
-                   DCProgs::t_real _rtol = 1e-10, DCProgs::t_uint _itermax = 100 ) {
-      return new DCProgs::MissedEventsG(
-          DCProgs::create_missed_eventsG( *_matrix, _tau, _nmax, _xtol, _rtol, _itermax)
-      );
-    }
   }
+  MissedEventsG( QMatrix const & _qmatrix, DCProgs::t_real _tau, 
+                 DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol = 1e-12,
+                 DCProgs::t_real _rtol = 1e-12, DCProgs::t_uint _itermax = 100 );
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
   %extend {
     PyObject* af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->af(t); }); 
     }
     PyObject* fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->fa(t); }); 
     }
   }
-  DCProgs::t_rmatrix laplace_af(DCProgs::t_real t);
-  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real t);
+  DCProgs::t_rmatrix laplace_af(DCProgs::t_real s);
+  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s);
   %extend {
     PyObject* laplace_af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_af(s); }); 
     }
     PyObject* laplace_fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_fa(s); }); 
     }
   }
   // Make CHS_occupancies member methods of MissedEventsG. 
