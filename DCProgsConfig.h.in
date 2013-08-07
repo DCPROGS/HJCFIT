@@ -23,6 +23,7 @@
 
 #include <iso646.h>
 #include <vector>
+#include <limits>
 #include <type_traits>
 #include <Eigen/Dense>
 
@@ -136,5 +137,12 @@ namespace DCProgs {
            if(DCPROGS_ISNAN(_matrix(i, j))) return true;
       return false;
     }
+
+  // Check that quiet nan exists. Otherwise fails to compile here and now.
+  static_assert(std::numeric_limits<t_real>::has_quiet_NaN == true,
+                "Quiet NaN is not defined for the reals used by DCProgs.");
+
+  //! The quiet NaN value
+  t_real static const quiet_nan = std::numeric_limits<t_real>::quiet_NaN();
 }
 #endif

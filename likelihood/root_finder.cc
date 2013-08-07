@@ -156,8 +156,18 @@ namespace DCProgs {
            if(_compare_func(eigenvalue, root)) return root;
            root = _change_func(eigenvalue, root);
         }
-        throw errors::Runtime("Reached maximum number of iterations "
-                              "when searching for root.");
+        std::ostringstream sstr;
+        sstr << "Searching for upper or lower bound.\n\n"
+             << _det 
+             << "  * starting point " << _start << "\n"
+             << "  * current location: " << root << "\n";
+        try {
+          t_rmatrix const H(_det.H(root));
+          Eigen::EigenSolver<t_rmatrix> eigsolver(H);
+          sstr  << "  * current eigenvalues: " << numpy_io(eigsolver.eigenvalues().transpose()) << "\n"
+                << "  * current bouding eigenvalue: " << _select_eig(eigsolver.eigenvalues()) << "\n";
+        } catch(...) {};
+        throw errors::MaxIterations(sstr.str());
       }
 
    // The upper bound should always be such that the root is positive. 
@@ -178,22 +188,23 @@ namespace DCProgs {
          if(std::abs(root) < 1e-12) root = _sign < 0 ? -1e1: 1e1;
          else root = _change(root);
        }
-       throw errors::Runtime("Reached maximum number of iterations "
-                             "when searching for determinant with correct sign.");
+       throw errors::MaxIterations("Searching for determinant with correct sign.");
     }
   }
 
   std::vector<RootInterval> MSWINDOBE
     find_root_intervals(DeterminantEq const &_det, t_real _mins, t_real _maxs, t_real _tolerance) {
 
-    if(_mins > _maxs) {
-      _maxs = find_upper_bound_for_roots(_det, _maxs);
-      _mins = find_lower_bound_for_roots(_det, _maxs);
-    }
+    bool const is_min_nan = DCPROGS_ISNAN(_mins);
+    bool const is_max_nan = DCPROGS_ISNAN(_maxs);
+    if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
+      throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
+    t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
+    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, 0e0)): _maxs;
 
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   
     std::vector<RootInterval> intervals;
-    step_(_det, _mins, _maxs, _tolerance, _det.get_nopen(), 0, intervals);
+    step_(_det, mins, maxs, _tolerance, _det.get_nopen(), 0, intervals);
     return intervals;
   }
 
@@ -236,14 +247,20 @@ namespace DCProgs {
                                                             t_real _mins,
                                                             t_real _maxs,
                                                             t_real _root_tolerance) {
-    if(_mins > _maxs) _mins = find_lower_bound_for_roots(_det, _maxs);
+    bool const is_min_nan = DCPROGS_ISNAN(_mins);
+    bool const is_max_nan = DCPROGS_ISNAN(_maxs);
+    if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
+      throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
+    t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
+    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, 0e0)): _maxs;
+
     if(_resolution < 1e-12) throw errors::Domain("Resolution cannot be negative or null");
-    if(_mins + 2e0 * _resolution > _maxs) _resolution = (_maxs - _mins) / 10e0;
+    if(mins + 2e0 * _resolution > maxs) _resolution = (maxs - mins) / 10e0;
  
     std::vector<RootInterval> intervals;
     t_real const half_step = 0.5 * _resolution;
-    t_real previous = _det(_mins);
-    t_real s(_mins + _resolution);
+    t_real previous = _det(mins);
+    t_real s(mins + _resolution);
     do {
       t_real current = _det(s);
  
@@ -294,7 +311,7 @@ namespace DCProgs {
       // Move to next point.
       previous = current;
       s += _resolution;
-    } while (s < _maxs);
+    } while (s < maxs);
  
     // return result.
     return intervals;
@@ -302,8 +319,9 @@ namespace DCProgs {
 
   // Finds root using brentq and find_root_intervals.
   std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
-                                          t_real _xtol, t_real _rtol, t_uint _itermax) {
-    std::vector<RootInterval> intervals = find_root_intervals(_det, 1e8, 1e1, _xtol);
+                                          t_real _xtol, t_real _rtol, t_uint _itermax,
+                                          t_real _lowerbound, t_real _upperbound) {
+    std::vector<RootInterval> intervals = find_root_intervals(_det, _lowerbound, _upperbound, _xtol);
     std::vector<Root> result; result.reserve(intervals.size());
     for(RootInterval const &interval: intervals) 
       if(interval.multiplicity == 2)

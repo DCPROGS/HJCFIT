@@ -44,11 +44,14 @@ namespace DCProgs {
   }
 
   MSWINDOBE MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau, t_uint _nmax,
-                                                 t_real _xtol, t_real _rtol, t_uint _itermax) {
+                                                 t_real _xtol, t_real _rtol, t_uint _itermax,
+                                                 t_real _lowerbound, t_real _upperbound) {
     DeterminantEq const determinant_af(_matrix, _tau);
     DeterminantEq const determinant_fa = determinant_af.transpose(); 
-    std::vector<Root> const roots_af = find_roots(determinant_af, _xtol, _rtol, _itermax);
-    std::vector<Root> const roots_fa = find_roots(determinant_fa, _xtol, _rtol, _itermax);
+    std::vector<Root> const roots_af = find_roots( determinant_af, _xtol, _rtol, _itermax,
+                                                   _lowerbound, _upperbound );
+    std::vector<Root> const roots_fa = find_roots( determinant_fa, _xtol, _rtol, _itermax, 
+                                                   _lowerbound, _upperbound );
     return MissedEventsG(determinant_af, roots_af, determinant_fa, roots_fa);
   }
 }
