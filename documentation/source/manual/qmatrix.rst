@@ -1,3 +1,5 @@
+.. _manual_qmatrix:
+
 The :math:`Q`-matrix
 ====================
 

@@ -1,3 +1,5 @@
+.. _manual_eG:
+
 Missed-Events Likelihood :math:`{}^eG(t)`
 =========================================
 

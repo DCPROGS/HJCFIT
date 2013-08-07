@@ -1,3 +1,5 @@
+.. _manual_log10:
+
 Likelihood :math:`L(Q)`
 =======================
 
