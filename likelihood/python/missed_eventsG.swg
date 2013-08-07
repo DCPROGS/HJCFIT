@@ -42,7 +42,7 @@
          "   A :class:`QMatrix` instance. \n"
          ":param int nmax: \n"
          "   The exact missed event likelihood will be computed for times "
-            ":math:`t \\in [0, n_{\\mathrm{max}} \\tau`. It defaults to 2.\n"
+            ":math:`t \\in [0, n_{\\mathrm{max}} \\tau`. It defaults to 3.\n"
          ":param float xtol: \n"
          "   Tolerance criteria when computing roots using "
             ":py:func:`dcprogs.likelihood.brentq`. Defaults to 1e-10.\n"
@@ -86,7 +86,7 @@ class MissedEventsG {
   %extend {
     MissedEventsG(DCProgs::DeterminantEq *_af, PyObject * _roots_af, 
                   DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
-                  DCProgs::t_uint _nmax=2 ) {
+                  DCProgs::t_uint _nmax=3 ) {
       using namespace DCProgs;
       if(_nmax < 0) throw errors::Domain("nmax cannot be negative.");
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
@@ -106,7 +106,7 @@ class MissedEventsG {
     }
   }
   MissedEventsG( QMatrix const & _qmatrix, DCProgs::t_real _tau, 
-                 DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol = 1e-12,
+                 DCProgs::t_uint _nmax=3, DCProgs::t_real _xtol = 1e-12,
                  DCProgs::t_real _rtol = 1e-12, DCProgs::t_uint _itermax = 100 );
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);

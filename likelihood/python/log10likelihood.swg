@@ -70,28 +70,7 @@
   }
 %}
 
-%feature("autodoc", "Creates a functor for optimizing the likelihood.\n\n"
-         "This functor takes as input a qmatrix and returns the resulting likelihood in log10.\n\n"
-         ":param bursts:\n"
-         "   A sequence of bursts. Each burst is a sequence of open and shut intervals.\n"
-         "   There should always be an odd number of intervals. And the first interval\n"
-         "   is open by default.\n"
-         ":param integer nopen:\n"
-         "   Number of open states. Should be strictly positive.\n"
-         ":param float tau:\n"
-         "   Maximum length of missed events. Should be positive.\n"
-         ":param float tcrit:\n"
-         "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative or None, then the inital\n"
-         "   and final states are the equilibrium occupancies. \n"
-         ":param integer nmax:\n"
-         "   The exact missed-events likelihood will be computed for "
-            ":math:`t < n_{\\mathrm{max}}{}\\\\tau`.\n"
-         ":param float xtol:\n"
-         "   Tolerance criteria when computing roots via :func:`likelihood.brentq`.\n"
-         ":param float rtol:\n"
-         "   Tolerance criteria when computing roots via :func:`likelihood.brentq`.\n"
-         ":param integer itermax:\n"
-         "   Maximum number of iterations when computing roots via :func:`likelihood.brentq`.\n\n\n"
+%feature("autodoc", "Functor for optimizing the likelihood.\n\n"
          "\nAll the paramaters of the constructor can be accessed directly as attributes:\n\n"
          ".. attribute:: nopen\n\n"
          "   Number of open states. Should be strictly positive.\n\n"
@@ -140,8 +119,31 @@
         
 // The following makes it possible to use keyword arguments in the constructor.
 %feature("shadow") Log10Likelihood::Log10Likelihood %{
-  def __init__( self, bursts, nopen, tau, tcritical=None, nmax=2, xtol=1e-10, rtol=1e-10,
+  def __init__( self, bursts, nopen, tau, tcritical=None, nmax=3, xtol=1e-10, rtol=1e-10,
                 itermax=100 ):
+    """ Initializes the Log10Likelihood.
+
+        :param bursts:
+           A sequence of bursts. Each burst is a sequence of open and shut intervals.
+           There should always be an odd number of intervals. And the first interval
+           is open by default.
+        :param integer nopen:
+           Number of open states. Should be strictly positive.
+        :param float tau:
+           Maximum length of missed events. Should be positive.
+        :param float tcrit:
+           :math:`t_{\mathrm{crit}}` for CHS vectors. If negative or None, then the inital
+           and final states are the equilibrium occupancies. 
+        :param integer nmax:
+           The exact missed-events likelihood will be computed for
+           :math:`t < n_{\mathrm{max}}\tau`.
+        :param float xtol:
+           Tolerance criteria when computing roots via :func:`likelihood.brentq`.
+        :param float rtol:
+           Tolerance criteria when computing roots via :func:`likelihood.brentq`.
+        :param integer itermax:
+           Maximum number of iterations when computing roots via :func:`likelihood.brentq`.
+    """
     if tcritical is None: tcritical = -1
     this = $action(bursts, nopen, tau, tcritical, nmax, xtol, rtol, itermax)
     try: self.this.append(this)

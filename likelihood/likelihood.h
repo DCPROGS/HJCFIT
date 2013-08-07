@@ -125,7 +125,7 @@ namespace DCProgs {
       //! \param[in] _rtol Tolerance criteria for brentq().
       //! \param[in] _itermax Maximum number of iteration when calling brentq().
       Log10Likelihood   ( t_Bursts const &_bursts, t_uint _nopen, t_real _tau,
-                          t_real _tcritical=-1e0, t_uint _nmax=2, t_real _xtol=1e-10,
+                          t_real _tcritical=-1e0, t_uint _nmax=3, t_real _xtol=1e-10,
                           t_real _rtol=1e-10, t_uint _itermax=100 ) 
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}

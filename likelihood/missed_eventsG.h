@@ -92,7 +92,7 @@ namespace DCProgs {
       //!                       return a std::vector<RootIntervals>
       //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau,
-                        t_uint _nmax=2, t_real _xtol = 1e-12, t_real _rtol = 1e-12,
+                        t_uint _nmax=3, t_real _xtol = 1e-12, t_real _rtol = 1e-12,
                         t_uint _itermax = 100 )
                     : MissedEventsG( _qmatrix, _tau,
                                      [_xtol, _rtol, _itermax](DeterminantEq const &_c) {
