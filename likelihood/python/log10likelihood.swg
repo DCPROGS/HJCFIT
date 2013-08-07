@@ -71,28 +71,54 @@
 %}
 
 %feature("autodoc", "Creates a functor for optimizing the likelihood.\n\n"
-         "This functor can as input a qmatrix and returns the resulting likelihood.\n\n"
-         ":param bursts:\n"
-         "   A sequence of bursts. Each burst is a sequence of open and shut intervals. "
-            "There should always be an odd number of intervals. And the first interval "
-            "is open by default.\n"
-         ":param integer nopen:\n"
-         "   Number of open states. Should be strictly positive.\n"
-         ":param float tau:\n"
-         "   Maximum length of missed events. Should be positive.\n"
-         ":param float tcrit:\n"
-         "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative, then the inital "
-            "and final states are the equilibrium occupancies. \n"
-         ":param integer nmax:\n"
-         "   The exact missed-events likelihood will be computed for "
-            ":math:`t < n_{\\matrm{max}}\\tau`.\n"
-         ":param float xtol:\n"
-         "   Tolerance criteria when computing roots via :meth:`likelihood.brentq`.\n"
-         ":param float rtol:\n"
-         "   Tolerance criteria when computing roots via :meth:`likelihood.brentq`.\n"
-         ":param interger itermax:\n"
-         "   Maximum number of iterations when computing roots via :meth:`likelihood.brentq`.\n"
-        ) Log10Likelihood;
+         "This functor can as input a qmatrix and returns the resulting likelihood.\n"
+         "The root finding process is performed by :py:func:`find_roots`. Most of the\n"
+         "arguments to initialize this functor are parameters for that process.\n\n")
+         Log10Likelihood;
+
+%feature("shadow") Log10Likelihood::Log10Likelihood %{
+  def __init__( self, bursts, nopen, tau, tcritical=None, nmax=3, xtol=1e-10, rtol=1e-10,
+                itermax=100, lower_bound=None, upper_bound=None ):
+    """ Initializes the missed-events likelihood. 
+
+        :param bursts:
+           A sequence of bursts. Each burst is a sequence of open and shut intervals. 
+           There should always be an odd number of intervals. And the first interval 
+           is open by default.
+        :param integer nopen:
+           Number of open states. Should be strictly positive.
+        :param float tau:
+           Maximum length of missed events. Should be positive.
+        :param float tcritical:
+           :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the inital and final states
+           are the equilibrium occupancies.
+        :param integer nmax:
+           The exact missed-events likelihood will be computed for 
+           :math:`t < n_{\\matrm{max}}\\tau`.
+        :param float xtol:
+           Tolerance criteria when computing roots via :meth:`likelihood.brentq`
+        :param float rtol:
+           Tolerance criteria when computing roots via :meth:`likelihood.brentq`.
+        :param interger itermax:
+           Maximum number of iterations when computing roots via :meth:`likelihood.brentq`.
+        :param float lower_bound:
+           Lower bound for *all* roots. Defaults to None, in which the case the lower bound is
+           computed from :py:func:`find_lower_bound_for_roots`.
+        :param float upper_bound:
+           Upper bound for *all* roots. Defaults to None, in which the case the upper bound is
+           computed from :py:func:`find_upper_bound_for_roots`.
+    """
+    from numpy import NaN
+    if lower_bound is None: lower_bound = NaN
+    if upper_bound is None: upper_bound = NaN
+    if tcritical is None: tcritical = -1e0
+    
+    this = $action( bursts, nopen, tau, tcritical, nmax, xtol, rtol, itermax, lower_bound,
+                    upper_bound )
+    try: self.this.append(this)
+    except: self.this = this
+%}
+
         
 
 class Log10Likelihood {
@@ -112,6 +138,10 @@ class Log10Likelihood {
     DCProgs::t_real rtol;
     //! Maximum number of iterations for root finding.
     DCProgs::t_uint itermax;
+    //! Lower bound bracketing all roots.
+    DCProgs::t_real lower_bound;
+    //! Upper bound bracketing all roots.
+    DCProgs::t_real upper_bound;
 
     // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
     // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
@@ -124,12 +154,13 @@ class Log10Likelihood {
     //! Constructor
     %extend {
       Log10Likelihood   ( PyObject *_bursts, DCProgs::t_uint _nopen,
-                          DCProgs::t_real _tau, DCProgs::t_real _tcritical=-1e0,
-                          DCProgs::t_uint _nmax=2, DCProgs::t_real _xtol=1e-10,
-                          DCProgs::t_real _rtol=1e-10, DCProgs::t_uint _itermax=100 )  {
+                          DCProgs::t_real _tau, DCProgs::t_real _tcritical,
+                          DCProgs::t_uint _nmax, DCProgs::t_real _xtol,
+                          DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
+                          DCProgs::t_real _lower_bound, DCProgs::t_real _upper_bound )  {
         using namespace DCProgs;
         return new Log10Likelihood( convert_pybursts(_bursts), _nopen, _tau, _tcritical,
-                                    _nmax, _xtol, _rtol, _itermax );
+                                    _nmax, _xtol, _rtol, _itermax, _lower_bound, _upper_bound );
       }
 
       DCProgs::t_Burst & __getitem__(int i) {

@@ -165,8 +165,8 @@ namespace DCProgs {
   %include "qmatrix.swg"
   %include "idealg.swg"
   %include "determinant_equation.swg"
-  %include "root_finder.swg"
   %include "asymptotes.swg"
+  %include "root_finder.swg"
   %include "exact_survivor.swg"
   %include "approx_survivor.swg"
   %include "missed_eventsG.swg"
@@ -175,5 +175,4 @@ namespace DCProgs {
 }
 %include "time_filter.swg"
 %include "chained.swg"
-
 #undef DCPROGS_CATCH
