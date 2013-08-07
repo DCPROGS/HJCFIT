@@ -156,8 +156,18 @@ namespace DCProgs {
            if(_compare_func(eigenvalue, root)) return root;
            root = _change_func(eigenvalue, root);
         }
-        throw errors::Runtime("Reached maximum number of iterations "
-                              "when searching for root.");
+        std::ostringstream sstr;
+        sstr << "Searching for upper or lower bound.\n\n"
+             << _det 
+             << "  * starting point " << _start << "\n"
+             << "  * current location: " << root << "\n";
+        try {
+          t_rmatrix const H(_det.H(root));
+          Eigen::EigenSolver<t_rmatrix> eigsolver(H);
+          sstr  << "  * current eigenvalues: " << numpy_io(eigsolver.eigenvalues().transpose()) << "\n"
+                << "  * current bouding eigenvalue: " << _select_eig(eigsolver.eigenvalues()) << "\n";
+        } catch(...) {};
+        throw errors::MaxIterations(sstr.str());
       }
 
    // The upper bound should always be such that the root is positive. 
@@ -178,8 +188,7 @@ namespace DCProgs {
          if(std::abs(root) < 1e-12) root = _sign < 0 ? -1e1: 1e1;
          else root = _change(root);
        }
-       throw errors::Runtime("Reached maximum number of iterations "
-                             "when searching for determinant with correct sign.");
+       throw errors::MaxIterations("Searching for determinant with correct sign.");
     }
   }
 
@@ -188,7 +197,7 @@ namespace DCProgs {
 
     if(_mins > _maxs) {
       _maxs = find_upper_bound_for_roots(_det, _maxs);
-      _mins = find_lower_bound_for_roots(_det, _maxs);
+      _mins = find_lower_bound_for_roots(_det, std::min(t_real(0), _maxs));
     }
 
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   

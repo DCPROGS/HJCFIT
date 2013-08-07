@@ -86,6 +86,13 @@ namespace DCProgs {
         explicit Domain(std::string const &_message) noexcept : std::domain_error(_message), Math() {};
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
+    //! Thrown when the maximum number of iterations is reached
+    class MaxIterations : public Mass {
+      public:
+        explicit MaxIterations(char const *_message) noexcept : Mass(_message)  {};
+        explicit MaxIterations(std::string const &_message) noexcept : Mass(_message) {};
+        virtual char const* what() const noexcept { return this->Mass::what(); }
+    };
     //! Index error
     class Index : public Root, public virtual std::out_of_range {
       public:

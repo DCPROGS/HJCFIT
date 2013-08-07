@@ -68,8 +68,13 @@
     } catch (DCProgs::errors::NaN &_e) {                                       \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Mass &_e) {                                      \
+    } catch (DCProgs::errors::MaxIterations &_e) {                             \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Mass &_e) {                                      \
+      PyErr_SetString(PyExc_ArithmeticError,                                   \
+          (std::string("Maximum number of iterations reached: ") + _e.what())  \
+          .c_str() );                                                          \
       ONERROR;                                                                 \
     } catch (DCProgs::errors::Domain &_e) {                                    \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
@@ -95,6 +100,9 @@
       ONERROR;                                                                 \
     } catch(DCProgs::errors::NotImplemented &_e) {                             \
       PyErr_SetString(PyExc_NotImplementedError, _e.what());                   \
+      ONERROR;                                                                 \
+    } catch(DCProgs::errors::Runtime &_e) {                                    \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
       ONERROR;                                                                 \
     } catch(DCProgs::errors::Root &_e) {                                       \
       PyErr_SetString( PyExc_RuntimeError,                                     \

@@ -69,8 +69,8 @@ namespace DCProgs {
   //! \param[in] _tolerance: Minimum size of intervals. Below that, roots are expected to be
   //!                        multiples.
   std::vector<RootInterval> MSWINDOBE
-    find_root_intervals(DeterminantEq const &_det, t_real _mins = 1e8, t_real _maxs = 1e1,
-                        t_real _tolerance = 1e-8);
+    find_root_intervals( DeterminantEq const &_det, t_real _mins=1e8, t_real _maxs=1e1,
+                         t_real _tolerance=1e-8 );
 
   //! \brief Figures out an lower bound for root finding.
   //! \details Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than
