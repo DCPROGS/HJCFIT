@@ -66,14 +66,14 @@ TEST_F(IdealGTest, initialize){
 
   { t_rmatrix qq(5, 3);
     EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
-// { t_rmatrix qq(3, 5);
-//   EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
-// EXPECT_THROW(idealg.set(Q, 6), errors::Domain); 
-// EXPECT_THROW(idealg.set(Q, -1), errors::Domain); 
+  { t_rmatrix qq(3, 5);
+    EXPECT_THROW(idealg.set(qq, 2), errors::Domain); }
+  EXPECT_THROW(idealg.set(Q, 6), errors::Domain); 
+  EXPECT_THROW(idealg.set(Q, -1), errors::Domain);
  
   // Tests row constraints.
   for(t_rmatrix::Index i(0); i < Q.rows(); ++i)
-    EXPECT_DOUBLE_EQ(std::abs(idealg.get_matrix().row(i).sum()), 0e0);
+    EXPECT_TRUE(std::abs(idealg.get_matrix().row(i).sum()) < 1e-12);
  
   // Test that row constraints always works.
   { t_rmatrix qq(Q);
