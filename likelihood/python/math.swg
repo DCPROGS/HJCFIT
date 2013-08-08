@@ -63,12 +63,49 @@
 #   else
       t_real copyme(_in);
       return PyArray_Scalar( static_cast<void*>(&copyme), 
-                             PyArray_TypeObjectFromType( numpy::type<t_real>::value),
+                             PyArray_DescrFromType( numpy::type<t_real>::value),
                              base );
 #   endif
   }
 }%}
 
+// Tells swig about our type hierarchy. 
+// These types should make it easier to go from one system to another, but they do make it slightly
+// more difficult for swig to understand our code.
+%apply int { DCProgs::t_int }; 
+// unsigned should be checked for negative values. Otherwise swig comes out with a truly unhelpfull
+// message. Also checks for numpy scalar at the same type.
+%typemap(in) DCProgs::t_uint {
+  try {
+    using namespace DCProgs;
+    long integer;
+    if(PyLong_Check($input)) integer = PyLong_AsLong($input);
+#   ifndef DCPROGS_PYTHON3
+      else if(PyInt_Check($input)) integer = PyInt_AsLong($input);
+#   endif
+    else if(PyArray_CheckScalar($input))  {
+      PyArray_CastScalarToCtype($input, static_cast<void*>(&integer), 
+                                PyArray_DescrFromType(numpy::type<long>::value));
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+    } else throw errors::PythonTypeError("Unexpected type in burst.");
+    if(integer < 0) throw errors::PythonValueError("Input integer cannot be negative.");
+    $1 = static_cast<t_uint>(integer);
+  } DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(out) DCProgs::t_uint = unsigned int;
+%typemap(typecheck) DCProgs::t_uint = int;
+%typemap(out) DCProgs::t_real { 
+  try{ $result = DCProgs::convert_real_to_python($1); }
+  DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(in) DCProgs::t_real {
+  try { $1 = convert_to_real($input); }
+  DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(typecheck) DCProgs::t_real {
+  $1 = convertible_to_real($input) ? 1: 0;
+}
+%apply double { DCProgs::t_real }; 
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);
