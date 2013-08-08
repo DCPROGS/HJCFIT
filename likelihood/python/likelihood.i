@@ -68,8 +68,13 @@
     } catch (DCProgs::errors::NaN &_e) {                                       \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Mass &_e) {                                      \
+    } catch (DCProgs::errors::MaxIterations &_e) {                             \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
+      ONERROR;                                                                 \
+    } catch (DCProgs::errors::Mass &_e) {                                      \
+      PyErr_SetString(PyExc_ArithmeticError,                                   \
+          (std::string("Maximum number of iterations reached: ") + _e.what())  \
+          .c_str() );                                                          \
       ONERROR;                                                                 \
     } catch (DCProgs::errors::Domain &_e) {                                    \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
@@ -95,6 +100,9 @@
       ONERROR;                                                                 \
     } catch(DCProgs::errors::NotImplemented &_e) {                             \
       PyErr_SetString(PyExc_NotImplementedError, _e.what());                   \
+      ONERROR;                                                                 \
+    } catch(DCProgs::errors::Runtime &_e) {                                    \
+      PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
       ONERROR;                                                                 \
     } catch(DCProgs::errors::Root &_e) {                                       \
       PyErr_SetString( PyExc_RuntimeError,                                     \
@@ -157,8 +165,8 @@ namespace DCProgs {
   %include "qmatrix.swg"
   %include "idealg.swg"
   %include "determinant_equation.swg"
-  %include "root_finder.swg"
   %include "asymptotes.swg"
+  %include "root_finder.swg"
   %include "exact_survivor.swg"
   %include "approx_survivor.swg"
   %include "missed_eventsG.swg"
@@ -167,5 +175,4 @@ namespace DCProgs {
 }
 %include "time_filter.swg"
 %include "chained.swg"
-
 #undef DCPROGS_CATCH

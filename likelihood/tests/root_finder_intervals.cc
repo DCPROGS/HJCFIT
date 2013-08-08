@@ -81,8 +81,8 @@ TEST_F(RootFinderIntervalsTest, open) {
   QMatrix const qmatrix(Q, 2);
   DeterminantEq det(qmatrix, 1e-4); 
   
-  std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
-  EXPECT_EQ(intervals.size(), std::vector<RootInterval>::size_type(2));
+  std::vector<RootInterval> intervals = find_root_intervals(det);
+  EXPECT_EQ(std::vector<RootInterval>::size_type(2), intervals.size());
 
   std::sort(intervals.begin(), intervals.end(),
             [](RootInterval const &_a, RootInterval const &_b) { return _a.start < _b.end; });
@@ -99,8 +99,8 @@ TEST_F(RootFinderIntervalsTest, closed) {
   QMatrix const qmatrix(Q, 2);
   DeterminantEq det(qmatrix.transpose(), 1e-4); 
   
-  std::vector<RootInterval> intervals = find_root_intervals(det, -1e6);
-  EXPECT_EQ(intervals.size(), std::vector<RootInterval>::size_type(3));
+  std::vector<RootInterval> intervals = find_root_intervals(det);
+  EXPECT_EQ(std::vector<RootInterval>::size_type(3), intervals.size());
 
   std::sort(intervals.begin(), intervals.end(),
             [](RootInterval const &_a, RootInterval const &_b) { return _a.start < _b.end; });
@@ -138,7 +138,7 @@ TEST_P(TestFindIntervals, random_matrix) {
     DeterminantEq det(qmatrix, 1e-4);
     // Look for roots and sort them
     t_real const convergence = 1e-6;
-    std::vector<RootInterval> intervals = find_root_intervals(det, 1e8, 0e0, convergence);
+    std::vector<RootInterval> intervals = find_root_intervals(det, quiet_nan, quiet_nan, convergence);
     std::sort(intervals.begin(), intervals.end(),
               [](RootInterval const &_a, RootInterval const &_b)
               { return _a.start < _b.end; });

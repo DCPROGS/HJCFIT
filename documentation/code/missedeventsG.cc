@@ -33,7 +33,7 @@ int main() {
 
   // Create eG by giving home-made root-finding function.
   auto find_roots = [](DCProgs::DeterminantEq const &_det) {
-    return DCProgs::find_roots(_det, 1e-12, 1e-12, 150);
+    return DCProgs::find_roots(_det, 1e-12, 1e-12, 100, DCProgs::quiet_nan, DCProgs::quiet_nan);
   };
   DCProgs::MissedEventsG eG_from_func(qmatrix, tau, find_roots);
  
@@ -46,11 +46,11 @@ int main() {
 
     if(    ((eG_from_roots.af(t) - eG_from_func.af(t)).array().abs() > 1e-8).any()  
         or ((eG_from_roots.fa(t) - eG_from_func.fa(t)).array().abs() > 1e-8).any() )
-      throw std::exception();
+      throw DCProgs::errors::Runtime("root != func");
 
     if(    ((eG_from_roots.af(t) - eG_automatic.af(t)).array().abs() > 1e-8).any() 
         or ((eG_from_roots.fa(t) - eG_automatic.fa(t)).array().abs() > 1e-8).any() )
-      throw std::exception();
+      throw DCProgs::errors::Runtime("root != automatic");
   }
 
   return 0;

@@ -32,7 +32,7 @@ Initialization from a :math:`Q`-matrix
 
   .. literalinclude:: ../../code/missedeventsG.cc
      :language: c++
-     :lines: 1-18, 41, 55-
+     :lines: 1-18, 41, 60-
 
 A fair amount of work goes on behind the scene. First reasonable upper and lower bounds for the
 roots obtained (:cpp:func:`DCProgs::find_lower_bound_for_roots`, and

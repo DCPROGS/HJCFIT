@@ -30,7 +30,7 @@ namespace {
       class NumpyApplySpecialized : public DCProgs::numpy::type<T> {
         public:
           using DCProgs::numpy::type<T>::value;
-          using DCProgs::numpy::type<T>::np_type;
+          using typename DCProgs::numpy::type<T>::np_type;
        
           //! Creates functor.
           NumpyApplySpecialized(PyArrayObject *_in) : input_(acquire_ref(_in)) {
@@ -66,7 +66,7 @@ namespace {
       struct NumpyApplySpecialized<Eigen::Matrix<T, I, N>, reduce> : public DCProgs::numpy::type<T> {
         public:
           using DCProgs::numpy::type<T>::value;
-          using DCProgs::numpy::type<T>::np_type;
+          using typename DCProgs::numpy::type<T>::np_type;
           //! Number of dims of functor output.
           npy_intp const static add_dims;
   

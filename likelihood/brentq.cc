@@ -113,6 +113,6 @@ namespace DCProgs {
         fcur = _function(xcur);
         ++function_calls;
     }
-    throw errors::Mass("Could not converge search for root.");
+    throw errors::MaxIterations("Could not converge search for root in brentq.");
   }
 }

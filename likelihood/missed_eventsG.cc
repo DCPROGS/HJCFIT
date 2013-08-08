@@ -43,4 +43,11 @@ namespace DCProgs {
     return partial_CHS_matrix(*_g.asymptotes_af_, _g.get_tau(), _tcrit) * _g.get_af_factor();
   }
 
+  MissedEventsG::MissedEventsG( QMatrix const &_qmatrix, t_real _tau,
+                                t_uint _nmax, t_real _xtol, t_real _rtol, t_uint _itermax,
+                                t_real _lowerbound, t_real _upperbound )
+    : MissedEventsG( _qmatrix, _tau,
+                     [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+                        return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound); 
+                     }, _nmax ) {}
 }

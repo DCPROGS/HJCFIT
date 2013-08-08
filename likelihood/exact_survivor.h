@@ -80,7 +80,7 @@ namespace DCProgs {
       t_rvector eigenvalues_fa() const;
 
       //! Move assignment.
-      bool operator=(ExactSurvivor &&_c);
+      ExactSurvivor& operator=(ExactSurvivor &&_c);
 
     protected:
       //! \cond 

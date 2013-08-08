@@ -85,8 +85,12 @@ namespace DCProgs {
 
   //! \brief Likelihood of a set of bursts
   //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
-  //!          bursts and maximum missed-event length. It is, in practice, a convenience object with
-  //!          which to perform likelihood maximization.
+  //!          bursts. It is, in practice, a convenience object with which to perform likelihood
+  //!          optimization.
+  //!
+  //!          At each call, it creates a likelihood object MissedEventsG using the input parameters
+  //!          given during initialization, and the Q-matrix given on input. It then returns the
+  //!          log10 likelihood for the set of bursts given on input.
   class MSWINDOBE Log10Likelihood {
     public:
       //! Set of bursts for which to compute the likelihood.
@@ -107,6 +111,10 @@ namespace DCProgs {
       t_real rtol;
       //! Maximum number of iterations for root finding.
       t_uint itermax;
+      //! Lower bound bracketing all roots.
+      t_real lower_bound;
+      //! Upper bound bracketing all roots.
+      t_real upper_bound;
 
 
       //! Constructor
@@ -124,11 +132,18 @@ namespace DCProgs {
       //! \param[in] _xtol Tolerance criteria for brentq().
       //! \param[in] _rtol Tolerance criteria for brentq().
       //! \param[in] _itermax Maximum number of iteration when calling brentq().
+      //! \param[in] _lowerbound Lower bound of the interval bracketing all roots. If None, the
+      //!            lower bound is obtained from find_lower_bound_for_roots().
+      //! \param[in] _upperbound Upper bound of the interval bracketing all roots. If None, the
+      //!            upper bound is obtained from find_upper_bound_for_roots().
       Log10Likelihood   ( t_Bursts const &_bursts, t_uint _nopen, t_real _tau,
-                          t_real _tcritical=-1e0, t_uint _nmax=3, t_real _xtol=1e-10,
-                          t_real _rtol=1e-10, t_uint _itermax=100 ) 
+                          t_real _tcritical=-1e0, t_uint _nmax=2, t_real _xtol=1e-10,
+                          t_real _rtol=1e-10, t_uint _itermax=100,
+                          t_real _lowerbound=quiet_nan,
+                          t_real _upperbound=quiet_nan ) 
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
-                        nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax) {}
+                        nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax),
+                        lower_bound(_lowerbound), upper_bound(_upperbound) {}
      
       //! \brief Computes likelihood for each burst
       //! \return a DCProgs::t_rvector 

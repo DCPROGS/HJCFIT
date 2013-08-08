@@ -18,49 +18,58 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-%feature("autodoc", "Figures out lower bound for root.\n\n"
-         "Lower bound is obtained by iteratively checking the "
-         "lowest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
-         "where :math:`s_i` is the guess at iteration :math:`i`. If the "
-         "lower eigenvalue is lower than :math:`s_i`, than "
-         ":math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` "
-         "is created.\n\n"
-         ":param DeterminantEq det: \n"
-         "     Function for which to guess bound for lower root.\n"
-         ":param Number start:\n"
-         "     Starting point. Defaults to zero.\n"
-         ":param Number alpha:\n"
-         "     Factor from which to determine next best guess.\n"
-         ":param Integer itermax:\n"
-         "     Maximum number of iterations before bailing out.\n")
-         find_lower_bound_for_roots(DeterminantEq const &det);
+%rename("_find_lower_bound_for_roots") find_lower_bound_for_roots;
+DCProgs::t_real find_lower_bound_for_roots( DCProgs::DeterminantEq const &_det,
+                                            DCProgs::t_real _start,
+                                            DCProgs::t_real _alpha,
+                                            DCProgs::t_uint _itermax );
+%pythoncode %{
+def find_lower_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
+  """ Figures out lower bound for root.
 
-DCProgs::t_real find_lower_bound_for_roots(DeterminantEq const &det,
-                                           DCProgs::t_real start = 1e8,
-                                           DCProgs::t_real alpha = 2e0, 
-                                           DCProgs::t_int itermax = 100);
+       The lower bound is obtained by iteratively checking the lowest eigenvalue
+       :math:`\\epsilon_i^s` of :math:`H(s_i)`, where :math:`s_i` is the guess at iteration
+       :math:`i`. If the lowest eigenvalue is smaller than :math:`s_i`, then
+       :math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` is created.
 
-%feature("autodoc", "Figures out upper bound for root.\n\n"
-         "Lower bound is obtained by iteratively checking the "
-         "largest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
-         "where :math:`s_i` is the guess at iteration :math:`i`. If the "
-         "lower eigenvalue is lower than :math:`s_i`, than "
-         ":math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` "
-         "is created.\n\n"
-         ":param DeterminantEq det: \n"
-         "     Function for which to guess bound for lower root.\n"
-         ":param Number start:\n"
-         "     Starting point. Defaults to zero.\n"
-         ":param Number alpha:\n"
-         "     Factor from which to determine next best guess.\n"
-         ":param Integer itermax:\n"
-         "     Maximum number of iterations before bailing out.\n")
-         find_upper_bound_for_roots(DeterminantEq const &det);
+       :param DeterminantEq det:
+            Function for which to guess bound for lower root.
+       :param Number start:
+            Starting point. 
+       :param Number alpha: 
+            Factor from which to determine next best guess. 
+       :param Integer itermax:
+            Maximum number of iterations before bailing out.
+  """
+  return _likelihood._find_lower_bound_for_roots(determinant, start, alpha, itermax)
+%}
 
-DCProgs::t_real find_upper_bound_for_roots(DeterminantEq const &det,
-                                           DCProgs::t_real start = 1e8,
-                                           DCProgs::t_real alpha = 2e0, 
-                                           DCProgs::t_int itermax = 100);
+%rename("_find_upper_bound_for_roots") find_upper_bound_for_roots;
+DCProgs::t_real find_upper_bound_for_roots( DCProgs::DeterminantEq const &_det,
+                                            DCProgs::t_real _start,
+                                            DCProgs::t_real _alpha,
+                                            DCProgs::t_uint _itermax );
+%pythoncode %{
+def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
+  """ Figures out upper bound for root.
+
+      The upper bound is obtained by iteratively checking the largest eigenvalue
+      :math:`\\epsilon_i^s` of :math:`H(s_i)`, where :math:`s_i` is the guess at iteration
+      :math:`i`. If the largest eigenvalue is larger than :math:`s_i`, then
+      :math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` is created.
+
+
+      :param DeterminantEq det: 
+           Function for which to guess bound for lower root.
+      :param Number start:
+           Starting point. 
+      :param Number alpha:
+           Factor from which to determine next best guess.
+      :param Integer itermax:
+           Maximum number of iterations before bailing out.
+  """
+  return _likelihood._find_upper_bound_for_roots(determinant, start, alpha, itermax)
+%}
 
 
 // Creates a typemap to convert std::vector<RootInterval> to a python list.
@@ -91,74 +100,122 @@ DCProgs::t_real find_upper_bound_for_roots(DeterminantEq const &det,
   $result = py_result.release();
 }
 
-%feature("autodoc", "Returns intervals for searching roots.\n\n"
-         "Lower bound is obtained by iteratively checking the "
-         "lowest eigenvalue :math:`\\epsilon_i^s` of :math:`H(s_i)`, "
-         "where :math:`s_i` is the guess at iteration :math:`i`. If the "
-         "lower eigenvalue is lower than :math:`s_i`, than "
-         ":math:`s_{i+1} = \\epsilon_i^s + \\alpha(\\epsilon_i^s - s_i)` "
-         "is created.\n\n"
-         ":param DeterminantEq det:\n"
-         "     Function for which to guess bound for lower root.\n"
-         ":param mins: Number\n"
-         "     Starting point. Defaults to a large number, larger than `maxs`."
-             " In that case, the lower bound is determined using"
-             " :py:meth:`find_lower_bound_for_roots`. "
-             "If it is smaller than `maxs`, than all roots should be larger than this number."
-         ":param Number maxs:\n"
-         "     Roots should all be smaller than this number.\n"
-         ":param Number tolerance:\n"
-         "     Size of the smallest possible intervals. Intervals smaller than this are likely to"
-             " have multiple roots.\n\n"
-         ":raises: ArithmeticError when NaN is encountered or when eigenvalue solver fails.\n\n"
-         ":returns: A list `[(a, b), multiplicity]`, where `(a, b)` denotes an interval, "
-                   "and `multiplicity` the multiplicity of the root. All roots with "
-                   "`multiplicity > 1` will have a size of `tolerance` or smaller.")
-         find_root_intervals;
-// Gives the arguments a default.
-// Despite what it advertises, SWIG doesn't seem to deal well with multiple default arguments in
-// c++.
-%typemap("default") DCProgs::t_real mins { $1 = 1e8; };
-%typemap("default") DCProgs::t_real maxs { $1 = 1e1; };
-%typemap("default") DCProgs::t_real tolerance { $1 = 1e-8; };
+%rename("_find_root_intervals") find_root_intervals;
 std::vector<DCProgs::RootInterval>
-   find_root_intervals(DeterminantEq const &det, DCProgs::t_real mins, 
-                       DCProgs::t_real maxs, DCProgs::t_real tolerance);
+   find_root_intervals( DCProgs::DeterminantEq const &det, DCProgs::t_real mins, 
+                        DCProgs::t_real maxs, DCProgs::t_real tolerance );
+%pythoncode %{
+  def find_root_intervals(determinant, mins=None, maxs=None, tolerance=1e-8):
+    """ Returns intervals for searching roots.
 
+        Finds a set of intervals between mins and maxs, each containing a single root.
 
-%feature("autodoc", "Find intervals for roots using brute force.\n\n"
-         "Computes all values between mins and maxs, for a given resolution. "
-         "If determinant changes sign between two values, or if it comes to within tolerance of "
-         "zero, then computes eigenvalues of H to determine possible multiplicity.\n\n" 
-         ":param DeterminantEq det:\n"
-         "     Function for which to guess bound for lower root.\n"
-         ":param Number resolution:\n"
-         "     Resolution at which to sample interval.\n"
-         ":param Number mins: \n"
-         "     Starting point. Defaults to a large number, larger than `maxs`."
-             " In that case, the lower bound is determined using"
-             " :py:meth:`find_lower_bound_for_roots`. "
-             "If it is smaller than `maxs`, than all roots should be larger than this number."
-         ":param Number maxs:\n"
-         "     Roots should all be smaller than this number.\n"
-         ":param Number tolerance:\n"
-         "     Tolerance below which the value of the determinant is considered "
-               "_close to zero_.\n\n"
-         ":raises: ArithmeticError when NaN is encountered or when eigenvalue solver fails.\n\n"
-         ":returns: A list `[(a, b), multiplicity]`, where `(a, b)` denotes an interval, "
-                   "and `multiplicity` the multiplicity of the root. All roots with "
-                   "`multiplicity > 1` will have a size of `tolerance` or smaller.")
-         find_root_intervals_brute_force; 
-%typemap("default") DCProgs::t_real resolution { $1 = 1e1; };
+        :param determinant:
+             :class:`DeterminantEq` instance for which to guess bound for lower root.
+        :param mins: Number
+             Lower bound of the interval within which to search for roots. If None, the lower bound
+             is determined using :py:func:`find_lower_bound_for_roots`. 
+        :param Number maxs:
+             Upper bound of the interval within which to search for roots. If None, the upper bound
+             is determined using :py:func:`find_upper_bound_for_roots`. 
+        :param Number tolerance:
+             Size of the smallest possible intervals. Intervals smaller than this are likely to
+             have multiple roots.
+        :raises: ArithmeticError when NaN is encountered or when eigenvalue solver fails.
+        :returns:
+             A list `[(a, b), multiplicity]`, where `(a, b)` denotes an interval, and
+             `multiplicity` the multiplicity of the root. All roots with `multiplicity`:math:`> 1`
+             will have a size of `tolerance` or smaller.
+    """
+    from numpy import NaN
+    if mins is None: mins = NaN
+    if maxs is None: maxs = NaN
+    return _likelihood._find_root_intervals(determinant, mins, maxs, tolerance)
+%}
+
+%rename("_find_root_intervals_brute_force") find_root_intervals_brute_force;
 std::vector<DCProgs::RootInterval> 
-  find_root_intervals_brute_force(DCProgs::DeterminantEq const &det, DCProgs::t_real resolution,
-                                  DCProgs::t_real mins, DCProgs::t_real maxs, 
-                                  DCProgs::t_real tolerance);
-%clear DCProgs::t_real resolution;
-%clear DCProgs::t_real mins;
-%clear DCProgs::t_real maxs;
-%clear DCProgs::t_real tolerance;
+  find_root_intervals_brute_force( DCProgs::DeterminantEq const &det, DCProgs::t_real resolution,
+                                   DCProgs::t_real mins, DCProgs::t_real maxs, 
+                                   DCProgs::t_real tolerance );
+%pythoncode %{
+  def find_root_intervals_brute_force( determinant, resolution=1e-1, mins=None, maxs=None,
+                                       tolerance=1e-8 ):
+    """ Find intervals for roots using brute force.
 
+        Computes all values between mins and maxs, for a given resolution. If the determinant
+        changes sign between two values, or if it comes to within tolerance of zero, then the
+        eigenvalues of H are used to determine possible multiplicity.
+
+        :param determinant:
+             Instance of :py:class:`DeterminantEq` for which to find root intervals
+        :param Number resolution:
+             Resolution at which to sample interval.
+        :param Number mins: 
+             Lower bound of interval. If None, then :py:func:`find_lower_bound_for_roots` is called.
+        :param Number maxs:
+             Upper bound of interval. If None, then :py:func:`find_upper_bound_for_roots` is called.
+        :param Number tolerance:
+             Tolerance below which the value of the determinant is considered "_close to zero_".
+
+        :raises: ArithmeticError when NaN is encountered or when eigenvalue solver fails.\n\n"
+
+        :returns:
+           A list `[(a, b), multiplicity]`, where `(a, b)` denotes an interval, and `multiplicity`
+           the multiplicity of the root. All roots with `multiplicity > 1` will have a size of
+           `tolerance` or smaller.
+    """
+    from numpy import NaN
+    if mins is None: mins = NaN
+    if maxs is None: maxs = NaN
+    return _likelihood._find_root_intervals_brute_force(determinant, resolution, mins, maxs, tolerance)
+%}
+
+%rename("_find_roots") find_roots;
+std::vector<DCProgs::Root>
+  find_roots( DeterminantEq const &det, DCProgs::t_real xtol, DCProgs::t_real rtol,
+              DCProgs::t_uint itermax, DCProgs::t_real lowerbound, DCProgs::t_real upperbound);
+%pythoncode %{
+  def find_roots( determinant, xtol=1e-12, rtol=1e-12, itermax=100, upperbound=None,
+                  lowerbound=None ):
+    """ Finds roots of a determinantal equation.
+
+        This is a three step process.
+
+        1. Find an interval that contains all roots/eigenvalues
+        1. Split it into smaller intervals until each contains only one root
+        1. Optimize over this interval to find an accurate position for the root
+
+        In the first step, if `upperbound` (`lowerbound`) is None -- the default -- then it is
+        obtained by calling :py:func:`find_upper_bound_for_roots`
+        (:py:func:`find_lower_bound_for_roots`). Otherwise the bound is used as is.
+        The second step is performed by :py:func:`find_root_intervals`.
+        The last step is carried out by brentq().
+
+        :param determinant:
+             Instance of :py:class:`DeterminantEq` for which to find root intervals
+        :param Number xtol:
+             Convergence criteria used in :py:func:`brentq`.
+        :param Number rtol:
+             Convergence criteria used in :py:func:`brentq`.
+        :param Integer itermax:
+             Maximum number of iterations. Used separately in each process.
+        :param Number mins: 
+             Lower bound of interval. If None, then :py:func:`find_lower_bound_for_roots` is called.
+        :param Number maxs:
+             Upper bound of interval. If None, then :py:func:`find_upper_bound_for_roots` is called.
+
+        :returns:
+        
+             A list `[(a, b), multiplicity]`, where `(a, b)` denotes an interval, and `multiplicity`
+             the multiplicity of the root. All roots with `multiplicity > 1` will have a size of
+             `tolerance` or smaller.
+    """
+    from numpy import NaN
+    if mins is None: mins = NaN
+    if maxs is None: maxs = NaN
+    return _likelihood._find_roots(determinant, mins, maxs, tolerance)
+%}
 
 %{
   // Helper function to convert output of root finding objects to cpp

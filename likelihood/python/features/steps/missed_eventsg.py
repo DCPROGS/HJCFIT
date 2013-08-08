@@ -29,6 +29,7 @@ def step(context, n, tau, nmax):
     i -= 1
     if i == 0: raise AssertionError('Could not instanciate enough likelihoods.')
     qmatrix = random_qmatrix()
+    G = MissedEventsG(qmatrix, tau, nmax)
     try: G = MissedEventsG(qmatrix, tau, nmax)
     except: continue
     else:
@@ -199,7 +200,7 @@ def step(context):
         Hfa = compute_Hfa(qmatrix, G.tau, t)
         check = sum(Hfa[:, :G.nopen], axis=1) 
         assert all(abs(occ - check) < context.tolerance)
-        if any(2e0*check > context.tolerance): 
+        if any(2e0*abs(check) > context.tolerance): 
           assert any(abs(occ - 2e0*check) > context.tolerance)
       except:
         print(G)

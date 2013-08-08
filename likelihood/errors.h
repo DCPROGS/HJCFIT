@@ -104,6 +104,18 @@ namespace DCProgs {
         //! Describes the exception
         virtual char const* what() const noexcept { return this->std::domain_error::what(); }
     };
+    //! Thrown when the maximum number of iterations is reached
+    class MaxIterations : public Mass {
+      public:
+        //! \brief Constructor
+        //! \param[in] _message A message to carry with the exception
+        explicit MaxIterations(char const *_message) noexcept : Mass(_message)  {};
+        //! \brief Constructor
+        //! \param[in] _message A message to carry with the exception
+        explicit MaxIterations(std::string const &_message) noexcept : Mass(_message) {};
+        //! Describes the exception
+        virtual char const* what() const noexcept { return this->Mass::what(); }
+    };
     //! Index error
     class Index : public Root, public virtual std::out_of_range {
       public:
