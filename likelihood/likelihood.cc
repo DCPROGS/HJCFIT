@@ -49,7 +49,8 @@ namespace DCProgs {
             << "=================\n\n" 
             << "  * Number of open states: " << _self.nopen << "\n"
             << "  * Resolution time tau: " << _self.tau << "\n";
-    if(_self.tcritical <= 0e0) _stream << "  * Using equilibrium occupancies.\n";
+    if(DCPROGS_ISNAN(_self.tcritical)  or _self.tcritical <= 0e0)
+         _stream << "  * Using equilibrium occupancies.\n";
     else _stream << "  * Using CHS occupancies with tcrit: "  << _self.tcritical << "\n";
     _stream << "  * Exact events computed for: t < "
             << _self.nmax << " tau\n\n"
@@ -64,10 +65,11 @@ namespace DCProgs {
   t_real Log10Likelihood::operator()(QMatrix const &_matrix) const {
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
-    t_rvector const final = tcritical > 0 ?
-                              CHS_occupancies(eG, tcritical, false).transpose():
-                              occupancies(eG, false).transpose();
-    t_initvec const initial = tcritical > 0 ? CHS_occupancies(eG, tcritical): occupancies(eG);
+    bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
+    t_rvector const final = eq_vector ?
+                              occupancies(eG, false).transpose():
+                              CHS_occupancies(eG, tcritical, false).transpose();
+    t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_real result(0);
     for(t_Burst const &burst: bursts) 
@@ -77,10 +79,11 @@ namespace DCProgs {
   t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
-    t_rvector const final = tcritical > 0 ?
-                              CHS_occupancies(eG, tcritical, false).transpose():
-                              occupancies(eG, false).transpose();
-    t_initvec const initial = tcritical > 0 ? CHS_occupancies(eG, tcritical): occupancies(eG);
+    bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
+    t_rvector const final = eq_vector ? 
+                              occupancies(eG, false).transpose():
+                              CHS_occupancies(eG, tcritical, false).transpose();
+    t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_rvector result(bursts.size());
     t_int i(0);

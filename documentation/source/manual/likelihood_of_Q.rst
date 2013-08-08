@@ -72,19 +72,31 @@ and c++, the functions accepts either a matrix or an actual :cpp:class:`DCProgs:
 (:py:class:`python <dcprogs.likelihood.QMatrix>`) object. In the former case, the number of open
 states is set to `nopen`.
 
-Finally, it should be noted that the python the bursts are accessed in python directly from the
-likelihood using normal sequence operations. Only a small subset of sequence operations where
-implemented.
+It should be noted that the python the bursts are accessed in python directly from the likelihood
+using normal sequence operations. Only a small subset of sequence operations where implemented.
 
 :python:
 
   .. literalinclude:: ../../code/log10.py
      :language: python
-     :lines: 1, 26-
+     :lines: 1, 26-37
 
 :c++11:
 
   :cpp:member:`DCProgs::Log10Likelihood::bursts` is a public member and can be accessed directly.  
+
+
+Finally, some of the attributes, namely, :py:attr:`Log10Likelihood.tcritical`,
+:py:attr:`Log10Likelihood.upper_bound`, :py:attr:`Log10Likelihood.lower_bound`, act both as
+parameters and as switch when given special values. These special values are `None` and `numpy.NaN`
+in python and :c:data:`DCProgs::quiet_nan` in c++. In python, the special values will always be transformed
+to `None`. 
+
+:python:
+   
+  .. literalinclude:: ../../code/log10.py
+     :language: python
+     :lines: 39-
 
 .. _initializerlist: https://en.wikipedia.org/wiki/C++11#Initializer_lists
 .. _uniforminit: https://en.wikipedia.org/wiki/C++11#Uniform_initialization

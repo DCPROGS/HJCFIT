@@ -78,8 +78,8 @@
          "   Number of open states. Should be strictly positive.\n\n"
          ".. attribute:: tau\n\n"
          "   Maximum length of missed events. Should be positive.\n\n"
-         ".. attribute:: tcrit\n\n"
-         "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative or None, then the inital\n"
+         ".. attribute:: tcritical\n\n"
+         "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative, None, or NaN, then the inital\n"
          "   and final states are the equilibrium occupancies.\n\n"
          ".. attribute:: nmax\n\n"
          "  The exact missed-events likelihood will be computed for \n"
@@ -91,11 +91,11 @@
          ".. attribute:: itermax\n\n"
          "   Maximum number of iterations when computing roots via :py:func:`likelihood.brentq`.\n"
          ".. attribute:: lower_bound\n\n"
-         "   Lower bound bracketing all roots. If None, then the lower bound will be computed \n"
-         "   during calls by :py:func:`find_lower_bound_for_root`\n\n"
+         "   Lower bound bracketing all roots. If None or NaN, then the lower bound will be \n"
+         "   computed during calls by :py:func:`find_lower_bound_for_root`\n\n"
          ".. attribute:: upper_bound\n\n"
-         "   Upper bound bracketing all roots. If None, then the upper bound will be computed \n"
-         "   during calls by :py:func:`find_upper_bound_for_root`\n\n") Log10Likelihood;
+         "   Upper bound bracketing all roots. If None or NaN, then the upper bound will be \n"
+         "   computed during calls by :py:func:`find_upper_bound_for_root`\n\n") Log10Likelihood;
 
 // The following makes it possible to use keyword arguments in the constructor.
 %feature("shadow") Log10Likelihood::Log10Likelihood %{
@@ -175,6 +175,23 @@ class Log10Likelihood {
     DCProgs::t_uint nopen;
     //! Max length of missed events
     DCProgs::t_real tau;
+
+    // Tells SWIG how to convert tcritical, since it can be negative or NaN or None.
+    %typemap(in) DCProgs::t_real tcritical { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+        if($1 <= 0) $1 = quiet_nan;
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real tcritical { 
+      if(DCPROGS_ISNAN($1) or $1 <= 0) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
     //! \brief tcrit. 
     //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
     DCProgs::t_real tcritical;
@@ -186,10 +203,43 @@ class Log10Likelihood {
     DCProgs::t_real rtol;
     //! Maximum number of iterations for root finding.
     DCProgs::t_uint itermax;
+
+    // Tells SWIG how to convert upper and lower bounds, since it can be NaN or None.
+    %typemap(in) DCProgs::t_real lower_bound { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real lower_bound { 
+      if(DCPROGS_ISNAN($1)) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
+    %clear DCProgs::t_real tcritical;
     //! Lower bound bracketing all roots.
     DCProgs::t_real lower_bound;
+    %clear DCProgs::t_real lower_bound;
+    %typemap(in) DCProgs::t_real upper_bound { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real upper_bound { 
+      if(DCPROGS_ISNAN($1)) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
     //! Upper bound bracketing all roots.
     DCProgs::t_real upper_bound;
+    %clear DCProgs::t_real upper_bound;
 
     // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
     // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.

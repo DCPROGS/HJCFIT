@@ -1,4 +1,4 @@
-from numpy import all, abs
+from numpy import all, abs, NaN
 from dcprogs.likelihood import Log10Likelihood
 
 bursts = [  [0.1, 0.2, 0.1],                  # 1st burst 
@@ -35,3 +35,20 @@ assert all(abs(likelihood[2] - [0.15, 0.16, 0.18]) < 1e-12)
 likelihood.append([0.25, 0.013, 0.013])
 assert len(likelihood) == 4
 assert all(abs(likelihood[3] - [0.25, 0.013, 0.013]) < 1e-12)
+
+# some attributes act as switches and get converted back to None when given special values
+assert likelihood.tcritical is None
+likelihood.tcritical = NaN
+assert likelihood.tcritical is None
+likelihood.tcritical = -1
+assert likelihood.tcritical is None
+likelihood.tcritical = 0.5
+assert likelihood.tcritical is not None and abs(likelihood.tcritical - 0.5) < 1e-12
+
+assert likelihood.lower_bound is None
+likelihood.lower_bound = NaN
+assert likelihood.lower_bound is None
+likelihood.lower_bound = -1e6
+assert likelihood.lower_bound is not None and abs(likelihood.lower_bound + 1e6) < 1e-12
+likelihood.lower_bound = None
+assert likelihood.lower_bound is None
