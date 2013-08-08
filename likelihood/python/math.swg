@@ -17,6 +17,57 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
+// Some functions to convert back and forth between python and t_real.
+%{ namespace {
+  // Converts input to real
+  DCProgs::t_real convert_to_real(PyObject* _in) {
+    using namespace DCProgs;
+    if(PyLong_Check(_in)) return static_cast<t_real>(PyLong_AsLong(_in));
+#   ifndef DCPROGS_PYTHON3
+      else if(PyInt_Check(_in)) return static_cast<t_real>(PyInt_AsLong(_in));
+#   endif
+    else if(PyFloat_Check(_in)) return static_cast<t_real>(PyFloat_AsDouble(_in));
+    else if(PyArray_CheckScalar(_in))  {
+      t_real real_result;
+      PyArray_CastScalarToCtype(_in, static_cast<void*>(&real_result), 
+                                PyArray_DescrFromType(numpy::type<t_real>::value));
+      if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+      return std::move(real_result);
+    } else throw errors::PythonTypeError("Unexpected type is not a real number.");
+  }
+  bool convertible_to_real(PyObject* _in) {
+    using namespace DCProgs;
+    if(PyFloat_Check(_in)) return true;
+    if(PyLong_Check(_in)) return true;
+#   ifndef DCPROGS_PYTHON3
+      if(PyInt_Check(_in)) return true;
+#   endif
+    if(PyArray_CheckScalar(_in)) {
+     int const typein = PyArray_TYPE(reinterpret_cast<PyArrayObject*>(_in));
+     return PyArray_CanCastSafely(typein, numpy::type<t_real>::value) != 0;
+    }
+    return false;
+  }
+  int convert_to_real(PyObject* _in, void *_out) {
+    using namespace DCProgs;
+    try {
+      t_real result = convert_to_real(_in);
+      *static_cast<t_real*>(_out) = std::move(result);
+      return 1;
+    } DCPROGS_CATCH(return 0);
+  }
+  PyObject* convert_real_to_python(DCProgs::t_real const & _in, PyObject *base=NULL) {
+    using namespace DCProgs;
+#   ifndef DCPROGS_LONG_DOUBLE
+      return PyFloat_FromDouble(_in);
+#   else
+      t_real copyme(_in);
+      return PyArray_Scalar( static_cast<void*>(&copyme), 
+                             PyArray_TypeObjectFromType( numpy::type<t_real>::value),
+                             base );
+#   endif
+  }
+}%}
 
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }

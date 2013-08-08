@@ -128,11 +128,14 @@
   DCPROGS_CATCH(return NULL;);
 }
 
+// Adds some standard converters for eigen, 
+// + bindings for svd, eig, ... in case we are compiling with t_real > double.
+%include "math.swg"
+
 // Tells swig about our type hierarchy. 
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
 %apply int { DCProgs::t_int }; 
-%apply double { DCProgs::t_real }; 
 // unsigned should be checked for negative values. Otherwise swig comes out with a truly unhelpfull
 // message. Also checks for numpy scalar at the same type.
 %typemap(in) DCProgs::t_uint {
@@ -154,10 +157,19 @@
 }
 %typemap(out) DCProgs::t_uint = unsigned int;
 %typemap(typecheck) DCProgs::t_uint = int;
+%typemap(out) DCProgs::t_real { 
+  try{ $result = DCProgs::convert_real_to_python($1); }
+  DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(in) DCProgs::t_real {
+  try { $1 = convert_to_real($input); }
+  DCPROGS_CATCH(SWIG_fail);
+}
+%typemap(typecheck) DCProgs::t_real {
+  $1 = convertible_to_real($input) ? 1: 0;
+}
+%apply double { DCProgs::t_real }; 
 
-// Adds some standard converters for eigen, 
-// + bindings for svd, eig, ... in case we are compiling with t_real > double.
-%include "math.swg"
 // These macros help us translate from C++ exceptions to python exceptions
 //! General namespace for all things DCProgs.
 namespace DCProgs {
