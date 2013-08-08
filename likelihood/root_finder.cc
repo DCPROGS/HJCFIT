@@ -200,7 +200,7 @@ namespace DCProgs {
     if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
       throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
     t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
-    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, 0e0)): _maxs;
+    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, t_real(0))): _maxs;
 
     // Now calls a recurrent function to bisect intervals until all roots are accounted for.   
     std::vector<RootInterval> intervals;
@@ -252,7 +252,7 @@ namespace DCProgs {
     if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
       throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
     t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
-    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, 0e0)): _maxs;
+    t_real const maxs = is_max_nan ? find_upper_bound_for_roots(_det, std::max(mins, t_real(0))): _maxs;
 
     if(_resolution < 1e-12) throw errors::Domain("Resolution cannot be negative or null");
     if(mins + 2e0 * _resolution > maxs) _resolution = (maxs - mins) / 10e0;
