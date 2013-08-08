@@ -26,7 +26,7 @@ import sys, os
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.mathjax',
-              'sphinx.ext.viewcode'] \
+              'sphinx.ext.viewcode', 'sphinx.ext.ifconfig'] \
              + [@SPHINX_EXTENSIONS@]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -298,3 +298,8 @@ rst_epilog = """
 .. _ipython: http://ipython.org/
 .. _eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
 """
+
+def setup(app): 
+  app.add_config_value('python_bindings', "@pythonBindings@", True)
+
+python_bindings = "@pythonBindings@"

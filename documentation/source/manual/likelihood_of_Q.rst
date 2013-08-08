@@ -33,14 +33,26 @@ A callable object :math:`L(Q)` exists in both :ref:`c++ <cpp_log10_section>` and
 
   .. literalinclude:: ../../code/log10.cc
      :language: c++
-     :lines: 1-14, 27-
+     :lines: 1-15, 28-
 
   The initialisation of `bursts` above is done in using two newer c++11 coding techniques: 
   `initializer lists <initializerlist_>`_, and `uniform initialization <uniforminit_>`_.
   It may not be available from all compilers just yet...
 
 Once the objects are initialized, the input attributes can be accessed (and modified) through the
-'.' operator: `likelihood.nopen = 2`. 
+'.' operator: ``likelihood.nopen = 2``. 
+
+
+.. note:: 
+
+   :py:func:`~dcprogs.likelihood.Log10Likelihood` uses equilibrium occupancies depending on the
+   value of its attribute :py:attr:`~dcprogs.likelihood.Log10Likelihood.tcritical`:
+
+   - if it is ``None``, ``numpy.NaN``, or negative, then the equilibrium occupancies are used
+   - if it a strictly positive real number, then the CHS vectors are computed
+
+   Similarly, in c++, ``tcritical`` can be set to :c:data:`DCProgs::quiet_nan` to trigger
+   calculations with equilibrium occupancies.
 
 It is required that the bursts have been pre-filtered so that there are no intervals smaller than
 the resolution :math:`\tau`. This can be done using :cpp:func:`time_filter`
@@ -55,7 +67,7 @@ they were function. The following snippets are inserted at the tail end of the p
 
   .. literalinclude:: ../../code/log10.py
      :language: python
-     :lines: 15, 15-25 
+     :lines: 17-25 
   
   The function can take any sort square matrix, whether using standard python lists or a numpy
   array. It can only take one matrix at a time. 
@@ -64,7 +76,7 @@ they were function. The following snippets are inserted at the tail end of the p
 
   .. literalinclude:: ../../code/log10.cc
      :language: c++
-     :lines: 14-25
+     :lines: 17-25
 
   
 The return is the log-likelihood associated with the bursts and the input Q-matrix. In both python
@@ -79,7 +91,7 @@ using normal sequence operations. Only a small subset of sequence operations whe
 
   .. literalinclude:: ../../code/log10.py
      :language: python
-     :lines: 1, 26-37
+     :lines: 1, 27-37
 
 :c++11:
 
@@ -96,7 +108,7 @@ to `None`.
    
   .. literalinclude:: ../../code/log10.py
      :language: python
-     :lines: 39-
+     :lines: 40-
 
 .. _initializerlist: https://en.wikipedia.org/wiki/C++11#Initializer_lists
 .. _uniforminit: https://en.wikipedia.org/wiki/C++11#Uniform_initialization

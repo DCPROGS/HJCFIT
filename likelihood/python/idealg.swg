@@ -20,16 +20,18 @@
 
 %feature("autodoc", "Ideal Likelihood.\n\n"
          "This object can be instantiated one of several way:\n\n"
-         "   - With a matrix and an integer\n\n"
-         "     >>> idealg = IdealG(array([...]), 2)\n\n"
-         "   - With a QMatrix\n\n"
-         "     >>> matrix = QMatrix(array([...]), 2)\n"
-         "     >>> idealg = IdealG(matrix)\n\n") IdealG;
-%feature("autodoc", "AF transitions with respect to time: :math:`e^{tQ_{FF}}Q_{FA}`.") IdealG::af;
-%feature("autodoc", "FA transitions with respect to time: :math:`e^{tQ_{AA}}Q_{AF}$.") IdealG::fa;
-%feature("autodoc", "AF transitions with respect to scale: :math:`(sI - Q_{AA})^{-1}Q_{AF}`.")
+         "- With a matrix and an integer\n\n"
+         "  >>> idealg = IdealG(array([...]), 2)\n\n"
+         "- With a QMatrix\n\n"
+         "  >>> matrix = QMatrix(array([...]), 2)\n"
+         "  >>> idealg = IdealG(matrix)\n\n") IdealG;
+%feature("autodoc", "AF transitions with respect to time, :math:`e^{tQ_{FF}}Q_{FA}`.")
+        IdealG::af(DCProgs::t_real _s);
+%feature("autodoc", "FA transitions with respect to time, :math:`e^{tQ_{AA}}Q_{AF}`.") 
+        IdealG::fa(DCProgs::t_real _s);
+%feature("autodoc", "AF transitions with respect to scale, :math:`(sI - Q_{AA})^{-1}Q_{AF}`.")
         IdealG::laplace_af;
-%feature("autodoc", "FA transitions with respect to scale: :math:`(sI - Q_{FF})^{-1}Q_{FA}$`.")
+%feature("autodoc", "FA transitions with respect to scale, :math:`(sI - Q_{FF})^{-1}Q_{FA}`.")
         IdealG::laplace_fa;
 %feature("autodoc", "Occupancies for initial states.") IdealG::initial_occupancies;
 %feature("autodoc", "Occupancies for final states.") IdealG::final_occupancies;
@@ -44,9 +46,6 @@ class IdealG {
 
   // Some constructors.
   %extend { 
-    IdealG(DCProgs::QMatrix const &states) {
-      return new DCProgs::IdealG(states.matrix, states.nopen); 
-    }
     IdealG(PyObject* _py_matrix, DCProgs::t_uint _nopen) {
       using namespace DCProgs;
       if(_nopen == 0) 
@@ -58,6 +57,7 @@ class IdealG {
       return new IdealG(std::move(matrix), _nopen); 
     }
   }
+  IdealG(DCProgs::QMatrix const &states);
 
   // Adds some quantities as properties
   %extend {

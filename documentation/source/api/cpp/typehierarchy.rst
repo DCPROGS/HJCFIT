@@ -36,7 +36,7 @@ Eigen/Math types
 Global Data
 +++++++++++
 
-.. cpp:var: DCProgs::quiet_nan
+.. c:var:: DCProgs::quiet_nan
 
    Holds an alias to `NaN` representation in :cpp:type:`DCProgs::t_real`. The code will fail to
    compile if `NaN` cannot be represented in this type.

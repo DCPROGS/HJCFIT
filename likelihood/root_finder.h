@@ -137,8 +137,8 @@ namespace DCProgs {
   //! \param[in] _det The determinantal equation for which to compute the roots.
   //! \param[in] _xtol Tolerance for interval size
   //! \param[in] _rtol Tolerance for interval size. The convergence criteria is an affine function
-  //!                  of the root: \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} =
-  //!                  \frac{|x_a - x_b|}{2}\f$.
+  //!                  of the root:
+  //!    \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\f$.
   //! \param[in] _itermax maximum number of iterations for any of the three steps.
   //! \param[in] _lowerbound Lower bound of the interval bracketing all roots. If None, the lower
   //!            bound is obtained from find_lower_bound_for_roots().

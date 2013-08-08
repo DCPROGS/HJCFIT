@@ -53,6 +53,8 @@ namespace DCProgs {
       //! \throws errors::Domain if input has incorrect values or size.
       template<class T>
         IdealG(Eigen::DenseBase<T> const &_matrix, t_uint _nopen);
+      //! Constructor
+      IdealG(QMatrix const &_c) : QMatrix(_c) {};
       //! Destructor 
       virtual ~IdealG() {}; 
   

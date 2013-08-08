@@ -9,7 +9,8 @@ int main() {
      {0.15, 0.16, 0.18, 0.05, 0.1}     /* 3rd burst */
   };
   
-  DCProgs::Log10Likelihood likelihood(bursts, /*nopen=*/2, /*tau=*/1e-2, /*tcrit=*/-1);
+  DCProgs::Log10Likelihood likelihood( bursts, /*nopen=*/2, /*tau=*/1e-2,
+                                       /*tcrit=*/DCProgs::quiet_nan );
  
   std::cout << likelihood << std::endl;
 

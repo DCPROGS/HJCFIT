@@ -7,3 +7,4 @@ Python API Reference
    python/qmatrix.rst
    python/log10likelihood.rst
    python/missed_eventsG.rst
+   python/idealG.rst

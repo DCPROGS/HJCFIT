@@ -202,7 +202,10 @@ namespace DCProgs {
           //! Holds part of the message carried with the exception
           std::string message_;
       };
-      //! Exception was thrown by python API.
+      //! \brief Exception was thrown by python API.
+      //! \details This is a convenience exception that can be thrown when a python api has set an
+      //! error. It allows us to easily escape from the current scope, while keeping the python
+      //! exception as it is.
       class PythonErrorAlreadyThrown : public Python {
         public:
           //! \brief Constructor
