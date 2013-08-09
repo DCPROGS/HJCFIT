@@ -3,4 +3,4 @@
 IdealG
 ------
 
-.. doxygenstruct:: DCProgs::IdealG
+.. doxygenclass:: DCProgs::IdealG

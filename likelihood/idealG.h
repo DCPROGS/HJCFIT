@@ -34,7 +34,7 @@
 namespace DCProgs {
 
   //! \brief Ideal transition matrix of open and shut intervals
-  //! \details Given a transition matrix $Q$ it is possible to figure out the evolution of any given
+  //! \details Given a transition matrix \f$\mathcal{Q}\f$ it is possible to figure out the evolution of any given
   //! system. 
   class MSWINDOBE IdealG : protected QMatrix {
 

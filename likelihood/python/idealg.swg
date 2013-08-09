@@ -25,16 +25,38 @@
          "- With a QMatrix\n\n"
          "  >>> matrix = QMatrix(array([...]), 2)\n"
          "  >>> idealg = IdealG(matrix)\n\n") IdealG;
-%feature("autodoc", "AF transitions with respect to time, :math:`e^{tQ_{FF}}Q_{FA}`.")
-        IdealG::af(DCProgs::t_real _s);
-%feature("autodoc", "FA transitions with respect to time, :math:`e^{tQ_{AA}}Q_{AF}`.") 
-        IdealG::fa(DCProgs::t_real _s);
-%feature("autodoc", "AF transitions with respect to scale, :math:`(sI - Q_{AA})^{-1}Q_{AF}`.")
-        IdealG::laplace_af;
-%feature("autodoc", "FA transitions with respect to scale, :math:`(sI - Q_{FF})^{-1}Q_{FA}`.")
-        IdealG::laplace_fa;
-%feature("autodoc", "Occupancies for initial states.") IdealG::initial_occupancies;
-%feature("autodoc", "Occupancies for final states.") IdealG::final_occupancies;
+%feature("autodoc", "AF transitions with respect to time\n\n"
+         "Implements the ideal likelihood:\n\n"
+         ".. math::\n\n  e^{t\\mathcal{Q}_{FF}}\\mathcal{Q}_{FA}.\n\n"
+         ":param t:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") IdealG::af(PyObject* _s);
+%feature("autodoc", "FA transitions with respect to time\n\n"
+         "Implements the ideal likelihood:\n\n"
+         ".. math::\n\n  e^{t\\mathcal{Q}_{AA}}\\mathcal{Q}_{AF}.\n\n"
+         ":param t:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") IdealG::fa(PyObject* _s);
+%feature("autodoc", "AF transitions with respect to scale\n\n" 
+         "Implements the laplace transform of the likelihood:\n\n"
+         ".. math::\n\n  (sI - \\mathcal{Q}_{AA})^{-1}\\mathcal{Q}_{AF}.\n\n"
+         ":param s:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") IdealG::laplace_af(PyObject*);
+%feature("autodoc", "FA transitions with respect to scale\n\n"
+         "Implements the laplace transform of the likelihood:\n\n"
+         ".. math::\n\n  (sI - \\mathcal{Q}_{FF})^{-1}\\mathcal{Q}_{FA}.\n\n"
+         ":param s:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") IdealG::laplace_fa(PyObject*);
+%feature("autodoc", "Equilibrium occupancies for initial states.\n\n"
+         "Computes the left eigenvector of :math:`\\mathcal{G}_{AF}\\mathcal{G}_{FA}`, where\n"
+         ":math:`\\mathcal{G}_{AF}` is the laplacian for :math:`s=0` of the likelihood.")
+         IdealG::initial_occupancies;
+%feature("autodoc", "Equilibrium occupancies for final states.\n\n"
+         "Computes the right eigenvector of :math:`\\mathcal{G}_{FA}\\mathcal{G}_{AF}`, where\n"
+         ":math:`\\mathcal{G}_{FA}` is the laplacian for :math:`s=0` of the likelihood.")
+         IdealG::final_occupancies;
 %feature("autodoc", "Number of open-states.") IdealG::nopen;
 %feature("autodoc", "Number of shut-states.") IdealG::nshut;
 
@@ -62,7 +84,7 @@ class IdealG {
   // Adds some quantities as properties
   %extend {
     DCProgs::t_initvec const initial_occupancies;
-    DCProgs::t_initvec const final_occupancies;
+    DCProgs::t_rvector const final_occupancies;
     DCProgs::t_uint const nopen;
     DCProgs::t_uint const nshut;
   }
@@ -70,8 +92,8 @@ class IdealG {
     DCProgs::t_initvec DCProgs_IdealG_initial_occupancies_get(DCProgs::IdealG *_in) {
       return DCProgs::occupancies(*_in, true);
     }
-    DCProgs::t_initvec DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
-      return DCProgs::occupancies(*_in, false);
+    DCProgs::t_rvector DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
+      return DCProgs::occupancies(*_in, false).transpose();
     }
     DCProgs::t_uint DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
     DCProgs::t_uint DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
