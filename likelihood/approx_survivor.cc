@@ -24,6 +24,7 @@
 
 #include "errors.h"
 #include "approx_survivor.h"
+#include "root_finder.h"
 
 
 namespace DCProgs {
@@ -66,4 +67,12 @@ namespace DCProgs {
                    << "  * af roots: " << af_roots.transpose() << "\n"
                    << "  * fa roots: " << fa_roots.transpose() << "\n";
   }
+
+  ApproxSurvivor::ApproxSurvivor( QMatrix const &_qmatrix, t_real _tau,
+                                  t_real _xtol, t_real _rtol, t_uint _itermax,
+                                  t_real _lowerbound, t_real _upperbound )
+    : ApproxSurvivor( _qmatrix, _tau,
+                      [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+                        return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound); 
+                      }) {}
 }

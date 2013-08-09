@@ -13,3 +13,4 @@ C++ API Reference
    cpp/idealG.rst
    cpp/occupancies.rst
    cpp/exact_survivor.rst
+   cpp/approx_survivor.rst

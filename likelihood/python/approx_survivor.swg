@@ -21,6 +21,8 @@
 %feature("autodoc", "Computes approximate missed-event survivor function.\n\n") ApproxSurvivor;
 %feature("autodoc", "Open to close transitions") ApproxSurvivor::af;
 %feature("autodoc", "Closed to open transitions") ApproxSurvivor::fa;
+%feature("autodoc", "Coefficient and exponents of the exponentials") ApproxSurvivor::fa_components;
+%feature("autodoc", "Coefficient and exponents of the exponentials") ApproxSurvivor::af_components;
 %feature("shadow") ApproxSurvivor::ApproxSurvivor %{
   def __init__(self, *args, **kwargs):
     """ Initializes the approximate survivor function.
@@ -128,19 +130,10 @@ class ApproxSurvivor {
       std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
       return new ApproxSurvivor(_af, roots_af, _fa, roots_fa);
     }
-    ApproxSurvivor( QMatrix const * const _matrix, DCProgs::t_real _tau, 
-                    DCProgs::t_real _xtol, DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
-                    DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound ) {
-      using namespace DCProgs;
-      DeterminantEq const determinant_af(*_matrix, _tau);
-      DeterminantEq const determinant_fa = determinant_af.transpose(); 
-      std::vector<Root> const roots_af = find_roots( determinant_af, _xtol, _rtol, _itermax,
-                                                     _lowerbound, _upperbound );
-      std::vector<Root> const roots_fa = find_roots( determinant_fa, _xtol, _rtol, _itermax, 
-                                                     _lowerbound, _upperbound );
-      return new DCProgs::ApproxSurvivor(determinant_af, roots_af, determinant_fa, roots_fa);
-    }
   }
+  ApproxSurvivor( QMatrix const & _matrix, DCProgs::t_real _tau, 
+                  DCProgs::t_real _xtol, DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
+                  DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound );
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);

@@ -12,7 +12,7 @@ with,
 .. math::
   M_m(t)=\left\{\begin{split}
     0&\quad\text{if}\quad t < 0\\
-    \sum_{i=1}^k B_{im}(t) e^{-\lambda_i t}&\quad\text{if}\quad t \geq 0
+    \sum_{i=0}^k B_{im}(t) e^{-\lambda_i t}&\quad\text{if}\quad t \geq 0
     &
   \end{split}\right.,\\
   B_{im}(t) = \sum_{r=0}^mC_{imr}t^r,
@@ -58,7 +58,7 @@ The survivor function can be intialized from a :math:`\mathcal{Q}`-matrix and th
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++
-     :lines: 1-19, 40
+     :lines: 1-19, 39-
 
 The open and shut time survivor likelihood can be computed using a single call:
 
@@ -75,7 +75,7 @@ The open and shut time survivor likelihood can be computed using a single call:
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++
-     :lines: 22-31
+     :lines: 21-30
 
 
 The details of the recursions, i.e. the :math:`C_{iml}` matrices, can be accessed directly as shown
@@ -91,4 +91,4 @@ below.
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++
-     :lines: 35-39
+     :lines: 32-38

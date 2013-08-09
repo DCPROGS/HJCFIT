@@ -9,3 +9,4 @@ Python API Reference
    python/missed_eventsG.rst
    python/idealG.rst
    python/exact_survivor.rst
+   python/approx_survivor.rst

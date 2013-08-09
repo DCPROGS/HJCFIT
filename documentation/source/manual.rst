@@ -32,3 +32,4 @@ either language.
    manual/idealG.rst
    manual/occupancies.rst
    manual/exact_survivor.rst
+   manual/approx_survivor.rst
