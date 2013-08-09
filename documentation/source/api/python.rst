@@ -8,3 +8,4 @@ Python API Reference
    python/log10likelihood.rst
    python/missed_eventsG.rst
    python/idealG.rst
+   python/exact_survivor.rst
