@@ -29,6 +29,8 @@ namespace DCProgs {
 
 
   //! \brief Survivor functions $^{A}R(s)$ in Laplace space. 
+  //| \details Also contains many of the math kernels needed for the Determinantal equation.
+  //! It is practical to have it defined on its own.
   class MSWINDOBE LaplaceSurvivor {
     
     public:

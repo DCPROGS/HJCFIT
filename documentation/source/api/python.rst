@@ -10,3 +10,4 @@ Python API Reference
    python/idealG.rst
    python/exact_survivor.rst
    python/approx_survivor.rst
+   python/determinanteq.rst

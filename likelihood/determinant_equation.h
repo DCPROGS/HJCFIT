@@ -38,6 +38,10 @@ namespace DCProgs {
       DeterminantEq(QMatrix const & _qmatrix, t_real _tau) : LaplaceSurvivor(_qmatrix), tau_(_tau) {};
       //! Constructor.
       DeterminantEq(DeterminantEq const & _c) : LaplaceSurvivor(_c), tau_(_c.tau_) {};
+      //! Constructor
+      template<class T> 
+        DeterminantEq   (Eigen::DenseBase<T> const &_matrix, t_uint _nopen, t_real _tau)
+                      : DeterminantEq(QMatrix(_matrix, _nopen), _tau) {};
 
       //! Computes the determinant \f$\mathrm{det}(sI - H(s))\f$
       //! \param[in] _s Value of the laplacian scale.

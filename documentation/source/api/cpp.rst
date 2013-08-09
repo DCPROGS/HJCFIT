@@ -14,3 +14,4 @@ C++ API Reference
    cpp/occupancies.rst
    cpp/exact_survivor.rst
    cpp/approx_survivor.rst
+   cpp/determinanteq.rst
