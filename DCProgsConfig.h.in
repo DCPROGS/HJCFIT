@@ -122,9 +122,9 @@ namespace DCProgs {
 
   //! Dumps eigen array in format we can copy/paste to python
   template<class T>
-    auto numpy_io(Eigen::DenseBase<T> const &_matrix)
+    auto numpy_io(Eigen::DenseBase<T> const &_matrix, std::string const &_indent="")
                    -> decltype(_matrix.format(Eigen::IOFormat()))  {
-      return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n",
+      return _matrix.format(Eigen::IOFormat(Eigen::FullPrecision, 0, ", ", ",\n" + _indent,
                                             "[", "]", "[", "]"));
     }
 

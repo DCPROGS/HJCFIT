@@ -186,12 +186,14 @@ namespace DCProgs {
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
+    if(_m > 10) throw errors::Index("m index should be smaller than 10.");
     return  recursion_af_->operator()(_i, _m, _l);
   }
   t_rmatrix ExactSurvivor :: recursion_fa(t_uint _i, t_uint _m, t_uint _l) const {
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
+    if(_m > 10) throw errors::Index("m index should be smaller than 10.");
     return  recursion_fa_->operator()(_i, _m, _l);
   }
   t_rmatrix ExactSurvivor :: D_af(t_uint _i) const {
@@ -212,5 +214,34 @@ namespace DCProgs {
     recursion_fa_ = std::move(_c.recursion_fa_);
     tau_ = _c.tau_;
     return *this;
+  }
+
+  namespace {
+    // Should be used only to print the recursion interface.
+    template<class T> void print_interface(std::ostream &_stream, T &_self) {
+      _stream << "  * eigenvalues: " << numpy_io(_self.eigenvalues().transpose()) << "\n";
+      for(t_uint i(0); i < _self.nbeigvals(); ++i) 
+        _stream << "  * D_" << i << ":\n    " 
+                << numpy_io(_self.getD(i), "    ") << "\n\n";
+      for(t_uint i(0); i < _self.nbeigvals(); ++i) 
+        _stream << "  * C_{" << i << "00}:\n    "
+                << numpy_io(_self(i, 0, 0), "    ") << "\n\n";
+    }
+  }
+  
+  //! Dumps object to stream.
+  MSWINDOBE std::ostream & operator<< (std::ostream &_stream, ExactSurvivor const &_self) {
+
+    _stream << "Exact Survivor\n"
+               "==============\n\n"
+               "  * Resolution or Maximum length of missed events: " << _self.get_tau() << "\n\n"
+               "AF block\n"
+               "--------\n\n";
+    print_interface(_stream, *_self.recursion_af_);
+    _stream << "\n\n"
+               "FA block\n"
+               "--------\n\n";
+    print_interface(_stream, *_self.recursion_fa_);
+    return _stream;
   }
 }

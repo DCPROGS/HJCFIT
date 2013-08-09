@@ -33,10 +33,16 @@
 
 namespace DCProgs {
 
+  class ExactSurvivor;
+
+  //! Dumps object to stream.
+  MSWINDOBE std::ostream & operator<< (std::ostream &, ExactSurvivor const &);
+
   //! \brief Implementation of recursion for exact missed-event survivor function
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
   class MSWINDOBE ExactSurvivor {
+    friend std::ostream & operator<< (std::ostream &, ExactSurvivor const &);
     public:
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix Partitionned matrix with open states in top left corner.

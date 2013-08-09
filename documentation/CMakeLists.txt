@@ -14,7 +14,17 @@ if(SPHINX_FOUND)
     set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
   endif(WIN32)
 
-  set(SOURCE_DOC_FILES source/bibliography.bib source/index.rst source/cpp/index.rst)
+  set(SOURCE_DOC_FILES source/bibliography.bib source/api/cpp/exceptions.rst
+                       source/api/cpp/idealG.rst source/api/cpp/log10likelihood.rst
+                       source/api/cpp/missed_eventsG.rst source/api/cpp/occupancies.rst
+                       source/api/cpp/qmatrix.rst source/api/cpp/typehierarchy.rst
+                       source/api/cpp.rst source/api/python/idealG.rst
+                       source/api/python/log10likelihood.rst source/api/python/missed_eventsG.rst
+                       source/api/python/qmatrix.rst source/api/python.rst
+                       source/api.rst source/index.rst source/manual/exact_survivor.rst
+                       source/manual/idealG.rst source/manual/likelihood_of_Q.rst
+                       source/manual/missedeventsG.rst source/manual/occupancies.rst
+                       source/manual/qmatrix.rst source/manual.rst)
 
   add_custom_target(documentation 
     ${SPHINX_EXECUTABLE}

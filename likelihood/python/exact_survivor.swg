@@ -31,8 +31,13 @@
 %feature("autodoc", ":math:`C_{iml}` recursion matrices for fa.") ExactSurvivor::recursion_fa;
 %feature("autodoc", ":math:`D_i` matrices for af.") ExactSurvivor::D_af;
 %feature("autodoc", ":math:`D_i` matrices for fa.") ExactSurvivor::D_fa;
-%feature("autodoc", "Eigenvalues in af basis.") ExactSurvivor::eigenvalues_af;
-%feature("autodoc", "Eigenvalues in fa basis.") ExactSurvivor::eigenvalues_fa;
+%feature("autodoc", "Eigenvalues in of the transition matrix.\n\n"
+         "This is the real part of the eigenvalues only.\n") ExactSurvivor::eigenvalues_af;
+%feature("autodoc", "Eigenvalues in of the transpose transition matrix.\n\n"
+         "This is the real part of the eigenvalues only.\n"
+         "For numerical reasons, the order of the eigenvalues for AF and FA recursion\n"
+         "may be different") ExactSurvivor::eigenvalues_fa;
+%feature("autodoc", "Resolution or maximum length of the missed events") ExactSurvivor::tau;
 
 class ExactSurvivor {
   public:
@@ -69,26 +74,35 @@ class ExactSurvivor {
   DCProgs::t_rmatrix D_af(DCProgs::t_uint _i) const;
   DCProgs::t_rmatrix D_fa(DCProgs::t_uint _i) const;
 
-  // Renames some values so we can make it a property.
-  %rename(_get_tau) get_tau() const; 
-  %rename(_eigenvalues_af) eigenvalues_af() const;
-  %rename(_eigenvalues_fa) eigenvalues_fa() const;
-  DCProgs::t_real get_tau() const;
-  DCProgs::t_rvector eigenvalues_af() const;
-  DCProgs::t_rvector eigenvalues_fa() const;
-  %pythoncode %{
-    __swig_getmethods__["tau"] = _get_tau
-    __swig_getmethods__["eigenvalues_af"] = _eigenvalues_af
-    __swig_getmethods__["eigenvalues_fa"] = _eigenvalues_fa
-    if _newclass:
-      tau = property(_get_tau, doc="Max length of mixed events.")
-      eigenvalues_af = property(_eigenvalues_af,
-                                doc="Eigenvalues of the transition matrix.\n\n"  \
-                                    "This is the real part of eigenvalues only.\n")
-      eigenvalues_fa = property(_eigenvalues_fa,
-                                doc="Eigenvalues of the transition matrix.\n\n"  \
-                                    "This is the real part of eigenvalues only.\n")
+  // Add extensions to compute properties
+  %extend {
+    DCProgs::t_real const tau;
+    DCProgs::t_rvector const eigenvalues_af;
+    DCProgs::t_rvector const eigenvalues_fa;
+  }
+  %{
+    DCProgs::t_real DCProgs_ExactSurvivor_tau_get(DCProgs::ExactSurvivor *_in) {
+      return _in->get_tau();
+    }
+    DCProgs::t_rvector const DCProgs_ExactSurvivor_eigenvalues_af_get(DCProgs::ExactSurvivor *_in) {
+      return _in->eigenvalues_af();
+    }
+    DCProgs::t_rvector const DCProgs_ExactSurvivor_eigenvalues_fa_get(DCProgs::ExactSurvivor *_in) {
+      return _in->eigenvalues_fa();
+    }
   %}
+
+  // Add some printout functions.
+  %extend {
+    PyObject* __str__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+    PyObject* __repr__() {
+      std::ostringstream sstr; sstr << *($self);
+      return PyString_FromString(sstr.str().c_str());
+    }
+  }
 };
 
 %clear ExactSurvivor;

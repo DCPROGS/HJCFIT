@@ -31,3 +31,4 @@ either language.
    manual/missedeventsG.rst
    manual/idealG.rst
    manual/occupancies.rst
+   manual/exact_survivor.rst
