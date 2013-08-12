@@ -34,8 +34,7 @@ if(SPHINX_FOUND)
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
     WORKING_DIRECTORY ${WORKINGDIR} 
-    DEPENDS )
-#   DEPENDS doxydocs )
+    DEPENDS doxydocs )
 
 endif(SPHINX_FOUND)
 
