@@ -1,0 +1,265 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Determinant Equation \(W(s) = sI - H(s)\) &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Searching for Roots" href="roots.html" />
+    <link rel="prev" title="Approximate Survivor Function \(R_A(t)\)" href="approx_survivor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="Approximate Survivor Function \(R_A(t)\)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="determinant-equation">
+<h1>Determinant Equation <span class="math">\(W(s) = sI - H(s)\)</span><a class="headerlink" href="#determinant-equation" title="Permalink to this headline">¶</a></h1>
+<p>The function <span class="math">\(H(s)\)</span> is an integral defined as:</p>
+<div class="math">
+\[H(s) = sI - \mathcal{Q}_{AA} - \mathcal{Q}_{AF}\
+  \int_0^\tau e^{-st}e^{\mathcal{Q}_{FF}t}\partial\,t\ \mathcal{Q}_{FA}\]</div>
+<p>It is possible the function <span class="math">\(H\)</span> as well as its determinant using the
+<a class="reference internal" href="../api/python/determinanteq.html#dcprogs.likelihood.DeterminantEq" title="dcprogs.likelihood.DeterminantEq"><tt class="xref py py-class docutils literal"><span class="pre">DeterminantEq</span></tt></a> objects. This is the object used when solving for the
+approximate missed-events likelihood. The determinant equation is initialized in one of two ways,
+either from a matrix or <a class="reference internal" href="../api/python/qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">DeterminantEq</span><span class="p">,</span> <span class="n">QMatrix</span>
+
+<span class="c"># Define parameters.</span>
+<span class="n">matrix</span> <span class="o">=</span> <span class="p">[</span> <span class="p">[</span><span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+           <span class="p">[</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+           <span class="p">[</span>   <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> 
+           <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+           <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">]</span> <span class="p">]</span>
+<span class="n">qmatrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mf">1e-4</span>
+
+<span class="n">det0</span> <span class="o">=</span> <span class="n">DeterminantEq</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+<span class="n">det1</span> <span class="o">=</span> <span class="n">DeterminantEq</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;{0!s}</span><span class="se">\n\n</span><span class="s">{1!s}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">det0</span><span class="p">,</span> <span class="n">det1</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="cp">#include &lt;likelihood/determinant_equation.h&gt;</span>
+<span class="cp">#include &lt;likelihood/root_finder.h&gt;</span>
+ 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="c1">// Define parameters.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">QMatrix</span> <span class="n">qmatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">);</span>
+
+  <span class="c1">// Create determinant using a QMatrix and a matrix+nopen.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="n">det0</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="n">det1</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">det0</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">det1</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * d[sI-H(s)]/ds for s=-1e2:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">det0</span><span class="p">.</span><span class="n">s_derivative</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>With an object in hand, it is possible to compute <span class="math">\(\mathop{det}W(s)\)</span> for any <span class="math">\(s\)</span>. In the
+following we demonstrate that the two initialization methods are equivalent and that the determinant
+is zero at the roots of <span class="math">\(W(s)\)</span>, per definition.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><p class="first">The python bindings accept both scalars and arrays as input.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">x</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mf">1e2</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">det0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="n">det1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+<span class="n">roots</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">3045.285776037674</span><span class="p">,</span> <span class="o">-</span><span class="mf">162.92946543451328</span><span class="p">])</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">det0</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="k">if</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">det0</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">-</span> <span class="n">det1</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> 
+      <span class="n">or</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">det0</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">det1</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>
+      <span class="n">or</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span><span class="n">det0</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">)</span> <span class="o">-</span> <span class="n">det1</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mf">1e-6</span><span class="p">)</span>
+    <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;instanciations differ.&quot;</span><span class="p">);</span>
+
+  <span class="k">if</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span> <span class="n">det0</span><span class="p">(</span><span class="o">-</span><span class="mf">3045.285776037674</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="mf">3e3</span>
+      <span class="n">or</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span> <span class="n">det0</span><span class="p">(</span><span class="o">-</span><span class="mf">162.92946543451328</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="mf">2e2</span> <span class="p">)</span>
+    <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;Roots are not roots.&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>There exists a convenience function to transform a determinant equation into its &#8220;transpose&#8221;, e.g.
+one where A states become F states and F states become A states:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="n">transpose</span> <span class="o">=</span> <span class="n">det0</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="n">roots</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="p">[</span><span class="o">-</span><span class="mf">17090.192769236815</span><span class="p">,</span> <span class="o">-</span><span class="mf">2058.0812921673496</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.24356535498785126</span><span class="p">],</span>
+               <span class="n">dtype</span><span class="o">=</span><span class="n">internal_dtype</span> <span class="p">)</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">transpose</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="nb">abs</span><span class="p">(</span><span class="n">roots</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Here we choose to create an input which has same internal type as the dcprogs package. This may
+result in faster code since no conversion are required.</p>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="n">transpose</span> <span class="o">=</span> <span class="n">det0</span><span class="p">.</span><span class="n">transpose</span><span class="p">();</span>
+  <span class="k">if</span><span class="p">(</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span> <span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mf">17090.192769236815</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="mf">2e5</span>
+      <span class="n">or</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span> <span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mf">2058.0812921673496</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span> <span class="o">*</span> <span class="mf">2e3</span>
+      <span class="n">or</span> <span class="n">std</span><span class="o">::</span><span class="n">abs</span><span class="p">(</span> <span class="n">transpose</span><span class="p">(</span><span class="o">-</span><span class="mf">0.24356535498785126</span><span class="p">)</span> <span class="p">)</span> <span class="o">&gt;</span> <span class="mf">1e-6</span>  <span class="p">)</span>
+    <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;Roots are not roots.&quot;</span><span class="p">);</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Finally, it is possible to compute <span class="math">\(H(s)\)</span> directly, as well as <span class="math">\(\frac{\partial
+W(s)}{\partial s}\)</span>, as demonstrated below.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;  * H({0}):</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">det0</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;  * H({0}):</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">,</span> <span class="n">det0</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;  * d[sI-H(s)]/ds for s={0}:</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">det0</span><span class="o">.</span><span class="n">s_derivative</span><span class="p">(</span><span class="mi">0</span><span class="p">)))</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;  * d[sI-H(s)]/ds for s={0}:</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">,</span> <span class="n">det0</span><span class="o">.</span><span class="n">s_derivative</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">)))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  * H(0):</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">det0</span><span class="p">.</span><span class="n">H</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * H(-1e2):</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">det0</span><span class="p">.</span><span class="n">H</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  * d[sI-H(s)]/ds for s=0:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">det0</span><span class="p">.</span><span class="n">s_derivative</span><span class="p">(</span><span class="mi">0</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * d[sI-H(s)]/ds for s=-1e2:</span><span class="se">\n</span><span class="s">&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">det0</span><span class="p">.</span><span class="n">s_derivative</span><span class="p">(</span><span class="o">-</span><span class="mf">1e2</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="approx_survivor.html"
+                        title="previous chapter">Approximate Survivor Function <span class="math">\(R_A(t)\)</span></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="roots.html"
+                        title="next chapter">Searching for Roots</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/determinant_equation.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="Approximate Survivor Function \(R_A(t)\)"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

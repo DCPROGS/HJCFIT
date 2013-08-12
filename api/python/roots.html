@@ -1,0 +1,274 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Searching for Roots &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Python API Reference" href="../python.html" />
+    <link rel="prev" title="DeterminantEq" href="determinanteq.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" accesskey="U">Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="searching-for-roots">
+<span id="python-roots-api"></span><h1>Searching for Roots<a class="headerlink" href="#searching-for-roots" title="Permalink to this headline">¶</a></h1>
+<p id=""><span id="project0namespace_d_c_progs_1a82bd17fe29eedfb4cb40e00abdecc60c"></span><div class="line-block">
+<div class="line">std::vector&lt;  Root  &gt; <strong>find_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _rtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _lowerbound = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _upperbound = quiet_nan)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Finds root using brentq and find_root_intervals. </p>
+<p><p>Tries and computes the roots of an input determinant equation. This is a three fold process:</p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation for which to compute the roots. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_xtol</span></tt> - <p>Tolerance for interval size </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_rtol</span></tt> - <p>Tolerance for interval size. The convergence criteria is an affine function of the root: <span class="math">\(x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\)</span>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>maximum number of iterations for any of the three steps. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_lowerbound</span></tt> - <p>Lower bound of the interval bracketing all roots. If None, the lower bound is obtained from <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>find_lower_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_upperbound</span></tt> - <p>Upper bound of the interval bracketing all roots. If None, the upper bound is obtained from <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>find_upper_bound_for_roots()</em></a>. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</p>
+</div></blockquote>
+<div class="section" id="bracketing-all-roots">
+<h2>Bracketing all Roots<a class="headerlink" href="#bracketing-all-roots" title="Permalink to this headline">¶</a></h2>
+<p id=""><span id="project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>find_lower_bound_for_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _start = 0e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _alpha = 5e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Figures out an lower bound for root finding. </p>
+<p>Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is higher than the current bound. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_start</span></tt> - <p>Value where to start looking for lower bound. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_alpha</span></tt> - <p>factor by which to set new lower bound: <span class="math">\(s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\)</span>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>Maximum number of iterations. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>find_upper_bound_for_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _start = 0e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _alpha = 5e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Figures out an upper bound for root finding. </p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_start</span></tt> - <p>Value where to start looking for lower bound. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_alpha</span></tt> - <p>factor by which to set new lower bound: <span class="math">\(s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\)</span>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>Maximum number of iterations. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+</div>
+<div class="section" id="finding-intervals-for-each-root">
+<h2>Finding intervals for each root<a class="headerlink" href="#finding-intervals-for-each-root" title="Permalink to this headline">¶</a></h2>
+<p id=""><span id="project0namespace_d_c_progs_1a2a4a1d0c1a2172cbb8fda1bec6bb28cb"></span><div class="line-block">
+<div class="line">std::vector&lt;  RootInterval  &gt; <strong>find_root_intervals</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _mins = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _maxs = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tolerance = 1e-8)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Figures out interval where roots can be found. </p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_mins</span></tt> - <p>A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>DCProgs::find_lower_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_maxs</span></tt> - <p>A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>DCProgs::find_upper_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tolerance</span></tt> - <p>Minimum size of intervals. Below that, roots are expected to be multiples. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0namespace_d_c_progs_1a416c17273d99bca5a82923801e7fc3f1"></span><div class="line-block">
+<div class="line">std::vector&lt;  RootInterval  &gt; <strong>find_root_intervals_brute_force</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _resolution = 1e-1, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _mins = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _maxs = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tolerance = 1e-1)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Finds roots via brute force search. </p>
+<p>Computes all values between mins and maxs, for a given resolution. If determinant changes sign between two values, or if it comes to within tolerance of zero, then computes eigenvalues of H to determine possible multiplicity. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_resolution</span></tt> - <p>resolution at which computes values in interval. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_mins</span></tt> - <p>A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>DCProgs::find_lower_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_maxs</span></tt> - <p>A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>DCProgs::find_upper_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tolerance</span></tt> - <p>Tolerance below which the value of the determinant is considered &#8220;close to zero&#8221;. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+</div>
+<div class="section" id="root-optimization">
+<h2>Root optimization<a class="headerlink" href="#root-optimization" title="Permalink to this headline">¶</a></h2>
+<p id=""><span id="project0namespace_d_c_progs_1af13aff14f1014d7404f29aece242f5fa"></span><div class="line-block">
+<div class="line">std::tuple&lt;  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> ,  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> ,  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a>  &gt; <strong>brentq</strong>(std::function&lt;  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> ( <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> )&gt; const &amp; _function, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xstart, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xend, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _rtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Computes root of a function in a given interval. </p>
+<p>Scavenged from Scipy. Actual code (.cc file) is under BSD. <dl class="docutils">
+<dt><strong>Return</strong></dt>
+<dd>A tuple (x, iterations, function calls) </dd>
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_function</span></tt> - <p>A call-back to the actual function. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_xstart</span></tt> - <p>Beginning of the interval </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_xend</span></tt> - <p>End of the interval </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_xtol</span></tt> - <p>Tolerance for interval size </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_rtol</span></tt> - <p>Tolerance for interval size. The convergence criteria is an affine function of the root: <span class="math">\(x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\)</span>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>maximum number of iterations. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Searching for Roots</a><ul>
+<li><a class="reference internal" href="#bracketing-all-roots">Bracketing all Roots</a></li>
+<li><a class="reference internal" href="#finding-intervals-for-each-root">Finding intervals for each root</a></li>
+<li><a class="reference internal" href="#root-optimization">Root optimization</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="determinanteq.html"
+                        title="previous chapter">DeterminantEq</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/python/roots.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" >Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

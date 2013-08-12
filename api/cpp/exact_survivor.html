@@ -1,0 +1,346 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ExactSurvivor &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="C++ API Reference" href="../cpp.html" />
+    <link rel="next" title="ApproxSurvivor" href="approx_survivor.html" />
+    <link rel="prev" title="Occupancies" href="occupancies.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="occupancies.html" title="Occupancies"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" accesskey="U">C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="exactsurvivor">
+<span id="cpp-exact-survivor-api"></span><h1>ExactSurvivor<a class="headerlink" href="#exactsurvivor" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line" id=""><span id="project0class_d_c_progs_1_1_exact_survivor"></span><em>class</em> <strong>DCProgs::ExactSurvivor</strong></div>
+</div>
+<blockquote>
+<div><p>Implementation of recursion for exact missed-event survivor function. </p>
+<p>Implements the exact-missed event probability calculations, as detailed in Hawkes, Jalali, and Colquhoun (1990). Specifically, this is equation 3.2. </p>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1aa8ab1e5745edd7d6efd53031fa0240d5"></span><div class="line-block">
+<div class="line"> <strong>ExactSurvivor</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _qmatrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Initializes exact survivor functor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_qmatrix</span></tt> - <p>Partitioned matrix with open states in top left corner. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Missed event cutoff time. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a348647baa5a2b722b7b30833795c1dae"></span><div class="line-block">
+<div class="line">template &lt; class T &gt;</div>
+<div class="line"> <strong>ExactSurvivor</strong>(Eigen::DenseBase&lt; T &gt; const &amp; _qmatrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _nopen, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Initializes exact survivor functor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_qmatrix</span></tt> - <p>A transition matrix with open states in top left corner </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_nopen</span></tt> - <p>Number of open states. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Missed event cutoff time. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a0058031019c56a6ee1f2aeddf4746e7b"></span><div class="line-block">
+<div class="line"> <strong>ExactSurvivor</strong>(<a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor"><em>ExactSurvivor</em></a>  &amp;&amp; _c)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Move constructor. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a03d9cc5719403a30cadf182932019fdd"></span><div class="line-block">
+<div class="line">void <strong>set</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _qmatrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Sets the values for which to compute exact g. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a4bb413c72734772a776d84a68ea86ecb"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>af</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> t)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Probability of no shut times detected between 0 and t. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a6c29ffe02fb5993707ddec22b4894811"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>fa</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> t)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Probability of no open times detected between 0 and t. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a66bb01f10025da144a35b32908abb949"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>get_tau</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Gets the value of tau;. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1ad53998e5d96c0da80b850c56227839f5"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>recursion_af</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _m, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _l)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns recursion matrix for af. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1adb0419c3715b67059443bd10b09422a8"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>recursion_fa</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _m, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _l)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns recursion matrix for af. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a4fb0715c6fe36cfc51ebc71e31cc63cb"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>D_af</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns Di matrix for af. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a22f251309f02b05df839027f72b6c6e1"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>D_fa</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns Di matrix for af. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a4e205bc5bfd7441cba7b1e61a27e24fc"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25a673fd5aa7e07bc0b77cb388b061a1"><em>t_rvector</em></a> <strong>eigenvalues_af</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns eigenvalues for af matrix. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1ae42571895bd1e04240188be4a84f1910"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25a673fd5aa7e07bc0b77cb388b061a1"><em>t_rvector</em></a> <strong>eigenvalues_fa</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns eigenvalues for fa matrix. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1a4b2847ccf8593f4866faa181aff6924d"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor"><em>ExactSurvivor</em></a>  &amp; <strong>operator=</strong>(<a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor"><em>ExactSurvivor</em></a>  &amp;&amp; _c)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Move assignment. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+<p><p id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface"><em>class</em> <strong>RecursionInterface</strong></p>
+<blockquote>
+<div><p>Implementation of recursion for exact missed-event Survivor function. </p>
+<p>This is an interface to the function recursion_formula. In practice, this object needs not be called directly. Rather the public interface (which is about computing the likelihood for an event of duration t) is in the containing class <a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor"><em>ExactSurvivor</em></a>. </p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1ab8f1c11eed3cb05184ab6a2297f0426c"></span>typedef <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>t_element</strong></p>
+<blockquote>
+<div><p>Element on which to perform recursion. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1a27b54ace27b72d8da8a6077fc759ad24"></span><div class="line-block">
+<div class="line"> <strong>RecursionInterface</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _qmatrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau, bool _doAF = true)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Constructor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_qmatrix</span></tt> - <p>The transition state matrix for which to compute <span class="math">\(^eR_{AF}(t\rightarrow\infty)\)</span> </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Maximum length of missed events </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_doAF</span></tt> - <p>Whether to do AF (true) or FA </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1a26e9773441ec13e2d6b745f618271051"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1ab8f1c11eed3cb05184ab6a2297f0426c"><em>t_element</em></a> <strong>operator()</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _m, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _l)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Recursion element i, m, l. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1aa6b2f7ed75f4e3d086dd40347d23309f"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1ab8f1c11eed3cb05184ab6a2297f0426c"><em>t_element</em></a>  const &amp; <strong>getD</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns D values. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1a1bed942bc6978df70045172d9fe39ba7"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>get_eigvals</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns i <span class="math">\(^{th}\)</span> eigenvalue. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1a36dc2c1f36ec8214a065b5520b43630e"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> <strong>nbeigvals</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns the number of eigenvalues. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1adbe693ac9edba6c6566059f6c6a9ff95"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25a673fd5aa7e07bc0b77cb388b061a1"><em>t_rvector</em></a>  const &amp; <strong>eigenvalues</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Reference to eigenvalues. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_exact_survivor_1_1_recursion_interface_1a8f38c00ea09e847e98761ef74c1889fa"></span><div class="line-block">
+<div class="line">decltype(t_rmatrix::Zero(1, 1)) <strong>zero</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>A null matrix of appropriate size. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</p>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="occupancies.html"
+                        title="previous chapter">Occupancies</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="approx_survivor.html"
+                        title="next chapter">ApproxSurvivor</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/cpp/exact_survivor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="occupancies.html" title="Occupancies"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" >C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>IdealG &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Python API Reference" href="../python.html" />
+    <link rel="next" title="ExactSurvivor" href="exact_survivor.html" />
+    <link rel="prev" title="MissedEventsG" href="missed_eventsG.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="ExactSurvivor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="missed_eventsG.html" title="MissedEventsG"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" accesskey="U">Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="python-idealg-api">
+<span id="idealg"></span><h1>IdealG<a class="headerlink" href="#python-idealg-api" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dcprogs.likelihood.IdealG">
+<em class="property">class </em><tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">IdealG</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.IdealG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ideal Likelihood.</p>
+<p>This object can be instantiated one of several way:</p>
+<ul>
+<li><p class="first">With a matrix and an integer</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">idealg</span> <span class="o">=</span> <span class="n">IdealG</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="o">...</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+<li><p class="first">With a QMatrix</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">matrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">(</span><span class="n">array</span><span class="p">([</span><span class="o">...</span><span class="p">]),</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">idealg</span> <span class="o">=</span> <span class="n">IdealG</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+</pre></div>
+</div>
+</li>
+</ul>
+<dl class="attribute">
+<dt id="dcprogs.likelihood.IdealG.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#dcprogs.likelihood.IdealG.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.IdealG.af">
+<tt class="descname">af</tt><big>(</big><em>self</em>, <em>t</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.IdealG.af" title="Permalink to this definition">¶</a></dt>
+<dd><p>AF transitions with respect to time</p>
+<p>Implements the ideal likelihood:</p>
+<div class="math">
+\[e^{t\mathcal{Q}_{FF}}\mathcal{Q}_{FA}.\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> &#8211; A scalar or something to a numpy array. In the latter case, the return is an array
+of matrices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.IdealG.fa">
+<tt class="descname">fa</tt><big>(</big><em>self</em>, <em>t</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.IdealG.fa" title="Permalink to this definition">¶</a></dt>
+<dd><p>FA transitions with respect to time</p>
+<p>Implements the ideal likelihood:</p>
+<div class="math">
+\[e^{t\mathcal{Q}_{AA}}\mathcal{Q}_{AF}.\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> &#8211; A scalar or something to a numpy array. In the latter case, the return is an array
+of matrices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.IdealG.final_occupancies">
+<tt class="descname">final_occupancies</tt><a class="headerlink" href="#dcprogs.likelihood.IdealG.final_occupancies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equilibrium occupancies for final states.</p>
+<p>Computes the right eigenvector of <span class="math">\(\mathcal{G}_{FA}\mathcal{G}_{AF}\)</span>, where
+<span class="math">\(\mathcal{G}_{FA}\)</span> is the laplacian for <span class="math">\(s=0\)</span> of the likelihood.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.IdealG.initial_occupancies">
+<tt class="descname">initial_occupancies</tt><a class="headerlink" href="#dcprogs.likelihood.IdealG.initial_occupancies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Equilibrium occupancies for initial states.</p>
+<p>Computes the left eigenvector of <span class="math">\(\mathcal{G}_{AF}\mathcal{G}_{FA}\)</span>, where
+<span class="math">\(\mathcal{G}_{AF}\)</span> is the laplacian for <span class="math">\(s=0\)</span> of the likelihood.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.IdealG.laplace_af">
+<tt class="descname">laplace_af</tt><big>(</big><em>self</em>, <em>s</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.IdealG.laplace_af" title="Permalink to this definition">¶</a></dt>
+<dd><p>AF transitions with respect to scale</p>
+<p>Implements the laplace transform of the likelihood:</p>
+<div class="math">
+\[(sI - \mathcal{Q}_{AA})^{-1}\mathcal{Q}_{AF}.\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> &#8211; A scalar or something to a numpy array. In the latter case, the return is an array
+of matrices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.IdealG.laplace_fa">
+<tt class="descname">laplace_fa</tt><big>(</big><em>self</em>, <em>s</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.IdealG.laplace_fa" title="Permalink to this definition">¶</a></dt>
+<dd><p>FA transitions with respect to scale</p>
+<p>Implements the laplace transform of the likelihood:</p>
+<div class="math">
+\[(sI - \mathcal{Q}_{FF})^{-1}\mathcal{Q}_{FA}.\]</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> &#8211; A scalar or something to a numpy array. In the latter case, the return is an array
+of matrices.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.IdealG.nopen">
+<tt class="descname">nopen</tt><a class="headerlink" href="#dcprogs.likelihood.IdealG.nopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of open-states.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.IdealG.nshut">
+<tt class="descname">nshut</tt><a class="headerlink" href="#dcprogs.likelihood.IdealG.nshut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of shut-states.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="missed_eventsG.html"
+                        title="previous chapter">MissedEventsG</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exact_survivor.html"
+                        title="next chapter">ExactSurvivor</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/python/idealG.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="ExactSurvivor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="missed_eventsG.html" title="MissedEventsG"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" >Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

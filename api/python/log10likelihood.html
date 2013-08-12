@@ -1,0 +1,305 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Log10Likelihood &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Python API Reference" href="../python.html" />
+    <link rel="next" title="MissedEventsG" href="missed_eventsG.html" />
+    <link rel="prev" title="QMatrix" href="qmatrix.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="missed_eventsG.html" title="MissedEventsG"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="qmatrix.html" title="QMatrix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" accesskey="U">Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="log10likelihood">
+<span id="python-log10-section"></span><h1>Log10Likelihood<a class="headerlink" href="#log10likelihood" title="Permalink to this headline">¶</a></h1>
+<p>The purpose of this class is to provide an interface for maximizing the likelihood. It computes,
+for a given set of observed open and shut intervals, the likelihood <span class="math">\(\frac{\ln(L(Q))}{ln 10}\)</span>,
+where <span class="math">\(L(Q)\)</span> is declared in <a class="reference internal" href="../../manual.html#log10likelihood-equation"><em>the likelihood equation</em></a>.</p>
+<dl class="class">
+<dt id="dcprogs.likelihood.Log10Likelihood">
+<em class="property">class </em><tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">Log10Likelihood</tt><big>(</big><em>bursts</em>, <em>nopen</em>, <em>tau</em>, <em>tcritical=None</em>, <em>nmax=3</em>, <em>xtol=1e-10</em>, <em>rtol=1e-10</em>, <em>itermax=100</em>, <em>lower_bound=None</em>, <em>upper_bound=None</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a functor for optimizing the likelihood.</p>
+<p>This functor can as input a <span class="math">\(\mathcal{Q}\)</span>-matrix and returns the resulting
+likelihood. The root finding process is performed by <tt class="xref py py-func docutils literal"><span class="pre">find_roots()</span></tt>. Most of the
+arguments to initialize this functor are parameters for that process.</p>
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.nopen">
+<tt class="descname">nopen</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.nopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of open states. Should be strictly positive.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.tau">
+<tt class="descname">tau</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum length of missed events. Should be positive.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.tcritical">
+<tt class="descname">tcritical</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.tcritical" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(t_{\mathrm{crit}}\)</span> for CHS vectors. If negative, <tt class="docutils literal"><span class="pre">None</span></tt>, or <tt class="docutils literal"><span class="pre">NaN</span></tt>, 
+then the initial and final states are the equilibrium occupancies.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.nmax">
+<tt class="descname">nmax</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.nmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>The exact missed-events likelihood will be computed for 
+<span class="math">\(t &lt; n_{\mathrm{max}}       au\)</span>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.xtol">
+<tt class="descname">xtol</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.xtol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tolerance criteria when computing roots via <tt class="xref py py-func docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.rtol">
+<tt class="descname">rtol</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.rtol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Tolerance criteria when computing roots via <tt class="xref py py-func docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.itermax">
+<tt class="descname">itermax</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.itermax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Maximum number of iterations when computing roots via <tt class="xref py py-func docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.lower_bound">
+<tt class="descname">lower_bound</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.lower_bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Lower bound bracketing all roots. If None or NaN, then the lower bound will be 
+computed during calls by <tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_root()</span></tt></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.upper_bound">
+<tt class="descname">upper_bound</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.upper_bound" title="Permalink to this definition">¶</a></dt>
+<dd><p>Upper bound bracketing all roots. If None or NaN, then the upper bound will be 
+computed during calls by <tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_root()</span></tt></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>self</em>, <em>_Q</em><big>)</big> &rarr; DCProgs::t_real<a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the <span class="math">\(log_{10}\)</span>-likelihood for the input Q-matrix</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> &#8211; Can be either a square numpy array  or a <a class="reference internal" href="qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a> object. In the first
+case, the number of open states is set to attribute <cite>nopen</cite>.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deletes the nth burst.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the nth burst.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>bursts</em>, <em>nopen</em>, <em>tau</em>, <em>tcritical=None</em>, <em>nmax=3</em>, <em>xtol=1e-10</em>, <em>rtol=1e-10</em>, <em>itermax=100</em>, <em>lower_bound=None</em>, <em>upper_bound=None</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes the missed-events likelihood.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>bursts</strong> &#8211; A sequence of bursts. Each burst is a sequence of open and shut intervals. 
+There should always be an odd number of intervals. And the first interval 
+is open by default.</li>
+<li><strong>nopen</strong> (<em>integer</em>) &#8211; Number of open states. Should be strictly positive.</li>
+<li><strong>tau</strong> (<em>float</em>) &#8211; Maximum length of missed events. Should be positive.</li>
+<li><strong>tcritical</strong> (<em>float</em>) &#8211; <span class="math">\(t_{\mathrm{crit}}\)</span> for CHS vectors. If None, then the initial and final states
+are the equilibrium occupancies.</li>
+<li><strong>nmax</strong> (<em>integer</em>) &#8211; The exact missed-events likelihood will be computed for 
+<span class="math">\(t &lt; n_{\matrm{max}} au\)</span>.</li>
+<li><strong>xtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots via <tt class="xref py py-meth docutils literal"><span class="pre">likelihood.brentq()</span></tt></li>
+<li><strong>rtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots via <tt class="xref py py-meth docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</li>
+<li><strong>itermax</strong> (<em>interger</em>) &#8211; Maximum number of iterations when computing roots via <tt class="xref py py-meth docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</li>
+<li><strong>lower_bound</strong> (<em>float</em>) &#8211; Lower bound for <em>all</em> roots. Defaults to None, in which the case the lower bound is
+computed from <tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt>.</li>
+<li><strong>upper_bound</strong> (<em>float</em>) &#8211; Upper bound for <em>all</em> roots. Defaults to None, in which the case the upper bound is
+computed from <tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of bursts.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.__setitem__">
+<tt class="descname">__setitem__</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__setitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the nth burst.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>index</strong> &#8211; Index to the burst that should be changed.</li>
+<li><strong>value</strong> &#8211; A list of time intervals with an odd number of components, in seconds.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.Log10Likelihood.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.insert">
+<tt class="descname">insert</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inserts a burst at given index.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.Log10Likelihood.vector">
+<tt class="descname">vector</tt><big>(</big><em>self</em>, <em>_Q</em><big>)</big> &rarr; DCProgs::t_rvector<a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood.vector" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the <span class="math">\(log_{10}\)</span>-likelihood for each individual burst</p>
+<p>The sum over the return of this function is the return of <a class="reference internal" href="#dcprogs.likelihood.Log10Likelihood.__call__" title="dcprogs.likelihood.Log10Likelihood.__call__"><tt class="xref py py-meth docutils literal"><span class="pre">__call__()</span></tt></a>.
+This is merely a convenience function if one wants the likelihood associate with
+each burst</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>matrix</strong> &#8211; Can be either a square numpy array  or a <a class="reference internal" href="qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a> object. In the first
+case, the number of open states is set to attribute <cite>nopen</cite>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">A numpy array where each component contains the <span class="math">\(log_{10}\)</span> likelihood of a
+single burst.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="qmatrix.html"
+                        title="previous chapter">QMatrix</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="missed_eventsG.html"
+                        title="next chapter">MissedEventsG</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/python/log10likelihood.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="missed_eventsG.html" title="MissedEventsG"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="qmatrix.html" title="QMatrix"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" >Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

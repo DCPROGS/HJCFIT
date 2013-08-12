@@ -1,0 +1,249 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Occupancies &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Exact Survivor Function \(R_A(t)\)" href="exact_survivor.html" />
+    <link rel="prev" title="Ideal Likelihood \(\mathcal{G}(t)\)" href="idealG.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="Exact Survivor Function \(R_A(t)\)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="idealG.html" title="Ideal Likelihood \(\mathcal{G}(t)\)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="occupancies">
+<span id="manual-occupancies"></span><h1>Occupancies<a class="headerlink" href="#occupancies" title="Permalink to this headline">¶</a></h1>
+<p>The start and end occupancies can be computed one of two way. They can be the equilibrium
+occupancies determined from the equation:</p>
+<div class="math">
+\[\begin{split}\phi_A = \phi_A {}^e\mathcal{G}_{AF} {}^e\mathcal{G}_{FA},\\
+\phi_F = {}^e\mathcal{G}_{FA} {}^e\mathcal{G}_{AF} \phi_F,\\\end{split}\]</div>
+<p>subject to the constraints,</p>
+<div class="math">
+\[\begin{split}\sum_i [\phi_A]_i = 1,\\
+\sum_i [\phi_F]_i = 1.\end{split}\]</div>
+<p>Where <span class="math">\({}^e\mathcal{G}_{AF}\)</span> and <span class="math">\({}^e\mathcal{G}_{FA}\)</span> are the laplacians of the
+missed-events likelihoods (or equivalently, the ideal likelihoods) for <span class="math">\(s=0\)</span>, and
+<span class="math">\([a]_i\)</span> indicates the <span class="math">\(i^{th}\)</span> component of vector <span class="math">\(a\)</span>.</p>
+<p>Or they can be computed as CHS vectors, e.g. equation 5.11 and 5.8 from <a class="reference internal" href="../index.html#colquhoun-1996">[4]</a>.</p>
+<p>The occupancies are accessed differently in <a class="reference internal" href="../api/cpp/occupancies.html#cpp-occupancies-api"><em>c++</em></a> and in python.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><p class="first">The equilibrium occupancies are accessed as properties of <a class="reference internal" href="../api/python/idealG.html#dcprogs.likelihood.IdealG" title="dcprogs.likelihood.IdealG"><tt class="xref py py-class docutils literal"><span class="pre">IdealG</span></tt></a>
+and <a class="reference internal" href="../api/python/missed_eventsG.html#dcprogs.likelihood.MissedEventsG" title="dcprogs.likelihood.MissedEventsG"><tt class="xref py py-class docutils literal"><span class="pre">MissedEventsG</span></tt></a> instances. The CHS vectors are functions of
+these same classes that take as arguments the critical time.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">QMatrix</span><span class="p">,</span> <span class="n">IdealG</span><span class="p">,</span> <span class="n">MissedEventsG</span>
+
+<span class="c"># Define parameters.</span>
+<span class="n">qmatrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">([</span> <span class="p">[</span><span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>   <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">]</span> <span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mf">1e-4</span>
+ 
+<span class="n">eG</span> <span class="o">=</span> <span class="n">MissedEventsG</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+<span class="n">idealG</span> <span class="o">=</span> <span class="n">IdealG</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">)</span>
+
+<span class="n">tcritical</span> <span class="o">=</span> <span class="mf">5e-3</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;Equilibrium Occupancies</span><span class="se">\n</span><span class="s">&quot;</span>            \
+      <span class="s">&quot;=======================</span><span class="se">\n\n</span><span class="s">&quot;</span>          \
+      <span class="s">&quot;Ideal Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>                   \
+      <span class="s">&quot;----------------</span><span class="se">\n\n</span><span class="s">&quot;</span>                 \
+      <span class="s">&quot;  * initial: {ideal_initial!r}</span><span class="se">\n</span><span class="s">&quot;</span>     \
+      <span class="s">&quot;  * final: {ideal_final!r}</span><span class="se">\n\n\n</span><span class="s">&quot;</span>     \
+      <span class="s">&quot;Missed-events Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>           \
+      <span class="s">&quot;------------------------</span><span class="se">\n\n</span><span class="s">&quot;</span>         \
+      <span class="s">&quot;  * initial: {equi_initial!r}</span><span class="se">\n</span><span class="s">&quot;</span>      \
+      <span class="s">&quot;  * final: {equi_final!r}</span><span class="se">\n\n\n\n</span><span class="s">&quot;</span>    \
+      <span class="s">&quot;CHS Occupancies</span><span class="se">\n</span><span class="s">&quot;</span>                    \
+      <span class="s">&quot;===============</span><span class="se">\n\n</span><span class="s">&quot;</span>                  \
+      <span class="s">&quot;Missed-events Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>           \
+      <span class="s">&quot;------------------------</span><span class="se">\n\n</span><span class="s">&quot;</span>         \
+      <span class="s">&quot;  * tcritical: {tcritical}</span><span class="se">\n</span><span class="s">&quot;</span>         \
+      <span class="s">&quot;  * initial: {chs_initial!r}</span><span class="se">\n</span><span class="s">&quot;</span>       \
+      <span class="s">&quot;  * final: {chs_final!r}&quot;</span>             \
+      <span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">ideal_initial</span> <span class="o">=</span> <span class="n">idealG</span><span class="o">.</span><span class="n">initial_occupancies</span><span class="p">,</span>
+        <span class="n">ideal_final</span>   <span class="o">=</span> <span class="n">idealG</span><span class="o">.</span><span class="n">final_occupancies</span><span class="p">,</span>
+        <span class="n">equi_initial</span>  <span class="o">=</span> <span class="n">eG</span><span class="o">.</span><span class="n">initial_occupancies</span><span class="p">,</span>
+        <span class="n">equi_final</span>    <span class="o">=</span> <span class="n">eG</span><span class="o">.</span><span class="n">final_occupancies</span><span class="p">,</span>
+        <span class="n">chs_initial</span>   <span class="o">=</span> <span class="n">eG</span><span class="o">.</span><span class="n">initial_CHS_occupancies</span><span class="p">(</span><span class="n">tcritical</span><span class="p">),</span>
+        <span class="n">chs_final</span>     <span class="o">=</span> <span class="n">eG</span><span class="o">.</span><span class="n">final_CHS_occupancies</span><span class="p">(</span><span class="n">tcritical</span><span class="p">),</span>
+        <span class="n">tcritical</span>     <span class="o">=</span> <span class="n">tcritical</span>
+      <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><p class="first">Both equilibrium and CHS occupancies are accessed via function calls acting on the
+<tt class="xref cpp cpp-class docutils literal"><span class="pre">IdealG</span></tt> and <tt class="xref cpp cpp-class docutils literal"><span class="pre">MissedEventsG</span></tt>.</p>
+<div class="last highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="cp">#include &lt;likelihood/missed_eventsG.h&gt;</span>
+<span class="cp">#include &lt;likelihood/idealG.h&gt;</span>
+<span class="cp">#include &lt;likelihood/occupancies.h&gt;</span>
+ 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="c1">// Define parameters.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">QMatrix</span> <span class="n">qmatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="k">const</span> <span class="n">tau</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">);</span> <span class="c1">// in seconds</span>
+
+  <span class="c1">// Create missed-events G</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">MissedEventsG</span> <span class="n">eG</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">);</span>
+  <span class="c1">// Create ideal G</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">IdealG</span> <span class="n">idealG</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">);</span>
+  
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="k">const</span> <span class="n">tcritical</span><span class="p">(</span><span class="mf">5e-3</span><span class="p">);</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;Equilibrium Occupancies</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;=======================</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;Ideal Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;----------------</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * initial: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">occupancies</span><span class="p">(</span><span class="n">idealG</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * final: &quot;</span>   <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">occupancies</span><span class="p">(</span><span class="n">idealG</span><span class="p">,</span> <span class="nb">false</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;Missed-events Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;------------------------</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * initial: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">occupancies</span><span class="p">(</span><span class="n">eG</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * final: &quot;</span>   <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">occupancies</span><span class="p">(</span><span class="n">eG</span><span class="p">,</span> <span class="nb">false</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;CHS Occupancies</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;===============</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;Missed-events Likelihood</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;------------------------</span><span class="se">\n\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * tcritical: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">tcritical</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * initial: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">CHS_occupancies</span><span class="p">(</span><span class="n">eG</span><span class="p">,</span> <span class="n">tcritical</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * final: &quot;</span>   <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">CHS_occupancies</span><span class="p">(</span><span class="n">eG</span><span class="p">,</span> <span class="n">tcritical</span><span class="p">,</span> <span class="nb">false</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In c++, the occupancies are kept outside of the classes because computing these values is outside
+the pure remit of the classes (which is to compute the likelihood). However, in python, practicality
+beats purity, and it makes practical sense to keep likelihood and occupancies together.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><a class="reference internal" href="../api/python/log10likelihood.html#dcprogs.likelihood.Log10Likelihood" title="dcprogs.likelihood.Log10Likelihood"><tt class="xref py py-func docutils literal"><span class="pre">Log10Likelihood()</span></tt></a> uses equilibrium occupancies depending on the
+value of its attribute <a class="reference internal" href="../api/python/log10likelihood.html#dcprogs.likelihood.Log10Likelihood.tcritical" title="dcprogs.likelihood.Log10Likelihood.tcritical"><tt class="xref py py-attr docutils literal"><span class="pre">tcritical</span></tt></a>:</p>
+<ul class="last simple">
+<li>if it is <tt class="docutils literal"><span class="pre">None</span></tt>, <tt class="docutils literal"><span class="pre">numpy.NaN</span></tt>, or negative, then the equilibrium occupancies are used</li>
+<li>if it a strictly positive real number, then the CHS vectors are computed</li>
+</ul>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="idealG.html"
+                        title="previous chapter">Ideal Likelihood <span class="math">\(\mathcal{G}(t)\)</span></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="exact_survivor.html"
+                        title="next chapter">Exact Survivor Function <span class="math">\(R_A(t)\)</span></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/occupancies.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="Exact Survivor Function \(R_A(t)\)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="idealG.html" title="Ideal Likelihood \(\mathcal{G}(t)\)"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

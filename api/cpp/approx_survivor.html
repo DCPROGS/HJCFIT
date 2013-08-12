@@ -1,0 +1,261 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ApproxSurvivor &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="C++ API Reference" href="../cpp.html" />
+    <link rel="next" title="DeterminantEq" href="determinanteq.html" />
+    <link rel="prev" title="ExactSurvivor" href="exact_survivor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="ExactSurvivor"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" accesskey="U">C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="approxsurvivor">
+<span id="cpp-approx-survivor-api"></span><h1>ApproxSurvivor<a class="headerlink" href="#approxsurvivor" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line" id=""><span id="project0class_d_c_progs_1_1_approx_survivor"></span><em>class</em> <strong>DCProgs::ApproxSurvivor</strong></div>
+</div>
+<blockquote>
+<div><p>Implementation of asymptotic missed events. </p>
+<p>This object merely puts together two Asymptotes objects. </p>
+<em>Public Type</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a41910b3d9b5e7db18d5e07500693835f"></span>typedef std::function&lt; std::vector&lt;  Root  &gt; <a class="reference internal" href="determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp;)&gt; <strong>t_RootFinder</strong></p>
+<blockquote>
+<div><p>Type of the function used to minimize roots. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1abab091c3641442ce3856dc44740e493e"></span><div class="line-block">
+<div class="line"> <strong>ApproxSurvivor</strong>(<a class="reference internal" href="determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _af, std::vector&lt;  Root  &gt; const &amp; _roots_af, <a class="reference internal" href="determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _fa, std::vector&lt;  Root  &gt; const &amp; _roots_fa)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Initializes approximate survivor functor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_af</span><span class="pre">:</span></tt> - <p>Determinant equation for open-&gt;shut transitions </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_roots_af</span><span class="pre">:</span></tt> - <p>Roots of _af equation </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_fa</span><span class="pre">:</span></tt> - <p>Determinant equation for shut-&gt;open transitions </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_roots_fa</span><span class="pre">:</span></tt> - <p>Roots of _fa equation </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1ad3a2cb7d922f944b7bea08a9a0312a99"></span><div class="line-block">
+<div class="line"> <strong>ApproxSurvivor</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _matrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau, <a class="reference internal" href="#project0class_d_c_progs_1_1_approx_survivor_1a41910b3d9b5e7db18d5e07500693835f"><em>t_RootFinder</em></a>  const &amp; _findroots)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Initializes approx survivor functor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_matrix</span><span class="pre">:</span></tt> - <p>Transition matrix </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span><span class="pre">:</span></tt> - <p>resolution/max length missed events </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_findroots</span><span class="pre">:</span></tt> - <p>A functor with which to find all roots. This function should take a <a class="reference internal" href="determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a> as its sole argument and return a std::vector&lt;DCProgs::RootInterval&gt; </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a67b502f02d0a17fb8bb2c42042173f9f"></span><div class="line-block">
+<div class="line"> <strong>ApproxSurvivor</strong>(<a class="reference internal" href="#project0class_d_c_progs_1_1_approx_survivor"><em>ApproxSurvivor</em></a>  &amp;&amp; _c)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Move constructor. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a6ec05ef630687f163ecefaa3a1e8b86a"></span><div class="line-block">
+<div class="line"> <strong>ApproxSurvivor</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _qmatrix, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xtol = 1e-12, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _rtol = 1e-12, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _lowerbound = quiet_nan, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _upperbound = quiet_nan)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Initializes missed-events functor. </p>
+<p><dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_qmatrix</span></tt> - <p>Transition matrix </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>resolution/max length missed events </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_xtol</span></tt> - <p>Tolerance for interval size </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_rtol</span></tt> - <p>Tolerance for interval size. The convergence criteria is an affine function of the root: <span class="math">\(x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{1}{2}|x_a - x_b|\)</span>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>maximum number of iterations for any of the three steps. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_lowerbound</span></tt> - <p>Lower bound of the interval bracketing all roots. If None, the lower bound is obtained from <a class="reference internal" href="../python/roots.html#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>find_lower_bound_for_roots()</em></a>. </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_upperbound</span></tt> - <p>Upper bound of the interval bracketing all roots. If None, the upper bound is obtained from <a class="reference internal" href="../python/roots.html#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>find_upper_bound_for_roots()</em></a>. </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1ad24748396af8e0e8a59958c64c45ef1f"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>af</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _t)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Open to close transitions. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a2c7665cdf5a96837d02b5b8f02fcb38e"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>fa</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _t)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Close to open transitions. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a106e4031fb8a1d2c86b67a0c5e069398"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> <strong>nb_af_components</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Number of exponential components for af. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a2bdd0e716d02646148f5c79e4f68ec8a"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> <strong>nb_fa_components</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Number of exponential components for fa. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1ac87d2f5ae2857669d85ed54942028d46"></span><div class="line-block">
+<div class="line">Asymptotes::t_MatrixAndRoot  const &amp; <strong>get_af_components</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af5016dba5792114ec2b78607776283f3"><em>t_int</em></a> i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>AF exponential components. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_approx_survivor_1a1e30b1c095a52082dd96661f8ac2deba"></span><div class="line-block">
+<div class="line">Asymptotes::t_MatrixAndRoot  const &amp; <strong>get_fa_components</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af5016dba5792114ec2b78607776283f3"><em>t_int</em></a> i)</div>
+</div>
+</p>
+<blockquote>
+<div><p>FA exponential components. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exact_survivor.html"
+                        title="previous chapter">ExactSurvivor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="determinanteq.html"
+                        title="next chapter">DeterminantEq</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/cpp/approx_survivor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="ExactSurvivor"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" >C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

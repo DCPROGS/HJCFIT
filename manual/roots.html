@@ -1,0 +1,276 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Searching for Roots &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Application Programming Interface:" href="../api.html" />
+    <link rel="prev" title="Determinant Equation \(W(s) = sI - H(s)\)" href="determinant_equation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../api.html" title="Application Programming Interface:"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="determinant_equation.html" title="Determinant Equation \(W(s) = sI - H(s)\)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="searching-for-roots">
+<h1>Searching for Roots<a class="headerlink" href="#searching-for-roots" title="Permalink to this headline">¶</a></h1>
+<p>The default procedure for finding roots is a three step process:</p>
+<ol class="arabic simple">
+<li>Searching for sensible upper and lower bounds bracketing all roots</li>
+<li>Bisecting the bracket above to obtain bracket with a single root each</li>
+<li>Using a standard root-finding method to search for the root within that bracket</li>
+</ol>
+<p>The first step is carried out by iteratively computing the eigenvalues of <span class="math">\(H(s)\)</span> and setting
+the candidate lower(upper) boundary below(above) the smallest(largest) eigenvalue. Additionally, the
+upper boundary is set to a value such that <span class="math">\(\mathop{det}H(s)\)</span> is strictly positive. There are
+two convenience functions to encapsulate this functionality, <tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt>
+and <tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="nb">all</span>
+<span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">eig</span>
+<span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">find_upper_bound_for_roots</span><span class="p">,</span> <span class="n">find_lower_bound_for_roots</span><span class="p">,</span>        \
+                               <span class="n">find_root_intervals</span><span class="p">,</span> <span class="n">brentq</span><span class="p">,</span> <span class="n">find_roots</span><span class="p">,</span> <span class="n">QMatrix</span><span class="p">,</span> <span class="n">DeterminantEq</span>
+
+<span class="n">qmatrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">([</span> <span class="p">[</span><span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>   <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">]</span> <span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">det</span> <span class="o">=</span> <span class="n">DeterminantEq</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+
+<span class="n">upper_bound</span> <span class="o">=</span> <span class="n">find_upper_bound_for_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+<span class="n">lower_bound</span> <span class="o">=</span> <span class="n">find_lower_bound_for_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+
+<span class="n">get_eigenvalues</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">eig</span><span class="p">(</span><span class="n">det</span><span class="o">.</span><span class="n">H</span><span class="p">(</span><span class="n">s</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">T</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">get_eigenvalues</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">lower_bound</span><span class="p">)</span> 
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">get_eigenvalues</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">upper_bound</span><span class="p">)</span> 
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">This package can be compiled to use 128bit reals. However, numpy does not provide all of its
+linear algebra utilities for such type. As consequence, this package exposes some of the
+functionality that it needs for its reals.</p>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="cp">#include &lt;likelihood/determinant_equation.h&gt;</span>
+<span class="cp">#include &lt;likelihood/root_finder.h&gt;</span>
+<span class="cp">#include &lt;likelihood/brentq.h&gt;</span>
+ 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="c1">// Define parameters.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">QMatrix</span> <span class="n">qmatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="n">det</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+  <span class="c1">// Find upper and lower bound</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="n">upper_bound</span> <span class="o">=</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">find_upper_bound_for_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="n">lower_bound</span> <span class="o">=</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">find_lower_bound_for_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+
+
+  <span class="c1">// computes eigenvalues of H(s) for given s</span>
+  <span class="k">auto</span> <span class="n">get_eigenvalues</span> <span class="o">=</span> <span class="p">[</span><span class="o">&amp;</span><span class="n">det</span><span class="p">](</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="n">_s</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rvector</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">Eigen</span><span class="o">::</span><span class="n">EigenSolver</span><span class="o">&lt;</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span><span class="o">&gt;</span><span class="p">(</span><span class="n">det</span><span class="p">.</span><span class="n">H</span><span class="p">(</span><span class="n">_s</span><span class="p">)).</span><span class="n">eigenvalues</span><span class="p">().</span><span class="n">real</span><span class="p">();</span>
+  <span class="p">};</span>
+
+  <span class="c1">// Checks bounds are correct.</span>
+  <span class="k">if</span><span class="p">((</span><span class="n">get_eigenvalues</span><span class="p">(</span><span class="n">lower_bound</span><span class="p">).</span><span class="n">array</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">lower_bound</span><span class="p">).</span><span class="n">any</span><span class="p">())</span> 
+    <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;Incorrect lower bound.&quot;</span><span class="p">);</span>
+  <span class="k">if</span><span class="p">((</span><span class="n">get_eigenvalues</span><span class="p">(</span><span class="n">upper_bound</span><span class="p">).</span><span class="n">array</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">upper_bound</span><span class="p">).</span><span class="n">any</span><span class="p">())</span> 
+    <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;Incorrect upper bound.&quot;</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The snippets above check that upper and lower bounds are indeed upper and lower bound, as
+advertised. It is possible that overflow errors make it difficult to find an upper or lower bound.
+It is possible in most function and classes to pass actual values for the upper and lower bounds
+(rather than the default, <tt class="docutils literal"><span class="pre">None</span></tt>).</p>
+<p>The second step of the process is to bisect the input bracket until intervals are found which
+contain a single root (e.g. a single eigenvalue of H(s)).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="n">intervals</span> <span class="o">=</span> <span class="n">find_root_intervals</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">RootInterval</span><span class="o">&gt;</span> <span class="n">intervals</span>
+    <span class="o">=</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">find_root_intervals</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">lower_bound</span><span class="p">,</span> <span class="n">upper_bound</span><span class="p">);</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The third step is performed by calling (by default) the <tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt> subroutine. This method is
+copied straight from numpy, with some modifications to allow it to cope with 128bit reals, if need
+be.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="k">for</span> <span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">),</span> <span class="n">multiplicity</span> <span class="ow">in</span> <span class="n">intervals</span><span class="p">:</span>
+  <span class="n">root</span><span class="p">,</span> <span class="n">iterations</span><span class="p">,</span> <span class="n">function_calls</span> <span class="o">=</span> <span class="n">brentq</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+  <span class="k">print</span><span class="p">(</span><span class="s">&quot;  * Root interval: [{0}, {1}]</span><span class="se">\n</span><span class="s">&quot;</span>
+        <span class="s">&quot;    Corresponding root: {2}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="n">root</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="k">for</span><span class="p">(</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">RootInterval</span> <span class="k">const</span><span class="o">&amp;</span> <span class="n">interval</span><span class="o">:</span> <span class="n">intervals</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">auto</span> <span class="n">brentq_result</span> <span class="o">=</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">brentq</span><span class="p">(</span><span class="n">det</span><span class="p">,</span> <span class="n">interval</span><span class="p">.</span><span class="n">start</span><span class="p">,</span> <span class="n">interval</span><span class="p">.</span><span class="n">end</span><span class="p">);</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  * Root interval: [&quot;</span> <span class="o">&lt;&lt;</span> <span class="n">interval</span><span class="p">.</span><span class="n">start</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;, &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">interval</span><span class="p">.</span><span class="n">end</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;]</span><span class="se">\n</span><span class="s">&quot;</span> 
+              <span class="o">&lt;&lt;</span> <span class="s">&quot;    Corresponding root: &quot;</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">(</span><span class="n">brentq_result</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The whole procedure is encapsulated within the function <tt class="xref py py-func docutils literal"><span class="pre">find_roots()</span></tt>. On top of the
+parameters in the snippets below, <tt class="xref py py-func docutils literal"><span class="pre">find_roots()</span></tt> can take variety of parameters to control
+the root-finding procedure. Most notably, it accepts <tt class="docutils literal"><span class="pre">lower_bound</span></tt> and <tt class="docutils literal"><span class="pre">upper_bound</span></tt> keywords,
+allowing users to by-pass the first step if need be.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="n">roots</span> <span class="o">=</span> <span class="n">find_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;  * All roots: {0}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">([</span><span class="n">root</span> <span class="k">for</span> <span class="n">root</span><span class="p">,</span> <span class="n">multiplicity</span> <span class="ow">in</span> <span class="n">roots</span><span class="p">]))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">Root</span><span class="o">&gt;</span> <span class="n">roots</span> <span class="o">=</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">find_roots</span><span class="p">(</span><span class="n">det</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span>  <span class="s">&quot;  * All roots: &quot;</span><span class="p">;</span>
+  <span class="k">for</span><span class="p">(</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">Root</span> <span class="k">const</span> <span class="o">&amp;</span><span class="n">root</span><span class="o">:</span> <span class="n">roots</span><span class="p">)</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">root</span><span class="p">.</span><span class="n">root</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="determinant_equation.html"
+                        title="previous chapter">Determinant Equation <span class="math">\(W(s) = sI - H(s)\)</span></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../api.html"
+                        title="next chapter">Application Programming Interface:</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/roots.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../api.html" title="Application Programming Interface:"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="determinant_equation.html" title="Determinant Equation \(W(s) = sI - H(s)\)"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

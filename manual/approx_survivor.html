@@ -1,0 +1,244 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Approximate Survivor Function \(R_A(t)\) &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Determinant Equation \(W(s) = sI - H(s)\)" href="determinant_equation.html" />
+    <link rel="prev" title="Exact Survivor Function \(R_A(t)\)" href="exact_survivor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="determinant_equation.html" title="Determinant Equation \(W(s) = sI - H(s)\)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="Exact Survivor Function \(R_A(t)\)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="approximate-survivor-function">
+<h1>Approximate Survivor Function <span class="math">\(R_A(t)\)</span><a class="headerlink" href="#approximate-survivor-function" title="Permalink to this headline">¶</a></h1>
+<p>The approximate survivor function is defined, and used, for <span class="math">\(t &gt; 2\tau\)</span>:</p>
+<div class="math">
+\[\mathcal{R}_A(u) \backsim
+  \sum_{i=1}^{k_A}\frac{\vec{c}_i\vec{r}_i}{\vec{r}_iW'(s_i)\vec{c}_i}  e^{u s_i}\]</div>
+<p>where <span class="math">\(c_i\)</span> and <span class="math">\(r_i\)</span> are the column and row eigenvectors of a
+<span class="math">\(H(s_i)\)</span> (defined below), <span class="math">\(s_i\)</span> are the roots of <span class="math">\(\mathop{det}W(s)\)</span>.</p>
+<div class="math">
+\[\begin{split}W(s) = sI - H(s)\\\end{split}\]</div>
+<div class="math">
+\[H(s) = \mathcal{Q}_{AA} + \mathcal{Q}_{AF}\left[sI-\mathcal{Q}_{FF}\right]^{-1}
+       \left(I-e^{-(sI-\mathcal{Q}_{FF})\tau}\right)\mathcal{Q}_{FA}\]</div>
+<div class="math">
+\[W'(s) = I+\mathcal{Q}_{AF}\left[\bar{S}_{FF}(s)\left(sI-\mathcal{Q}_{FF}\right)^{-1}
+   -\tau \left(I -\bar{\mathbf{S}}_{FF}(s)\right)\right]\bar{\mathcal{G}}_{FA}(s)\]</div>
+<div class="math">
+\[\bar{\mathbf{S}}_{FF}(s) = \int_0^\tau\!\mathrm{d}\,t\ e^{-st}e^{\mathcal{Q}_{FF}t}\]</div>
+<div class="math">
+\[\bar{\mathcal{G}}_{FA}(s) = \left[sI-\mathcal{Q}_{FF}\right]^{-1}\mathcal{Q}_{FA}\]</div>
+<p>The approximate survivor function can be initialized from a <span class="math">\(\mathcal{Q}\)</span>-matrix and the resolution
+<span class="math">\(\tau\)</span>:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">QMatrix</span><span class="p">,</span> <span class="n">ApproxSurvivor</span>
+
+<span class="c"># Define parameters.</span>
+<span class="n">qmatrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">([</span> <span class="p">[</span><span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>   <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">]</span> <span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mf">1e-4</span>
+
+<span class="n">survivor</span> <span class="o">=</span> <span class="n">ApproxSurvivor</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+<span class="k">print</span> <span class="n">survivor</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+
+<span class="cp">#include &lt;likelihood/approx_survivor.h&gt;</span>
+<span class="cp">#include &lt;likelihood/errors.h&gt;</span>
+ 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="c1">// Define parameters.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">QMatrix</span> <span class="n">qmatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">);</span>
+
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">ApproxSurvivor</span> <span class="n">survivor</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="mf">1e-4</span><span class="p">);</span>
+
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">survivor</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The initialization shown above hides many details of the implementation, most notably how the
+roots are obtained. However, this object can also be initialed in exactly the same way as
+<a class="reference internal" href="missedeventsG.html#manual-eg"><em>MissedEventsG</em></a>, with the same sets parameters (except for <tt class="docutils literal"><span class="pre">nmax</span></tt>).</p>
+</div>
+<p>The open and shut time survivor likelihood can be computed using a single call:</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><p class="first">The python bindings accept both scalars and array inputs.</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;AF values</span><span class="se">\n</span><span class="s">&quot;</span>  \
+      <span class="s">&quot;---------</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">)</span>
+<span class="n">times</span> <span class="o">=</span> <span class="p">[</span><span class="mf">1e-4</span><span class="p">,</span> <span class="mf">1e-5</span><span class="p">,</span> <span class="mf">2.0e-5</span><span class="p">,</span> <span class="mf">2.5e-5</span><span class="p">]</span>
+<span class="n">af_values</span> <span class="o">=</span> <span class="n">survivor</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">times</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">t</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">times</span><span class="p">,</span> <span class="n">af_values</span><span class="p">):</span> <span class="k">print</span><span class="p">(</span><span class="s">&quot;  * at time t={0}:</span><span class="se">\n</span><span class="s">{1}</span><span class="se">\n</span><span class="s">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;AF values</span><span class="se">\n</span><span class="s">&quot;</span>
+               <span class="s">&quot;---------</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;  * at time t=&quot;</span> <span class="o">&lt;&lt;</span> <span class="mf">1e-4</span> <span class="o">&lt;&lt;</span><span class="s">&quot;:</span><span class="se">\n</span><span class="s">    &quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">survivor</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">),</span> <span class="s">&quot;    &quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * at time t=&quot;</span> <span class="o">&lt;&lt;</span> <span class="mf">1.5e-4</span> <span class="o">&lt;&lt;</span><span class="s">&quot;:</span><span class="se">\n</span><span class="s">    &quot;</span> 
+            <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">survivor</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="mf">1.5e-4</span><span class="p">),</span> <span class="s">&quot;    &quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * at time t=&quot;</span> <span class="o">&lt;&lt;</span> <span class="mf">2.0e-4</span> <span class="o">&lt;&lt;</span><span class="s">&quot;:</span><span class="se">\n</span><span class="s">    &quot;</span> 
+            <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">survivor</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="mf">2.0e-4</span><span class="p">),</span> <span class="s">&quot;    &quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="s">&quot;  * at time t=&quot;</span> <span class="o">&lt;&lt;</span> <span class="mf">2.5e-4</span> <span class="o">&lt;&lt;</span><span class="s">&quot;:</span><span class="se">\n</span><span class="s">    &quot;</span>
+            <span class="o">&lt;&lt;</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">numpy_io</span><span class="p">(</span><span class="n">survivor</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="mf">2.5e-4</span><span class="p">),</span> <span class="s">&quot;    &quot;</span><span class="p">)</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;</span><span class="se">\n\n</span><span class="s">&quot;</span><span class="p">;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The coefficient and the exponents of the exponentials that make up the asymptotic expression are
+exposed as shown below.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="k">print</span><span class="p">(</span><span class="s">&quot;  * Exponents: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">([</span><span class="n">root</span> <span class="k">for</span> <span class="n">matrix</span><span class="p">,</span> <span class="n">root</span> <span class="ow">in</span> <span class="n">survivor</span><span class="o">.</span><span class="n">af_components</span><span class="p">]))</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; * Exponents: &quot;</span><span class="p">;</span>
+  <span class="k">for</span><span class="p">(</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">t_uint</span> <span class="n">i</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">survivor</span><span class="p">.</span><span class="n">nb_af_components</span><span class="p">();</span> <span class="o">++</span><span class="n">i</span><span class="p">)</span> 
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">get</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">&gt;</span><span class="p">(</span><span class="n">survivor</span><span class="p">.</span><span class="n">get_af_components</span><span class="p">(</span><span class="n">i</span><span class="p">))</span> <span class="o">&lt;&lt;</span> <span class="s">&quot; &quot;</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="exact_survivor.html"
+                        title="previous chapter">Exact Survivor Function <span class="math">\(R_A(t)\)</span></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="determinant_equation.html"
+                        title="next chapter">Determinant Equation <span class="math">\(W(s) = sI - H(s)\)</span></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/approx_survivor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="determinant_equation.html" title="Determinant Equation \(W(s) = sI - H(s)\)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="exact_survivor.html" title="Exact Survivor Function \(R_A(t)\)"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,290 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Likelihood \(L(Q)\) &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Missed-Events Likelihood \({}^eG(t)\)" href="missedeventsG.html" />
+    <link rel="prev" title="The \(Q\)-matrix" href="qmatrix.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="missedeventsG.html" title="Missed-Events Likelihood \({}^eG(t)\)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="qmatrix.html" title="The \(Q\)-matrix"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="likelihood">
+<span id="manual-log10"></span><h1>Likelihood <span class="math">\(L(Q)\)</span><a class="headerlink" href="#likelihood" title="Permalink to this headline">¶</a></h1>
+<p>The callable object <span class="math">\(L_{\log10}(Q)\)</span> provides an interface designed to compute the
+log10-likelihood as a function of the rates, from the knowledge of the observed open and shut time
+intervals and the (type of) initial and final occupancies. This object is especially suited for
+maximizing the likelihood of a given mechanism. It is defined as</p>
+<div class="math">
+\[L_{\log10}(Q) = \frac{1}{\mathrm{ln} 10}\sum_b \mathrm{ln} L_b(Q)\]</div>
+<p>with <span class="math">\(L_b(Q)\)</span> defined <a class="reference internal" href="../manual.html#log10likelihood-equation"><em>here</em></a>, the index <span class="math">\(b\)</span> refers
+to the individual bursts, and <span class="math">\(\mathrm{ln}\)</span> is the natural logarithm.</p>
+<p>The purpose of this class is to provide an interface for maximizing the likelihood. It computes,
+for a given set of observed open and shut intervals, the likelihood <span class="math">\(\frac{\ln(L(Q))}{ln 10}\)</span>,
+where <span class="math">\(L(Q)\)</span> is declared in <a class="reference internal" href="../manual.html#log10likelihood-equation"><em>the likelihood equation</em></a>.</p>
+<p>A callable object <span class="math">\(L(Q)\)</span> exists in both <a class="reference internal" href="../api/cpp/log10likelihood.html#cpp-log10-section"><em>c++</em></a> and <a class="reference internal" href="../api/python/log10likelihood.html#python-log10-section"><em>python</em></a>. It can be initialized as follows</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">Log10Likelihood</span>
+
+<span class="n">bursts</span> <span class="o">=</span> <span class="p">[</span>  <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span>                  <span class="c"># 1st burst </span>
+            <span class="p">[</span><span class="mf">0.2</span><span class="p">],</span>                            <span class="c"># 2nd burst</span>
+            <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span> <span class="p">]</span>   <span class="c"># 3rd burst</span>
+<span class="sd">&quot;&quot;&quot; List of bursts.  </span>
+
+<span class="sd">    Each burst is a list of observed open and shut intervals. </span>
+<span class="sd">    There should always be an odd number of intervals, since bursts end in a shut states.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">likelihood</span> <span class="o">=</span> <span class="n">Log10Likelihood</span><span class="p">(</span><span class="n">bursts</span><span class="p">,</span> <span class="n">nopen</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">tau</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span> <span class="n">tcritical</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="n">likelihood</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &lt;likelihood/likelihood.h&gt;</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_Bursts</span> <span class="n">bursts</span><span class="p">{</span>
+     <span class="p">{</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">},</span>                  <span class="cm">/* 1st burst */</span>
+     <span class="p">{</span><span class="mf">0.2</span><span class="p">},</span>                            <span class="cm">/* 2nd burst */</span>
+     <span class="p">{</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">}</span>     <span class="cm">/* 3rd burst */</span>
+  <span class="p">};</span>
+  
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">Log10Likelihood</span> <span class="n">likelihood</span><span class="p">(</span> <span class="n">bursts</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">,</span> <span class="cm">/*tau=*/</span><span class="mf">1e-2</span><span class="p">,</span>
+                                       <span class="cm">/*tcrit=*/</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">quiet_nan</span> <span class="p">);</span>
+ 
+  <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="n">likelihood</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p class="last">The initialization of <cite>bursts</cite> above is done in using two newer c++11 coding techniques:
+<a class="reference external" href="https://en.wikipedia.org/wiki/C++11#Initializer_lists">initializer lists</a>, and <a class="reference external" href="https://en.wikipedia.org/wiki/C++11#Uniform_initialization">uniform initialization</a>.
+It may not be available from all compilers just yet...</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Once the objects are initialized, the input attributes can be accessed (and modified) through the
+&#8216;.&#8217; operator: <tt class="docutils literal"><span class="pre">likelihood.nopen</span> <span class="pre">=</span> <span class="pre">2</span></tt>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p><a class="reference internal" href="../api/python/log10likelihood.html#dcprogs.likelihood.Log10Likelihood" title="dcprogs.likelihood.Log10Likelihood"><tt class="xref py py-func docutils literal"><span class="pre">Log10Likelihood()</span></tt></a> uses equilibrium occupancies depending on the
+value of its attribute <a class="reference internal" href="../api/python/log10likelihood.html#dcprogs.likelihood.Log10Likelihood.tcritical" title="dcprogs.likelihood.Log10Likelihood.tcritical"><tt class="xref py py-attr docutils literal"><span class="pre">tcritical</span></tt></a>:</p>
+<ul class="simple">
+<li>if it is <tt class="docutils literal"><span class="pre">None</span></tt>, <tt class="docutils literal"><span class="pre">numpy.NaN</span></tt>, or negative, then the equilibrium occupancies are used</li>
+<li>if it a strictly positive real number, then the CHS vectors are computed</li>
+</ul>
+<p class="last">Similarly, in c++, <tt class="docutils literal"><span class="pre">tcritical</span></tt> can be set to <a class="reference internal" href="../api/cpp/typehierarchy.html#DCProgs::quiet_nan" title="DCProgs::quiet_nan"><tt class="xref c c-data docutils literal"><span class="pre">DCProgs::quiet_nan</span></tt></a> to trigger
+calculations with equilibrium occupancies.</p>
+</div>
+<p>It is required that the bursts have been pre-filtered so that there are no intervals smaller than
+the resolution <span class="math">\(\tau\)</span>. This can be done using <tt class="xref cpp cpp-func docutils literal"><span class="pre">time_filter()</span></tt>
+(<tt class="xref py py-func docutils literal"><span class="pre">python</span></tt>) or <tt class="xref cpp cpp-func docutils literal"><span class="pre">interval_filter()</span></tt>
+(<tt class="xref py py-func docutils literal"><span class="pre">python</span></tt>).</p>
+<p>The likelihood for any Q-matrix can then be computed by calling the <cite>likelihood</cite> objects as though
+they were function. The following snippets are inserted at the tail end of the previous code.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="n">matrix</span> <span class="o">=</span> <span class="p">[[</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span> <span class="p">],</span> 
+          <span class="p">[</span> <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span> <span class="p">],</span>  
+          <span class="p">[</span>    <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span> <span class="p">],</span>  
+          <span class="p">[</span>     <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span> <span class="p">],</span>  
+          <span class="p">[</span>     <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span> <span class="p">]</span> <span class="p">]</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">likelihood</span><span class="p">(</span><span class="n">matrix</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s">&quot;Computation: {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">result</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>The function can take any sort square matrix, whether using standard python lists or a numpy
+array. It can only take one matrix at a time.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="k">const</span> <span class="n">result</span> <span class="o">=</span> <span class="n">likelihood</span><span class="p">(</span><span class="n">matrix</span><span class="p">);</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The return is the log-likelihood associated with the bursts and the input Q-matrix. In both python
+and c++, the functions accepts either a matrix or an actual <tt class="xref cpp cpp-class docutils literal"><span class="pre">DCProgs::QMatrix</span></tt>
+(<a class="reference internal" href="../api/python/qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">python</span></tt></a>) object. In the former case, the number of open
+states is set to <cite>nopen</cite>.</p>
+<p>It should be noted that the python the bursts are accessed in python directly from the likelihood
+using normal sequence operations. Only a small subset of sequence operations where implemented.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="nb">all</span><span class="p">,</span> <span class="nb">abs</span><span class="p">,</span> <span class="n">NaN</span>
+<span class="c"># Get the number of bursts</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">likelihood</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+<span class="c"># Check the second burst is what we expect</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">likelihood</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">)</span>
+<span class="c"># Modify, and check the second burst</span>
+<span class="n">likelihood</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">]</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">likelihood</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="mf">0.15</span><span class="p">,</span> <span class="mf">0.16</span><span class="p">,</span> <span class="mf">0.18</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">)</span>
+<span class="c"># Add an extra burst, and check that it is there</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">])</span>
+<span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">likelihood</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">likelihood</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="p">[</span><span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">,</span> <span class="mf">0.013</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1e-12</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><p class="first last"><tt class="xref cpp cpp-member docutils literal"><span class="pre">DCProgs::Log10Likelihood::bursts</span></tt> is a public member and can be accessed directly.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Finally, some of the attributes, namely, <tt class="xref py py-attr docutils literal"><span class="pre">Log10Likelihood.tcritical</span></tt>,
+<tt class="xref py py-attr docutils literal"><span class="pre">Log10Likelihood.upper_bound</span></tt>, <tt class="xref py py-attr docutils literal"><span class="pre">Log10Likelihood.lower_bound</span></tt>, act both as
+parameters and as switch when given special values. These special values are <cite>None</cite> and <cite>numpy.NaN</cite>
+in python and <a class="reference internal" href="../api/cpp/typehierarchy.html#DCProgs::quiet_nan" title="DCProgs::quiet_nan"><tt class="xref c c-data docutils literal"><span class="pre">DCProgs::quiet_nan</span></tt></a> in c++. In python, the special values will always be transformed
+to <cite>None</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first last highlight-python"><div class="highlight"><pre><span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="ow">is</span> <span class="bp">None</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="o">=</span> <span class="n">NaN</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="ow">is</span> <span class="bp">None</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="ow">is</span> <span class="bp">None</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">likelihood</span><span class="o">.</span><span class="n">tcritical</span> <span class="o">-</span> <span class="mf">0.5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span>
+
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="ow">is</span> <span class="bp">None</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="n">NaN</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="ow">is</span> <span class="bp">None</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1e6</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">+</span> <span class="mf">1e6</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1e-12</span>
+<span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="k">assert</span> <span class="n">likelihood</span><span class="o">.</span><span class="n">lower_bound</span> <span class="ow">is</span> <span class="bp">None</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="qmatrix.html"
+                        title="previous chapter">The <span class="math">\(Q\)</span>-matrix</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="missedeventsG.html"
+                        title="next chapter">Missed-Events Likelihood <span class="math">\({}^eG(t)\)</span></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/likelihood_of_Q.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="missedeventsG.html" title="Missed-Events Likelihood \({}^eG(t)\)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="qmatrix.html" title="The \(Q\)-matrix"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

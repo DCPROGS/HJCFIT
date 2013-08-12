@@ -1,0 +1,230 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>DeterminantEq &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Python API Reference" href="../python.html" />
+    <link rel="next" title="Searching for Roots" href="roots.html" />
+    <link rel="prev" title="ApproxSurvivor" href="approx_survivor.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" accesskey="U">Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="determinanteq">
+<span id="python-determinanteq-api"></span><h1>DeterminantEq<a class="headerlink" href="#determinanteq" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dcprogs.likelihood.DeterminantEq">
+<em class="property">class </em><tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">DeterminantEq</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.DeterminantEq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute determinant W needed to approximate missed event G</p>
+<p>This object can be instantiated from a square matrix, the number of open states, and the
+resolution, or maximum length of missed events <span class="math">\(\tau\)</span>:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">DeterminantEq</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="n">nopen</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or, it can be instantiated from a <a class="reference internal" href="qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a> instance 
+and <span class="math">\(\tau\)</span></p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">DeterminantEq</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>matrix</strong> &#8211; Transition rate matrix, where the upper left corner contain open-open transitions</li>
+<li><strong>nopen</strong> (<em>integer</em>) &#8211; Number of open states in the transition matrix.</li>
+<li><strong>qmatrix</strong> &#8211; <a class="reference internal" href="qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a> instance</li>
+<li><strong>tau</strong> (<em>number</em>) &#8211; Max length of missed events.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dcprogs.likelihood.DeterminantEq.H">
+<tt class="descname">H</tt><big>(</big><em>self</em>, <em>s</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.DeterminantEq.H" title="Permalink to this definition">¶</a></dt>
+<dd><p>H(self, s, tau) -&gt; DCProgs::t_rmatrix
+Computes the matrix H</p>
+<p>H is defined as  <span class="math">\(\mathcal{Q}_{AA} + \mathcal{Q}_{AF}\ \int_0^\tau e^{-st}e^{\mathcal{Q}_{FF}t}\partial\,t\ \mathcal{Q}_{FA}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<em>number</em>) &#8211; The laplace scale. It can be a scalar or a numpy array of any shape.
+In the latter case, the return is a array of the same shape where
+each element is a matrix corresponding to the element in the input
+array.</li>
+<li><strong>tau</strong> (<em>number</em>) &#8211; <em>Optional</em>. If present, it is the max length of missed events.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a numpy array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.DeterminantEq.__call__">
+<tt class="descname">__call__</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.DeterminantEq.__call__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes determinant W</p>
+<dl class="docutils">
+<dt>Parameters:</dt>
+<dd><dl class="first last docutils">
+<dt>s: scalar, tuple, list, array</dt>
+<dd>The laplace scale.</dd>
+<dt>tau: <em>optional</em> number</dt>
+<dd>If present, it is the max length of missed events.</dd>
+</dl>
+</dd>
+</dl>
+<p>Returns: If a scalar, returns a scalar. Otherwise returns a numpy array.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.DeterminantEq.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#dcprogs.likelihood.DeterminantEq.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.DeterminantEq.s_derivative">
+<tt class="descname">s_derivative</tt><big>(</big><em>self</em>, <em>s</em><big>)</big> &rarr; DCProgs::t_rmatrix<a class="headerlink" href="#dcprogs.likelihood.DeterminantEq.s_derivative" title="Permalink to this definition">¶</a></dt>
+<dd><p>s_derivative(self, s, tau) -&gt; DCProgs::t_rmatrix
+Computes the derivative of H versus s</p>
+<p>H is defined as  <span class="math">\(\mathcal{Q}_{AA} + \mathcal{Q}_{AF}\ \int_0^\tau e^{-st}e^{\mathcal{Q}_{FF}t}\partial\,t\ \mathcal{Q}_{FA}\)</span>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>s</strong> (<em>number</em>) &#8211; The laplace scale. It can be a scalar or a numpy array of any shape.
+In the latter case, the return is a array of the same shape where
+each element is a matrix corresponding to the element in the input
+array.</li>
+<li><strong>tau</strong> (<em>number</em>) &#8211; <em>Optional</em>. If present, it is the max length of missed events.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a numpy array.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.DeterminantEq.tau">
+<tt class="descname">tau</tt><a class="headerlink" href="#dcprogs.likelihood.DeterminantEq.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Max length of mixed events.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="approx_survivor.html"
+                        title="previous chapter">ApproxSurvivor</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="roots.html"
+                        title="next chapter">Searching for Roots</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/python/determinanteq.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" >Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

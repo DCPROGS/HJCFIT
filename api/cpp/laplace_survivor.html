@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>LaplaceSurvivor &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="C++ API Reference" href="../cpp.html" />
+    <link rel="next" title="Searching for Roots" href="roots.html" />
+    <link rel="prev" title="DeterminantEq" href="determinanteq.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" accesskey="U">C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="laplacesurvivor">
+<span id="cpp-laplace-survivor-api"></span><h1>LaplaceSurvivor<a class="headerlink" href="#laplacesurvivor" title="Permalink to this headline">¶</a></h1>
+<div class="line-block">
+<div class="line" id=""><span id="project0class_d_c_progs_1_1_laplace_survivor"></span><em>class</em> <strong>DCProgs::LaplaceSurvivor</strong></div>
+</div>
+<blockquote>
+<div><p>Survivor functions $^{A}R(s)$ in Laplace space. </p>
+<p>It is practical to have it defined on its own. </p>
+<em>Public Functions</em><blockquote>
+<div><p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1ad55c6b9298ac78e082bfa6368170305b"></span><div class="line-block">
+<div class="line"> <strong>LaplaceSurvivor</strong>(<a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; _qmatrix)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Constructor. <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_qmatrix</span></tt> - <p>The transition state matrix for which to compute <span class="math">\(^eG_{AF}(t\rightarrow\infty)\)</span> </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1af42f5c8bd18d8fccbc17668cb5f1e155"></span><div class="line-block">
+<div class="line"> <strong>LaplaceSurvivor</strong>(<a class="reference internal" href="#project0class_d_c_progs_1_1_laplace_survivor"><em>LaplaceSurvivor</em></a>  const &amp; _c)</div>
+</div>
+</p>
+<blockquote>
+<div><p>Copy constructor. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1ad740454d3b8f52b9f019b7ad316c1a0c"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>H</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _s, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Computes <span class="math">\(sI - Q_{AA} - Q_{AF}\ \int_0^\tau e^{-st}e^{Q_{FF}t}\partial\,t\ Q_{FA}\)</span> <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_s</span></tt> - <p>Value of the laplacian scale </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Maximum length of missed events </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1abcb38f1c257b9fcd891a91149bc5a12a"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>operator()</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _s, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Computes the determinant <span class="math">\(\mathrm{det}(sI - H(s))\)</span> <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_s</span></tt> - <p>Value of the laplacian scale </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Maximum length of missed events </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1a25bdb2f4f79614b6e5040b698b3df863"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>W</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _s, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Computes the matrix <span class="math">\(W=\mathrm{det}(sI - H(s, \tau))\)</span> <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_s</span></tt> - <p>Value of the laplacian scale </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Maximum length of missed events </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1aa192b00080298e3f521238460d40cb36"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1a25cfdd50785b8c3adb0c2358a398724c"><em>t_rmatrix</em></a> <strong>s_derivative</strong>(<a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _s, <a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tau)</div>
+</div>
+</p>
+<blockquote>
+<div><p></p>
+<p>Derivative along of W along s <dl class="docutils">
+<dt><strong>Parameters</strong></dt>
+<dd><ul class="breatheparameterlist first last">
+<li><tt class="first docutils literal"><span class="pre">_s</span></tt> - <p>Value of the laplacian scale </p>
+</li>
+<li><tt class="first docutils literal"><span class="pre">_tau</span></tt> - <p>Maximum length of missed events </p>
+</li>
+</ul>
+</dd>
+</dl>
+</p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1ab5dfe644c9ce082e375b6126390ba2f3"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="qmatrix.html#project0struct_d_c_progs_1_1_q_matrix"><em>QMatrix</em></a>  const &amp; <strong>get_qmatrix</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns the Q matrix. </p>
+<p>This is strictly a read-only function since changing the matrix has fairly far ranging implications. </p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1af37e0db8a7357d68e8897c1a6eb96b4b"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> <strong>get_nopen</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Get expected number of open-states. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1a540380159b84658c27c9fb7812aad0d2"></span><div class="line-block">
+<div class="line"><a class="reference internal" href="#project0class_d_c_progs_1_1_laplace_survivor"><em>LaplaceSurvivor</em></a> <strong>transpose</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns <span class="math">\(^{F}R(s)\)</span>. </p>
+<p></p>
+</div></blockquote>
+<p id=""><span id="project0class_d_c_progs_1_1_laplace_survivor_1a901ff5c29fde8b3341409529f91413e1"></span><div class="line-block">
+<div class="line">t_cvector <strong>get_ff_eigenvalues</strong>()</div>
+</div>
+</p>
+<blockquote>
+<div><p>Returns eigenvalues of ff block. </p>
+<p></p>
+</div></blockquote>
+</div></blockquote>
+</div></blockquote>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="determinanteq.html"
+                        title="previous chapter">DeterminantEq</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="roots.html"
+                        title="next chapter">Searching for Roots</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/cpp/laplace_survivor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="roots.html" title="Searching for Roots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="determinanteq.html" title="DeterminantEq"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../cpp.html" >C++ API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

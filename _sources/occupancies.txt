@@ -1,0 +1,14 @@
+.. _manual_occupancies:
+
+Occupancies
+===========
+
+The start and end occupancies can be computed one of two way. They can be the equilibrium
+occupancies determined from the equation: 
+
+\f\[
+  \phi_A = \phi_A {}^e\mathcal{G}_{AF}(s=0) {}^e\mathcal{G}_{FA}(s=0)\\
+  \phi_F = {}^e\mathcal{G}_{FA}(s=0) {}^e\mathcal{G}_{AF}(s=0) \phi_F\\
+  \phi_A \cdot u_A = 1\\
+  \phi_F \cdot u_F = 1
+\f\]

@@ -1,0 +1,203 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ExactSurvivor &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../../index.html" />
+    <link rel="up" title="Python API Reference" href="../python.html" />
+    <link rel="next" title="ApproxSurvivor" href="approx_survivor.html" />
+    <link rel="prev" title="IdealG" href="idealG.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="idealG.html" title="IdealG"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" accesskey="U">Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="exactsurvivor">
+<span id="python-exact-survivor-api"></span><h1>ExactSurvivor<a class="headerlink" href="#exactsurvivor" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="dcprogs.likelihood.ExactSurvivor">
+<em class="property">class </em><tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">ExactSurvivor</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes exact missed-event survivor function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>qmatrix</strong> &#8211; The Q-matrix for which to compute the exact likelihood.</li>
+<li><strong>double</strong> (<em>float</em>) &#8211; The maximum length of missed events.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.D_af">
+<tt class="descname">D_af</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.D_af" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(D_i\)</span> matrices for af.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.D_fa">
+<tt class="descname">D_fa</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.D_fa" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(D_i\)</span> matrices for fa.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.ExactSurvivor.__weakref__">
+<tt class="descname">__weakref__</tt><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.__weakref__" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of weak references to the object (if defined)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.af">
+<tt class="descname">af</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.af" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open to close transitions
+Open to close transitions</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.ExactSurvivor.eigenvalues_af">
+<tt class="descname">eigenvalues_af</tt><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.eigenvalues_af" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvalues in of the transition matrix.</p>
+<p>This is the real part of the eigenvalues only.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.ExactSurvivor.eigenvalues_fa">
+<tt class="descname">eigenvalues_fa</tt><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.eigenvalues_fa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Eigenvalues in of the transpose transition matrix.</p>
+<p>This is the real part of the eigenvalues only.
+For numerical reasons, the order of the eigenvalues for AF and FA recursion
+may be different</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.fa">
+<tt class="descname">fa</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.fa" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closed to open transitions
+Closed to open transitions</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.recursion_af">
+<tt class="descname">recursion_af</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.recursion_af" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(C_{iml}\)</span> recursion matrices for af.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="dcprogs.likelihood.ExactSurvivor.recursion_fa">
+<tt class="descname">recursion_fa</tt><big>(</big><em>*args</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.recursion_fa" title="Permalink to this definition">¶</a></dt>
+<dd><p><span class="math">\(C_{iml}\)</span> recursion matrices for fa.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.ExactSurvivor.tau">
+<tt class="descname">tau</tt><a class="headerlink" href="#dcprogs.likelihood.ExactSurvivor.tau" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resolution or maximum length of the missed events</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="idealG.html"
+                        title="previous chapter">IdealG</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="approx_survivor.html"
+                        title="next chapter">ApproxSurvivor</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/api/python/exact_survivor.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="approx_survivor.html" title="ApproxSurvivor"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="idealG.html" title="IdealG"
+             >previous</a> |</li>
+        <li><a href="../../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../../api.html" >Application Programming Interface:</a> &raquo;</li>
+          <li><a href="../python.html" >Python API Reference</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

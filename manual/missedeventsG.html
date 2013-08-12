@@ -1,0 +1,297 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Missed-Events Likelihood \({}^eG(t)\) &mdash; DCProgs 0.9 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/breathe.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.9',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="DCProgs 0.9 documentation" href="../index.html" />
+    <link rel="up" title="User Guide" href="../manual.html" />
+    <link rel="next" title="Ideal Likelihood \(\mathcal{G}(t)\)" href="idealG.html" />
+    <link rel="prev" title="Likelihood \(L(Q)\)" href="likelihood_of_Q.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="idealG.html" title="Ideal Likelihood \(\mathcal{G}(t)\)"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="likelihood_of_Q.html" title="Likelihood \(L(Q)\)"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" accesskey="U">User Guide</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="missed-events-likelihood">
+<span id="manual-eg"></span><h1>Missed-Events Likelihood <span class="math">\({}^eG(t)\)</span><a class="headerlink" href="#missed-events-likelihood" title="Permalink to this headline">¶</a></h1>
+<p>The callable object <tt class="xref cpp cpp-class docutils literal"><span class="pre">DCProgs::MissedEventsG</span></tt> provides an interface to compute the
+likelihood <span class="math">\({}^eG(t)\)</span> of open and shut events as a function of their lengths, for a fixed
+<span class="math">\(Q\)</span>-matrix. It has the ability to compute both exact and approximate missed-events likelihood,
+returning one or the other depending on a given time cutoff.</p>
+<p>The asymptotic expression of the likelihood can be computed from the knowledge of the roots of a
+specific equations. On the one hand, root-finding can be a fairly difficult numerical operation. On
+the other, it would be more convenient if we can initialize <tt class="xref cpp cpp-class docutils literal"><span class="pre">DCProgs::MissedEventsG</span></tt>
+directly from a <span class="math">\(Q\)</span>-matrix object. As such, there are several means to initialize the functor:</p>
+<ul class="simple">
+<li>from the knowledge of the roots and the determinant equations</li>
+<li>directly from a <span class="math">\(Q\)</span>-matrix, using the default root-finding mechanism</li>
+<li>from a <span class="math">\(Q\)</span>-matrix, using a custom root-finding mechanism (c++ only)</li>
+</ul>
+<div class="section" id="initialization-from-a-matrix">
+<h2>Initialization from a <span class="math">\(Q\)</span>-matrix<a class="headerlink" href="#initialization-from-a-matrix" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">numpy</span> <span class="kn">import</span> <span class="nb">all</span><span class="p">,</span> <span class="nb">abs</span><span class="p">,</span> <span class="n">arange</span>
+<span class="kn">from</span> <span class="nn">dcprogs.likelihood</span> <span class="kn">import</span> <span class="n">QMatrix</span><span class="p">,</span> <span class="n">DeterminantEq</span><span class="p">,</span> <span class="n">MissedEventsG</span>
+
+<span class="c"># Define parameters.</span>
+<span class="n">qmatrix</span> <span class="o">=</span> <span class="n">QMatrix</span><span class="p">([</span> <span class="p">[</span><span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span><span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>   <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">],</span> 
+                    <span class="p">[</span>    <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">]</span> <span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">tau</span> <span class="o">=</span> <span class="mf">1e-4</span>
+ 
+<span class="n">eG_automatic</span> <span class="o">=</span> <span class="n">MissedEventsG</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre><span class="cp">#include &lt;iostream&gt;</span>
+<span class="cp">#include &lt;exception&gt;</span>
+
+<span class="cp">#include &lt;likelihood/missed_eventsG.h&gt;</span>
+<span class="cp">#include &lt;likelihood/root_finder.h&gt;</span>
+ 
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+
+  <span class="c1">// Define parameters.</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_rmatrix</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">5</span> <span class="p">,</span><span class="mi">5</span><span class="p">);</span>
+  <span class="n">matrix</span> <span class="o">&lt;&lt;</span> <span class="o">-</span><span class="mi">3050</span><span class="p">,</span>        <span class="mi">50</span><span class="p">,</span>  <span class="mi">3000</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span> 
+            <span class="mf">2.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span> <span class="o">-</span><span class="mf">1502.</span><span class="o">/</span><span class="mf">3.</span><span class="p">,</span>     <span class="mi">0</span><span class="p">,</span>    <span class="mi">500</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+               <span class="mi">15</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">2065</span><span class="p">,</span>     <span class="mi">50</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>     <span class="mi">15000</span><span class="p">,</span>  <span class="mi">4000</span><span class="p">,</span> <span class="o">-</span><span class="mi">19000</span><span class="p">,</span>    <span class="mi">0</span><span class="p">,</span>  
+                <span class="mi">0</span><span class="p">,</span>         <span class="mi">0</span><span class="p">,</span>    <span class="mi">10</span><span class="p">,</span>      <span class="mi">0</span><span class="p">,</span>  <span class="o">-</span><span class="mi">10</span><span class="p">;</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">QMatrix</span> <span class="n">qmatrix</span><span class="p">(</span><span class="n">matrix</span><span class="p">,</span> <span class="cm">/*nopen=*/</span><span class="mi">2</span><span class="p">);</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="k">const</span> <span class="n">tau</span><span class="p">(</span><span class="mf">1e-4</span><span class="p">);</span> <span class="c1">// in seconds</span>
+
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">MissedEventsG</span> <span class="n">eG_automatic</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">);</span>
+
+  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>A fair amount of work goes on behind the scene. First reasonable upper and lower bounds for the
+roots obtained (<tt class="xref cpp cpp-func docutils literal"><span class="pre">DCProgs::find_lower_bound_for_roots()</span></tt>, and
+<tt class="xref cpp cpp-func docutils literal"><span class="pre">DCProgs::find_upper_bound_for_roots()</span></tt>). Then intervals for each roots are computed
+(<tt class="xref cpp cpp-func docutils literal"><span class="pre">DCProgs::find_root_intervals()</span></tt>). And finally, the roots themselves are obtained
+(<tt class="xref cpp cpp-func docutils literal"><span class="pre">DCProgs::brentq()</span></tt>). All this work is done automatically in the case of this particular
+instantiation. A few extra parameters to control the root-finding process can be passed to the c++
+and python constructors.</p>
+</div>
+<div class="section" id="initialization-from-the-roots-and-determinant-equations">
+<h2>Initialization from the roots and determinant equations<a class="headerlink" href="#initialization-from-the-roots-and-determinant-equations" title="Permalink to this headline">¶</a></h2>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="n">determinant_eq</span> <span class="o">=</span> <span class="n">DeterminantEq</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">)</span>
+<span class="n">af_roots</span> <span class="o">=</span> <span class="p">[(</span> <span class="o">-</span><span class="mf">3045.285776037674</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">162.92946543451328</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">fa_roots</span> <span class="o">=</span> <span class="p">[(</span><span class="o">-</span><span class="mf">17090.192769236815</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">2058.0812921673496</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mf">0.24356535498785126</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">eG_from_roots</span> <span class="o">=</span> <span class="n">MissedEventsG</span><span class="p">(</span><span class="n">determinant_eq</span><span class="p">,</span> <span class="n">af_roots</span><span class="p">,</span> <span class="n">determinant_eq</span><span class="o">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">fa_roots</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="n">determinant_eq</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">Root</span><span class="o">&gt;</span> <span class="n">af_roots</span><span class="p">{</span>
+    <span class="p">{</span> <span class="cm">/*root=*/</span> <span class="o">-</span><span class="mf">3045.285776037674</span><span class="p">,</span>   <span class="cm">/*multiplicity=*/</span> <span class="mi">1</span><span class="p">},</span> 
+    <span class="p">{</span> <span class="cm">/*root=*/</span> <span class="o">-</span><span class="mf">162.92946543451328</span><span class="p">,</span>  <span class="cm">/*multiplicity=*/</span> <span class="mi">1</span><span class="p">}</span>
+  <span class="p">};</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">Root</span><span class="o">&gt;</span> <span class="n">fa_roots</span><span class="p">{</span>
+    <span class="p">{</span> <span class="cm">/*root=*/</span> <span class="o">-</span><span class="mf">17090.192769236815</span><span class="p">,</span>      <span class="cm">/*multiplicity=*/</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">{</span> <span class="cm">/*root=*/</span>  <span class="o">-</span><span class="mf">2058.0812921673496</span><span class="p">,</span>     <span class="cm">/*multiplicity=*/</span> <span class="mi">1</span><span class="p">},</span>
+    <span class="p">{</span> <span class="cm">/*root=*/</span>     <span class="o">-</span><span class="mf">0.24356535498785126</span><span class="p">,</span> <span class="cm">/*multiplicity=*/</span> <span class="mi">1</span><span class="p">}</span>
+  <span class="p">};</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">MissedEventsG</span> <span class="n">eG_from_roots</span><span class="p">(</span> <span class="n">determinant_eq</span><span class="p">,</span> <span class="n">af_roots</span><span class="p">,</span> 
+                                        <span class="n">determinant_eq</span><span class="p">.</span><span class="n">transpose</span><span class="p">(),</span> <span class="n">fa_roots</span> <span class="p">);</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>In this case, it is expected the roots are known, somehow, as well as their multiplicity. This
+format allows external root-finding methods to be interfaced with the packages.</p>
+</div>
+<div class="section" id="initialization-from-the-matrix-and-a-root-finding-function">
+<h2>Initialization from the <span class="math">\(Q\)</span>-matrix and a root finding function<a class="headerlink" href="#initialization-from-the-matrix-and-a-root-finding-function" title="Permalink to this headline">¶</a></h2>
+<p>Given a root-finding function, it is possible to instantiate  <span class="math">\({}^eG\)</span>. The root finding
+function should take a determinant equation as input, and return a vector of
+<tt class="xref cpp cpp-class docutils literal"><span class="pre">DCProgs::Root</span></tt> as output. In the code below, we show how the prior initialization could
+be recreated.</p>
+<div class="highlight-c++"><div class="highlight"><pre>  <span class="k">auto</span> <span class="n">find_roots</span> <span class="o">=</span> <span class="p">[](</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">DeterminantEq</span> <span class="k">const</span> <span class="o">&amp;</span><span class="n">_det</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">find_roots</span><span class="p">(</span><span class="n">_det</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="mf">1e-12</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">quiet_nan</span><span class="p">,</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">quiet_nan</span><span class="p">);</span>
+  <span class="p">};</span>
+  <span class="n">DCProgs</span><span class="o">::</span><span class="n">MissedEventsG</span> <span class="n">eG_from_func</span><span class="p">(</span><span class="n">qmatrix</span><span class="p">,</span> <span class="n">tau</span><span class="p">,</span> <span class="n">find_roots</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>This is mostly a convenience function, to make it slightly easier to interface with other
+root-finding methods in c++. This interface is not explicitly available in python, although it can
+be created with ease.</p>
+</div>
+<div class="section" id="computing-and">
+<h2>Computing <span class="math">\({}^eG_{AF}(t)\)</span> and <span class="math">\({}^eG_{FA}(t)\)</span><a class="headerlink" href="#computing-and" title="Permalink to this headline">¶</a></h2>
+<p>The computation of the likelihood matrices is illustrated by comparing the three initialization
+methods (two in python). It is clear that all three yield the same function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">python:</th><td class="field-body"><div class="first highlight-python"><div class="highlight"><pre><span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eG_from_roots</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">tau</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eG_from_roots</span><span class="o">.</span><span class="n">fa</span><span class="p">(</span><span class="n">tau</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="o">.</span><span class="n">fa</span><span class="p">(</span><span class="n">tau</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+
+<span class="c"># Checks the three initialization are equivalent at different times</span>
+<span class="c"># The functions can be applied to arrays. </span>
+<span class="n">times</span> <span class="o">=</span> <span class="n">arange</span><span class="p">(</span><span class="n">tau</span><span class="p">,</span> <span class="mi">10</span><span class="o">*</span><span class="n">tau</span><span class="p">,</span> <span class="mf">0.1</span><span class="o">*</span><span class="n">tau</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">eG_from_roots</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">times</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="k">assert</span> <span class="n">eG_from_roots</span><span class="o">.</span><span class="n">fa</span><span class="p">(</span><span class="n">times</span><span class="p">)</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">times</span><span class="p">),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eG_from_roots</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="o">.</span><span class="n">af</span><span class="p">(</span><span class="n">times</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">eG_from_roots</span><span class="o">.</span><span class="n">fa</span><span class="p">(</span><span class="n">times</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="o">.</span><span class="n">fa</span><span class="p">(</span><span class="n">times</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mf">1e-8</span><span class="p">)</span>
+</pre></div>
+</div>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">c++11:</th><td class="field-body"><div class="first last highlight-c++"><div class="highlight"><pre>  <span class="k">for</span><span class="p">(</span><span class="n">DCProgs</span><span class="o">::</span><span class="n">t_real</span> <span class="n">t</span><span class="p">(</span><span class="n">tau</span><span class="p">);</span>  <span class="n">t</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="o">*</span><span class="n">tau</span><span class="p">;</span> <span class="n">t</span> <span class="o">+=</span> <span class="n">tau</span> <span class="o">*</span> <span class="mf">0.1</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span>    <span class="p">((</span><span class="n">eG_from_roots</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_from_func</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="n">t</span><span class="p">)).</span><span class="n">array</span><span class="p">().</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">).</span><span class="n">any</span><span class="p">()</span>  
+        <span class="n">or</span> <span class="p">((</span><span class="n">eG_from_roots</span><span class="p">.</span><span class="n">fa</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_from_func</span><span class="p">.</span><span class="n">fa</span><span class="p">(</span><span class="n">t</span><span class="p">)).</span><span class="n">array</span><span class="p">().</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">).</span><span class="n">any</span><span class="p">()</span> <span class="p">)</span>
+      <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;root != func&quot;</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span>    <span class="p">((</span><span class="n">eG_from_roots</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="p">.</span><span class="n">af</span><span class="p">(</span><span class="n">t</span><span class="p">)).</span><span class="n">array</span><span class="p">().</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">).</span><span class="n">any</span><span class="p">()</span> 
+        <span class="n">or</span> <span class="p">((</span><span class="n">eG_from_roots</span><span class="p">.</span><span class="n">fa</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="o">-</span> <span class="n">eG_automatic</span><span class="p">.</span><span class="n">fa</span><span class="p">(</span><span class="n">t</span><span class="p">)).</span><span class="n">array</span><span class="p">().</span><span class="n">abs</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mf">1e-8</span><span class="p">).</span><span class="n">any</span><span class="p">()</span> <span class="p">)</span>
+      <span class="k">throw</span> <span class="n">DCProgs</span><span class="o">::</span><span class="n">errors</span><span class="o">::</span><span class="n">Runtime</span><span class="p">(</span><span class="s">&quot;root != automatic&quot;</span><span class="p">);</span>
+  <span class="p">}</span>
+</pre></div>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The python bindings accept any input that can be transformed to a numpy array of reals. If the input
+is a scalar, then the AF and FA blocks are returned. If the input is an array, then an array of
+similar shape is returned, where each component is a matrix.</p>
+<p>The <tt class="xref cpp cpp-class docutils literal"><span class="pre">DCProgs::MissedEventsG</span></tt> provides further functionality. For instance, the cutoff
+point between exact and asymptotic calculations can be set explicitly (it defaults to <span class="math">\(t &lt;
+3\tau\)</span>). And the likelihood can be computed in Laplace space (see
+<tt class="xref cpp cpp-member docutils literal"><span class="pre">DCProgs::MissedEventsG::laplace_af</span></tt> and
+<tt class="xref cpp cpp-member docutils literal"><span class="pre">DCProgs::MissedEventsG::laplace_fa</span></tt>). We invite users to turn to the <a class="reference internal" href="../api/python/missed_eventsG.html#python-eg-api"><em>python</em></a> and the <a class="reference internal" href="../api/cpp/missed_eventsG.html#cpp-eg-api"><em>c++</em></a> API for more details.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Missed-Events Likelihood <span class="math">\({}^eG(t)\)</span></a><ul>
+<li><a class="reference internal" href="#initialization-from-a-matrix">Initialization from a <span class="math">\(Q\)</span>-matrix</a></li>
+<li><a class="reference internal" href="#initialization-from-the-roots-and-determinant-equations">Initialization from the roots and determinant equations</a></li>
+<li><a class="reference internal" href="#initialization-from-the-matrix-and-a-root-finding-function">Initialization from the <span class="math">\(Q\)</span>-matrix and a root finding function</a></li>
+<li><a class="reference internal" href="#computing-and">Computing <span class="math">\({}^eG_{AF}(t)\)</span> and <span class="math">\({}^eG_{FA}(t)\)</span></a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="likelihood_of_Q.html"
+                        title="previous chapter">Likelihood <span class="math">\(L(Q)\)</span></a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="idealG.html"
+                        title="next chapter">Ideal Likelihood <span class="math">\(\mathcal{G}(t)\)</span></a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/manual/missedeventsG.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="idealG.html" title="Ideal Likelihood \(\mathcal{G}(t)\)"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="likelihood_of_Q.html" title="Likelihood \(L(Q)\)"
+             >previous</a> |</li>
+        <li><a href="../index.html">DCProgs 0.9 documentation</a> &raquo;</li>
+          <li><a href="../manual.html" >User Guide</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Mayeul d&#39;Avezac.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
