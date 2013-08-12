@@ -14,6 +14,8 @@ tau = 1e-4
 det0 = DeterminantEq(qmatrix, 1e-4);
 det1 = DeterminantEq(matrix, 2, 1e-4);
 
+print("{0!s}\n\n{1!s}".format(det0, det1))
+
 x = [0, -1, -1e2]
 assert all(abs(det0(x) - det1(x)) < 1e-8)
 

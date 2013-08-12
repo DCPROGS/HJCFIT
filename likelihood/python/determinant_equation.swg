@@ -21,24 +21,30 @@
 %feature("autodoc", "Computes the matrix H\n\n" 
          "H is defined as  :math:`"
          "\\mathcal{Q}_{AA} + \\mathcal{Q}_{AF}\ "
-         "\\int_0^\\tau e^{-st}e^{\\mathcal{Q}_{FF}t}\\partial\,t\ \\mathcal{Q}_{FA}`.\n\n"
+         "\\int_0^\\\\tau e^{-st}e^{\\mathcal{Q}_{FF}t}\\partial\,t\ \\mathcal{Q}_{FA}`.\n\n"
          ":param number s:\n"
-         "    The laplace scale.\n"
+         "    The laplace scale. It can be a scalar or a numpy array of any shape.\n"
+         "    In the latter case, the return is a array of the same shape where\n"
+         "    each element is a matrix corresponding to the element in the input\n"
+         "    array.\n"
          ":param number tau:\n"
          "    *Optional*. If present, it is the max length of missed events.\n\n"
-         ":returns: a numpy array.") DeterminantEq::H;
+         ":returns: a numpy array.\n")  DeterminantEq::H(PyObject*);
 %feature("autodoc", "Computes the derivative of H versus s\n\n" 
          "H is defined as  :math:`"
-         "\\mathcal{Q}_{AA} + \\mathcal{Q}_{AF}\ \\int_0^\\tau "
+         "\\mathcal{Q}_{AA} + \\mathcal{Q}_{AF}\ \\int_0^\\\\tau "
          "e^{-st}e^{\\mathcal{Q}_{FF}t}\\partial\,t\ \\mathcal{Q}_{FA}`.\n\n"
          ":param number s:\n"
-         "    The laplace scale.\n"
+         "    The laplace scale. It can be a scalar or a numpy array of any shape.\n"
+         "    In the latter case, the return is a array of the same shape where\n"
+         "    each element is a matrix corresponding to the element in the input\n"
+         "    array.\n"
          ":param number tau:\n"
          "    *Optional*. If present, it is the max length of missed events.\n\n"
-         ":returns: a numpy array.") DeterminantEq::s_derivative(DeterminantEq const *, DCProgs::t_real s);
+         ":returns: a numpy array.\n") DeterminantEq::s_derivative(PyObject*);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
          "This object can be instantiated from a square matrix, the number of open states, and the\n"
-         "resolution, or maximum lenght of missed events :math:`\\tau`:\n\n"
+         "resolution, or maximum lenght of missed events :math:`\\\\tau`:\n\n"
          ">>> DeterminantEq(matrix, nopen, tau)\n\n"
          "or, it can be instanciated from a :py:class:`~dcprogs.likelihood.QMatrix` instance \n"
          "and :math:`\\tau`\n\n"
@@ -52,6 +58,16 @@
          ":param number tau:\n"
          "      Max length of missed events.\n")
          DeterminantEq;
+%feature("autodoc", "Computes the determinant of :math:`W(s)`.\n\n"
+         ":param number s:\n"
+         "    The laplace scale. It can be a scalar or a numpy array of any shape.\n"
+         "    In the latter case, the return is a array of the same shape where\n"
+         "    each element is a matrix corresponding to the element in the input\n"
+         "    array.\n"
+         ":param number tau:\n"
+         "    *Optional*. If present, it is the max length of missed events.\n\n"
+         ":returns: a numpy array.\n") DeterminantEq::operator()(PyObject*);
+
 
 // Adds determinant functor
 class DeterminantEq {
@@ -122,12 +138,12 @@ class DeterminantEq {
                                 "Otherwise returns a numpy array."
   %}
                      
+  // Add the ability to pass in numpy arrays.
+  // Unfortunately, no tau overload.
   DCProgs::t_rmatrix H(DCProgs::t_real s);
   DCProgs::t_rmatrix H(DCProgs::t_real s, DCProgs::t_real tau);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s);
   DCProgs::t_rmatrix s_derivative(DCProgs::t_real s, DCProgs::t_real tau);
-  // Add the ability to pass in numpy arrays.
-  // Unfortunately, no tau overload.
   %extend {
     PyObject* H(PyObject *_s) {
       return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->H(s); }); 

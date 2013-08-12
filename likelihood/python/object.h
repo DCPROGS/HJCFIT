@@ -82,7 +82,7 @@ namespace {
         }
         operator bool() const { return object_ != NULL; }
 
-      private:
+      protected:
         explicit Object(T * const _in) : object_(_in) {}
         T * object_; 
     };

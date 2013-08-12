@@ -56,6 +56,7 @@
 #  include "../missed_eventsG.h"
 #  include "../likelihood.h"
 #  include "../time_filter.h"
+#  include "../brentq.h"
 
 
 #ifdef DCPROGS_CATCH
@@ -148,6 +149,7 @@ namespace DCProgs {
   %include "log10likelihood.swg"
 
 }
+%include "brentq.swg"
 %include "time_filter.swg"
 %include "chained.swg"
 #undef DCPROGS_CATCH

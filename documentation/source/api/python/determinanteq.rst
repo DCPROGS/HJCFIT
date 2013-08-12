@@ -6,3 +6,4 @@ DeterminantEq
 .. currentmodule:: dcprogs.likelihood
 .. autoclass:: DeterminantEq
    :members:
+   :special-members: __call__

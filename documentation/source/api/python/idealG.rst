@@ -7,4 +7,5 @@ IdealG
 
 .. autoclass:: IdealG
    :members: 
+   :special-members: __call__
 

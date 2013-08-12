@@ -14,9 +14,11 @@ int main() {
                 0,         0,    10,      0,  -10;
   DCProgs::QMatrix qmatrix(matrix, /*nopen=*/2);
 
-  // Create eG from prior knowledge of roots
+  // Create determinant using a QMatrix and a matrix+nopen.
   DCProgs::DeterminantEq det0(qmatrix, 1e-4);
   DCProgs::DeterminantEq det1(matrix, 2, 1e-4);
+
+  std::cout << det0 << "\n\n" << det1 << "\n";
 
   if( std::abs(det0(0) - det1(0)) > 1e-6 
       or std::abs(det0(-1) - det1(-1)) > 1e-6

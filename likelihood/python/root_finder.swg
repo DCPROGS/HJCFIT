@@ -81,9 +81,9 @@ def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
   Py_ssize_t i(0);
   for(DCProgs::RootInterval const &c_interval: $1) {
   
-    Object<> left_limit = steal_ref(PyFloat_FromDouble(c_interval.start));
+    Object<> left_limit = steal_ref(convert_real_to_python(c_interval.start));
     if(not left_limit) return NULL;
-    Object<> right_limit = steal_ref(PyFloat_FromDouble(c_interval.end));
+    Object<> right_limit = steal_ref(convert_real_to_python(c_interval.end));
     if(not right_limit) return NULL;
   
     Object<> py_interval = steal_ref(PyTuple_Pack(2, ~left_limit, ~right_limit));
@@ -176,15 +176,15 @@ std::vector<DCProgs::Root>
   find_roots( DeterminantEq const &det, DCProgs::t_real xtol, DCProgs::t_real rtol,
               DCProgs::t_uint itermax, DCProgs::t_real lowerbound, DCProgs::t_real upperbound);
 %pythoncode %{
-  def find_roots( determinant, xtol=1e-12, rtol=1e-12, itermax=100, upperbound=None,
-                  lowerbound=None ):
+  def find_roots( determinant, lowerbound=None, upperbound=None, xtol=1e-12, rtol=1e-12,
+                  itermax=100 ):
     """ Finds roots of a determinantal equation.
 
         This is a three step process.
 
         1. Find an interval that contains all roots/eigenvalues
-        1. Split it into smaller intervals until each contains only one root
-        1. Optimize over this interval to find an accurate position for the root
+        2. Split it into smaller intervals until each contains only one root
+        3. Optimize over this interval to find an accurate position for the root
 
         In the first step, if `upperbound` (`lowerbound`) is None -- the default -- then it is
         obtained by calling :py:func:`find_upper_bound_for_roots`
@@ -200,9 +200,9 @@ std::vector<DCProgs::Root>
              Convergence criteria used in :py:func:`brentq`.
         :param Integer itermax:
              Maximum number of iterations. Used separately in each process.
-        :param Number mins: 
+        :param Number upper_bound: 
              Lower bound of interval. If None, then :py:func:`find_lower_bound_for_roots` is called.
-        :param Number maxs:
+        :param Number lower_bound:
              Upper bound of interval. If None, then :py:func:`find_upper_bound_for_roots` is called.
 
         :returns:
@@ -212,9 +212,9 @@ std::vector<DCProgs::Root>
              `tolerance` or smaller.
     """
     from numpy import NaN
-    if mins is None: mins = NaN
-    if maxs is None: maxs = NaN
-    return _likelihood._find_roots(determinant, mins, maxs, tolerance)
+    if lower_bound is None: lower_bound = NaN
+    if upper_bound is None: upper_bound = NaN
+    return _likelihood._find_roots(determinant, xtol, rtol, itermax, lower_bound, upper_bound)
 %}
 
 %{

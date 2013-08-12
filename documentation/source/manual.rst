@@ -33,3 +33,5 @@ either language.
    manual/occupancies.rst
    manual/exact_survivor.rst
    manual/approx_survivor.rst
+   manual/determinant_equation.rst
+   manual/roots.rst

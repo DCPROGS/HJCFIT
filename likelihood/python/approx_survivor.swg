@@ -61,7 +61,7 @@
         :param float rtol:
            Tolerance criteria when computing roots using py:meth:`dcprogs.likelihood.brentq`.
            Defaults to 1e-12.
-        :param float itermax: \n"
+        :param float itermax:
            Maximum number of iterations when computing roots using
            py:meth:`dcprogs.likelihood.brentq`.
            Defaults to 100.
@@ -160,7 +160,7 @@ class ApproxSurvivor {
           DCProgs::Asymptotes::t_MatrixAndRoot const &item = _getstuff(i);
           Object<> py_item = steal_ref( PyTuple_New(2) );
           if(not py_item) throw DCProgs::errors::PythonErrorAlreadyThrown();
-          Object<> py_root = steal_ref(PyFloat_FromDouble(std::get<1>(item)));
+          Object<> py_root = steal_ref(convert_real_to_python(std::get<1>(item)));
           if(not py_root) throw DCProgs::errors::PythonErrorAlreadyThrown();
           DCProgs::t_rmatrix const & matrix = std::get<0>(item);
           Object<> py_matrix = steal_ref(DCProgs::numpy::wrap_to_numpy(matrix));

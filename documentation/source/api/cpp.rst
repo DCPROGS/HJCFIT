@@ -15,3 +15,5 @@ C++ API Reference
    cpp/exact_survivor.rst
    cpp/approx_survivor.rst
    cpp/determinanteq.rst
+   cpp/laplace_survivor.rst
+   cpp/roots.rst

@@ -32,7 +32,7 @@
       PyArray_CastScalarToCtype(_in, static_cast<void*>(&real_result), 
                                 PyArray_DescrFromType(numpy::type<t_real>::value));
       if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
-      return std::move(real_result);
+      return real_result;
     } else throw errors::PythonTypeError("Unexpected type is not a real number.");
   }
   bool convertible_to_real(PyObject* _in) {
@@ -43,8 +43,9 @@
       if(PyInt_Check(_in)) return true;
 #   endif
     if(PyArray_CheckScalar(_in)) {
-     int const typein = PyArray_TYPE(reinterpret_cast<PyArrayObject*>(_in));
-     return PyArray_CanCastSafely(typein, numpy::type<t_real>::value) != 0;
+     Object<PyArray_Descr> descr = steal_ref<PyArray_Descr>(PyArray_DescrFromScalar(_in));
+     if(not descr) throw errors::PythonErrorAlreadyThrown();
+     return PyArray_CanCastSafely(numpy::type<t_real>::value, (~descr)->type_num) != 0;
     }
     return false;
   }
@@ -95,17 +96,16 @@
 %typemap(out) DCProgs::t_uint = unsigned int;
 %typemap(typecheck) DCProgs::t_uint = int;
 %typemap(out) DCProgs::t_real { 
-  try{ $result = DCProgs::convert_real_to_python($1); }
+  try{ $result = convert_real_to_python($1); }
   DCPROGS_CATCH(SWIG_fail);
 }
 %typemap(in) DCProgs::t_real {
   try { $1 = convert_to_real($input); }
   DCPROGS_CATCH(SWIG_fail);
 }
-%typemap(typecheck) DCProgs::t_real {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE) DCProgs::t_real {
   $1 = convertible_to_real($input) ? 1: 0;
 }
-%apply double { DCProgs::t_real }; 
 %typemap(out) DCProgs::t_rvector { 
   try { $result = DCProgs::numpy::wrap_to_numpy($1); }
   DCPROGS_CATCH(SWIG_fail);

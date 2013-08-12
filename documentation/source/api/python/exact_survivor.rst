@@ -6,3 +6,4 @@ ExactSurvivor
 .. currentmodule:: dcprogs.likelihood
 .. autoclass:: ExactSurvivor
    :members:
+   :special-members: __call__
