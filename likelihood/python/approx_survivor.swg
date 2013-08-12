@@ -33,21 +33,21 @@
         >>> ApproxSurvivor(matrix, nopen, tau, **kwargs)
         >>> ApproxSurvivor(qmatrix, tau, **kwargs)
 
-        The parameters bewteen brackets are optional. The last two versions will try and calculate
-        the roots of the determinantal equations automatically. A number of parameters can be given
+        The parameters between brackets are optional. The last two versions will try and calculate
+        the roots of the determinant equations automatically. A number of parameters can be given
         to control this process. The keyword arguments are listed below.
 
         :param determinant_af:
             A :class:`DeterminantEq` instance, specifically for the af block.
         :param roots_af:
-           The roots of the af determinantal equation. The should come in the format
+           The roots of the af determinant equation. The should come in the format
            `[(root, multiplicity), (root, multiplicity), ...]`.
         :param determinant_fa:
            A :class:`DeterminantEq` instance, specifically for the fa block.
            It should the transpose of `determinant_af`. It is required so 
            it need not be recomputed, since it most likely already exists.
         :param roots_fa:
-           The roots of the fa determinantal equation. The should come in the format 
+           The roots of the fa determinant equation. The should come in the format 
            `[(root, multiplicity), (root, multiplicity), ...]`.
         :param matrix:
            An object convertible to a square matrix.
@@ -56,14 +56,14 @@
         :param qmatrix:
            A :class:`QMatrix` instance.
         :param float xtol: 
-           Tolerance criteria when computing roots using py:meth:`dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
            Defaults to 1e-12.
         :param float rtol:
-           Tolerance criteria when computing roots using py:meth:`dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
            Defaults to 1e-12.
         :param float itermax:
            Maximum number of iterations when computing roots using
-           py:meth:`dcprogs.likelihood.brentq`.
+           :func:`~dcprogs.likelihood.brentq`.
            Defaults to 100.
         :param float lower_bound:
            Lower bound for *all* roots. Defaults to None, in which the case the lower bound is

@@ -1,5 +1,5 @@
-Determinantal Eqation :math:`W(s) = sI - H(s)`
-==============================================
+Determinant Equation :math:`W(s) = sI - H(s)`
+=============================================
 
 
 The function :math:`H(s)` is an integral defined as:
@@ -11,7 +11,7 @@ The function :math:`H(s)` is an integral defined as:
 
 It is possible the function :math:`H` as well as its determinant using the
 :py:class:`~dcprogs.likelihood.DeterminantEq` objects. This is the object used when solving for the
-approximate missed-events likelihood. The determinantal equation is initialized in one of two ways,
+approximate missed-events likelihood. The determinant equation is initialized in one of two ways,
 either from a matrix or :py:class:`~dcprogs.likelihood.QMatrix`.
 
 :python: 
@@ -29,7 +29,7 @@ either from a matrix or :py:class:`~dcprogs.likelihood.QMatrix`.
 
 
 With an object in hand, it is possible to compute :math:`\mathop{det}W(s)` for any :math:`s`. In the
-following we demonstate that the two initilization methods are equivalent and that the determinant
+following we demonstrate that the two initialization methods are equivalent and that the determinant
 is zero at the roots of :math:`W(s)`, per definition. 
 
 :python: 

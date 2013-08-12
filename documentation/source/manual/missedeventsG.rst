@@ -8,12 +8,12 @@ likelihood :math:`{}^eG(t)` of open and shut events as a function of their lengt
 :math:`Q`-matrix. It has the ability to compute both exact and approximate missed-events likelihood,
 returning one or the other depending on a given time cutoff.
 
-The asymptotic expression of the likelihood can be computed from the knowldge of the roots of a
+The asymptotic expression of the likelihood can be computed from the knowledge of the roots of a
 specific equations. On the one hand, root-finding can be a fairly difficult numerical operation. On
-the other, it would be more convenient if we can initialise :cpp:class:`DCProgs::MissedEventsG`
+the other, it would be more convenient if we can initialize :cpp:class:`DCProgs::MissedEventsG`
 directly from a :math:`Q`-matrix object. As such, there are several means to initialize the functor:
 
-- from the knowledge of the roots and the determinantal equations
+- from the knowledge of the roots and the determinant equations
 - directly from a :math:`Q`-matrix, using the default root-finding mechanism
 - from a :math:`Q`-matrix, using a custom root-finding mechanism (c++ only)
 
@@ -43,8 +43,8 @@ instantiation. A few extra parameters to control the root-finding process can be
 and python constructors.
 
 
-Initialization from the roots and determinantal equations
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""
+Initialization from the roots and determinant equations
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 :python: 
 
@@ -67,7 +67,7 @@ Initialization from the :math:`Q`-matrix and a root finding function
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 Given a root-finding function, it is possible to instantiate  :math:`{}^eG`. The root finding
-function should take a determinantal equation as input, and return a vector of
+function should take a determinant equation as input, and return a vector of
 :cpp:class:`DCProgs::Root` as output. In the code below, we show how the prior initialization could
 be recreated.
 
@@ -76,7 +76,7 @@ be recreated.
    :lines: 35-38
 
 This is mostly a convenience function, to make it slightly easier to interface with other
-root-finding methods in c++. This interface is not explicitely available in python, although it can
+root-finding methods in c++. This interface is not explicitly available in python, although it can
 be created with ease.
 
 
@@ -106,7 +106,7 @@ is a scalar, then the AF and FA blocks are returned. If the input is an array, t
 similar shape is returned, where each component is a matrix. 
 
 The :cpp:class:`DCProgs::MissedEventsG` provides further functionality. For instance, the cutoff
-point between exact and asymptotic calculations can be set explicitely (it defaults to :math:`t <
+point between exact and asymptotic calculations can be set explicitly (it defaults to :math:`t <
 3\tau`). And the likelihood can be computed in Laplace space (see
 :cpp:member:`DCProgs::MissedEventsG::laplace_af` and
 :cpp:member:`DCProgs::MissedEventsG::laplace_fa`). We invite users to turn to the :ref:`python

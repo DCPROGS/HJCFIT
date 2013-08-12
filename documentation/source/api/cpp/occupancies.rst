@@ -26,7 +26,7 @@ Occupancies
     
     .. note::
     
-       The initial and final vectors are not quite as satifyingly symmetric as for other
+       The initial and final vectors are not quite as satisfyingly symmetric as for other
        occupancies. However, to simplify the API, this function still deals with both cases.
 
    :param _this: 

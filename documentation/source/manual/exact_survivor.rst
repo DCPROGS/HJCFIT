@@ -44,7 +44,7 @@ Finally, the matrices :math:`D_i` are defined as:
   :math:`D_i`, for instance, as scalars rather than matrices. 
 
 
-The survivor function can be intialized from a :math:`\mathcal{Q}`-matrix and the resolution
+The survivor function can be initialized from a :math:`\mathcal{Q}`-matrix and the resolution
 :math:`\tau`:
 
 :python: 

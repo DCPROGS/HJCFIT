@@ -40,7 +40,7 @@ namespace DCProgs {
  
   // Function to create approximate missed event survivor function.
   ApproxSurvivor::ApproxSurvivor(QMatrix const &_qmatrix, t_real _tau, t_RootFinder const &_findroots) {
-    // First creates determinantal equations.
+    // First creates determinant equations.
     DeterminantEq determinant_af(_qmatrix, _tau);
     DeterminantEq determinant_fa(determinant_af.transpose());
     // Then finds roots

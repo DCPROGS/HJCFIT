@@ -14,8 +14,11 @@ Python API Reference
    python/roots.rst
 
 
-Internal Type
--------------
+Extras
+------
+
+Internal Numpy Type
++++++++++++++++++++
 
 Many of the python bindings accept both scalars and values that can be converted to numpy arrays.
 The latter are first converted to a specific numpy type, depending on how this package was compiled.
@@ -27,3 +30,19 @@ The latter are first converted to a specific numpy type, depending on how this p
 If the package is configured and compiled with ``-DCPROGS_LONG_DOUBLE`` (see wiki), then long
 doubles of 128bits are used through out. Otherwise,  the package defaults to garden variety 64bit
 doubles.
+
+
+Linear Algebra
+++++++++++++++
+
+Numpy does provides only a subset of its utilities for arrays consisting of 128 bit reals. As a
+result, this package exposes some of Eigen_'s capabilities, as needed. Their interface is generally
+reminiscent of the numpy utility they mirror.
+
+
+.. currentmodule:: dcprogs.likelihood
+.. autofunction:: eig
+.. autofunction:: inv
+.. autofunction:: svd
+.. autofunction:: det
+.. autofunction:: expm

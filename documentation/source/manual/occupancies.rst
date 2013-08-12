@@ -19,7 +19,7 @@ subject to the constraints,
  \sum_i [\phi_F]_i = 1.
 
 Where :math:`{}^e\mathcal{G}_{AF}` and :math:`{}^e\mathcal{G}_{FA}` are the laplacians of the
-missed-events likelihoods (or equivilantly, the ideal likelihoods) for :math:`s=0`, and
+missed-events likelihoods (or equivalently, the ideal likelihoods) for :math:`s=0`, and
 :math:`[a]_i` indicates the :math:`i^{th}` component of vector :math:`a`.
 
 Or they can be computed as CHS vectors, e.g. equation 5.11 and 5.8 from :cite:`colquhoun:1996`. 

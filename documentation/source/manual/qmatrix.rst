@@ -33,7 +33,8 @@ zero over rows (this condition is not enforced by the :cpp:class:`QMatrix` objec
 
 :python: 
 
-  The matrix is a numpy array. As such, it can be used within efficient numerical algorithms.
+  The matrix is a numpy array. As such, it can be used within any of the efficient numerical
+  algorithms provided. There are some restrictions if this package is compiled with 128 bit reals.
 
   .. literalinclude:: ../../code/qmatrix.py
      :language: python
@@ -41,7 +42,7 @@ zero over rows (this condition is not enforced by the :cpp:class:`QMatrix` objec
 
 :c++11:
 
-  The matrix is an eigen_ array. Many linear algebra operations can be peformed very efficiently
+  The matrix is an eigen_ array. Many linear algebra operations can be performed very efficiently
   using Eigen_'s interface.
 
   .. literalinclude:: ../../code/qmatrix.cc
@@ -60,9 +61,6 @@ can and *should* be used within numerical algorithms.
      :lines: 28-
 
 :c++11:
-
-  The matrix is an eigen_ array. Many linear algebra operations can be peformed very efficiently
-  using Eigen_'s interface.
 
   .. literalinclude:: ../../code/qmatrix.cc
      :language: c++

@@ -35,7 +35,7 @@ A callable object :math:`L(Q)` exists in both :ref:`c++ <cpp_log10_section>` and
      :language: c++
      :lines: 1-15, 28-
 
-  The initialisation of `bursts` above is done in using two newer c++11 coding techniques: 
+  The initialization of `bursts` above is done in using two newer c++11 coding techniques: 
   `initializer lists <initializerlist_>`_, and `uniform initialization <uniforminit_>`_.
   It may not be available from all compilers just yet...
 

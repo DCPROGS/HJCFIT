@@ -25,7 +25,7 @@ def step(context, matrix, nopen, tau):
   context.nopen = nopen
   context.tau = tau
 
-@given('a determinantal equation instantiated with the {model} Q matrix')
+@given('a determinant equation instantiated with the {model} Q matrix')
 def setp(context, model):
   from test_setup import DetModel
   context.determinant = DetModel(model)
@@ -37,7 +37,7 @@ def step(context):
   if not hasattr(context, 'output'): context.output = {}
   exec(pattern.sub('\nq\\1', context.text), globals(), context.output)
 
-@when('a determinantal equation is instantiated')
+@when('a determinant equation is instantiated')
 def step(context):
   from sys import exc_info
   from dcprogs.likelihood import DeterminantEq
@@ -50,7 +50,7 @@ def step(context):
 def step(context, tau):
   assert abs(context.determinant.tau - tau) < 1e-8
 
-@when("a determinantal equation is instantiated from a state matrix and {tau:Float}")
+@when("a determinant equation is instantiated from a state matrix and {tau:Float}")
 def step(context, tau):
   from sys import exc_info
   from dcprogs.likelihood import DeterminantEq
@@ -58,7 +58,7 @@ def step(context, tau):
   try: context.determinant = DeterminantEq(context.qmatrix, tau)
   except: context.initialization_exception = exc_info() 
 
-@when("The determinantal equation is computed for {s:Float}")
+@when("The determinant equation is computed for {s:Float}")
 def step(context, s):
   from dcprogs.likelihood import DeterminantEq
   context.result = DeterminantEq(context.matrix, context.nopen, context.tau)(s)

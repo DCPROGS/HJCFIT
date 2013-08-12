@@ -33,7 +33,7 @@ where :math:`c_i` and :math:`r_i` are the column and row eigenvectors of a
 
 
 
-The approximate survivor function can be intialized from a :math:`\mathcal{Q}`-matrix and the resolution
+The approximate survivor function can be initialized from a :math:`\mathcal{Q}`-matrix and the resolution
 :math:`\tau`:
 
 :python: 

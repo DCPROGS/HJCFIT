@@ -52,7 +52,7 @@ namespace DCProgs {
       t_real operator()(t_real _s, t_real _tau) const {
         return (_s * this->id_() - LaplaceSurvivor::H(_s, _tau)).determinant();
       }
-      //! \brief Determinantal equation for transpose matrix
+      //! \brief Determinant equation for transpose matrix
       //! \details In other words, if looking at open states, then returns equation for shut states,
       //!          and vice-versa.
       DeterminantEq transpose() const { return DeterminantEq(get_qmatrix().transpose(), tau_); }
@@ -77,7 +77,7 @@ namespace DCProgs {
       t_real tau_;
   };
 
-  //! Dumps Determinantal equation to stream
+  //! Dumps Determinant equation to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, DeterminantEq const &_self);
 }
 #endif 

@@ -68,12 +68,12 @@ namespace DCProgs {
                       fa_factor_( _fa.get_qmatrix().af()
                                   * (_af.get_tau() * _fa.get_qmatrix().ff()).exp() ) {}
       //! \brief Initializes missed events functor.
-      //! \details Uses input root finding funtion to determine roots.
+      //! \details Uses input root finding function to determine roots.
       //! \param[in] _qmatrix Transition matrix
       //! \param[in] _tau resolution/max length missed events
       //! \param[in] _findroots A functor with which to find all roots.
       //!                       This function should take a DeterminantEq as its sole argument and
-      //!                       return a std::vector<RootIntervals>
+      //!                       return a std::vector<DCProgs::RootInterval>
       //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
                         t_RootFinder const &_findroots, t_uint _nmax=3 ) 
@@ -136,7 +136,7 @@ namespace DCProgs {
       t_uint  get_nmax() const { return nmax_; }
       //! Gets the value of missed event resolution;
       t_real get_tau() const { return ExactSurvivor::get_tau(); }
-      //! Tmax is the maximum time after which to switch to approximate calculations.
+      //! \f$t_{\mathrm{max}}\f$ is the time after which approximate calculations are performed.
       t_real get_tmax() const { return tmax_; }
 
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$

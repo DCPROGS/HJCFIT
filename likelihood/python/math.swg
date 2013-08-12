@@ -188,13 +188,12 @@
   }
 %}
 PyObject* _dcprogs_dtype();
-%feature("autodoc", "Computes eigenvalues\n\n"
-         "Only have this so we can compute eigenvalues of 128-bit reals, if dcprogs is so "
-         "compiled.") eig;
+%feature("autodoc", "Computes determinant of a matrix") det;
+%feature("autodoc", "Computes eigenvalues of a matrix") eig;
+%feature("autodoc", "Computes inverse of a non-singular matrix") inv;
+%feature("autodoc", "Computes exponential of a matrix (matrix operation)") expm;
+%feature("autodoc", "Computes singular value decomposition of a matrix") expm;
 PyObject* eig(PyObject* _matrix);
-%feature("autodoc", "Computes inverse of a matrix\n\n"
-         "Only have this so we can compute inverse of 128-bit reals, if dcprogs is so "
-         "compiled.") inv;
 PyObject* inv(PyObject* _matrix);
 DCProgs::t_real det(PyObject* _matrix);
 PyObject* svd(PyObject* _matrix);

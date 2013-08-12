@@ -19,7 +19,7 @@ from behave import given, when, then
 from test_setup import register_type
 register_type()
 
-@given('the {doopen}-states determinantal equation \"{qmatrix:QMatrix}\" with tau={tau:Float}')
+@given('the {doopen}-states determinant equation \"{qmatrix:QMatrix}\" with tau={tau:Float}')
 def step(context, doopen, qmatrix, tau):
   from dcprogs.likelihood import DeterminantEq
   context.equation = DeterminantEq(qmatrix, tau)

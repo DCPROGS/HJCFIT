@@ -178,7 +178,7 @@ std::vector<DCProgs::Root>
 %pythoncode %{
   def find_roots( determinant, lowerbound=None, upperbound=None, xtol=1e-12, rtol=1e-12,
                   itermax=100 ):
-    """ Finds roots of a determinantal equation.
+    """ Finds roots of a determinant equation.
 
         This is a three step process.
 

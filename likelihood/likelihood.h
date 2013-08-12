@@ -84,7 +84,7 @@ namespace DCProgs {
 
 
   //! \brief Likelihood of a set of bursts
-  //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
+  //! \details This functor takes as input a Q-matrix and returns the likelihood for a given set of
   //!          bursts. It is, in practice, a convenience object with which to perform likelihood
   //!          optimization.
   //!
@@ -99,7 +99,7 @@ namespace DCProgs {
       t_uint nopen;
       //! Max length of missed events
       t_real tau;
-      //! \brief tcrit. 
+      //! \brief \f$t_{\mathrm{crit}}\f$. 
       //! \details If negative or null, will use equilibrium occupancies rather than CHS
       //!          occupancies.
       t_real tcritical;

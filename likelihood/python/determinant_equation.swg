@@ -44,10 +44,10 @@
          ":returns: a numpy array.\n") DeterminantEq::s_derivative(PyObject*);
 %feature("autodoc", "Compute determinant W needed to approximate missed event G\n\n"
          "This object can be instantiated from a square matrix, the number of open states, and the\n"
-         "resolution, or maximum lenght of missed events :math:`\\\\tau`:\n\n"
+         "resolution, or maximum length of missed events :math:`\\\\tau`:\n\n"
          ">>> DeterminantEq(matrix, nopen, tau)\n\n"
-         "or, it can be instanciated from a :py:class:`~dcprogs.likelihood.QMatrix` instance \n"
-         "and :math:`\\tau`\n\n"
+         "or, it can be instantiated from a :py:class:`~dcprogs.likelihood.QMatrix` instance \n"
+         "and :math:`\\\\tau`\n\n"
          ">>> DeterminantEq(qmatrix, tau)\n\n"
          ":param matrix:\n"
          "      Transition rate matrix, where the upper left corner contain open-open transitions\n"  

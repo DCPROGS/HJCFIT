@@ -71,8 +71,8 @@
 %}
 
 %feature("autodoc", "Creates a functor for optimizing the likelihood.\n\n"
-         "This functor can as input a qmatrix and returns the resulting likelihood.\n"
-         "The root finding process is performed by :py:func:`find_roots`. Most of the\n"
+         "This functor can as input a :math:`\\mathcal{Q}`-matrix and returns the resulting\n"
+         "likelihood. The root finding process is performed by :py:func:`find_roots`. Most of the\n"
          "arguments to initialize this functor are parameters for that process.\n\n"
          ".. attribute:: nopen\n\n"
          "   Number of open states. Should be strictly positive.\n\n"
@@ -80,7 +80,7 @@
          "   Maximum length of missed events. Should be positive.\n\n"
          ".. attribute:: tcritical\n\n"
          "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative, ``None``, or ``NaN``, \n"
-         "   then the inital and final states are the equilibrium occupancies.\n\n"
+         "   then the initial and final states are the equilibrium occupancies.\n\n"
          ".. attribute:: nmax\n\n"
          "  The exact missed-events likelihood will be computed for \n"
          "  :math:`t < n_{\mathrm{max}}\tau`.\n\n"
@@ -92,10 +92,11 @@
          "   Maximum number of iterations when computing roots via :py:func:`likelihood.brentq`.\n"
          ".. attribute:: lower_bound\n\n"
          "   Lower bound bracketing all roots. If None or NaN, then the lower bound will be \n"
-         "   computed during calls by :py:func:`find_lower_bound_for_root`\n\n"
+         "   computed during calls by :py:func:`~dcprogs.likelihood.find_lower_bound_for_root`\n\n"
          ".. attribute:: upper_bound\n\n"
          "   Upper bound bracketing all roots. If None or NaN, then the upper bound will be \n"
-         "   computed during calls by :py:func:`find_upper_bound_for_root`\n\n") Log10Likelihood;
+         "   computed during calls by :py:func:`~dcprogs.likelihood.find_upper_bound_for_root`\n\n")
+         Log10Likelihood;
 
 // The following makes it possible to use keyword arguments in the constructor.
 %feature("shadow") Log10Likelihood::Log10Likelihood %{
@@ -112,7 +113,7 @@
         :param float tau:
            Maximum length of missed events. Should be positive.
         :param float tcritical:
-           :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the inital and final states
+           :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the initial and final states
            are the equilibrium occupancies.
         :param integer nmax:
            The exact missed-events likelihood will be computed for 

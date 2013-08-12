@@ -21,7 +21,7 @@ and :py:func:`find_lower_bound_for_roots`.
 
   .. note:: 
 
-     This packag can be compiled to use 128bit reals. However, numpy does not provide all of its
+     This package can be compiled to use 128bit reals. However, numpy does not provide all of its
      linear algebra utilities for such type. As consequence, this package exposes some of the
      functionality that it needs for its reals.
 

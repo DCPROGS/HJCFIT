@@ -45,7 +45,7 @@ namespace DCProgs {
     friend std::ostream & operator<< (std::ostream &, ExactSurvivor const &);
     public:
       //! Initializes exact survivor functor.
-      //! \param[in] _qmatrix Partitionned matrix with open states in top left corner.
+      //! \param[in] _qmatrix Partitioned matrix with open states in top left corner.
       //! \param[in] _tau Missed event cutoff time.
       ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) { set(_qmatrix, _tau); }
       //! Initializes exact survivor functor.
@@ -135,7 +135,7 @@ namespace DCProgs {
         assert(_i <= nbeigvals());
         return dvalues_[_i]; 
       }
-      //! Returns ith eigenvalue.
+      //! Returns i\f$^{th}\f$ eigenvalue.
       t_real get_eigvals(t_uint _i) const {
         assert(_i <= nbeigvals());
         return eigenvalues_(_i);
@@ -143,7 +143,7 @@ namespace DCProgs {
       //! Returns the number of eigenvalues
       t_uint nbeigvals() const { return static_cast<t_uint>(eigenvalues_.size()); }
 
-      //! Reference to eigenvales
+      //! Reference to eigenvalues
       t_rvector const & eigenvalues() const { return eigenvalues_; }
       //! A null matrix of appropriate size
       decltype(t_rmatrix::Zero(1,1)) zero() const { return t_rmatrix::Zero(nopen, nopen); };
