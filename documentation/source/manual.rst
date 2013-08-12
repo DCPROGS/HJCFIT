@@ -21,17 +21,6 @@ python and from c++. In the following, we try and show how they can be created a
 either language.
 
 
-How to read this manual
------------------------
-
-Each topic below is illustrated by an example in c++, and another in python. These examples can be
-found in the source code of the package within the directory ``documentation/code``. In any case,
-one can copy paste.
-
-
-Topics
-------
-
 .. toctree::
    :maxdepth: 2
 
@@ -45,3 +34,14 @@ Topics
    manual/approx_survivor.rst
    manual/determinant_equation.rst
    manual/roots.rst
+
+How to read this manual
+-----------------------
+
+Each topic below is illustrated by an example in c++, and another in python. These examples can be
+found in the source code of the package within the directory ``documentation/code``. In any case,
+one can copy paste.
+
+The user guide should read using the left eye only, and keeping the right eye on the api, or
+vice-versa. Most of the c++ functions and python bindings offer more functionality or parameters
+than mentioned in the manual. 

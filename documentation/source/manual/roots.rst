@@ -66,7 +66,7 @@ be.
 
   .. literalinclude:: ../../code/roots.cc
      :language: c++
-     :lines: 48, 52
+     :lines: 48-52
 
 The whole procedure is encapsulated within the function :py:func:`find_roots`. On top of the
 parameters in the snippets below, :py:func:`find_roots` can take variety of parameters to control
