@@ -42,7 +42,7 @@ namespace DCProgs {
   //! \details Implements the exact-missed event probability calculations, as detailed in Hawkes,
   //! Jalali, and Colquhoun (1990). Specifically, this is equation 3.2.
   class MSWINDOBE ExactSurvivor {
-    friend std::ostream & operator<< (std::ostream &, ExactSurvivor const &);
+    friend MSWINDOBE std::ostream & operator<< (std::ostream &, ExactSurvivor const &);
     public:
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix Partitioned matrix with open states in top left corner.
