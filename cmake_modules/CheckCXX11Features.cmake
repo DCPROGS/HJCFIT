@@ -91,6 +91,7 @@ CXX11_CHECK_FEATURE("constexpr"             2235 HAS_CXX11_CONSTEXPR)
 CXX11_CHECK_FEATURE("unique_ptr"            ""   HAS_CXX11_UNIQUE_PTR)
 CXX11_CHECK_FEATURE("shared_ptr"            ""   HAS_CXX11_SHARED_PTR)
 CXX11_CHECK_FEATURE("constructor_delegate"  ""   HAS_CXX11_CONSTRUCTOR_DELEGATE)
+CXX11_CHECK_FEATURE("initialization"        ""   HAS_CXX11_UNIQUE_INITIALIZATION)
 # MinGW has not implemented std::random_device fully yet. Unfortunately, this can only be detected
 # by running a program which tries to call std::random_device. However that generates an error that
 # is *not* caught by CMake's try_run. 

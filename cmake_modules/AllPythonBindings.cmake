@@ -97,8 +97,11 @@ if(tests)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
       STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
+      file(TO_NATIVE_PATH "${WORKINGDIR}" PYTHON_PATH)
+      STRING(REPLACE "\\;" ";" PYTHONPATH "${PYTHON_PATH};$ENV{PYTHONPATH}")
+      STRING(REPLACE ";" "\\;" PYTHON_PATH "${PYTHON_PATH}")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "PATH=${PATH_STRING}")
+                           "PATH=${PATH_STRING};PYTHONPATH=${PYTHON_PATH}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
                            "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")
@@ -115,7 +118,7 @@ if(tests)
   endfunction(feature_test)
 
   function(python_test name filename)
-    _python_test(${name} ${filename} ${PYTHON_EXECUTABLE} -v -v -v ${ARGN})
+    _python_test(${name} ${filename} ${PYTHON_EXECUTABLE} ${ARGN})
   endfunction(python_test)
 endif(tests)
 

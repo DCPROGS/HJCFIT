@@ -42,6 +42,16 @@ if(compileDocs)
 
   file(GLOB CXX_SOURCE_FILES code/*.cc)
   file(GLOB PY_SOURCE_FILES code/*.py)
+  # Some example files will not compile on propietary compilers
+  if(NOT HAS_CXX11_UNIQUE_INITIALIZATION)
+    foreach(pathfile ${CXX_SOURCE_FILES})
+      get_filename_component(pathname ${pathfile} NAME_WE)
+      if("${pathname}" STREQUAL "missedeventsG"
+         OR "${pathname}" STREQUAL "log10")
+        list(REMOVE_ITEM CXX_SOURCE_FILES ${pathfile})
+      endif()
+    endforeach()
+  endif(NOT HAS_CXX11_UNIQUE_INITIALIZATION)
 
   foreach(pathfile ${CXX_SOURCE_FILES})
     get_filename_component(pathname ${pathfile} NAME_WE)
@@ -51,9 +61,30 @@ if(compileDocs)
   endforeach()
 
   if(tests)
+    if(WIN32)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+    else()
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
+    endif(WIN32)
+    if(MSVC OR MSYS) 
+      set(ENV_STRING "${ADD_TO_PATH};$ENV{PATH}")
+      STRING(REPLACE "\\;" ";" ENV_STRING "${ENV_STRING}")
+      STRING(REPLACE ";" "\\;" ENV_STRING "${ENV_STRING}")
+      set(ENV_STRING "PATH=${ENV_STRING}")
+    elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+      set(ENV_STRING 
+          "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")
+    elseif(UNIX)
+      set(ENV_STRING 
+          "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
+    endif(MSVC OR MSYS)
+
     foreach(pathfile ${CXX_SOURCE_FILES})
       get_filename_component(pathname ${pathfile} NAME_WE)
       add_test(cxx_doctest_${pathname} doc_cxx_${pathname})
+      set_tests_properties(cxx_doctest_${pathname} PROPERTIES ENVIRONMENT "${ENV_STRING}")
     endforeach()
 
     foreach(pathfile ${PY_SOURCE_FILES})
