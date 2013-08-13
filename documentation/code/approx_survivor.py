@@ -10,7 +10,7 @@ tau = 1e-4
 
 survivor = ApproxSurvivor(qmatrix, 1e-4);
 
-print survivor
+print(survivor)
 
 print("AF values\n"  \
       "---------\n")

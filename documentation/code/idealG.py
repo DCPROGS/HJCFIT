@@ -8,7 +8,7 @@ qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0],
                     [    0,         0,    10,      0,  -10] ], 2)
 
 idealG = IdealG(qmatrix)
-print idealG
+print(idealG)
 
 idealG_fa = dot(expm(2e-4 * qmatrix.ff), qmatrix.fa)
 assert all( abs(idealG_fa - idealG.fa(2e-4)) < 1e-8 )
