@@ -23,20 +23,55 @@
          "Asymptotic calculations take over for larger times.\n\n") MissedEventsG;
 
 
-%feature("autodoc", "Open to close transitions\n\n") MissedEventsG::af;
-%feature("autodoc", "Closed to open transitions") MissedEventsG::fa;
-%feature("autodoc", "Exact missed-events G in Laplace space.\n\\"
+%feature("autodoc", "Likelihood of an observed open time of length ``t``\n\n"
+         ":param t:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") MissedEventsG::af(PyObject*);
+%feature("autodoc", "Likelihood of a shut time of length ``t``\n\n"
+         ":param t:\n"
+         "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
+         "   of matrices.\n") MissedEventsG::fa(PyObject*);
+%feature("autodoc", "Exact missed-events G in Laplace space.\n\n"
          "The exact expression is "
-         ":math:`^{e}G_{AF}(s) = {}^AR(s) e^{-s\\tau}Q_{AF}e^{Q_{FF}\\tau}`, "
-         "with :math:{}^AR(s) = [sI - Q_{AA} - Q_{AF} \\int_0^\\taue^{-st}"
-         "e^{Q_{FF}t}\\partial t Q_{FA}]^{-1}`.") MissedEventsG::laplace_af;
-%feature("autodoc", "Exact missed-events G in Laplace space.\n\\"
+         ":math:`^{e}\\mathcal{G}_{AF}(s) = {}^AR(s) e^{-s\\\\tau}\\mathcal{Q}_{AF}"
+                 "e^{\\mathcal{Q}_{FF}\\\\tau}`, "
+         "with :math:`{}^AR(s) = [sI - \\mathcal{Q}_{AA} - \\mathcal{Q}_{AF}"
+                      " \\\\int_0^\\\\tau e^{-st}"
+         "e^{\\mathcal{Q}_{FF}t}\\\\partial t \\mathcal{Q}_{FA}]^{-1}`.\n\n"  
+         ":param s:\n"
+         "  The laplace scale. A real scalar or something convertible to a numpy array.\n\n"
+         ":returns:\n"
+         "  A matrix if the input is scalar, an array of matrices otherwise, \n"
+         "  with the shape of the input.") MissedEventsG::laplace_af(PyObject*);
+%feature("autodoc", "Exact missed-events G in Laplace space.\n\n"
          "The exact expression is "
-         ":math:`^{e}G_{FA}(s) = {}^FR(s) e^{-s\\tau}Q_{FA}e^{Q_{AA}\\tau}`, "
-         "with :math:{}^FR(s) = [sI - Q_{FF} - Q_{FA} \\int_0^\\taue^{-st}"
-         "e^{Q_{AA}t}\\partial t Q_{AF}]^{-1}`.") MissedEventsG::laplace_af;
+         ":math:`^{e}\\mathcal{G}_{FA}(s) = {}^FR(s) e^{-s\\\\tau}\\mathcal{Q}_{FA}"
+                   "e^{\\mathcal{Q}_{AA}\\\\tau}`, "
+         "with :math:`{}^FR(s) = [sI - \\mathcal{Q}_{FF} - \\mathcal{Q}_{FA} "
+                     "\\\\int_0^\\\\tau e^{-st}"
+         "e^{\\mathcal{Q}_{AA}t}\\\\partial t \\mathcal{Q}_{AF}]^{-1}`.\n\n"
+         ":param s:\n"
+         "  The laplace scale. A real scalar or something convertible to a numpy array.\n\n"
+         ":returns:\n"
+         "  A matrix if the input is scalar, an array of matrices otherwise, \n"
+         "  with the shape of the input.") MissedEventsG::laplace_fa(PyObject*);
 %feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::initial_CHS_occupancies;
 %feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::final_CHS_occupancies;
+%feature("autodoc", "Resolution or maximum length of the missed events.") MissedEventsG::tau;
+%feature("autodoc", "Factor accounting for minimum shut time\n\n"
+         "It is the likelihood :math:`\\mathcal{Q}_{AF}e^{-\\mathcal{Q}_{FF}\\tau}` of a shut\n"
+         "time of length :math:`\\tau`.") MissedEventsG::af_factor;
+%feature("autodoc", "Factor accounting for minimum open time\n\n"
+         "It is the likelihood :math:`\\mathcal{Q}_{FA}e^{-\\mathcal{Q}_{AA}\\tau}` of an open\n"
+         "time of length :math:`\\tau`.") MissedEventsG::fa_factor;
+%feature("autodoc", "Equilibrium occupancies for initial states.\n\n"
+         "Computes the left eigenvector of :math:`{}^e\\mathcal{G}_{AF}{}^e\\mathcal{G}_{FA}`, \n"
+         "where :math:`{}^e\\mathcal{G}_{AF}` is the laplacian for :math:`s=0` of the likelihood.")
+         MissedEventsG::initial_occupancies;
+%feature("autodoc", "Equilibrium occupancies for final states.\n\n"
+         "Computes the right eigenvector of :math:`{}^e\\mathcal{G}_{FA}{}^e\\mathcal{G}_{AF}`, \n"
+         "where :math:`{}^e\\mathcal{G}_{FA}` is the laplacian for :math:`s=0` of the likelihood.")
+         MissedEventsG::final_occupancies;
 
 %feature("shadow") MissedEventsG::MissedEventsG %{
   def __init__(self, *args, **kwargs):
@@ -51,21 +86,21 @@
         >>> MissedEvents(matrix, nopen, tau, **kwargs)
         >>> MissedEvents(qmatrix, tau, **kwargs)
 
-        The parameters bewteen brackets are optional. The last two versions will try 
-        and calculate the roots of the determinantal equations automatically. A number of parameters
+        The parameters between brackets are optional. The last two versions will try 
+        and calculate the roots of the determinant equations automatically. A number of parameters
         can be given to control this process.
 
         :param determinant_af:
             A :class:`DeterminantEq` instance, specifically for the af block.
         :param roots_af:
-           The roots of the af determinantal equation. The should come in the format
+           The roots of the af determinant equation. The should come in the format
            `[(root, multiplicity), (root, multiplicity), ...]`.
         :param determinant_fa:
            A :class:`DeterminantEq` instance, specifically for the fa block.
            It should the transpose of `determinant_af`. It is required so 
            it need not be recomputed, since it most likely already exists.
         :param roots_fa:
-           The roots of the fa determinantal equation. The should come in the format 
+           The roots of the fa determinant equation. The should come in the format 
            `[(root, multiplicity), (root, multiplicity), ...]`.
         :param matrix:
            An object convertible to a square matrix.
@@ -77,14 +112,14 @@
            The exact missed event likelihood will be computed for times 
            :math:`t \in [0, n_{\mathrm{max}} \tau`. Defaults to 3.
         :param float xtol: 
-           Tolerance criteria when computing roots using py:meth:`dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
            Defaults to 1e-12.
         :param float rtol:
-           Tolerance criteria when computing roots using py:meth:`dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
            Defaults to 1e-12.
         :param float itermax:
            Maximum number of iterations when computing roots using
-           py:meth:`dcprogs.likelihood.brentq`.
+           :func:`~dcprogs.likelihood.brentq`.
            Defaults to 100.
         :param float lower_bound:
            Lower bound for *all* roots. Defaults to None, in which the case the lower bound is
@@ -100,11 +135,12 @@
     det_af   = args[0] if len(args) > 0 else kargs.get("det_af", None)
     if isinstance(det_af, DeterminantEq):
       roots_af = args[1] if len(args) > 1 else kargs.get("roots_af", None)
-      det_fa   = args[2] if len(args) > 0 else kargs.get("det_fa", None)
-      roots_fa = args[3] if len(args) > 1 else kargs.get("roots_fa", None)
+      if roots_af is None: raise TypeError('Missing roots_af argument')
+      det_fa   = args[2] if len(args) > 2 else kargs.get("det_fa", None)
+      if det_fa is None: raise TypeError('Missing det_fa argument')
+      roots_fa = args[3] if len(args) > 3 else kargs.get("roots_fa", None)
+      if roots_fa is None: raise TypeError('Missing roots_fa argument')
       nmax = int(args[4] if len(args) > 4 else kwargs.get('nmax', 3))
-      if roots_af is None or det_fa is None or roots_fa is not None:
-        raise InputError("Input to MisseEventsG is invalid.")
       this = $action(det_af, roots_af, det_fa, roots_fa, nmax)
       try: self.this.append(this)
       except: self.this = this
@@ -113,18 +149,18 @@
     # Try second and third instanciation
     matrix = args[0] if len(args) > 0 else kwargs.get('matrix', kwargs.get('qmatrix', None))
     if matrix is None: 
-      raise InputError("Expected the q-matrix or a matrix + number of open states on input.")
+      raise ValueError("Expected the q-matrix or a matrix + number of open states on input.")
     index = 1
     if not isinstance(matrix, QMatrix):
       matrix = array(matrix, internal_dtype)
       nopen = int(args[index]) if len(args) > index else kwargs.get('nopen', None)
       if nopen is None: 
-        raise InputError("A matrix was given on input, but without a nopen parameter.")
+        raise ValueError("A matrix was given on input, but without a nopen parameter.")
       matrix = QMatrix(matrix, nopen)
       index += 1
 
     tau = args[index] if len(args) > index else kwargs.get('tau', None)
-    if tau is None: raise InputError("No tau given on input.")
+    if tau is None: raise ValueError("No tau given on input.")
     nmax        = int(args[index+1] if len(args) > index+1 else kwargs.get('nmax', 3))
     xtol        = args[index+2] if len(args) > index+2 else kwargs.get('xtol', 1e-12)
     rtol        = args[index+3] if len(args) > index+3 else kwargs.get('rtol', 1e-12)
@@ -145,7 +181,7 @@ class MissedEventsG {
   %extend {
     MissedEventsG(DCProgs::DeterminantEq *_af, PyObject * _roots_af, 
                   DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
-                  DCProgs::t_uint _nmax=2 ) {
+                  DCProgs::t_uint _nmax=3 ) {
       using namespace DCProgs;
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
       std::vector<Root> roots_af = convert_to_roots(_roots_af);
@@ -162,35 +198,30 @@ class MissedEventsG {
       }
       return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
     }
-    MissedEventsG( QMatrix const * const _matrix, DCProgs::t_real _tau, 
-                   DCProgs::t_uint _nmax, DCProgs::t_real _xtol,
-                   DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
-                   DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound ) {
-      return new DCProgs::MissedEventsG(
-          DCProgs::create_missed_eventsG(*_matrix, _tau, _nmax, _xtol, _rtol, _itermax,
-                                         _lowerbound, _upperbound)
-      );
-    }
   }
+  MissedEventsG( QMatrix const & _qmatrix, DCProgs::t_real _tau, 
+                 DCProgs::t_uint _nmax, DCProgs::t_real _xtol,
+                 DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
+                 DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound );
 
   DCProgs::t_rmatrix af(DCProgs::t_real t);
   DCProgs::t_rmatrix fa(DCProgs::t_real t);
   %extend {
     PyObject* af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->af(t); }); 
     }
     PyObject* fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->fa(t); }); 
     }
   }
-  DCProgs::t_rmatrix laplace_af(DCProgs::t_real t);
-  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real t);
+  DCProgs::t_rmatrix laplace_af(DCProgs::t_real s);
+  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s);
   %extend {
     PyObject* laplace_af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_af(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_af(s); }); 
     }
     PyObject* laplace_fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->laplace_fa(_t); }); 
+      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_fa(s); }); 
     }
   }
   // Make CHS_occupancies member methods of MissedEventsG. 
@@ -207,33 +238,31 @@ class MissedEventsG {
     }
   }
 
-  // Renames some values so we can make them properties
-  %rename(_get_tau) get_tau() const; 
-  %rename(_get_af_factor) get_af_factor() const; 
-  %rename(_get_fa_factor) get_fa_factor() const; 
-  DCProgs::t_real get_tau() const;
-  DCProgs::t_rmatrix get_af_factor() const;
-  DCProgs::t_rmatrix get_fa_factor() const;
-  // Add extensions to compute occupancies.
+  // Add extensions to compute properties
   %extend {
-    DCProgs::t_initvec _initial_occupancies() { return DCProgs::occupancies(*$self); }
-    DCProgs::t_rvector _final_occupancies() { return DCProgs::occupancies(*$self, false); }
+    DCProgs::t_real const tau;
+    DCProgs::t_rmatrix const & af_factor;
+    DCProgs::t_rmatrix const & fa_factor;
+    DCProgs::t_initvec const initial_occupancies;
+    DCProgs::t_rvector const final_occupancies;
   }
-  // Now go to python and add the properties.
-  %pythoncode %{
-    __swig_getmethods__["tau"] = _get_tau
-    __swig_getmethods__["af_factor"] = _get_af_factor
-    __swig_getmethods__["fa_factor"] = _get_fa_factor
-    __swig_getmethods__["initial_occupancies"] = _initial_occupancies
-    __swig_getmethods__["final_occupancies"]   = _final_occupancies
-    if _newclass:
-      tau = property(_get_tau, doc="Max length of mixed events.")
-      af_factor = property(_get_af_factor, doc=":math:`Q_{AF}e^{-Q_{FF}\\tau}`")
-      fa_factor = property(_get_fa_factor, doc=":math:`Q_{FA}e^{-Q_{AA}\\tau}`")
-      initial_occupancies = property(_initial_occupancies, doc="Occupancies for initial states.")
-      final_occupancies = property(_final_occupancies, doc="Occupancies for final states.")
+  %{
+    DCProgs::t_real DCProgs_MissedEventsG_tau_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_tau();
+    }
+    DCProgs::t_rmatrix const & DCProgs_MissedEventsG_af_factor_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_af_factor();
+    }
+    DCProgs::t_rmatrix const & DCProgs_MissedEventsG_fa_factor_get(DCProgs::MissedEventsG *_in) {
+      return _in->get_fa_factor();
+    }
+    DCProgs::t_initvec DCProgs_MissedEventsG_initial_occupancies_get(DCProgs::MissedEventsG *_in) {
+      return DCProgs::occupancies(*_in, true);
+    }
+    DCProgs::t_rvector DCProgs_MissedEventsG_final_occupancies_get(DCProgs::MissedEventsG *_in) {
+      return DCProgs::occupancies(*_in, false).transpose();
+    }
   %}
-
   // Add some printout functions.
   %extend {
     PyObject* __str__() {

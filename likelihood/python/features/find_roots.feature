@@ -16,7 +16,7 @@ Feature: Figure out roots for a state matrix
   roots.
 
   Scenario: Find intervals of classic open-state matrix
-    Given the open-states determinantal equation "classic" with tau=1e-4
+    Given the open-states determinant equation "classic" with tau=1e-4
      When the root intervals are computed 
      Then no exception was thrown
       And there are 2 intervals 
@@ -24,7 +24,7 @@ Feature: Figure out roots for a state matrix
       And interval 1 contains -162.92946543451328
     
   Scenario: Find intervals of classic closed-state matrix
-    Given the closed-states determinantal equation "classic" with tau=1e-4
+    Given the closed-states determinant equation "classic" with tau=1e-4
      When the root intervals are computed 
      Then no exception was thrown
       And there are 3 intervals 
@@ -33,7 +33,7 @@ Feature: Figure out roots for a state matrix
       And interval 2 contains -0.24356535498785126
 
   Scenario Outline: Compare brute force and sensible search for intervals
-    Given the <type>-states determinantal equation "<equation>" with tau=1e-4
+    Given the <type>-states determinant equation "<equation>" with tau=1e-4
      When the root intervals are computed
       And a brute force search for roots is perfomed with resolution=<resolution>
      Then the intervals larger than <resolution> do overlap
@@ -53,7 +53,7 @@ Feature: Figure out roots for a state matrix
 
 
   Scenario Outline: Check roots in prospective intervals
-    Given the <type>-states determinantal equation "<equation>" with tau=1e-4
+    Given the <type>-states determinant equation "<equation>" with tau=1e-4
      When the root intervals are computed
      Then roots are found within each interval for which sign changes
 

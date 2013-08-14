@@ -45,7 +45,7 @@ Feature: Check Missed Events G functionality
   Scenario Outline: Computation of CHS vectors
     Given a list of 10 random missed-events likelihoods with tau=1e-4 and nmax=3
       And a list of 10 random times between 1e-3 and 3e-3
-      And a parameter tolerance=1e-8
+      And a parameter tolerance=1e-6
      When the <name> CHS occupancies are computed 
      Then the <name> CHS occupancies are the solutions to the CHS equations
  

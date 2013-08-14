@@ -71,11 +71,34 @@
 %}
 
 %feature("autodoc", "Creates a functor for optimizing the likelihood.\n\n"
-         "This functor can as input a qmatrix and returns the resulting likelihood.\n"
-         "The root finding process is performed by :py:func:`find_roots`. Most of the\n"
-         "arguments to initialize this functor are parameters for that process.\n\n")
+         "This functor can as input a :math:`\\mathcal{Q}`-matrix and returns the resulting\n"
+         "likelihood. The root finding process is performed by :py:func:`find_roots`. Most of the\n"
+         "arguments to initialize this functor are parameters for that process.\n\n"
+         ".. attribute:: nopen\n\n"
+         "   Number of open states. Should be strictly positive.\n\n"
+         ".. attribute:: tau\n\n"
+         "   Maximum length of missed events. Should be positive.\n\n"
+         ".. attribute:: tcritical\n\n"
+         "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative, ``None``, or ``NaN``, \n"
+         "   then the initial and final states are the equilibrium occupancies.\n\n"
+         ".. attribute:: nmax\n\n"
+         "  The exact missed-events likelihood will be computed for \n"
+         "  :math:`t < n_{\mathrm{max}}\tau`.\n\n"
+         ".. attribute:: xtol \n\n"
+         "   Tolerance criteria when computing roots via :py:func:`likelihood.brentq`.\n\n"
+         ".. attribute:: rtol\n\n"
+         "   Tolerance criteria when computing roots via :py:func:`likelihood.brentq`.\n\n"
+         ".. attribute:: itermax\n\n"
+         "   Maximum number of iterations when computing roots via :py:func:`likelihood.brentq`.\n"
+         ".. attribute:: lower_bound\n\n"
+         "   Lower bound bracketing all roots. If None or NaN, then the lower bound will be \n"
+         "   computed during calls by :py:func:`~dcprogs.likelihood.find_lower_bound_for_root`\n\n"
+         ".. attribute:: upper_bound\n\n"
+         "   Upper bound bracketing all roots. If None or NaN, then the upper bound will be \n"
+         "   computed during calls by :py:func:`~dcprogs.likelihood.find_upper_bound_for_root`\n\n")
          Log10Likelihood;
 
+// The following makes it possible to use keyword arguments in the constructor.
 %feature("shadow") Log10Likelihood::Log10Likelihood %{
   def __init__( self, bursts, nopen, tau, tcritical=None, nmax=3, xtol=1e-10, rtol=1e-10,
                 itermax=100, lower_bound=None, upper_bound=None ):
@@ -90,11 +113,11 @@
         :param float tau:
            Maximum length of missed events. Should be positive.
         :param float tcritical:
-           :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the inital and final states
+           :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the initial and final states
            are the equilibrium occupancies.
         :param integer nmax:
            The exact missed-events likelihood will be computed for 
-           :math:`t < n_{\\matrm{max}}\\tau`.
+           :math:`t < n_{\matrm{max}}\tau`.
         :param float xtol:
            Tolerance criteria when computing roots via :meth:`likelihood.brentq`
         :param float rtol:
@@ -119,14 +142,57 @@
     except: self.this = this
 %}
 
-        
+%feature("autodoc", "Computes the :math:`log_{10}`-likelihood for the input Q-matrix\n\n"
+         ":param matrix:\n"
+         "   Can be either a square numpy array  or a :py:class:`QMatrix` object. In the first\n"
+         "   case, the number of open states is set to attribute `nopen`.\n\n")
+         Log10Likelihood::operator()(QMatrix const &_Q) const;
+%feature("autodoc", "Computes the :math:`log_{10}`-likelihood for each individual burst\n\n"
+         "The sum over the return of this function is the return of :py:meth:`__call__`.\n"
+         "This is merely a convenience function if one wants the likelihood associate with\n"
+         "each burst\n\n"
+         ":param matrix:\n"
+         "   Can be either a square numpy array  or a :py:class:`QMatrix` object. In the first\n"
+         "   case, the number of open states is set to attribute `nopen`.\n\n"
+         ":return:\n\n"
+         "   A numpy array where each component contains the :math:`log_{10}` likelihood of a\n"
+         "   single burst.\n")
+         Log10Likelihood::vector(QMatrix const &_Q) const;
+%feature("autodoc", "Returns the nth burst.\n") Log10Likelihood::__getitem__;
+%feature("autodoc", "Sets the nth burst.\n\n"
+         ":param index:\n"
+         "   Index to the burst that should be changed.\n"
+         ":param value:\n"
+         "   A list of time intervals with an odd number of components, in seconds.\n")
+         Log10Likelihood::__setitem__;
+%feature("autodoc", "Deletes the nth burst.\n") Log10Likelihood::__delitem__;
+%feature("autodoc", "Number of bursts.\n") Log10Likelihood::__len__;
+%feature("autodoc", "Inserts a burst at given index.\n") Log10Likelihood::insert;
 
+        
 class Log10Likelihood {
   public:
     //! Number of open states.
     DCProgs::t_uint nopen;
     //! Max length of missed events
     DCProgs::t_real tau;
+
+    // Tells SWIG how to convert tcritical, since it can be negative or NaN or None.
+    %typemap(in) DCProgs::t_real tcritical { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+        if($1 <= 0) $1 = quiet_nan;
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real tcritical { 
+      if(DCPROGS_ISNAN($1) or $1 <= 0) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
     //! \brief tcrit. 
     //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
     DCProgs::t_real tcritical;
@@ -138,10 +204,43 @@ class Log10Likelihood {
     DCProgs::t_real rtol;
     //! Maximum number of iterations for root finding.
     DCProgs::t_uint itermax;
+
+    // Tells SWIG how to convert upper and lower bounds, since it can be NaN or None.
+    %typemap(in) DCProgs::t_real lower_bound { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real lower_bound { 
+      if(DCPROGS_ISNAN($1)) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
+    %clear DCProgs::t_real tcritical;
     //! Lower bound bracketing all roots.
     DCProgs::t_real lower_bound;
+    %clear DCProgs::t_real lower_bound;
+    %typemap(in) DCProgs::t_real upper_bound { 
+      using namespace DCProgs;
+      if($input == Py_None) $1 = quiet_nan;
+      else try {
+        $1 = convert_to_real($input); 
+      } DCPROGS_CATCH(SWIG_fail);
+    }
+    %typemap(out) DCProgs::t_real upper_bound { 
+      if(DCPROGS_ISNAN($1)) {
+        $result = Py_None;
+        Py_INCREF(Py_None);
+      } else try { $result = convert_real_to_python($1, $self); }
+      DCPROGS_CATCH(SWIG_fail);
+    }
     //! Upper bound bracketing all roots.
     DCProgs::t_real upper_bound;
+    %clear DCProgs::t_real upper_bound;
 
     // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
     // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
@@ -151,7 +250,11 @@ class Log10Likelihood {
         $result = DCProgs::numpy::wrap_to_numpy(map, $self); 
       } DCPROGS_CATCH(SWIG_fail);
     }
-    //! Constructor
+    // Constructor
+    // This is overriden twice: 
+    //   - first in c++ so as to convert bursts.
+    //   - then in python, so we can use keyword arguments
+    //     This is done above in the feature("shadow") bit
     %extend {
       Log10Likelihood   ( PyObject *_bursts, DCProgs::t_uint _nopen,
                           DCProgs::t_real _tau, DCProgs::t_real _tcritical,
@@ -162,13 +265,26 @@ class Log10Likelihood {
         return new Log10Likelihood( convert_pybursts(_bursts), _nopen, _tau, _tcritical,
                                     _nmax, _xtol, _rtol, _itermax, _lower_bound, _upper_bound );
       }
+    }
 
+    %extend {
       DCProgs::t_Burst & __getitem__(int i) {
         using namespace DCProgs;
         if(i < 0) i += $self->bursts.size();
         if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
         return $self->bursts[i];
+      }
+      void insert(int i, PyObject* _burst) {
+        using namespace DCProgs;
+        if(i < 0) i += $self->bursts.size();
+        if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
+          throw errors::Index("Index to burst is out of range.");
+        t_Burst burst = convert_pyburst(_burst);
+        if(burst.size() == 0) return;
+        if(burst.size() % 2 != 1)  
+          throw errors::PythonValueError("Each burst must have an odd number of intervals.");
+        $self->bursts.insert($self->bursts.begin() + i, burst);
       }
       void __setitem__(int i, PyObject* _burst) {
         using namespace DCProgs;
@@ -179,7 +295,7 @@ class Log10Likelihood {
         if(burst.size() == 0) return;
         if(burst.size() % 2 != 1)  
           throw errors::PythonValueError("Each burst must have an odd number of intervals.");
-        $self->bursts.insert($self->bursts.begin() + i, burst);
+        $self->bursts[i] = std::move(burst);
       }
       PyObject* __delitem__(int i) {
         using namespace DCProgs;

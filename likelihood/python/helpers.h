@@ -24,8 +24,8 @@ namespace {
     //! \details Applying a functor to a numpy array is mostly the same, whether that functor
     //!          returns a scalar or an array/matrix. `NumpyApplySpecialized` contain the snippet of
     //!          code that do change depending on what the functor returns.
-    //! \tparam T: Type of the ouput numpy array.
-    //! \tparam reduce: How many dimensions are gobled up by functor.
+    //! \tparam T Type of the ouput numpy array.
+    //! \tparam reduce How many dimensions are gobled up by functor.
     template<class T, size_t reduce=0>
       class NumpyApplySpecialized : public DCProgs::numpy::type<T> {
         public:

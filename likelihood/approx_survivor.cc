@@ -24,6 +24,7 @@
 
 #include "errors.h"
 #include "approx_survivor.h"
+#include "root_finder.h"
 
 
 namespace DCProgs {
@@ -39,7 +40,7 @@ namespace DCProgs {
  
   // Function to create approximate missed event survivor function.
   ApproxSurvivor::ApproxSurvivor(QMatrix const &_qmatrix, t_real _tau, t_RootFinder const &_findroots) {
-    // First creates determinantal equations.
+    // First creates determinant equations.
     DeterminantEq determinant_af(_qmatrix, _tau);
     DeterminantEq determinant_fa(determinant_af.transpose());
     // Then finds roots
@@ -52,6 +53,34 @@ namespace DCProgs {
     if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
   }
 
+
+  ApproxSurvivor::ApproxSurvivor( QMatrix const &_qmatrix, t_real _tau,
+                                  t_real _xtol, t_real _rtol, t_uint _itermax,
+                                  t_real _lowerbound, t_real _upperbound ) 
+# ifdef HAS_CXX11_CONSTRUCTOR_DELEGATE
+    : ApproxSurvivor( _qmatrix, _tau,
+                      [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+                        return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound); 
+                      }) {}
+# else
+  {
+    auto findroots = [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+      return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound);  
+    };
+    // First creates determinant equations.
+    DeterminantEq determinant_af(_qmatrix, _tau);
+    DeterminantEq determinant_fa(determinant_af.transpose());
+    // Then finds roots
+    std::vector<Root> roots_af = findroots(determinant_af);
+    std::vector<Root> roots_fa = findroots(determinant_fa);
+    // Then creates Asymptotes object
+    asymptotes_af_.reset(new Asymptotes(determinant_af, roots_af));
+    if(not asymptotes_af_.get()) throw errors::Runtime("Could not initialize unique_ptr");
+    asymptotes_fa_.reset(new Asymptotes(determinant_fa, roots_fa));
+    if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
+  }
+# endif
+  
   //! Dumps Survivor function equation to stream
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, ApproxSurvivor const &_self) {
 

@@ -80,8 +80,8 @@ if(tests)
 
   include(${CMAKE_MODULE_PATH}/CTestCustomPreWorkAround.cmake)
 
-  # A macro to run tests via behave.
-  function(feature_test name filename)
+  # A macro to run tests via python or behave.
+  function(_python_test name filename thiscommand)
     if(WIN32)
       set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
       set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
@@ -91,24 +91,43 @@ if(tests)
     endif(WIN32)
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${WORKINGDIR}
-             COMMAND behave ${CMAKE_CURRENT_SOURCE_DIR}/${filename} 
-                            --junit --junit-directory ${CMAKE_BINARY_DIR}/test-results/
-                            -q ${ARGN})
+             COMMAND ${thiscommand} ${CMAKE_CURRENT_SOURCE_DIR}/${filename})
     if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
       STRING(REPLACE ";" "\\;" PATH_STRING "${PATH_STRING}")
+      file(TO_NATIVE_PATH "${WORKINGDIR}" PYTHON_PATH)
+      STRING(REPLACE "\\;" ";" PYTHONPATH "${PYTHON_PATH};$ENV{PYTHONPATH}")
+      STRING(REPLACE ";" "\\;" PYTHON_PATH "${PYTHON_PATH}")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "PATH=${PATH_STRING}")
+                           "PATH=${PATH_STRING};PYTHONPATH=${PYTHON_PATH}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH}")
+                           "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")
     elseif(UNIX)
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH}")
+                           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
     endif(MSVC OR MSYS)
+  endfunction(_python_test)
+  # Look for behave
+  if(NOT BEHAVE_EXECUTABLE)
+    find_program(BEHAVE_EXECUTABLE behave DOC "Path to the behave executable")
+    if(NOT BEHAVE_EXECUTABLE)
+      message(FATAL_ERROR "[behave] Not found. Cannot run python tests.")
+    endif(NOT BEHAVE_EXECUTABLE)
+    message(STATUS "[behave] ${BEHAVE_EXECUTABLE}")
+  endif(NOT BEHAVE_EXECUTABLE)
+  # A macro to run tests via behave.
+  function(feature_test name filename)
+    _python_test(${name} ${filename} ${BEHAVE_EXECUTABLE} --junit --junit-directory
+                 ${CMAKE_BINARY_DIR}/test-results/ -q ${ARGN})
+                            
   endfunction(feature_test)
+
+  function(python_test name filename)
+    _python_test(${name} ${filename} ${PYTHON_EXECUTABLE} ${ARGN})
+  endfunction(python_test)
 endif(tests)
 
 

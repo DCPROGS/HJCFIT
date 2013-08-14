@@ -43,15 +43,24 @@ namespace DCProgs {
     return partial_CHS_matrix(*_g.asymptotes_af_, _g.get_tau(), _tcrit) * _g.get_af_factor();
   }
 
-  MSWINDOBE MissedEventsG create_missed_eventsG( QMatrix const &_matrix, t_real _tau, t_uint _nmax,
-                                                 t_real _xtol, t_real _rtol, t_uint _itermax,
-                                                 t_real _lowerbound, t_real _upperbound) {
-    DeterminantEq const determinant_af(_matrix, _tau);
-    DeterminantEq const determinant_fa = determinant_af.transpose(); 
-    std::vector<Root> const roots_af = find_roots( determinant_af, _xtol, _rtol, _itermax,
-                                                   _lowerbound, _upperbound );
-    std::vector<Root> const roots_fa = find_roots( determinant_fa, _xtol, _rtol, _itermax, 
-                                                   _lowerbound, _upperbound );
-    return MissedEventsG(determinant_af, roots_af, determinant_fa, roots_fa);
-  }
+  MissedEventsG::MissedEventsG( QMatrix const &_qmatrix, t_real _tau,
+                                t_uint _nmax, t_real _xtol, t_real _rtol, t_uint _itermax,
+                                t_real _lowerbound, t_real _upperbound )
+# ifdef HAS_CXX11_CONSTRUCTOR_DELEGATE
+    : MissedEventsG( _qmatrix, _tau,
+                     [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+                        return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound); 
+                     }, _nmax ) {}
+# else
+    : ExactSurvivor(_qmatrix, _tau),
+      ApproxSurvivor(_qmatrix, _tau,
+          [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
+            return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound); 
+          }),
+      laplace_a_(new LaplaceSurvivor(_qmatrix)),
+      laplace_f_(new LaplaceSurvivor(_qmatrix.transpose())),
+      nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
+      af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
+      fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
+# endif
 }

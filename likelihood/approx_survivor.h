@@ -38,9 +38,9 @@ namespace DCProgs {
       //! Type of the function used to minimize roots.
       typedef std::function<std::vector<Root>(DeterminantEq const &)> t_RootFinder;
       //! Initializes approximate survivor functor.
-      //! \param[in] _af: Determinantal equation for open->shut transitions
+      //! \param[in] _af: Determinant equation for open->shut transitions
       //! \param[in] _roots_af: Roots of _af equation
-      //! \param[in] _fa: Determinantal equation for shut->open transitions
+      //! \param[in] _fa: Determinant equation for shut->open transitions
       //! \param[in] _roots_fa: Roots of _fa equation
       ApproxSurvivor(DeterminantEq const &_af, std::vector<Root> const &_roots_af, 
                      DeterminantEq const &_fa, std::vector<Root> const &_roots_fa );
@@ -49,12 +49,27 @@ namespace DCProgs {
       //! \param[in] _tau: resolution/max length missed events
       //! \param[in] _findroots: A functor with which to find all roots.
       //!                        This function should take a DeterminantEq as its sole argument and
-      //!                        return a std::vector<RootIntervals>
+      //!                        return a std::vector<DCProgs::RootInterval>
       ApproxSurvivor(QMatrix const &_matrix, t_real _tau, t_RootFinder const &_findroots);
       //! Move constructor
       ApproxSurvivor   (ApproxSurvivor &&_c) 
                      : asymptotes_af_(std::move(_c.asymptotes_af_)),
                        asymptotes_fa_(std::move(_c.asymptotes_fa_)) {}
+      //! \brief Initializes missed-events functor.
+      //! \param[in] _qmatrix Transition matrix
+      //! \param[in] _tau resolution/max length missed events
+      //! \param[in] _xtol Tolerance for interval size
+      //! \param[in] _rtol Tolerance for interval size. The convergence criteria is an affine
+      //!            function of the root:
+      //!   \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{1}{2}|x_a - x_b|\f$.
+      //! \param[in] _itermax maximum number of iterations for any of the three steps.
+      //! \param[in] _lowerbound Lower bound of the interval bracketing all roots. If None, the
+      //!            lower bound is obtained from find_lower_bound_for_roots().
+      //! \param[in] _upperbound Upper bound of the interval bracketing all roots. If None, the
+      //!            upper bound is obtained from find_upper_bound_for_roots().
+      ApproxSurvivor( QMatrix const &_qmatrix, t_real _tau, t_real _xtol=1e-12, t_real _rtol=1e-12,
+                      t_uint _itermax=100, t_real _lowerbound=quiet_nan, 
+                      t_real _upperbound=quiet_nan );
 
       //! Open to close transitions 
       t_rmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }

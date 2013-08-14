@@ -34,7 +34,7 @@
 namespace DCProgs {
 
   //! \brief Ideal transition matrix of open and shut intervals
-  //! \details Given a transition matrix $Q$ it is possible to figure out the evolution of any given
+  //! \details Given a transition matrix \f$\mathcal{Q}\f$ it is possible to figure out the evolution of any given
   //! system. 
   class MSWINDOBE IdealG : protected QMatrix {
 
@@ -46,18 +46,20 @@ namespace DCProgs {
       IdealG() : QMatrix() {}
       //! \brief Constructor with parameters.
       //! \details Calls set method with input parameters.
-      //! \param[in] _matrix: Any matrix or matrix expression from Eigen. Will become the transition
+      //! \param[in] _matrix Any matrix or matrix expression from Eigen. Will become the transition
       //!                     matrix. Diagonal elements are transformed as explain in set(). Open
       //!                     states should be in the top rows.
-      //! \param[in] _nopen: Number of open states. 
+      //! \param[in] _nopen Number of open states. 
       //! \throws errors::Domain if input has incorrect values or size.
       template<class T>
         IdealG(Eigen::DenseBase<T> const &_matrix, t_uint _nopen);
+      //! Constructor
+      IdealG(QMatrix const &_c) : QMatrix(_c) {};
       //! Destructor 
       virtual ~IdealG() {}; 
   
       //! \brief Sets Q matrix and the number of open states.
-      //! \details Enforces \f[Q{ii} = -\sum_{j\neqi} Q{ij}]\f.
+      //! \details Enforces \f$Q_{ii} = -\sum_{j\neq i} Q_{ij}\f$.
       //!          It is expected that open states are the top rows [0, _nopen].
       void set(t_rmatrix const &_Q, t_uint const &_nopen);
       //! Sets state matrix on which to act.

@@ -62,10 +62,12 @@ namespace DCProgs {
 
   }
 
+  // \cond
   // Untemplates the templates.
   t_initvec MSWINDOBE occupancies(IdealG const &_idealg, bool _initial) {
     return occupancies_impl_(_idealg, _initial);
   }
+  // \endcond
 
   t_initvec MSWINDOBE occupancies(MissedEventsG const &_missedeventsG, bool _initial) {
     return occupancies_impl_(_missedeventsG, _initial);

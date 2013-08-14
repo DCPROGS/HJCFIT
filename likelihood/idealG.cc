@@ -27,7 +27,7 @@ namespace DCProgs {
   void IdealG::set(t_rmatrix const &_Q, t_uint const &_nopen) {
   
     if(_Q.rows() != _Q.cols()) throw errors::Domain("Transition matrix is not square.");
-    if(_nopen + 1 > static_cast<t_uint>(_Q.rows()))
+    if(_nopen >= static_cast<t_uint>(_Q.rows()))
       throw errors::Domain("There should be at least one shut state.");
     if(_nopen < 1) throw errors::Domain("There should be at least one open state.");
     this->matrix = _Q;

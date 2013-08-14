@@ -2,9 +2,9 @@ Feature: Determinantal Equation bindings
 
   The following tests the c++ to python bindings of DeterminantEq. 
 
-  Scenario Outline: Initialise the determinantal equation with basic objects
+  Scenario Outline: Initialise the determinant equation with basic objects
     Given a <matrix>, <nopen>, and <tau>
-    When  a determinantal equation is instantiated
+    When  a determinant equation is instantiated
     Then  instantiation did not throw
     And   equation's tau is <tau>
 
@@ -18,9 +18,9 @@ Feature: Determinantal Equation bindings
       | classic  | 2     |  0.2  |
       | classic  | 2     |  0.1  |
 
-  Scenario Outline: Initialise the determinantal equation with a state matrix
+  Scenario Outline: Initialise the determinant equation with a state matrix
     Given a QMatrix instantiated with <matrix> and <nopen>
-    When  a determinantal equation is instantiated from a state matrix and <tau>
+    When  a determinant equation is instantiated from a state matrix and <tau>
     Then  instantiation did not throw
     And   equation's tau is <tau>
 
@@ -37,7 +37,7 @@ Feature: Determinantal Equation bindings
 
   Scenario Outline: Expected initialization failure with basic objects
     Given a <matrix>, <nopen>, and <tau>
-    When  a determinantal equation is instantiated
+    When  a determinant equation is instantiated
     Then  instantiation threw <Exception>
 
     Examples:
@@ -99,7 +99,7 @@ Feature: Determinantal Equation bindings
 
 
   Scenario Outline: Computes the H matrix using different input formats
-    Given a determinantal equation instantiated with the <model> Q matrix
+    Given a determinant equation instantiated with the <model> Q matrix
       And a parameter tolerance=1e-8
       And the output matrices below
       """

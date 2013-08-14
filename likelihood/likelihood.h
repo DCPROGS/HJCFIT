@@ -32,12 +32,12 @@
 namespace DCProgs {
 
   //! Computes likelihood of a time series.
-  //! \param[in] _begin: First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end: One past last interval.
-  //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
+  //! \param[in] _end One past last interval.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial: initial occupancies.
-  //! \param[in] _final: final occupancies.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
                                t_initvec const &_initial, t_rvector const &_final ) {
@@ -53,12 +53,12 @@ namespace DCProgs {
 
   //! \brief Computes log10-likelihood of a time series.
   //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
-  //! \param[in] _begin: First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end: One past last interval.
-  //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
+  //! \param[in] _end One past last interval.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial: initial occupancies.
-  //! \param[in] _final: final occupancies.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_log10_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin,
                                      T_INTERVAL_ITERATOR _end, 
@@ -83,8 +83,8 @@ namespace DCProgs {
     }
 
 
-  //! \brief A functor with which to optimize a QMatrix
-  //! \details This functor takes as input a qmatrix and returns the likelihood for a given set of
+  //! \brief Likelihood of a set of bursts
+  //! \details This functor takes as input a Q-matrix and returns the likelihood for a given set of
   //!          bursts. It is, in practice, a convenience object with which to perform likelihood
   //!          optimization.
   //!
@@ -99,8 +99,9 @@ namespace DCProgs {
       t_uint nopen;
       //! Max length of missed events
       t_real tau;
-      //! \brief tcrit. 
-      //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
+      //! \brief \f$t_{\mathrm{crit}}\f$. 
+      //! \details If negative or null, will use equilibrium occupancies rather than CHS
+      //!          occupancies.
       t_real tcritical;
       //! Number of intervals for which to compute exact result.
       t_uint nmax;
@@ -117,6 +118,24 @@ namespace DCProgs {
 
 
       //! Constructor
+      //! \param[in] _bursts A vector of bursts. Each burst is a vector of intervals, starting with
+      //!            an open interval. The intervals should be prefiltered for the maximum
+      //!            missed-event length.
+      //! \param[in] _nopen Number of open states. The open states must be in the top left corner of
+      //!            the Q-matrix.
+      //! \param[in] _tau Maximum length of the missed events
+      //! \param[in] _tcritical Parameter for CHS vectors (see \cite colquhoun:1996) if positive. If
+      //!            negative, then equilibrium occupancies will be used as initial and final
+      //!            states (as in \cite colquhoun:1982)
+      //! \param[in] _nmax The exact missed-event likelihood will be computed for 
+      //!            \f$ t < n_{\mathrm{max}} \tau\f$
+      //! \param[in] _xtol Tolerance criteria for brentq().
+      //! \param[in] _rtol Tolerance criteria for brentq().
+      //! \param[in] _itermax Maximum number of iteration when calling brentq().
+      //! \param[in] _lowerbound Lower bound of the interval bracketing all roots. If None, the
+      //!            lower bound is obtained from find_lower_bound_for_roots().
+      //! \param[in] _upperbound Upper bound of the interval bracketing all roots. If None, the
+      //!            upper bound is obtained from find_upper_bound_for_roots().
       Log10Likelihood   ( t_Bursts const &_bursts, t_uint _nopen, t_real _tau,
                           t_real _tcritical=-1e0, t_uint _nmax=2, t_real _xtol=1e-10,
                           t_real _rtol=1e-10, t_uint _itermax=100,
@@ -126,9 +145,11 @@ namespace DCProgs {
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax),
                         lower_bound(_lowerbound), upper_bound(_upperbound) {}
      
-      //! Computes likelihood for each burst in separate value.
+      //! \brief Computes likelihood for each burst
+      //! \return a DCProgs::t_rvector 
       t_rvector vector(t_rmatrix const &_Q) const { return vector(QMatrix(_Q, nopen)); }
-      //! Computes likelihood for each burst in separate value.
+      //! \brief Computes likelihood for each burst
+      //! \return a DCProgs::t_rvector 
       t_rvector vector(QMatrix const &_Q) const;
       //! Log-likelihood 
       t_real operator()(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen)); }

@@ -16,10 +16,11 @@
 #########################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
-PROJECT(DCprogs)
+PROJECT(DCProgs)
 
-option(tests          "Enable testing."               on)
-option(pythonBindings "Enable python bindings."       on)
+option(tests          "Enable testing."                         on)
+option(pythonBindings "Enable python bindings."                 on)
+option(compileDocs    "Compile c++11 documentation examples."   on)
 
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
@@ -59,6 +60,9 @@ configure_file (
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
 )
 
+include(${CMAKE_MODULE_PATH}/documentation.cmake)
+
 add_subdirectory(likelihood)
 add_subdirectory(data)
 add_subdirectory(python)
+add_subdirectory(documentation)

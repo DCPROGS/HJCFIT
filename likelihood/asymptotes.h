@@ -28,15 +28,19 @@
 namespace DCProgs {
 
 
-  //! A functor to compute asymptotic missed event G.
-  //! \detail From the knowledged of roots and eigenvectors, figures out how to compute the
-  //!         asymptotic values of missed events R.
+  //! \brief A functor to compute asymptotic missed event G.
+  //! \details From the knowledged of roots and eigenvectors, figures out how to compute the
+  //!          asymptotic values of missed events R.
   class MSWINDOBE Asymptotes {
     
     public:
-      //! Holds a pair defining each exponential function.
+      //! \brief Holds a pair defining each exponential function.
+      //! \details - The first item is the weigh (as an matrix) of the exponential.
+      //! - The second item is the exponent of the exponential.
       typedef std::pair<t_rmatrix, t_real> t_MatrixAndRoot;
-      //| Holds all data relating to this functor.
+
+      //| \typedef  std::vector<t_MatrixAndRoot> t_MatricesAndRoots
+      //! \brief Container holding the parameters for each exponential
       typedef std::vector<t_MatrixAndRoot> t_MatricesAndRoots;
 
       //! Constructor. 
@@ -47,7 +51,7 @@ namespace DCProgs {
       //! Computes \f$\sum_i R_i e^{-\frac{t}{s_i}}\f$.
       //! \details The \f$s_i\f$ are the roots. \f$R_i\f$ matrices are weighted
       //! projections of the eigenvectors corresponding to the roots:
-      //! \f$R_i = \frac{c_i\cross r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$.
+      //! \f$R_i = \frac{c_i\times r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$.
       t_rmatrix operator()(t_real _t) const;
 
       //! Access to matrices and roots
@@ -72,14 +76,13 @@ namespace DCProgs {
   };
 
   //! \brief Partial computation of \f$H_{FA}\f$ for CHS vectors.
-  //! \details The object is to implement Eq. 5.10 from \cite colquhoun:1996. 
-  //! In order to do this, we abstract the part that comes from the likelihood and compute in
-  //! this function \f$-\sum_{i=1}^{k_F}{}^{A}R_i\frac{1}{s_i}
-  //! e^{(t_{\mathrm{crit}-\tau)s_i}\f$. The additional factor \f$Q_{AF}e^{Q_{FF}\tau}\f$ is
-  //! computed in MissedEventsG.
+  //! \details The object is to implement Eq. 5.10 from \cite colquhoun:1996. In order to do this,
+  //!          we abstract the part that comes from the likelihood and compute in this function 
+  //!          \f$-\sum_{i=1}^{k_F}{}^{A}R_i\frac{1}{s_i} e^{(t_{\mathrm{crit}}-\tau)s_i}\f$. The
+  //!          additional factor \f$Q_{AF}e^{Q_{FF}\tau}\f$ is computed in MissedEventsG.
   //! \note This is somewhat outside the remit of Asymptotes, although the calculations are similar
-  //! for good reasons. In any case, we keep this function outside the class itself, so as to not
-  //! confuse the purpose of the class itself.
+  //!       for good reasons. In any case, we keep this function outside the class itself, so as to
+  //!       not confuse the purpose of the class itself.
   t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
                                           t_real _tau, t_real _tcrit );
 }

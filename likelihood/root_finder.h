@@ -61,7 +61,7 @@ namespace DCProgs {
   };
 
   //! \brief Figures out interval where roots can be found.
-  //! \param[in] _det The determinantal equation
+  //! \param[in] _det The determinant equation
   //! \param[in] _mins A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower
   //!            bound is determined using DCProgs::find_lower_bound_for_roots().
   //! \param[in] _maxs  A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper
@@ -77,7 +77,7 @@ namespace DCProgs {
   //!          the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at
   //!          that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is
   //!          higher than the current bound.
-  //! \param[in] _det The determinantal equation
+  //! \param[in] _det The determinant equation
   //! \param[in] _start Value where to start looking for lower bound.
   //! \param[in] _alpha factor by which to set new lower bound:
   //!            \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
@@ -86,7 +86,7 @@ namespace DCProgs {
                                               t_real _alpha=5e0, t_uint _itermax=100);
 
   //! \brief Figures out an upper bound for root finding.
-  //! \param[in] _det The determinantal equation
+  //! \param[in] _det The determinant equation
   //! \param[in] _start Value where to start looking for lower bound.
   //! \param[in] _alpha factor by which to set new lower bound:
   //!            \f$s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\f$.
@@ -97,7 +97,7 @@ namespace DCProgs {
   //! \details Computes all values between mins and maxs, for a given resolution.
   //!          If determinant changes sign between two values, or if it comes to within tolerance of
   //!          zero, then computes eigenvalues of H to determine possible multiplicity.
-  //! \param[in] _det The determinantal equation
+  //! \param[in] _det The determinant equation
   //! \param[in] _resolution resolution at which computes values in interval.
   //! \param[in] _mins A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower
   //!            bound is determined using DCProgs::find_lower_bound_for_roots().
@@ -113,7 +113,7 @@ namespace DCProgs {
                                     t_real _tolerance = 1e-1);
 
   //! \brief Finds root using brentq and find_root_intervals.
-  //! \details Tries and computes the roots of an input determinantal equation.
+  //! \details Tries and computes the roots of an input determinant equation.
   //! This is a three fold process:
   //!
   //! 1. Find an interval that contains all roots/eigenvalues 
@@ -134,13 +134,16 @@ namespace DCProgs {
   //|
   //! The last step is carried out by brentq().
   //!
-  //! \param[in] _det The determinantal equation for which to compute the roots.
-  //! \param[in] _resolution Size of sieve with which to look for roots.
-  //! \param[in] _mins A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower
-  //!            bound is determined using DCProgs::find_lower_bound_for_roots().
-  //! \param[in] _maxs  A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper
-  //!            bound is determined using DCProgs::find_upper_bound_for_roots().
-  //! \param[in] _tolerance Tolerance to use for figuring out a root is in a sieve hole.
+  //! \param[in] _det The determinant equation for which to compute the roots.
+  //! \param[in] _xtol Tolerance for interval size
+  //! \param[in] _rtol Tolerance for interval size. The convergence criteria is an affine function
+  //!                  of the root:
+  //!    \f$x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\f$.
+  //! \param[in] _itermax maximum number of iterations for any of the three steps.
+  //! \param[in] _lowerbound Lower bound of the interval bracketing all roots. If None, the lower
+  //!            bound is obtained from find_lower_bound_for_roots().
+  //! \param[in] _upperbound Upper bound of the interval bracketing all roots. If None, the upper
+  //!            bound is obtained from find_upper_bound_for_roots().
   std::vector<Root> MSWINDOBE find_roots( DeterminantEq const &_det, 
                                           t_real _xtol = 1e-8,
                                           t_real _rtol = 1e-8,

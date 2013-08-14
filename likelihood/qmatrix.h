@@ -43,6 +43,17 @@ namespace DCProgs {
     //! Constructor
     template<class T>
       QMatrix(Eigen::DenseBase<T> const &_c, t_uint _nopen = 0) : nopen(_nopen), matrix(_c) {}
+
+    //! Returns rate at location
+    t_rmatrix::Scalar const & operator()( t_rmatrix::Index const &_i,
+                                          t_rmatrix::Index const &_j ) const {
+      return matrix(_i, _j);
+    }
+    
+    //! Returns rate at location
+    t_rmatrix::Scalar & operator()( t_rmatrix::Index const &_i, t_rmatrix::Index const &_j ) {
+      return matrix(_i, _j);
+    }
   
     //! Open to open transitions.
     Eigen::Block<t_rmatrix> aa() { return matrix.topLeftCorner(nopen, nopen); }
@@ -66,11 +77,12 @@ namespace DCProgs {
     Eigen::Block<t_rmatrix const> ff() const 
       { return matrix.bottomRightCorner(nshut(), nshut()); }
 
+    //! Number of shut states
     t_uint nshut() const { return static_cast<t_uint>(matrix.cols()) - nopen; }
 
-    //! \brief Returns transpose of state matrix.
-    //! \details Means A states become F states, and F states become A states, and the partitionned
-    //! matrix is transposed such that the new AA block is top left corner.
+    //! \brief Returns transpose of this \f$Q\f$-matrix.
+    //! \details A states become F states, and F states become A states, and the matrix is
+    //! transposed such that the new AA block is in the top left corner.
     QMatrix transpose() const;
  
     //! \brief Computes eigenvalues and eigenvectors

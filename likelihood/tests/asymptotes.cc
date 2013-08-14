@@ -37,7 +37,7 @@ using namespace DCProgs;
 #endif
 
 //! Params are whether to do open or closed states, 
-//! and the root of the determinantal equation.
+//! and the root of the determinant equation.
 typedef std::tuple<bool, std::vector<Root>> t_Params;
 
 class TestAsymptotes : public ::testing::TestWithParam<t_Params> {
