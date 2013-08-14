@@ -110,9 +110,17 @@ if(tests)
                            "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
     endif(MSVC OR MSYS)
   endfunction(_python_test)
+  # Look for behave
+  if(NOT BEHAVE_EXECUTABLE)
+    find_program(BEHAVE_EXECUTABLE behave DOC "Path to the behave executable")
+    if(NOT BEHAVE_EXECUTABLE)
+      message(FATAL_ERROR "[behave] Not found. Cannot run python tests.")
+    endif(NOT BEHAVE_EXECUTABLE)
+    message(STATUS "[behave] ${BEHAVE_EXECUTABLE}")
+  endif(NOT BEHAVE_EXECUTABLE)
   # A macro to run tests via behave.
   function(feature_test name filename)
-    _python_test(${name} ${filename} behave --junit --junit-directory
+    _python_test(${name} ${filename} ${BEHAVE_EXECUTABLE} --junit --junit-directory
                  ${CMAKE_BINARY_DIR}/test-results/ -q ${ARGN})
                             
   endfunction(feature_test)
