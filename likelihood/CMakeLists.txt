@@ -15,12 +15,14 @@
 #   GNU General Public License for more details.
 #########################
 
-add_library(likelihood SHARED qmatrix.h qmatrix.cc errors.h idealG.h idealG.cc 
-            occupancies.h occupancies.cc time_filter.h time_filter.cc recursion_formula.h
-            exact_survivor.h exact_survivor.cc root_finder.h root_finder.cc determinant_equation.h
-            determinant_equation.cc asymptotes.h asymptotes.cc approx_survivor.h approx_survivor.cc
-            missed_eventsG.h missed_eventsG.cc laplace_survivor.h laplace_survivor.cc likelihood.h
-            brentq.cc brentq.h likelihood.cc)
+set(LIKELIHOOD_SOURCE qmatrix.cc idealG.cc occupancies.cc time_filter.cc exact_survivor.cc
+                      root_finder.cc determinant_equation.cc asymptotes.cc approx_survivor.cc
+                      missed_eventsG.cc laplace_survivor.cc brentq.cc likelihood.cc)
+set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h occupancies.h time_filter.h recursion_formula.h
+                       exact_survivor.h root_finder.h determinant_equation.h asymptotes.h
+                       approx_survivor.h missed_eventsG.h laplace_survivor.h likelihood.h brentq.h)
+ 
+add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
 
 # Windows + Visual studio specifics.
 if(MSVC)
@@ -40,6 +42,8 @@ else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
 install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
+install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood) 
+
 
 # Test subdirectory.
 add_subdirectory(tests)
