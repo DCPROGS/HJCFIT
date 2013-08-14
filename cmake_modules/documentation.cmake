@@ -47,7 +47,7 @@ if(SPHINX_FOUND)
     "${CMAKE_BINARY_DIR}/conf.py"
     @ONLY)
 
-  message(STATUS "[Sphinx] found. Documentation target is \"doc\".")
+  message(STATUS "[Sphinx] found. Documentation target is \"documentation\".")
 else()
   message(STATUS "[Sphinx] not found. Documentation cannot be built.")
 endif(SPHINX_FOUND)
