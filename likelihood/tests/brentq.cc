@@ -53,7 +53,7 @@ TEST_P(TestPolynomial, random) {
 
   SetUp();
   t_rvector const roots = this->roots;
-  auto lambda = [&roots](t_rvector::Scalar const &_t) {
+  auto lambda = [&roots](t_rvector::Scalar const &_t) -> t_rvector::Scalar {
     t_rvector::Scalar result(1);
     for(t_rvector::Index i(0); i < roots.size(); ++i) result *= (roots(i) - _t);
     return result;
