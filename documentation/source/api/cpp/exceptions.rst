@@ -31,15 +31,7 @@ Math
 Python 
 ++++++
 
-.. ifconfig:: python_bindings in ('on', 'ON')
-
-  .. doxygenclass:: DCProgs::errors::Python
-  .. doxygenclass:: DCProgs::errors::PythonErrorAlreadyThrown
-  .. doxygenclass:: DCProgs::errors::PythonTypeError
-  .. doxygenclass:: DCProgs::errors::PythonValueError
-
-.. ifconfig:: python_bindings not in ('on', 'ON')
-
-  .. warning::
-   
-     The python bindings are not compiled. There are no python-related exceptions defined.
+.. doxygenclass:: DCProgs::errors::Python
+.. doxygenclass:: DCProgs::errors::PythonErrorAlreadyThrown
+.. doxygenclass:: DCProgs::errors::PythonTypeError
+.. doxygenclass:: DCProgs::errors::PythonValueError

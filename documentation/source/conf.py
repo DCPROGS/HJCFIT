@@ -26,8 +26,7 @@ import sys, os
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.mathjax',
-              'sphinx.ext.viewcode', 'sphinx.ext.ifconfig'] \
-             + [@SPHINX_EXTENSIONS@]
+              'sphinx.ext.viewcode'] + [@SPHINX_EXTENSIONS@]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = [os.path.join('@SPHINX_SOURCE_DIR@', '_templates')]
