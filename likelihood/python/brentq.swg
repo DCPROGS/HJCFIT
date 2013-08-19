@@ -22,7 +22,7 @@
   // Wraps a python object and makes it a c++ functor that brentq understands
   struct CallBackForBrentQ : Object<PyObject> {
     // Constructor acquires input object 
-    CallBackForBrentQ(PyObject * const _c) : Object(acquire_ref(_c)) {}
+    CallBackForBrentQ(PyObject * const _c) : Object<PyObject>(acquire_ref(_c)) {}
     // Operator calls function object
     DCProgs::t_real operator()(DCProgs::t_real _x) {
       Object<> x = steal_ref(convert_real_to_python(_x));
