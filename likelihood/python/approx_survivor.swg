@@ -146,7 +146,7 @@ class ApproxSurvivor {
       return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->fa(s); }); 
     }
   }
-
+ 
   %extend {
     PyObject* const af_components;
     PyObject* const fa_components;
@@ -157,7 +157,7 @@ class ApproxSurvivor {
         Object<> result = steal_ref( PyList_New(_N) );
         if(not result) throw DCProgs::errors::PythonErrorAlreadyThrown();
         for(Py_ssize_t i(0); i < _N; ++i) {
-          DCProgs::Asymptotes::t_MatrixAndRoot const &item = _getstuff(i);
+          DCProgs::Asymptotes::t_MatrixAndRoot const item = _getstuff(i);
           Object<> py_item = steal_ref( PyTuple_New(2) );
           if(not py_item) throw DCProgs::errors::PythonErrorAlreadyThrown();
           Object<> py_root = steal_ref(convert_real_to_python(std::get<1>(item)));
@@ -173,18 +173,22 @@ class ApproxSurvivor {
         return result.release();
       }
     PyObject* DCProgs_ApproxSurvivor_af_components_get(DCProgs::ApproxSurvivor *_in) {
+        using namespace DCProgs;
         return affa_components_get( (Py_ssize_t)_in->nb_af_components(),
-                                    [&_in](Py_ssize_t i) {
-                 return _in->get_af_components(static_cast<DCProgs::t_int>(i)); } );
+                                    [&_in](Py_ssize_t i)
+                                         -> Asymptotes::t_MatrixAndRoot const& {
+                 return _in->get_af_components(static_cast<t_int>(i)); } );
     }
     PyObject* DCProgs_ApproxSurvivor_fa_components_get(DCProgs::ApproxSurvivor *_in) {
+        using namespace DCProgs;
         return affa_components_get( (Py_ssize_t)_in->nb_fa_components(),
-                                    [&_in](Py_ssize_t i) {
-                 return _in->get_fa_components(static_cast<DCProgs::t_int>(i)); } );
+                                    [&_in](Py_ssize_t i) 
+                                         -> Asymptotes::t_MatrixAndRoot const& {
+                 return _in->get_fa_components(static_cast<t_int>(i)); } );
     }
  
   } %}
-
+ 
   // Add some printout functions.
   %extend {
     PyObject* __str__() {
