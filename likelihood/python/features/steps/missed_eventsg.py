@@ -200,13 +200,14 @@ def step(context):
         Hfa = compute_Hfa(qmatrix, G.tau, t)
         check = sum(Hfa[:, :G.nopen], axis=1) 
         assert all(abs(occ - check) < context.tolerance)
-        if any(2e0*abs(check) > context.tolerance): 
+        if any(abs(check) > 5e1 * context.tolerance): 
           assert any(abs(occ - 2e0*check) > context.tolerance)
       except:
         print(G)
         print("  * occupancies: {0}".format(occ))
         print("  * check: {0}".format(check))
         print("  * Hfa shape: {0}".format(Hfa.shape))
+        print("  * time: {0}".format(t))
         raise
 
 @then('the {which} CHS occupancies compare to {prior:Eval}')
