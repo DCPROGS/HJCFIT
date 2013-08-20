@@ -91,7 +91,7 @@ if(tests)
     endif(WIN32)
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${WORKINGDIR}
-             COMMAND ${thiscommand} ${CMAKE_CURRENT_SOURCE_DIR}/${filename})
+             COMMAND ${thiscommand} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${ARGN})
     if(MSVC OR MSYS) 
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")

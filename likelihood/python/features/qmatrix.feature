@@ -59,7 +59,7 @@ Feature: QMatrix bindings
       | matrix     | nopen | exception  |
       | classic    | -1    | ValueError |
       | classic    | 6     | ValueError |
-      | spam       | 0     | ValueError |
+      | spam       | 0     | TypeError  |
       | numpy_spam | 0     | TypeError  |
 
 

@@ -46,7 +46,7 @@ Feature: Determinantal Equation bindings
       | classic              |   0   |  0.4  | ValueError |
       | classic              |   5   |  0.1  | ValueError |
       | empty                |   0   |  0.3  | ValueError |
-      | spam                 |   1   |  0.1  | ValueError |
+      | spam                 |   1   |  0.1  | TypeError  |
       | rectangle            |   1   |  0.1  | ValueError |
 
 
