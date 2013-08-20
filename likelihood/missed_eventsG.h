@@ -61,7 +61,7 @@ namespace DCProgs {
                       ApproxSurvivor(_af, _roots_af, _fa, _roots_fa),
                       laplace_a_(new LaplaceSurvivor(_af.get_qmatrix())),
                       laplace_f_(new LaplaceSurvivor(_fa.get_qmatrix())),
-                      nmax_(_nmax), tmax_(nmax_ * get_tau()),
+                      nmax_(_nmax), tmax_(t_real(nmax_ - 1) * _af.get_tau()),
                       af_factor_( _af.get_qmatrix().af()
                                   * (_af.get_tau() * _af.get_qmatrix().ff()).exp() ),
                       // _fa is already transpose of _af, so it is indeed _fa.matrix.af * e^...
@@ -81,7 +81,7 @@ namespace DCProgs {
                       ApproxSurvivor(_qmatrix, _tau, _findroots), 
                       laplace_a_(new LaplaceSurvivor(_qmatrix)),
                       laplace_f_(new LaplaceSurvivor(_qmatrix.transpose())),
-                      nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
+                      nmax_(_nmax), tmax_(_tau*t_real(_nmax-1)),
                       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
                       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
       //! \brief Initializes missed-events functor.
@@ -130,7 +130,7 @@ namespace DCProgs {
       //! Sets \f$t\geq n_{\mathrm{max}}\tau\f$
       void  set_nmax(t_uint _n) { 
         if(_n == 0u) throw errors::Domain("n should be strictly positive.");
-        nmax_ = _n; tmax_ = t_real(_n) * ExactSurvivor::get_tau(); 
+        nmax_ = _n; tmax_ = t_real(_n-1) * ExactSurvivor::get_tau(); 
       }
       //! When to switch to asymptotic values
       t_uint  get_nmax() const { return nmax_; }
@@ -169,7 +169,10 @@ namespace DCProgs {
       t_LaplacePtr laplace_f_;
       //! Switches to asymptotic values for \f$t\geq n_{\mathrm{max}}\tau\f$.
       t_uint nmax_;
-      //! Max length of missed events.
+      //! \brief Cut-off time of exact calculations
+      //!        \f$t_{\mathrm{max}} = (n_{\mathrm{max}} - 1)\tau\f$.
+      //! \details Input time to the survivor function, so \f$-\tau\f$ translation is already in
+      //! there.
       t_real tmax_;
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
       t_rmatrix af_factor_;

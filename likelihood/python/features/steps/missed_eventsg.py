@@ -145,7 +145,8 @@ def step(context, name, start):
         print(missed_events_G)
         print("  * tmax: {0}".format(missed_events_G.tmax))
         print("{name}({t}*tau): \n{value}".format(name=name, t=t/tau, value=value))
-        print("approx.af({t}*tau) * factor: \n{value}".format(name=name, t=(t-tau)/tau, value=check))
+        print("approx.{name}({t}*tau) * factor: \n{value}"\
+              .format(name=name, t=(t-tau)/tau, value=check))
         print("factor:\n{factor}".format(factor=factor))
         raise 
 

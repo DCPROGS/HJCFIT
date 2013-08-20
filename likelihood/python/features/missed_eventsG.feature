@@ -5,8 +5,9 @@ Feature: Check Missed Events G functionality
 
   Scenario Outline: Computation of af, fa, compared to exact and approx survivors
     Given a list of 20 random q-matrices
-      And a list of 10 random times between 1e-4 and 3e-4
       And a list of 10 random times between 0e-4 and 1e-4
+      And a list of 10 random times between 1e-4 and 2e-4
+      And a list of 10 random times between 2e-4 and 3e-4
       And a list of 10 random times between 3e-4 and 4e-4
       And a parameter tolerance=1e-8
      When MissedEventsG objects are instantiated with the q-matrices and tau=1e-4 and nmax=3

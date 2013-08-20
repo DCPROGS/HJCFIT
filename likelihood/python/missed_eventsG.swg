@@ -72,6 +72,14 @@
          "Computes the right eigenvector of :math:`{}^e\\mathcal{G}_{FA}{}^e\\mathcal{G}_{AF}`, \n"
          "where :math:`{}^e\\mathcal{G}_{FA}` is the laplacian for :math:`s=0` of the likelihood.")
          MissedEventsG::final_occupancies;
+%feature("autodoc", "Cut-off time of exact calculations "
+         ":math:`t_{\\mathrm{max}} = (n_{\\mathrm{max}}-1)\\\\tau`.\n\n"
+         "For practical reasons, the minimum observation time has already"
+         "been removed here.") MissedEventsG::tmax;
+%feature("autodoc", "Cut-off time of exact calculations in units of :math:`\\\\tau`.")
+         MissedEventsG::nmax;
+%feature("autodoc", "Number of open-states.") MissedEventsG::nopen;
+%feature("autodoc", "Number of shut-states.") MissedEventsG::nshut;
 
 %feature("shadow") MissedEventsG::MissedEventsG %{
   def __init__(self, *args, **kwargs):
@@ -241,8 +249,8 @@ class MissedEventsG {
   // Add extensions to compute properties
   %extend {
     DCProgs::t_real const tau;
-    DCProgs::t_rmatrix const & af_factor;
-    DCProgs::t_rmatrix const & fa_factor;
+    PyObject * const af_factor;
+    PyObject * const fa_factor;
     DCProgs::t_initvec const initial_occupancies;
     DCProgs::t_rvector const final_occupancies;
   }
@@ -250,11 +258,15 @@ class MissedEventsG {
     DCProgs::t_real DCProgs_MissedEventsG_tau_get(DCProgs::MissedEventsG *_in) {
       return _in->get_tau();
     }
-    DCProgs::t_rmatrix const & DCProgs_MissedEventsG_af_factor_get(DCProgs::MissedEventsG *_in) {
-      return _in->get_af_factor();
+    PyObject* DCProgs_MissedEventsG_af_factor_get(DCProgs::MissedEventsG *_in) {
+      PyObject* result = DCProgs::numpy::wrap_to_numpy(_in->get_af_factor());
+      PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
+      return result;
     }
-    DCProgs::t_rmatrix const & DCProgs_MissedEventsG_fa_factor_get(DCProgs::MissedEventsG *_in) {
-      return _in->get_fa_factor();
+    PyObject* DCProgs_MissedEventsG_fa_factor_get(DCProgs::MissedEventsG *_in) {
+      PyObject* result = DCProgs::numpy::wrap_to_numpy(_in->get_fa_factor());
+      PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
+      return result;
     }
     DCProgs::t_initvec DCProgs_MissedEventsG_initial_occupancies_get(DCProgs::MissedEventsG *_in) {
       return DCProgs::occupancies(*_in, true);
