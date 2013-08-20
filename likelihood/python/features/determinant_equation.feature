@@ -42,12 +42,12 @@ Feature: Determinantal Equation bindings
 
     Examples:
 
-      | matrix               | nopen | tau   | Exception  |
-      | classic              |   0   |  0.4  | ValueError |
-      | classic              |   5   |  0.1  | ValueError |
-      | empty                |   0   |  0.3  | ValueError |
-      | spam                 |   1   |  0.1  | TypeError  |
-      | rectangle            |   1   |  0.1  | ValueError |
+      | matrix               | nopen | tau   | Exception               |
+      | classic              |   0   |  0.4  | ValueError              |
+      | classic              |   5   |  0.1  | ValueError              |
+      | empty                |   0   |  0.3  | ValueError              |
+      | spam                 |   1   |  0.1  | (ValueError, TypeError) |
+      | rectangle            |   1   |  0.1  | ValueError              |
 
 
   Scenario Outline: Computes the determinant for open states of classic case
