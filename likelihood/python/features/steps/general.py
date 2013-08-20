@@ -35,10 +35,12 @@ def step(context):
 
 @then('instantiation threw {type}')
 def step(context, type):
+  from collections import Iterable
   assert hasattr(context, 'initialization_exception')
   exception = getattr(context, 'initialization_exception')
   type = eval(type)
-  if not isinstance(exception[1], type): raise exception[1]
+  if not isinstance(type, Iterable): type = [type]
+  if not any(isinstance(exception[1], u) for u in type): raise exception[1]
 
 @then("no exception was thrown")
 def step(context):

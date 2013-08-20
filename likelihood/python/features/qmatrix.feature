@@ -56,11 +56,11 @@ Feature: QMatrix bindings
  
     Examples:
  
-      | matrix     | nopen | exception  |
-      | classic    | -1    | ValueError |
-      | classic    | 6     | ValueError |
-      | spam       | 0     | TypeError  |
-      | numpy_spam | 0     | TypeError  |
+      | matrix     | nopen | exception                |
+      | classic    | -1    | ValueError               |
+      | classic    | 6     | ValueError               |
+      | spam       | 0     | (ValueError, TypeError)  |
+      | numpy_spam | 0     | TypeError                |
 
 
   Scenario Outline: Modify matrix in-place
