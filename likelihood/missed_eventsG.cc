@@ -59,7 +59,7 @@ namespace DCProgs {
           }),
       laplace_a_(new LaplaceSurvivor(_qmatrix)),
       laplace_f_(new LaplaceSurvivor(_qmatrix.transpose())),
-      nmax_(_nmax), tmax_(_tau*t_real(_nmax)),
+      nmax_(_nmax), tmax_(_tau*t_real(_nmax-1)),
       af_factor_(_qmatrix.af() * (_tau * _qmatrix.ff()).exp()),
       fa_factor_(_qmatrix.fa() * (_tau * _qmatrix.aa()).exp()) {}
 # endif
