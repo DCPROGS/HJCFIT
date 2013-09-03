@@ -29,7 +29,7 @@ Feature: Check Missed Events G functionality
  
   Scenario Outline: Computation of equilibrium occupancy
     Given a list of 100 random missed-events likelihoods with tau=1e-4 and nmax=3
-      And a parameter tolerance=1e-8
+      And a parameter tolerance=1e-6
      When the <name> equilibrium occupancies are computed 
      Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
       And the components of the <name> equilibrium occupancies sum to one
