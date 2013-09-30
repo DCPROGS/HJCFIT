@@ -94,7 +94,7 @@
          "   The initial occupancy vector.\n" 
          ":param final:\n"
          "   The final occupancy vector.\n")
-        chained_likelihood(IdealG *_idealg, PyObject *_intervals, 
+        chained_likelihood(DCProgs::IdealG *_idealg, PyObject *_intervals, 
                            PyObject* _initial, PyObject* _final);
 DCProgs::t_real chained_likelihood(DCProgs::IdealG *idealg, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);

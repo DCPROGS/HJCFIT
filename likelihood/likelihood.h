@@ -74,7 +74,7 @@ namespace DCProgs {
         if(max_coeff > 1e50) {
           current  *= 1e-50;
           exponent += 50;
-        } else if(max_coeff < -50) {
+        } else if(max_coeff < 1e-50) {
           current  *= 1e+50;
           exponent -= 50;
         }
