@@ -154,7 +154,7 @@ def step(context, tolerance):
       isOK += 1 
       print("(s, error)={0} are not roots of {1}.\n"
             .format(false_roots, matrix)) 
-  if isOK * getattr(context, 'allowance', 1) >= 1:
+  if isOK / float(len(context.roots)) > getattr(context, 'allowance', 1):
     raise AssertionError("Found {0}/{1} systems with incorrect roots."\
                          .format(isOK, len(context.equations)))
 

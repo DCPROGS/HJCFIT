@@ -52,19 +52,22 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
    
        :param determinant: 
          A function or functor of a single variable.
+
        :param intervals:
          A list of items `[(a0, b0), ..., (a1, b1)]`, where `(a, b)` is the interval over which to
          look for roots. 
 
          If this object is None (default), then uses :py:meth:`find_root_intervals` to figure out
          the  intervals.
+
        :param tolerance:
          Tolerance criteria. Used to determine multiplicity.
+
        :returns: A list of items `(root, multiplicity)`.
    """
-   from scipy.optimize import brentq, fminbound
+   from scipy.optimize import fminbound
    from numpy import abs, count_nonzero
-   from .likelihood import find_root_intervals, eig
+   from .likelihood import find_root_intervals, eig, brentq
 
    if intervals is None:
      intervals = [u[0] for u in find_root_intervals(determinant)]
@@ -73,7 +76,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
    for interval in intervals:
      # left, right: limit of interval.
      left, right = determinant(interval)
-     if left * right < 0: root = brentq(determinant, *interval)
+     if left * right < 0: root = brentq(determinant, *interval)[0]
      elif left < 0:
        root, value, ierr, numfunc = fminbound(lambda x: -determinant(x), left, right)
        if abs(value) > tolerance: continue

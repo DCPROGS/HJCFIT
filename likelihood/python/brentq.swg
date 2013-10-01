@@ -63,7 +63,7 @@
 PyObject* brentq(PyObject *function, DCProgs::t_real a, DCProgs::t_real b, 
                  DCProgs::t_real xtol, DCProgs::t_real rtol, DCProgs::t_uint itermax);
 %pythoncode %{
-  def brentq(function, a, b, xtol=1e-8, rtol=1e-8, itermax=100):
+  def brentq(function, a, b, xtol=1e-12, rtol=4.440892098e-16, itermax=100):
     """ Computes zeros via brentq.
          
         This is the exact same algorithm as scipy.optimize.brentq. Only, the errors and c types
@@ -89,6 +89,7 @@ PyObject* brentq(PyObject *function, DCProgs::t_real a, DCProgs::t_real b,
     if xtol <= 0: raise ValueError("xtol must be strictly positive");
     if rtol <= 0: raise ValueError("rtol must be strictly positive");
     if itermax <= 0: raise ValueError("itermax must be strictly positive");
+    if b <= a: raise ValueError("Interval is not valid: {0} >= {1}.".format(a, b))
     return _likelihood._brentq(function, a, b, xtol, rtol, itermax)
 %}
 
