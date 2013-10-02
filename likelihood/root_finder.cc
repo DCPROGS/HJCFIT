@@ -66,7 +66,7 @@ namespace DCProgs {
        t_cvector::Scalar const * const i_data_end = i_data + eigenvalues.size();
        for(; i_data != i_data_end; ++i_data) 
          if( std::abs(i_data->imag()) < _tolerance
-             and std::abs(i_data->real() - _s) < std::max(_s, 1e0) * _tolerance ) ++result;
+             and std::abs(i_data->real() - _s) < std::max(_s, t_real(1)) * _tolerance ) ++result;
        return result;
      }
      
@@ -101,7 +101,7 @@ namespace DCProgs {
          if(nroots == 1) {
            if(_det(_min) * _det(_max) <= 0e0) _intervals.emplace_back(_min, _max, 1);
          } else if(nroots != 0) {
-           if( _max - _min < std::max(-_min, 1e0) * _tolerance) {
+           if( _max - _min < std::max(-_min, t_real(1)) * _tolerance) {
              t_real const s = (_min + _max) * 0.5;
              // count number of eigenvalues that are equal to s *and* real.
              t_uint const multiplicity = getMultiplicity(_det, s, _tolerance);
