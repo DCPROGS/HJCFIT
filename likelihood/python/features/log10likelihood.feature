@@ -4,7 +4,7 @@ Feature: Check log10likelihood
   function of an input matrix. It should be able to handle numbers with
   small/large exponents without producing NaN or infinities (or not too often...).
 
-  Scenario Outline: Compute very small likelihoods
+  Scenario Outline: Compute very small/large likelihoods
     Given a list of bursts <bursts>
       And a dictionary of parameters
           """ 

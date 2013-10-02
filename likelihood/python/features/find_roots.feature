@@ -76,3 +76,14 @@ Feature: Figure out roots for a state matrix
      When the roots are computed for each
      Then roots are roots indeed, to within tolerance=1e-5 * variation of det W
       And the multiplicity of the real roots add up to the number of open states
+
+
+  Scenario: Find large roots: Issue #59
+    Given a determinantal equation we know has large roots
+      And a dictionary of parameters
+          """
+          {'tolerance': 1e-12, 'lower_bound': -1e6, 'upper_bound': 0}
+          """
+     When searching for intervals for each root
+     Then the call does not stack-overflow
+

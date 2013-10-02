@@ -38,19 +38,26 @@ namespace DCProgs {
     if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
   }
  
+# ifdef DCPROGS_MACRO
+#   error DCPROGS_MACRO already defined
+# endif
+  // Macro is used to fake constructor delegation...
+# define DCPROGS_MACRO(FINDROOTS)                                                          \
+    /* First creates determinant equations. */                                             \
+    DeterminantEq determinant_af(_qmatrix, _tau);                                          \
+    DeterminantEq determinant_fa(determinant_af.transpose());                              \
+    /* Then finds roots */                                                                 \
+    std::vector<Root> roots_af = FINDROOTS(determinant_af);                                \
+    std::vector<Root> roots_fa = FINDROOTS(determinant_fa);                                \
+    /* Then creates Asymptotes object */                                                   \
+    asymptotes_af_.reset(new Asymptotes(determinant_af, roots_af));                        \
+    if(not asymptotes_af_.get()) throw errors::Runtime("Could not initialize unique_ptr"); \
+    asymptotes_fa_.reset(new Asymptotes(determinant_fa, roots_fa));                        \
+    if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr"); 
+
   // Function to create approximate missed event survivor function.
   ApproxSurvivor::ApproxSurvivor(QMatrix const &_qmatrix, t_real _tau, t_RootFinder const &_findroots) {
-    // First creates determinant equations.
-    DeterminantEq determinant_af(_qmatrix, _tau);
-    DeterminantEq determinant_fa(determinant_af.transpose());
-    // Then finds roots
-    std::vector<Root> roots_af = _findroots(determinant_af);
-    std::vector<Root> roots_fa = _findroots(determinant_fa);
-    // Then creates Asymptotes object
-    asymptotes_af_.reset(new Asymptotes(determinant_af, roots_af));
-    if(not asymptotes_af_.get()) throw errors::Runtime("Could not initialize unique_ptr");
-    asymptotes_fa_.reset(new Asymptotes(determinant_fa, roots_fa));
-    if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
+    DCPROGS_MACRO(_findroots);
   }
 
 
@@ -67,17 +74,7 @@ namespace DCProgs {
     auto findroots = [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
       return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound);  
     };
-    // First creates determinant equations.
-    DeterminantEq determinant_af(_qmatrix, _tau);
-    DeterminantEq determinant_fa(determinant_af.transpose());
-    // Then finds roots
-    std::vector<Root> roots_af = findroots(determinant_af);
-    std::vector<Root> roots_fa = findroots(determinant_fa);
-    // Then creates Asymptotes object
-    asymptotes_af_.reset(new Asymptotes(determinant_af, roots_af));
-    if(not asymptotes_af_.get()) throw errors::Runtime("Could not initialize unique_ptr");
-    asymptotes_fa_.reset(new Asymptotes(determinant_fa, roots_fa));
-    if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
+    DCPROGS_MACRO(findroots);
   }
 # endif
   

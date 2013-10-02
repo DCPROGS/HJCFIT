@@ -45,6 +45,55 @@ def step(context, n):
 def step(context, n):
   context.allowance = float(n) / 100.0
 
+@given('a determinantal equation we know has large roots')
+def step(context):
+  from dcprogs.likelihood import QMatrix, DeterminantEq
+  qmatrix = QMatrix([[ -1.89907444e+02,   0.00000000e+00,   2.17917781e+01,
+                        1.68115666e+02,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,  -5.59197168e+02,   0.00000000e+00,
+                        0.00000000e+00,   2.28813670e+01,   5.36315801e+02,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  1.70657017e+04,   0.00000000e+00,  -1.70657017e+04,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  6.93510518e+04,   0.00000000e+00,   0.00000000e+00,
+                       -7.70252433e+04,   0.00000000e+00,   0.00000000e+00,
+                        7.67419154e+03,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,   1.62124166e+04,   0.00000000e+00,
+                        0.00000000e+00,  -1.62124166e+04,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,   7.15538758e+04,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,  -1.06690747e+06,
+                        9.95292553e+05,   0.00000000e+00,   6.10438859e+01,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        1.45242879e+04,   0.00000000e+00,   3.69900307e+05,
+                       -3.87202655e+05,   2.77806009e+03,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        2.01908451e+03,  -2.28998927e+03,   2.70904758e+02,
+                        0.00000000e+00,   0.00000000e+00],
+                     [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   2.87990000e+04,
+                        0.00000000e+00,   1.09766807e+02,  -2.90893700e+04,
+                        1.80603172e+02,   0.00000000e+00],
+                     [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   2.19533614e+02,
+                       -3.09835200e+02,   9.03015859e+01],
+                     [  0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
+                        3.29300422e+02,  -3.29300422e+02]], 3)
+  context.determinant = DeterminantEq(qmatrix, 4e-5).transpose()
+
 @when("the root intervals are computed")
 def step(context):
   from dcprogs.likelihood import find_root_intervals
@@ -69,6 +118,13 @@ def step(context, resolution):
   mini = min([r[0] for r in roots])
   context.intervals_brute_force = find_root_intervals_brute_force(context.equation, resolution, 2*mini)
   context.resolution = resolution
+
+@when("searching for intervals for each root")
+def step(context):
+  from dcprogs.likelihood import find_root_intervals
+  try: find_root_intervals(context.determinant, **context.parameters)
+  except: context.noerror = False
+  else: context.noerror = True
 
 @then("there are {n:Integer} intervals")
 def step(context, n):
@@ -154,7 +210,7 @@ def step(context, tolerance):
       isOK += 1 
       print("(s, error)={0} are not roots of {1}.\n"
             .format(false_roots, matrix)) 
-  if isOK * getattr(context, 'allowance', 1) >= 1:
+  if isOK / float(len(context.roots)) > getattr(context, 'allowance', 1):
     raise AssertionError("Found {0}/{1} systems with incorrect roots."\
                          .format(isOK, len(context.equations)))
 
@@ -172,3 +228,7 @@ def step(context):
   if isOK * getattr(context, 'allowance', 1) >= 1:
     raise AssertionError("Found {0}/{1} systems with incorrect number of roots."\
                          .format(isOK, len(context.equations)))
+
+@then("the call does not stack-overflow")
+def step(context):
+  assert context.noerror

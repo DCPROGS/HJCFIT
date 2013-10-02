@@ -44,11 +44,7 @@ class Asymptotes {
 
          Object<> py_root = steal_ref(PySequence_GetItem(~item, 0));
          if(not py_root) throw errors::PythonErrorAlreadyThrown();
-         t_real c_root;
-         if(PyFloat_Check(~py_root)) c_root = (t_real)PyFloat_AsDouble(~py_root);
-         else if(PyLong_Check(~py_root)) c_root = (t_real)PyLong_AsLong(~py_root);
-         else if(PyInt_Check(~py_root)) c_root = (t_real)PyInt_AsLong(~py_root);
-         else throw errors::PythonTypeError("Roots should be a real number.");
+         t_real const c_root = convert_to_real(~py_root);
 
          Object<> py_mult = steal_ref(PySequence_GetItem(~item, 1));
          if(not py_mult) throw errors::PythonErrorAlreadyThrown();
