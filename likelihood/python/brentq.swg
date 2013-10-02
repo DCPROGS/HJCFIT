@@ -80,7 +80,7 @@ PyObject* brentq(PyObject *function, DCProgs::t_real a, DCProgs::t_real b,
         :param float rtol: 
            Tolerance for interval size. The convergence criteria is an affine function of the
            root:
-           :math:`x_{\\mathrm{tol}}+r_{\\mathrm{tol}} x_{\\matrm{current}} = \\frac{|x_a-x_b|}{2}`.
+           :math:`x_{\\mathrm{tol}}+r_{\\mathrm{tol}} x_{\\mathrm{current}} = \\frac{|x_a-x_b|}{2}`.
         :param int itermax: 
            maximum number of iterations.
 

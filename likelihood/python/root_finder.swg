@@ -156,7 +156,7 @@ std::vector<DCProgs::RootInterval>
         :param Number upper_bound:
              Upper bound of interval. If None, then :py:func:`find_upper_bound_for_roots` is called.
         :param Number tolerance:
-             Tolerance below which the value of the determinant is considered "_close to zero_".
+             Tolerance below which the value of the determinant is considered *close* *to* *zero*.
 
         :raises: ArithmeticError when NaN is encountered or when eigenvalue solver fails.\n\n"
 

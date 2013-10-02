@@ -64,7 +64,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-12, **kwargs):
          Tolerance criteria. Used to determine multiplicity.
 
        :param kwargs:
-         Passed on to :py:meth:`brentq` and :py:math:`find_root_intervals`.
+         Passed on to :py:meth:`brentq` and :py:meth:`find_root_intervals`.
 
        :returns: A list of items `(root, multiplicity)`.
    """
