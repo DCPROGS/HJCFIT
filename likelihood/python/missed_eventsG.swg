@@ -140,13 +140,13 @@
     from .. import internal_dtype
     from . import QMatrix
     # Try first initalization mode
-    det_af   = args[0] if len(args) > 0 else kargs.get("det_af", None)
+    det_af   = args[0] if len(args) > 0 else kwargs.get("det_af", None)
     if isinstance(det_af, DeterminantEq):
-      roots_af = args[1] if len(args) > 1 else kargs.get("roots_af", None)
+      roots_af = args[1] if len(args) > 1 else kwargs.get("roots_af", None)
       if roots_af is None: raise TypeError('Missing roots_af argument')
-      det_fa   = args[2] if len(args) > 2 else kargs.get("det_fa", None)
+      det_fa   = args[2] if len(args) > 2 else kwargs.get("det_fa", None)
       if det_fa is None: raise TypeError('Missing det_fa argument')
-      roots_fa = args[3] if len(args) > 3 else kargs.get("roots_fa", None)
+      roots_fa = args[3] if len(args) > 3 else kwargs.get("roots_fa", None)
       if roots_fa is None: raise TypeError('Missing roots_fa argument')
       nmax = int(args[4] if len(args) > 4 else kwargs.get('nmax', 3))
       this = $action(det_af, roots_af, det_fa, roots_fa, nmax)
