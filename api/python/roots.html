@@ -52,160 +52,198 @@
         
   <div class="section" id="searching-for-roots">
 <span id="python-roots-api"></span><h1>Searching for Roots<a class="headerlink" href="#searching-for-roots" title="Permalink to this headline">¶</a></h1>
-<p id=""><span id="project0namespace_d_c_progs_1a82bd17fe29eedfb4cb40e00abdecc60c"></span><div class="line-block">
-<div class="line">std::vector&lt;  Root  &gt; <strong>find_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _rtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _lowerbound = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _upperbound = quiet_nan)</div>
-</div>
-</p>
-<blockquote>
-<div><p>Finds root using brentq and find_root_intervals. </p>
-<p><p>Tries and computes the roots of an input determinant equation. This is a three fold process:</p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation for which to compute the roots. </p>
+<dl class="function">
+<dt id="dcprogs.likelihood.find_roots">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">find_roots</tt><big>(</big><em>determinant</em>, <em>intervals=None</em>, <em>tolerance=1e-12</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.find_roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes roots for each interval.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>determinant</strong> &#8211; A function or functor of a single variable.</li>
+<li><strong>intervals</strong> &#8211; <p>A list of items <cite>[(a0, b0), ..., (a1, b1)]</cite>, where <cite>(a, b)</cite> is the interval over which to
+look for roots.</p>
+<p>If this object is None (default), then uses <a class="reference internal" href="#dcprogs.likelihood.find_root_intervals" title="dcprogs.likelihood.find_root_intervals"><tt class="xref py py-meth docutils literal"><span class="pre">find_root_intervals()</span></tt></a> to figure out
+the  intervals.</p>
 </li>
-<li><tt class="first docutils literal"><span class="pre">_xtol</span></tt> - <p>Tolerance for interval size </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_rtol</span></tt> - <p>Tolerance for interval size. The convergence criteria is an affine function of the root: <span class="math">\(x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\)</span>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>maximum number of iterations for any of the three steps. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_lowerbound</span></tt> - <p>Lower bound of the interval bracketing all roots. If None, the lower bound is obtained from <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>find_lower_bound_for_roots()</em></a>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_upperbound</span></tt> - <p>Upper bound of the interval bracketing all roots. If None, the upper bound is obtained from <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>find_upper_bound_for_roots()</em></a>. </p>
-</li>
+<li><strong>tolerance</strong> &#8211; Tolerance criteria. Used to determine multiplicity.</li>
+<li><strong>kwargs</strong> &#8211; Passed on to <a class="reference internal" href="#dcprogs.likelihood.brentq" title="dcprogs.likelihood.brentq"><tt class="xref py py-meth docutils literal"><span class="pre">brentq()</span></tt></a> and <a class="reference internal" href="#dcprogs.likelihood.find_root_intervals" title="dcprogs.likelihood.find_root_intervals"><tt class="xref py py-meth docutils literal"><span class="pre">find_root_intervals()</span></tt></a>.</li>
 </ul>
-</dd>
-</dl>
-</p>
-</p>
-</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list of items <cite>(root, multiplicity)</cite>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <div class="section" id="bracketing-all-roots">
 <h2>Bracketing all Roots<a class="headerlink" href="#bracketing-all-roots" title="Permalink to this headline">¶</a></h2>
-<p id=""><span id="project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"></span><div class="line-block">
-<div class="line"><a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>find_lower_bound_for_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _start = 0e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _alpha = 5e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
-</div>
-</p>
-<blockquote>
-<div><p>Figures out an lower bound for root finding. </p>
-<p>Proceeds by computing the eigenvalues, then setting lower bound to somewhat lower than the lowest eigenvalue. It then checks that the eigenvalues of the matrix computed at that value, and so on and so forth. The algorithm stops when the lowest eigenvalue is higher than the current bound. <dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_start</span></tt> - <p>Value where to start looking for lower bound. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_alpha</span></tt> - <p>factor by which to set new lower bound: <span class="math">\(s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\)</span>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>Maximum number of iterations. </p>
-</li>
+<dl class="function">
+<dt id="dcprogs.likelihood.find_lower_bound_for_roots">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">find_lower_bound_for_roots</tt><big>(</big><em>determinant</em>, <em>start=0.0</em>, <em>alpha=2.0</em>, <em>itermax=100</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.find_lower_bound_for_roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figures out lower bound for root.</p>
+<p>The lower bound is obtained by iteratively checking the lowest eigenvalue
+<span class="math">\(\epsilon_i^s\)</span> of <span class="math">\(H(s_i)\)</span>, where <span class="math">\(s_i\)</span> is the guess at iteration
+<span class="math">\(i\)</span>. If the lowest eigenvalue is smaller than <span class="math">\(s_i\)</span>, then
+<span class="math">\(s_{i+1} = \epsilon_i^s + \alpha(\epsilon_i^s - s_i)\)</span> is created.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>det</strong> (<em>DeterminantEq</em>) &#8211; Function for which to guess bound for lower root.</li>
+<li><strong>start</strong> (<em>Number</em>) &#8211; Starting point.</li>
+<li><strong>alpha</strong> (<em>Number</em>) &#8211; Factor from which to determine next best guess.</li>
+<li><strong>itermax</strong> (<em>Integer</em>) &#8211; Maximum number of iterations before bailing out.</li>
 </ul>
-</dd>
-</dl>
-</p>
-</div></blockquote>
-<p id=""><span id="project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"></span><div class="line-block">
-<div class="line"><a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> <strong>find_upper_bound_for_roots</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _start = 0e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _alpha = 5e0, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
-</div>
-</p>
-<blockquote>
-<div><p>Figures out an upper bound for root finding. </p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_start</span></tt> - <p>Value where to start looking for lower bound. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_alpha</span></tt> - <p>factor by which to set new lower bound: <span class="math">\(s_{n+1} = min(\epsilon_i) + \alpha (s_N - min(\epsilon_i))\)</span>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>Maximum number of iterations. </p>
-</li>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dcprogs.likelihood.find_upper_bound_for_roots">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">find_upper_bound_for_roots</tt><big>(</big><em>determinant</em>, <em>start=0.0</em>, <em>alpha=2.0</em>, <em>itermax=100</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.find_upper_bound_for_roots" title="Permalink to this definition">¶</a></dt>
+<dd><p>Figures out upper bound for root.</p>
+<p>The upper bound is obtained by iteratively checking the largest eigenvalue
+<span class="math">\(\epsilon_i^s\)</span> of <span class="math">\(H(s_i)\)</span>, where <span class="math">\(s_i\)</span> is the guess at iteration
+<span class="math">\(i\)</span>. If the largest eigenvalue is larger than <span class="math">\(s_i\)</span>, then
+<span class="math">\(s_{i+1} = \epsilon_i^s + \alpha(\epsilon_i^s - s_i)\)</span> is created.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>det</strong> (<em>DeterminantEq</em>) &#8211; Function for which to guess bound for lower root.</li>
+<li><strong>start</strong> (<em>Number</em>) &#8211; Starting point.</li>
+<li><strong>alpha</strong> (<em>Number</em>) &#8211; Factor from which to determine next best guess.</li>
+<li><strong>itermax</strong> (<em>Integer</em>) &#8211; Maximum number of iterations before bailing out.</li>
 </ul>
-</dd>
-</dl>
-</p>
-</div></blockquote>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 <div class="section" id="finding-intervals-for-each-root">
 <h2>Finding intervals for each root<a class="headerlink" href="#finding-intervals-for-each-root" title="Permalink to this headline">¶</a></h2>
-<p id=""><span id="project0namespace_d_c_progs_1a2a4a1d0c1a2172cbb8fda1bec6bb28cb"></span><div class="line-block">
-<div class="line">std::vector&lt;  RootInterval  &gt; <strong>find_root_intervals</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _mins = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _maxs = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tolerance = 1e-8)</div>
-</div>
-</p>
-<blockquote>
-<div><p>Figures out interval where roots can be found. </p>
-<p><dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_mins</span></tt> - <p>A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>DCProgs::find_lower_bound_for_roots()</em></a>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_maxs</span></tt> - <p>A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>DCProgs::find_upper_bound_for_roots()</em></a>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_tolerance</span></tt> - <p>Minimum size of intervals. Below that, roots are expected to be multiples. </p>
-</li>
+<dl class="function">
+<dt id="dcprogs.likelihood.find_root_intervals">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">find_root_intervals</tt><big>(</big><em>determinant</em>, <em>lower_bound=None</em>, <em>upper_bound=None</em>, <em>tolerance=1e-08</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.find_root_intervals" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns intervals for searching roots.</p>
+<p>Finds a set of intervals between lower_bound and upper_bound, each containing a single root.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>determinant</strong> &#8211; <a class="reference internal" href="determinanteq.html#dcprogs.likelihood.DeterminantEq" title="dcprogs.likelihood.DeterminantEq"><tt class="xref py py-class docutils literal"><span class="pre">DeterminantEq</span></tt></a> instance for which to guess bound for lower root.</li>
+<li><strong>lower_bound</strong> &#8211; Number
+Lower bound of the interval within which to search for roots. If None, the lower bound
+is determined using <a class="reference internal" href="#dcprogs.likelihood.find_lower_bound_for_roots" title="dcprogs.likelihood.find_lower_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt></a>.</li>
+<li><strong>upper_bound</strong> (<em>Number</em>) &#8211; Upper bound of the interval within which to search for roots. If None, the upper bound
+is determined using <a class="reference internal" href="#dcprogs.likelihood.find_upper_bound_for_roots" title="dcprogs.likelihood.find_upper_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt></a>.</li>
+<li><strong>tolerance</strong> (<em>Number</em>) &#8211; Size of the smallest possible intervals. Intervals smaller than this are likely to
+have multiple roots.</li>
 </ul>
-</dd>
-</dl>
-</p>
-</div></blockquote>
-<p id=""><span id="project0namespace_d_c_progs_1a416c17273d99bca5a82923801e7fc3f1"></span><div class="line-block">
-<div class="line">std::vector&lt;  RootInterval  &gt; <strong>find_root_intervals_brute_force</strong>(<a class="reference internal" href="../cpp/determinanteq.html#project0class_d_c_progs_1_1_determinant_eq"><em>DeterminantEq</em></a>  const &amp; _det, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _resolution = 1e-1, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _mins = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _maxs = quiet_nan, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _tolerance = 1e-1)</div>
-</div>
-</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><p class="first">ArithmeticError when NaN is encountered or when eigenvalue solver fails.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A list <cite>[(a, b), multiplicity]</cite>, where <cite>(a, b)</cite> denotes an interval, and
+<cite>multiplicity</cite> the multiplicity of the root. All roots with <cite>multiplicity</cite><span class="math">\(&gt; 1\)</span>
+will have a size of <cite>tolerance</cite> or smaller.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dcprogs.likelihood.find_root_intervals_brute_force">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">find_root_intervals_brute_force</tt><big>(</big><em>determinant</em>, <em>resolution=0.1</em>, <em>lower_bound=None</em>, <em>upper_bound=None</em>, <em>tolerance=1e-08</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.find_root_intervals_brute_force" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find intervals for roots using brute force.</p>
 <blockquote>
-<div><p>Finds roots via brute force search. </p>
-<p>Computes all values between mins and maxs, for a given resolution. If determinant changes sign between two values, or if it comes to within tolerance of zero, then computes eigenvalues of H to determine possible multiplicity. <dl class="docutils">
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_det</span></tt> - <p>The determinant equation </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_resolution</span></tt> - <p>resolution at which computes values in interval. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_mins</span></tt> - <p>A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a3fc8f164f3df034c6366b45614dc4190"><em>DCProgs::find_lower_bound_for_roots()</em></a>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_maxs</span></tt> - <p>A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper bound is determined using <a class="reference internal" href="#project0namespace_d_c_progs_1a4dcf7b2325e8c290ad6bc863a3629334"><em>DCProgs::find_upper_bound_for_roots()</em></a>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_tolerance</span></tt> - <p>Tolerance below which the value of the determinant is considered &#8220;close to zero&#8221;. </p>
-</li>
-</ul>
-</dd>
-</dl>
-</p>
+<div><p>Computes all values between lower_bound and upper_bound, for a given resolution. If the
+determinant changes sign between two values, or if it comes to within tolerance of zero,
+then the eigenvalues of H are used to determine possible multiplicity.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">param determinant:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Instance of <a class="reference internal" href="determinanteq.html#dcprogs.likelihood.DeterminantEq" title="dcprogs.likelihood.DeterminantEq"><tt class="xref py py-class docutils literal"><span class="pre">DeterminantEq</span></tt></a> for which to find root intervals</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param Number resolution:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Resolution at which to sample interval.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param Number lower_bound:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Lower bound of interval. If None, then <a class="reference internal" href="#dcprogs.likelihood.find_lower_bound_for_roots" title="dcprogs.likelihood.find_lower_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt></a> is called.</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">param Number upper_bound:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body">Upper bound of interval. If None, then <a class="reference internal" href="#dcprogs.likelihood.find_upper_bound_for_roots" title="dcprogs.likelihood.find_upper_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt></a> is called.</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">param Number tolerance:</th></tr>
+<tr class="field-odd field"><td>&nbsp;</td><td class="field-body">Tolerance below which the value of the determinant is considered <em>close</em> <em>to</em> <em>zero</em>.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">raises:</th><td class="field-body">ArithmeticError when NaN is encountered or when eigenvalue solver fails.</td>
+</tr>
+</tbody>
+</table>
 </div></blockquote>
+<p>&#8220;</p>
+<blockquote>
+<div><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">returns:</th><td class="field-body">A list <cite>[(a, b), multiplicity]</cite>, where <cite>(a, b)</cite> denotes an interval, and <cite>multiplicity</cite>
+the multiplicity of the root. All roots with <cite>multiplicity &gt; 1</cite> will have a size of
+<cite>tolerance</cite> or smaller.</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+</dd></dl>
+
 </div>
 <div class="section" id="root-optimization">
 <h2>Root optimization<a class="headerlink" href="#root-optimization" title="Permalink to this headline">¶</a></h2>
-<p id=""><span id="project0namespace_d_c_progs_1af13aff14f1014d7404f29aece242f5fa"></span><div class="line-block">
-<div class="line">std::tuple&lt;  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> ,  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> ,  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a>  &gt; <strong>brentq</strong>(std::function&lt;  <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> ( <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> )&gt; const &amp; _function, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xstart, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xend, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _xtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1af35231524e5cbdda2eac6693ad52443e"><em>t_real</em></a> _rtol = 1e-8, <a class="reference internal" href="../cpp/typehierarchy.html#project0namespace_d_c_progs_1aaad801e4e17919b8e1d2b8fef04743ed"><em>t_uint</em></a> _itermax = 100)</div>
-</div>
-</p>
-<blockquote>
-<div><p>Computes root of a function in a given interval. </p>
-<p>Scavenged from Scipy. Actual code (.cc file) is under BSD. <dl class="docutils">
-<dt><strong>Return</strong></dt>
-<dd>A tuple (x, iterations, function calls) </dd>
-<dt><strong>Parameters</strong></dt>
-<dd><ul class="breatheparameterlist first last">
-<li><tt class="first docutils literal"><span class="pre">_function</span></tt> - <p>A call-back to the actual function. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_xstart</span></tt> - <p>Beginning of the interval </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_xend</span></tt> - <p>End of the interval </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_xtol</span></tt> - <p>Tolerance for interval size </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_rtol</span></tt> - <p>Tolerance for interval size. The convergence criteria is an affine function of the root: <span class="math">\(x_{\mathrm{tol}} + r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a - x_b|}{2}\)</span>. </p>
-</li>
-<li><tt class="first docutils literal"><span class="pre">_itermax</span></tt> - <p>maximum number of iterations. </p>
-</li>
+<dl class="function">
+<dt id="dcprogs.likelihood.brentq">
+<tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">brentq</tt><big>(</big><em>function</em>, <em>a</em>, <em>b</em>, <em>xtol=1e-12</em>, <em>rtol=4.440892098e-16</em>, <em>itermax=100</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.brentq" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes zeros via brentq.</p>
+<p>This is the exact same algorithm as scipy.optimize.brentq. Only, the errors and c types
+have been changed to accomodate DCProgs and protect the innocents.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>function</strong> (<em>callable</em>) &#8211; Function for which to solve <span class="math">\(f(x) = 0\)</span>.</li>
+<li><strong>xstart</strong> (<em>float</em>) &#8211; Beginning of the interval</li>
+<li><strong>xend</strong> (<em>float</em>) &#8211; End of the interval</li>
+<li><strong>xtol</strong> (<em>float</em>) &#8211; Tolerance for interval size.</li>
+<li><strong>rtol</strong> (<em>float</em>) &#8211; Tolerance for interval size. The convergence criteria is an affine function of the
+root:
+<span class="math">\(x_{\mathrm{tol}}+r_{\mathrm{tol}} x_{\mathrm{current}} = \frac{|x_a-x_b|}{2}\)</span>.</li>
+<li><strong>itermax</strong> (<em>int</em>) &#8211; maximum number of iterations.</li>
 </ul>
-</dd>
-</dl>
-</p>
-</div></blockquote>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the tuple (x, iterations, times the function was called)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 </div>
 </div>
 

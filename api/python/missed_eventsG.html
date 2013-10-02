@@ -93,17 +93,17 @@ it need not be recomputed, since it most likely already exists.</li>
 <li><strong>qmatrix</strong> &#8211; A <a class="reference internal" href="qmatrix.html#dcprogs.likelihood.QMatrix" title="dcprogs.likelihood.QMatrix"><tt class="xref py py-class docutils literal"><span class="pre">QMatrix</span></tt></a> instance.</li>
 <li><strong>nmax</strong> (<em>int</em>) &#8211; The exact missed event likelihood will be computed for times 
 <span class="math">\(t \in [0, n_{\mathrm{max}}  au\)</span>. Defaults to 3.</li>
-<li><strong>xtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots using <tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt>.
+<li><strong>xtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots using <a class="reference internal" href="roots.html#dcprogs.likelihood.brentq" title="dcprogs.likelihood.brentq"><tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt></a>.
 Defaults to 1e-12.</li>
-<li><strong>rtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots using <tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt>.
+<li><strong>rtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots using <a class="reference internal" href="roots.html#dcprogs.likelihood.brentq" title="dcprogs.likelihood.brentq"><tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt></a>.
 Defaults to 1e-12.</li>
 <li><strong>itermax</strong> (<em>float</em>) &#8211; Maximum number of iterations when computing roots using
-<tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt>.
+<a class="reference internal" href="roots.html#dcprogs.likelihood.brentq" title="dcprogs.likelihood.brentq"><tt class="xref py py-func docutils literal"><span class="pre">brentq()</span></tt></a>.
 Defaults to 100.</li>
 <li><strong>lower_bound</strong> (<em>float</em>) &#8211; Lower bound for <em>all</em> roots. Defaults to None, in which the case the lower bound is
-computed from <tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt>.</li>
+computed from <a class="reference internal" href="roots.html#dcprogs.likelihood.find_lower_bound_for_roots" title="dcprogs.likelihood.find_lower_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt></a>.</li>
 <li><strong>upper_bound</strong> (<em>float</em>) &#8211; Upper bound for <em>all</em> roots. Defaults to None, in which the case the upper bound is
-computed from <tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt>.</li>
+computed from <a class="reference internal" href="roots.html#dcprogs.likelihood.find_upper_bound_for_roots" title="dcprogs.likelihood.find_upper_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt></a>.</li>
 </ul>
 </td>
 </tr>
@@ -228,9 +228,34 @@ with the shape of the input.</td>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="dcprogs.likelihood.MissedEventsG.nmax">
+<tt class="descname">nmax</tt><a class="headerlink" href="#dcprogs.likelihood.MissedEventsG.nmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cut-off time of exact calculations in units of <span class="math">\(\\tau\)</span>.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.MissedEventsG.nopen">
+<tt class="descname">nopen</tt><a class="headerlink" href="#dcprogs.likelihood.MissedEventsG.nopen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of open-states.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.MissedEventsG.nshut">
+<tt class="descname">nshut</tt><a class="headerlink" href="#dcprogs.likelihood.MissedEventsG.nshut" title="Permalink to this definition">¶</a></dt>
+<dd><p>Number of shut-states.</p>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="dcprogs.likelihood.MissedEventsG.tau">
 <tt class="descname">tau</tt><a class="headerlink" href="#dcprogs.likelihood.MissedEventsG.tau" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resolution or maximum length of the missed events.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dcprogs.likelihood.MissedEventsG.tmax">
+<tt class="descname">tmax</tt><a class="headerlink" href="#dcprogs.likelihood.MissedEventsG.tmax" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cut-off time of exact calculations <span class="math">\(t_{\mathrm{max}} = (n_{\mathrm{max}}-1)\\tau\)</span>.</p>
+<p>For practical reasons, the minimum observation time has alreadybeen removed here.</p>
 </dd></dl>
 
 </dd></dl>

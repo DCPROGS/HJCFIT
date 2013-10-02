@@ -63,7 +63,7 @@ where <span class="math">\(L(Q)\)</span> is declared in <a class="reference inte
 <em class="property">class </em><tt class="descclassname">dcprogs.likelihood.</tt><tt class="descname">Log10Likelihood</tt><big>(</big><em>bursts</em>, <em>nopen</em>, <em>tau</em>, <em>tcritical=None</em>, <em>nmax=3</em>, <em>xtol=1e-10</em>, <em>rtol=1e-10</em>, <em>itermax=100</em>, <em>lower_bound=None</em>, <em>upper_bound=None</em><big>)</big><a class="headerlink" href="#dcprogs.likelihood.Log10Likelihood" title="Permalink to this definition">¶</a></dt>
 <dd><p>Creates a functor for optimizing the likelihood.</p>
 <p>This functor can as input a <span class="math">\(\mathcal{Q}\)</span>-matrix and returns the resulting
-likelihood. The root finding process is performed by <tt class="xref py py-func docutils literal"><span class="pre">find_roots()</span></tt>. Most of the
+likelihood. The root finding process is performed by <a class="reference internal" href="roots.html#dcprogs.likelihood.find_roots" title="dcprogs.likelihood.find_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_roots()</span></tt></a>. Most of the
 arguments to initialize this functor are parameters for that process.</p>
 <dl class="attribute">
 <dt id="dcprogs.likelihood.Log10Likelihood.nopen">
@@ -172,9 +172,9 @@ are the equilibrium occupancies.</li>
 <li><strong>rtol</strong> (<em>float</em>) &#8211; Tolerance criteria when computing roots via <tt class="xref py py-meth docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</li>
 <li><strong>itermax</strong> (<em>interger</em>) &#8211; Maximum number of iterations when computing roots via <tt class="xref py py-meth docutils literal"><span class="pre">likelihood.brentq()</span></tt>.</li>
 <li><strong>lower_bound</strong> (<em>float</em>) &#8211; Lower bound for <em>all</em> roots. Defaults to None, in which the case the lower bound is
-computed from <tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt>.</li>
+computed from <a class="reference internal" href="roots.html#dcprogs.likelihood.find_lower_bound_for_roots" title="dcprogs.likelihood.find_lower_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_lower_bound_for_roots()</span></tt></a>.</li>
 <li><strong>upper_bound</strong> (<em>float</em>) &#8211; Upper bound for <em>all</em> roots. Defaults to None, in which the case the upper bound is
-computed from <tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt>.</li>
+computed from <a class="reference internal" href="roots.html#dcprogs.likelihood.find_upper_bound_for_roots" title="dcprogs.likelihood.find_upper_bound_for_roots"><tt class="xref py py-func docutils literal"><span class="pre">find_upper_bound_for_roots()</span></tt></a>.</li>
 </ul>
 </td>
 </tr>
