@@ -102,20 +102,20 @@ def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
 
 %rename("_find_root_intervals") find_root_intervals;
 std::vector<DCProgs::RootInterval>
-   find_root_intervals( DCProgs::DeterminantEq const &det, DCProgs::t_real mins, 
-                        DCProgs::t_real maxs, DCProgs::t_real tolerance );
+   find_root_intervals( DCProgs::DeterminantEq const &det, DCProgs::t_real lower_bound, 
+                        DCProgs::t_real upper_bound, DCProgs::t_real tolerance );
 %pythoncode %{
-  def find_root_intervals(determinant, mins=None, maxs=None, tolerance=1e-8):
+  def find_root_intervals(determinant, lower_bound=None, upper_bound=None, tolerance=1e-8):
     """ Returns intervals for searching roots.
 
-        Finds a set of intervals between mins and maxs, each containing a single root.
+        Finds a set of intervals between lower_bound and upper_bound, each containing a single root.
 
         :param determinant:
              :class:`DeterminantEq` instance for which to guess bound for lower root.
-        :param mins: Number
+        :param lower_bound: Number
              Lower bound of the interval within which to search for roots. If None, the lower bound
              is determined using :py:func:`find_lower_bound_for_roots`. 
-        :param Number maxs:
+        :param Number upper_bound:
              Upper bound of the interval within which to search for roots. If None, the upper bound
              is determined using :py:func:`find_upper_bound_for_roots`. 
         :param Number tolerance:
@@ -128,32 +128,32 @@ std::vector<DCProgs::RootInterval>
              will have a size of `tolerance` or smaller.
     """
     from numpy import NaN
-    if mins is None: mins = NaN
-    if maxs is None: maxs = NaN
-    return _likelihood._find_root_intervals(determinant, mins, maxs, tolerance)
+    if lower_bound is None: lower_bound = NaN
+    if upper_bound is None: upper_bound = NaN
+    return _likelihood._find_root_intervals(determinant, lower_bound, upper_bound, tolerance)
 %}
 
 %rename("_find_root_intervals_brute_force") find_root_intervals_brute_force;
 std::vector<DCProgs::RootInterval> 
   find_root_intervals_brute_force( DCProgs::DeterminantEq const &det, DCProgs::t_real resolution,
-                                   DCProgs::t_real mins, DCProgs::t_real maxs, 
+                                   DCProgs::t_real lower_bound, DCProgs::t_real upper_bound, 
                                    DCProgs::t_real tolerance );
 %pythoncode %{
-  def find_root_intervals_brute_force( determinant, resolution=1e-1, mins=None, maxs=None,
+  def find_root_intervals_brute_force( determinant, resolution=1e-1, lower_bound=None, upper_bound=None,
                                        tolerance=1e-8 ):
     """ Find intervals for roots using brute force.
 
-        Computes all values between mins and maxs, for a given resolution. If the determinant
-        changes sign between two values, or if it comes to within tolerance of zero, then the
-        eigenvalues of H are used to determine possible multiplicity.
+        Computes all values between lower_bound and upper_bound, for a given resolution. If the
+        determinant changes sign between two values, or if it comes to within tolerance of zero,
+        then the eigenvalues of H are used to determine possible multiplicity.
 
         :param determinant:
              Instance of :py:class:`DeterminantEq` for which to find root intervals
         :param Number resolution:
              Resolution at which to sample interval.
-        :param Number mins: 
+        :param Number lower_bound: 
              Lower bound of interval. If None, then :py:func:`find_lower_bound_for_roots` is called.
-        :param Number maxs:
+        :param Number upper_bound:
              Upper bound of interval. If None, then :py:func:`find_upper_bound_for_roots` is called.
         :param Number tolerance:
              Tolerance below which the value of the determinant is considered "_close to zero_".
@@ -166,9 +166,10 @@ std::vector<DCProgs::RootInterval>
            `tolerance` or smaller.
     """
     from numpy import NaN
-    if mins is None: mins = NaN
-    if maxs is None: maxs = NaN
-    return _likelihood._find_root_intervals_brute_force(determinant, resolution, mins, maxs, tolerance)
+    if lower_bound is None: lower_bound = NaN
+    if upper_bound is None: upper_bound = NaN
+    return _likelihood._find_root_intervals_brute_force(
+             determinant, resolution, lower_bound, upper_bound, tolerance)
 %}
 %{
   // Helper function to convert output of root finding objects to cpp

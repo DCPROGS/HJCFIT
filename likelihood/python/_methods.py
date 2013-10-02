@@ -47,7 +47,7 @@ def network(qmatrix):
         graph[i][j]['k-'] = qmatrix.matrix[j, i]
   return graph
 
-def find_roots(determinant, intervals=None, tolerance=1e-8):
+def find_roots(determinant, intervals=None, tolerance=1e-12, **kwargs):
    """ Computes roots for each interval. 
    
        :param determinant: 
@@ -63,20 +63,34 @@ def find_roots(determinant, intervals=None, tolerance=1e-8):
        :param tolerance:
          Tolerance criteria. Used to determine multiplicity.
 
+       :param kwargs:
+         Passed on to :py:meth:`brentq` and :py:math:`find_root_intervals`.
+
        :returns: A list of items `(root, multiplicity)`.
    """
    from scipy.optimize import fminbound
    from numpy import abs, count_nonzero
+   from inspect import getargspec
    from .likelihood import find_root_intervals, eig, brentq
 
    if intervals is None:
-     intervals = [u[0] for u in find_root_intervals(determinant)]
+     # Create dictionary of keyword arguments
+     names, varargs, keywords, defaults = getargspec(find_root_intervals)
+     intervals_kwargs = {'tolerance': tolerance} 
+     for name in names[-len(defaults):]: 
+       if name in kwargs: intervals_kwargs[name] = kwargs[name]
+     intervals = [u[0] for u in find_root_intervals(determinant, **intervals_kwargs)]
+
+   names, varargs, keywords, defaults = getargspec(brentq)
+   brentq_kwargs = {} 
+   for name in names[-len(defaults):]: 
+     if name in kwargs: brentq_kwargs[name] = kwargs[name]
 
    result = []
    for interval in intervals:
      # left, right: limit of interval.
      left, right = determinant(interval)
-     if left * right < 0: root = brentq(determinant, *interval)[0]
+     if left * right < 0: root = brentq(determinant, *interval, **brentq_kwargs)[0]
      elif left < 0:
        root, value, ierr, numfunc = fminbound(lambda x: -determinant(x), left, right)
        if abs(value) > tolerance: continue
