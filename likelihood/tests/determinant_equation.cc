@@ -89,9 +89,13 @@ TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
 
   Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.ff());
   t_rvector const eigs = eigsolver.eigenvalues().real();
-  EXPECT_TRUE(std::abs(det(eigs(0))) < std::abs(eigs(0)) * 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(1))) < std::abs(eigs(1)) * 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(2))) < std::abs(eigs(2)) * 1e-5);
+  EXPECT_TRUE(std::abs(det(eigs(0))) < std::max(1e0, std::abs(eigs(0))) * 1e-5);
+  EXPECT_TRUE(std::abs(det(eigs(1))) < std::max(1e0, std::abs(eigs(1))) * 1e-5);
+  EXPECT_TRUE(std::abs(det(eigs(2))) < std::max(1e0, std::abs(eigs(2))) * 1e-5)
+    << eigs(2) << std::endl
+    << det(eigs(2)) << std::endl;
+    
+
 }
 // Missed event with t resolution == zero (e.g. no missed event)
 TEST_F(DeterminantEqTest, FF_resolution_is_zero_check_derivative) {
