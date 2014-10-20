@@ -66,9 +66,14 @@ namespace DCProgs {
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
     bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
-    t_rvector const final = eq_vector ?
-                              occupancies(eG, false).transpose():
-                              CHS_occupancies(eG, tcritical, false).transpose();
+
+    t_rvector final;
+
+    if(eq_vector)
+        final = t_rmatrix::Ones(_matrix.nshut(),1);
+    else
+        final = CHS_occupancies(eG, tcritical, false).transpose();
+
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_real result(0);
@@ -80,9 +85,14 @@ namespace DCProgs {
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
     bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
-    t_rvector const final = eq_vector ? 
-                              occupancies(eG, false).transpose():
-                              CHS_occupancies(eG, tcritical, false).transpose();
+
+    t_rvector final;
+
+    if(eq_vector)
+        final = t_rmatrix::Ones(_matrix.nshut(),1);
+    else
+        final = CHS_occupancies(eG, tcritical, false).transpose();
+
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_rvector result(bursts.size());

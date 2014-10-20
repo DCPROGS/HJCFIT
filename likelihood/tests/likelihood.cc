@@ -111,7 +111,7 @@ TEST_F(TestLikelihood, manual_check) {
   likelihood->tcritical = -1e0;
   MissedEventsG eG(qmatrix, 1e-4);
   t_initvec const initial = occupancies(eG);
-  t_rvector const final = occupancies(eG, false).transpose();
+  t_rvector const final = t_rvector::Ones(3,1);
 
   t_rmatrix matrix = eG.af( likelihood->bursts.back()[0] );
 
