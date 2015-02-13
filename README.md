@@ -14,6 +14,7 @@ Explanations on compiling and installing the package can be found in the
 [wiki](https://github.com/UCL/dcprogs/wiki).
 
 Relevant references
+-------------------
 
 CH82: Colquhoun D, Hawkes AG (1982) On the stochastic properties of bursts of single ion channel openings and of clusters of bursts. Phil Trans R Soc Lond B 300, 1-59.
 
