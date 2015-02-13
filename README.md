@@ -1,10 +1,13 @@
-DCProgs
-=======
+HJCFIT
+======
 
-The goal of DCProgs is to provide a collection of tools for scientific research on ion channels. The
-package is derived from the [DCPROGS](http://www.ucl.ac.uk/Pharmacology/dcpr95.html) suite and will
-consist of a Python port and wrap of Fortran code with ~30 years usage at University College London.
-The rationale is to preserve and cultivate these tools for future research applications.
+Full maximum likelihood fitting of a mechanism directly to the entire sequence of open and shut times, with exact missed events correction.
+
+The name of the program is an acronym for Hawkes, Jalali & Colquhoun, whose papers in 1990 and 1992 described the exact solution of the missed event problem, which is the basis of the program.  The HJCFIT method was first described by Colquhoun, Hawkes & Srodzinski in 1996. The properties of the estimates of rate constants obtained by this method have now been evaluated (Colquhoun, Hatton & Hawkes, 2003).
+
+The input for HJCFIT is a list of idealised open and shut time intervals.  A kinetic mechanism is specified with some initial guesses for the rate constants. Fitting is done using the Simplex algorithm to maximise the likelihood.
+
+Currently this repository contains likelihood function only. 
 
 The documentation for this package can be found [here](http://ucl.github.io/dcprogs/index.html).
 
