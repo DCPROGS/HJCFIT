@@ -1,4 +1,7 @@
 build/
+include/
+nbproject/
+dcprogs/
 .*.swp
 .*.swo
 *.pyc
