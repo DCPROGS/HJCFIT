@@ -22,6 +22,9 @@ option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 
+# Provides backwards compatibility and prevents MACOS_RPATH warning
+cmake_policy(VERSION 3.0)
+
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
 # Set default ExternalProject root directory
@@ -33,6 +36,10 @@ enable_language(CXX)
 include(${CMAKE_MODULE_PATH}/AddCpp11Flags.cmake)
 include(${CMAKE_MODULE_PATH}/CheckCXX11Features.cmake)
 include(${CMAKE_MODULE_PATH}/CheckIsNaNStatus.cmake)
+
+# Downloads and installs GreatCMakeCookOff
+# It contains a number of cmake recipes
+#include(LookUp-GreatCMakeCookOff)
 
 
 find_package(eigen REQUIRED)
