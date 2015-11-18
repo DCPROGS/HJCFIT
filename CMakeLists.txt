@@ -42,15 +42,13 @@ include(${CMAKE_SCRIPTS}/CheckIsNaNStatus.cmake)
 # It contains a number of cmake recipes
 include(LookUp-GreatCMakeCookOff)
 include(PackageLookup)
+
 # Take advantage of GreatCMakeCookOff to install Eigen
 lookup_package(Eigen)
 
-#find_package(eigen REQUIRED)
-#include_directories(${EIGEN3_INCLUDE_DIR})
-#include_directories(${PROJECT_BINARY_DIR})
-
 if(tests) 
   enable_testing()
+  # Use the CookOff way of including GTest
   include(AddGTest)
 endif(tests)
 if(pythonBindings) 
