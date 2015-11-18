@@ -196,7 +196,7 @@ macro(numpy_feature_test OUTVARNAME testfilename testname)
     try_compile(
       ${OUTVARNAME}
       ${CMAKE_BINARY_DIR}
-      ${CMAKE_MODULE_PATH}/${testfilename}
+      ${CMAKE_SCRIPTS}/${testfilename}
       COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIRS}  -I${NUMPY_INCLUDES} 
                           -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
       CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${PYTHON_LIBRARIES} 
