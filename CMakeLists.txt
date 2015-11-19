@@ -44,7 +44,7 @@ include(LookUp-GreatCMakeCookOff)
 include(PackageLookup)
 
 # Take advantage of GreatCMakeCookOff to install Eigen
-lookup_package(Eigen)
+lookup_package(Eigen3 REQUIRED)
 
 if(tests) 
   enable_testing()
@@ -71,7 +71,7 @@ install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 
-add_subdirectory(likelihood)
+# add_subdirectory(likelihood)
 # add_subdirectory(data)
 # add_subdirectory(python)
 # add_subdirectory(documentation)
