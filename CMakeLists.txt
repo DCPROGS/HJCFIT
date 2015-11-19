@@ -55,21 +55,21 @@ if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
 endif(pythonBindings)
 
-# if(NOT HAS_CXX11_NOEXCEPT)
-#   set(noexcept TRUE)
-# endif()
-# if(NOT DCPROGS_LONG_DOUBLE) 
-#   set(DCPROGS_LONG_DOUBLE False CACHE BOOL
-#       "If True, will use long doubles rather than simple doubles.")
-# endif(NOT DCPROGS_LONG_DOUBLE)
+if(NOT HAS_CXX11_NOEXCEPT)
+  set(noexcept TRUE)
+endif()
+if(NOT DCPROGS_LONG_DOUBLE) 
+  set(DCPROGS_LONG_DOUBLE False CACHE BOOL
+      "If True, will use long doubles rather than simple doubles.")
+endif(NOT DCPROGS_LONG_DOUBLE)
 
-# configure_file (
-#  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
-#  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
-# )
-# install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
+configure_file (
+ "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
+ "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
+)
+install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
-# include(${CMAKE_MODULE_PATH}/documentation.cmake)
+include(${CMAKE_SCRIPTS}/documentation.cmake)
 
 # add_subdirectory(likelihood)
 # add_subdirectory(data)
