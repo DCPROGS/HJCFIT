@@ -22,6 +22,7 @@ set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h occupancies.h time_filter.h r
                        exact_survivor.h root_finder.h determinant_equation.h asymptotes.h
                        approx_survivor.h missed_eventsG.h laplace_survivor.h likelihood.h brentq.h)
  
+include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
 
 # Windows + Visual studio specifics.
@@ -34,15 +35,13 @@ endif(MSVC)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
-add_dependencies(likelihood eigen)
-
 if(WIN32)
   set(LIB_DIRECTORY dcprogs/DLLs)
 else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
 install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
-install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood) 
+install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood)
 
 
 # Test subdirectory.

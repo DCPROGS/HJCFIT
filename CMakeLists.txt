@@ -71,8 +71,8 @@ install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 
-# add_subdirectory(likelihood)
-# add_subdirectory(data)
-# add_subdirectory(python)
-# add_subdirectory(documentation)
+add_subdirectory(likelihood)
+add_subdirectory(data)
+add_subdirectory(python)
+add_subdirectory(documentation)
 
