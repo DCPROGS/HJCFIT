@@ -15,7 +15,11 @@
 #   GNU General Public License for more details.
 #########################
 
-include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+if(EIGEN3_INCLUDE_DIR)
+  include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+endif()
+
+
 
 if (DOXYGEN_FOUND)
   add_custom_target ( doxydocs 
