@@ -22,29 +22,37 @@ option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 
+# Provides backwards compatibility and prevents MACOS_RPATH warning
+cmake_policy(VERSION 3.0)
+
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
 # Set default ExternalProject root directory
 set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 
+set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
 enable_language(CXX)
-include(${CMAKE_MODULE_PATH}/AddCpp11Flags.cmake)
-include(${CMAKE_MODULE_PATH}/CheckCXX11Features.cmake)
-include(${CMAKE_MODULE_PATH}/CheckIsNaNStatus.cmake)
+include(${CMAKE_SCRIPTS}/AddCpp11Flags.cmake)
+include(${CMAKE_SCRIPTS}/CheckCXX11Features.cmake)
+include(${CMAKE_SCRIPTS}/CheckIsNaNStatus.cmake)
 
+# Downloads and installs GreatCMakeCookOff
+# It contains a number of cmake recipes
+include(LookUp-GreatCMakeCookOff)
+include(PackageLookup)
 
-find_package(eigen REQUIRED)
-include_directories(${EIGEN3_INCLUDE_DIR})
-include_directories(${PROJECT_BINARY_DIR})
+# Take advantage of GreatCMakeCookOff to install Eigen
+lookup_package(Eigen3 REQUIRED)
 
 if(tests) 
-  find_package(GTest)
   enable_testing()
+  # Use the CookOff way of including GTest
+  include(AddGTest)
 endif(tests)
 if(pythonBindings) 
-  include(${CMAKE_MODULE_PATH}/AllPythonBindings.cmake)
+  include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
 endif(pythonBindings)
 
 if(NOT HAS_CXX11_NOEXCEPT)
@@ -61,7 +69,7 @@ configure_file (
 )
 install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
-include(${CMAKE_MODULE_PATH}/documentation.cmake)
+include(${CMAKE_SCRIPTS}/documentation.cmake)
 
 add_subdirectory(likelihood)
 add_subdirectory(data)

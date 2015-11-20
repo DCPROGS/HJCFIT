@@ -17,26 +17,26 @@
 
 if(tests)
 
-  cxx_test(qmatrix qmatrix.cc likelihood)
-  cxx_test(idealG idealG.cc likelihood)
-  cxx_test(idealG_exponentials idealg_exponentials.cc likelihood)
-  cxx_test(idealG_laplacian idealG_laplacian.cc likelihood)
-  cxx_test(occupancies occupancies.cc likelihood)
-  cxx_test(time_filter time_filter.cc likelihood)
-  cxx_test(laplace_survivor laplace_survivor.cc likelihood)
-  cxx_test(determinant_equation determinant_equation.cc likelihood)
-  cxx_test(recursion recursion_formula.cc likelihood)
-  cxx_test(exact_survivor exact_survivor.cc likelihood)
-  cxx_test(root_finder_intervals
+  add_gtest(qmatrix qmatrix.cc likelihood)
+  add_gtest(idealG idealG.cc likelihood)
+  add_gtest(idealG_exponentials idealg_exponentials.cc likelihood)
+  add_gtest(idealG_laplacian idealG_laplacian.cc likelihood)
+  add_gtest(occupancies occupancies.cc likelihood)
+  add_gtest(time_filter time_filter.cc likelihood)
+  add_gtest(laplace_survivor laplace_survivor.cc likelihood)
+  add_gtest(determinant_equation determinant_equation.cc likelihood)
+  add_gtest(recursion recursion_formula.cc likelihood)
+  add_gtest(exact_survivor exact_survivor.cc likelihood)
+  add_gtest(root_finder_intervals
            "root_finder_intervals.cc;random_matrix.h;random_matrix.cc" 
            likelihood)
-  cxx_test(root_finder_lower_bound
+  add_gtest(root_finder_lower_bound
            "root_finder_lower_bound.cc;random_matrix.h;random_matrix.cc"
            likelihood)
-  cxx_test(asymptotes asymptotes.cc likelihood)
-  cxx_test(brentq
+  add_gtest(asymptotes asymptotes.cc likelihood)
+  add_gtest(brentq
            "brentq.cc;random_matrix.h;random_matrix.cc"
            likelihood)
-  cxx_test(likelihood likelihood.cc likelihood)
+  add_gtest(likelihood likelihood.cc likelihood)
 
 endif(tests)
