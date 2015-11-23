@@ -16,7 +16,7 @@
 #########################
 
 if(pythonBindings)
-  include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDES} ${CMAKE_CURRENT_SOURCE_DIR})
+  include_directories(${PYTHON_INCLUDE_PATH} ${NUMPY_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR})
   set(CMAKE_SWIG_FLAGS "")
 
   set_source_files_properties(likelihood.i PROPERTIES CPLUSPLUS ON)

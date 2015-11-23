@@ -32,11 +32,11 @@
 #    define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION
 #  endif
 #  include <numpy/arrayobject.h>
-#  ifndef DCPROGS_NPY_ARRAY
+#  ifndef NUMPY_NPY_ARRAY
 #    define NPY_ARRAY_C_CONTIGUOUS NPY_C_CONTIGUOUS 
 #    define NPY_ARRAY_WRITEABLE    NPY_WRITEABLE
 #  endif
-#  ifndef DCPROGS_NPY_ENABLEFLAGS
+#  ifndef NUMPY_NPY_ENABLEFLAGS
 #    define PyArray_ENABLEFLAGS(ARRAY, FLAGS)  (ARRAY)->flags |= FLAGS
 #    define PyArray_CLEARFLAGS(ARRAY, FLAGS)   (ARRAY)->flags &= (!FLAGS)
 #    define PyArray_SetBaseObject(ARRAY, BASE) (ARRAY)->base   = BASE

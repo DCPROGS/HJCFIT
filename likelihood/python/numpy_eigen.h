@@ -55,7 +55,7 @@ namespace DCProgs {
     DCPROGS_MACRO(npy_byte,        NPY_BYTE);
     DCPROGS_MACRO(npy_ubyte,       NPY_UBYTE);
 
-#   ifdef DCPROGS_NPY_LONG_DOUBLE
+#   ifdef NUMPY_NPY_LONG_DOUBLE
       DCPROGS_MACRO(npy_longdouble, NPY_LONGDOUBLE);
       DCPROGS_MACRO(npy_clongdouble, NPY_CLONGDOUBLE);
       template<> struct type< std::complex<npy_longdouble> > {
@@ -66,7 +66,7 @@ namespace DCProgs {
       };
       DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_longdouble> >::value, NPY_CLONGDOUBLE);
 #   endif
-#   ifdef DCPROGS_NPY_HAS_BOOL
+#   ifdef NUMPY_NPY_BOOL
       DCPROGS_MACRO(npy_bool, NPY_BOOL);
 #   else
       template<> struct type<bool> {
@@ -371,10 +371,10 @@ namespace DCProgs {
           DCPROGS_MACRO(npy_ushort);
           DCPROGS_MACRO(npy_byte);
           DCPROGS_MACRO(npy_ubyte);
-#         ifdef DCPROGS_NPY_LONG_DOUBLE
+#         ifdef NUMPY_NPY_LONG_DOUBLE
             DCPROGS_MACRO(npy_longdouble);
 #         endif
-#         ifdef DCPROGS_NPY_HAS_BOOL
+#         ifdef NUMPY_NPY_BOOL
             DCPROGS_MACRO(npy_bool);
 #         endif
 #      undef DCPROGS_MACRO
