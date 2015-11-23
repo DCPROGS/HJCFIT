@@ -6,7 +6,7 @@ include(PythonPackageLookup)
 find_package(CoherentPython)
 find_python_package(numpy)
 find_package(Numpy REQUIRED)
-find_python_package(behave)
+#find_python_package(behave)
 
 if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
   execute_process( 
