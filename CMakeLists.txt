@@ -51,6 +51,7 @@ if(tests)
   # Use the CookOff way of including GTest
   include(AddGTest)
 endif(tests)
+
 if(pythonBindings) 
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
 endif(pythonBindings)
@@ -58,6 +59,7 @@ endif(pythonBindings)
 if(NOT HAS_CXX11_NOEXCEPT)
   set(noexcept TRUE)
 endif()
+
 if(NOT DCPROGS_LONG_DOUBLE) 
   set(DCPROGS_LONG_DOUBLE False CACHE BOOL
       "If True, will use long doubles rather than simple doubles.")

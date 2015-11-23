@@ -1,7 +1,12 @@
 # Python bindings are a bit messy, so done here rather than main file.
 
-find_package(PythonLibs REQUIRED)
-find_package(PythonInterp REQUIRED)
+# Install Python with GreatCMakeCookOff, as well as numpy and behave
+include(PythonPackage)
+include(PythonPackageLookup)
+find_package(CoherentPython)
+find_python_package(numpy)
+find_package(Numpy REQUIRED)
+find_python_package(behave)
 
 if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
   execute_process( 
@@ -33,7 +38,7 @@ if(NOT DEFINED PYTHON_PKG_DIR)
               "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
               OUTPUT_VARIABLE PYTHON_PKG_DIR
   )
-  if(PYTHON_PKG_DIR )
+  if(PYTHON_PKG_DIR)
     string (STRIP ${PYTHON_PKG_DIR} PYTHON_PKG_DIR)
     set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH "Main python package repository.")
     mark_as_advanced(PYTHON_PKG_DIR)
@@ -68,8 +73,6 @@ if(MSYS)
   unset(NEED_CMATH_INCLUDE)
 endif(MSYS)
 
-find_package(Numpy REQUIRED) 
-
 set(DCPROGS_PYTHON_BINDINGS True)
 
 if(tests)
@@ -89,6 +92,7 @@ if(tests)
       set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
       set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
     endif(WIN32)
+
     add_test(NAME python_${name} 
              WORKING_DIRECTORY ${WORKINGDIR}
              COMMAND ${thiscommand} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${ARGN})
@@ -110,6 +114,7 @@ if(tests)
                            "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
     endif(MSVC OR MSYS)
   endfunction(_python_test)
+
   # Look for behave
   if(NOT BEHAVE_EXECUTABLE)
     find_program(BEHAVE_EXECUTABLE behave DOC "Path to the behave executable")
