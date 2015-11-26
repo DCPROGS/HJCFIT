@@ -26,7 +26,7 @@
 #include "../qmatrix.h"
 using namespace DCProgs;
 
-#ifdef HAS_CXX11_TYPETRAITS
+#ifdef HAS_CXX11_TYPE_TRAITS
   // Checks some assumption about eigen matrix types.
   static_assert( std::is_move_constructible<t_rmatrix>::value,
         	       "t_rmatrix is not move constructible." );  
@@ -39,7 +39,7 @@ using namespace DCProgs;
   static_assert( std::is_move_assignable<QMatrix>::value, 
   	             "QMatrix is not move assignable." );  
 #endif
-#ifdef HAS_CXX11_TRIVIALTYPETRAITS
+#ifdef HAS_CXX11_TRIVIAL_TYPE_TRAITS
   static_assert( not std::is_trivially_move_constructible<t_rmatrix>::value,
   	             "t_rmatrix is trivially move constructible." );  
   static_assert( not std::is_trivially_move_assignable<t_rmatrix>::value, 

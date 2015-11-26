@@ -33,18 +33,26 @@ set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-enable_language(CXX)
-include(${CMAKE_SCRIPTS}/AddCpp11Flags.cmake)
-include(${CMAKE_SCRIPTS}/CheckCXX11Features.cmake)
-include(${CMAKE_SCRIPTS}/CheckIsNaNStatus.cmake)
-
 # Downloads and installs GreatCMakeCookOff
 # It contains a number of cmake recipes
 include(LookUp-GreatCMakeCookOff)
 include(PackageLookup)
 
-# Take advantage of GreatCMakeCookOff to install Eigen
+# Install Eigen the CookOff way
 lookup_package(Eigen3 REQUIRED)
+
+# Adds flags to compiler to launch it into c++11 land
+include(AddCPP11Flags)
+
+# The following will print out all available features.
+include(CheckCXX11Features)
+
+# Check features (before REQUIRED they are optional)
+cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
+                    trivial_type_traits
+                    REQUIRED auto lambda static_assert rvalue_references decltype
+                    enable_if type_traits noexcept shared_ptr initialization)
+include(CheckIsNaN)
 
 if(tests) 
   enable_testing()
