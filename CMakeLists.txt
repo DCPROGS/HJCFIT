@@ -52,9 +52,9 @@ cxx11_find_all_features(ALL_FEATURES)
 
 
 # Check features (before REQUIRED they are optional)
-cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate enable_if
+cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
                     REQUIRED auto lambda static_assert rvalue_references decltype
-                    type_traits trivial_type_traits noexcept 
+                    enable_if type_traits trivial_type_traits noexcept 
                     shared_ptr initialization)
 include(CheckIsNaN)
 
