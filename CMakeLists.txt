@@ -46,10 +46,6 @@ include(AddCPP11Flags)
 
 # The following will print out all available features.
 include(CheckCXX11Features)
-cxx11_find_all_features(ALL_FEATURES)
-
-
-
 
 # Check features (before REQUIRED they are optional)
 cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
