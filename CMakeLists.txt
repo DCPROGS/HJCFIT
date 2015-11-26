@@ -41,9 +41,6 @@ include(PackageLookup)
 # Install Eigen the CookOff way
 lookup_package(Eigen3 REQUIRED)
 
-# Install C++11 the CookOff way
-enable_language(CXX)
-
 # Adds flags to compiler to launch it into c++11 land
 include(AddCPP11Flags)
 
