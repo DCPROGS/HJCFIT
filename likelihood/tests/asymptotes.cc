@@ -28,7 +28,7 @@
 
 #include "../asymptotes.h"
 using namespace DCProgs;
-#ifdef HAS_CXX11_TYPETRAITS
+#ifdef HAS_CXX11_TYPE_TRAITS
   // Checks some assumption about Asymptotes matrix types.
   static_assert( std::is_move_constructible<Asymptotes>::value,
         	       "Asymptotes is not move constructible." );  

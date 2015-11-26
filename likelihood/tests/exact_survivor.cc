@@ -27,7 +27,7 @@
 
 #include "../exact_survivor.h"
 using namespace DCProgs;
-#ifdef HAS_CXX11_TYPETRAITS
+#ifdef HAS_CXX11_TYPE_TRAITS
   static_assert( std::is_move_constructible<ExactSurvivor>::value,
          	       "ExactSurvivor is not move constructible." );  
   static_assert( std::is_move_assignable<ExactSurvivor>::value, 
