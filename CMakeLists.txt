@@ -47,10 +47,15 @@ include(AddCPP11Flags)
 # The following will print out all available features.
 include(CheckCXX11Features)
 cxx11_find_all_features(ALL_FEATURES)
-message(STATUS "[c++11] features we can check for: ${ALL_FEATURES}")
 
-# The following checks for all features
-cxx11_feature_check()
+
+
+
+# Check features (before REQUIRED they are optional)
+cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
+                    REQUIRED auto lambda static_assert rvalue_references decltype
+                    enable_if type_traits trivial_type_traits noexcept 
+                    shared_ptr initialization)
 include(CheckIsNaN)
 
 if(tests) 
