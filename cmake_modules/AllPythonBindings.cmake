@@ -4,12 +4,11 @@
 include(PythonPackage)
 include(PythonPackageLookup)
 find_package(CoherentPython)
-find_python_package(numpy)
+find_python_package(numpy REQUIRED)
 find_package(Numpy REQUIRED)
-#find_python_package(behave)
 
 if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
-  execute_process( 
+  execute_process(
     COMMAND ${PYTHON_EXECUTABLE} -c "import sys; print(\"%i.%i\" % sys.version_info[:2])"
     OUTPUT_VARIABLE PYTHON_VERSION
   )
@@ -33,8 +32,8 @@ execute_process(
 )
 
 if(NOT DEFINED PYTHON_PKG_DIR)
-  execute_process( 
-    COMMAND ${PYTHON_EXECUTABLE} -c 
+  execute_process(
+    COMMAND ${PYTHON_EXECUTABLE} -c
               "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
               OUTPUT_VARIABLE PYTHON_PKG_DIR
   )
@@ -55,10 +54,10 @@ if(MSYS)
   try_compile(
     NEED_CMATH_INCLUDE
     ${CMAKE_BINARY_DIR}
-    ${CMAKE_BINARY_DIR}/test_cmath_python.cc 
-    COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIRS} 
+    ${CMAKE_BINARY_DIR}/test_cmath_python.cc
+    COMPILE_DEFINITIONS -I${PYTHON_INCLUDE_DIRS}
                         -DNPY_NO_DEPRECATED_API=NPY_1_7_API_VERSION
-    CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${PYTHON_LIBRARIES} 
+    CMAKE_FLAGS -DLINK_LIBRARIES:STRING=${PYTHON_LIBRARIES}
                 -DCMAKE_CXX_FLAGS_DEBUG:STRING="${CMAKE_CXX_FLAGS_RELEASE}"
                 -DCMAKE_C_FLAGS_DEBUG:STRING="${CMAKE_C_FLAGS_RELEASE}"
                 -DCMAKE_EXE_LINKER_FLAGS_DEBUG:STRING="${CMAKE_EXE_LINKER_FLAGS_RELEASE}"
@@ -86,17 +85,17 @@ if(tests)
   # A macro to run tests via python or behave.
   function(_python_test name filename thiscommand)
     if(WIN32)
-      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
-      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/site-packages)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/Library/bin)
     else()
       set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
       set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
     endif(WIN32)
 
-    add_test(NAME python_${name} 
+    add_test(NAME python_${name}
              WORKING_DIRECTORY ${WORKINGDIR}
              COMMAND ${thiscommand} ${CMAKE_CURRENT_SOURCE_DIR}/${filename} ${ARGN})
-    if(MSVC OR MSYS) 
+    if(MSVC OR MSYS)
       set_tests_properties(python_${name} PROPERTIES CONFIGURATIONS Release)
       set(PATH_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" PATH_STRING "${PATH_STRING}")
@@ -127,7 +126,7 @@ if(tests)
   function(feature_test name filename)
     _python_test(${name} ${filename} ${BEHAVE_EXECUTABLE} --junit --junit-directory
                  ${CMAKE_BINARY_DIR}/test-results/ -q ${ARGN})
-                            
+
   endfunction(feature_test)
 
   function(python_test name filename)
@@ -136,9 +135,9 @@ if(tests)
 endif(tests)
 
 
-
+# Follow conda convention for Python installation in Windows
 if(WIN32)
-  set(PYINSTALL_DIRECTORY dcprogs/python-pkg)
+  set(PYINSTALL_DIRECTORY lib/site-packages)
 else()
   set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
 endif(WIN32)
@@ -146,4 +145,3 @@ endif(WIN32)
 if(NOT PYTHON_VERSION VERSION_LESS "3.0.0")
   set(DCPROGS_PYTHON3 TRUE)
 endif(NOT PYTHON_VERSION VERSION_LESS "3.0.0")
-

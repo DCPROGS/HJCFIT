@@ -39,12 +39,13 @@ endif(MSVC)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
+# Follow conda convention for Python installation in Windows
 if(WIN32)
-  set(LIB_DIRECTORY dcprogs/DLLs)
+  set(LIB_DIRECTORY Library/bin)
 else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
-install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
+install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
 install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood)
 
 
