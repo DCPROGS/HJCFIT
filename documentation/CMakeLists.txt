@@ -22,7 +22,7 @@ endif()
 
 
 if (DOXYGEN_FOUND)
-  add_custom_target ( doxydocs 
+  add_custom_target ( doxydocs
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
     SOURCES ${CMAKE_BINARY_DIR}/Doxyfile )
 endif(DOXYGEN_FOUND)
@@ -30,8 +30,8 @@ endif(DOXYGEN_FOUND)
 if(SPHINX_FOUND)
 
   if(WIN32)
-    set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
-    set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+    set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/site-packages)
+    set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/Library/bin)
   else()
     set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
     set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
@@ -49,14 +49,14 @@ if(SPHINX_FOUND)
                        source/manual/missedeventsG.rst source/manual/occupancies.rst
                        source/manual/qmatrix.rst source/manual.rst)
 
-  add_custom_target(documentation 
+  add_custom_target(documentation
     ${SPHINX_EXECUTABLE}
     -q -b ${SPHINX_BUILDER}
     -c ${CMAKE_BINARY_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
-    WORKING_DIRECTORY ${WORKINGDIR} 
+    WORKING_DIRECTORY ${WORKINGDIR}
     DEPENDS doxydocs )
 
 endif(SPHINX_FOUND)
@@ -85,22 +85,22 @@ if(compileDocs)
 
   if(tests)
     if(WIN32)
-      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
-      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/site-packages)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/Library/bin)
     else()
       set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
       set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
     endif(WIN32)
-    if(MSVC OR MSYS) 
+    if(MSVC OR MSYS)
       set(ENV_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" ENV_STRING "${ENV_STRING}")
       STRING(REPLACE ";" "\\;" ENV_STRING "${ENV_STRING}")
       set(ENV_STRING "PATH=${ENV_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-      set(ENV_STRING 
+      set(ENV_STRING
           "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")
     elseif(UNIX)
-      set(ENV_STRING 
+      set(ENV_STRING
           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
     endif(MSVC OR MSYS)
 
