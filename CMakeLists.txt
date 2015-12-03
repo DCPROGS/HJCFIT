@@ -39,15 +39,13 @@ include(PackageLookup)
 
 if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
+  # Unless explicitly initialized from command line, set install prefix to
+  # CookOff-set path to python interpreter.
+  if (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+      FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
+      set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
+  endif()
 endif(pythonBindings)
-
-# Unless explicitly initialized from command line, set install prefix to
-# CookOff-set path to python interpreter.
-if (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
-    set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
-endif()
-message (STATUS "CMAKE_INSTALL_PREFIX: ${CMAKE_INSTALL_PREFIX}")
 
 # Install Eigen the CookOff way
 lookup_package(Eigen3 REQUIRED)
