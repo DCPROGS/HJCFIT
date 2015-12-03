@@ -79,9 +79,9 @@ configure_file (
 )
 
 # Save all DCPROGS headers in the same place in Windows
-if (WIN32)
+if(WIN32)
    set(INCLUDE_DIR ${PYTHON_INTERP_PREFIX}/include/dcprogs)
-else
+else()
    set(INCLUDE_DIR include/dcprogs)
 endif(WIN32)
 install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION ${INCLUDE_DIR})
