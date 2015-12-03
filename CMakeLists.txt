@@ -77,7 +77,14 @@ configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
 )
-install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
+
+# Save all DCPROGS headers in the same place in Windows
+if (WIN32)
+   set(INCLUDE_DIR ${PYTHON_INTERP_PREFIX}/include/dcprogs)
+else
+   set(INCLUDE_DIR include/dcprogs)
+endif(WIN32)
+install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION ${INCLUDE_DIR})
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 
