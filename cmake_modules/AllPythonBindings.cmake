@@ -135,9 +135,9 @@ if(tests)
 endif(tests)
 
 
-
+# Follow conda convention for Python installation in Windows 
 if(WIN32)
-  set(PYINSTALL_DIRECTORY dcprogs/python-pkg)
+  set(PYINSTALL_DIRECTORY ${PYTHON_INTERP_PREFIX}/lib/site-packages)
 else()
   set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
 endif(WIN32)
