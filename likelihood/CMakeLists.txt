@@ -21,8 +21,13 @@ set(LIKELIHOOD_SOURCE qmatrix.cc idealG.cc occupancies.cc time_filter.cc exact_s
 set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h occupancies.h time_filter.h recursion_formula.h
                        exact_survivor.h root_finder.h determinant_equation.h asymptotes.h
                        approx_survivor.h missed_eventsG.h laplace_survivor.h likelihood.h brentq.h)
- 
+
+if(EIGEN3_INCLUDE_DIR)
+	include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+endif()
+
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
+add_dependencies(likelihood lookup_dependencies)
 
 # Windows + Visual studio specifics.
 if(MSVC)
@@ -34,15 +39,14 @@ endif(MSVC)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/likelihood)
 
-add_dependencies(likelihood eigen)
-
+# Follow conda convention for Python installation in Windows
 if(WIN32)
-  set(LIB_DIRECTORY dcprogs/DLLs)
+  set(LIB_DIRECTORY Library/bin)
 else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
-install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY}) 
-install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood) 
+install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
+install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood)
 
 
 # Test subdirectory.

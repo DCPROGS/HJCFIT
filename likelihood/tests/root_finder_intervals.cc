@@ -27,7 +27,7 @@
 #include "random_matrix.h"
 using namespace DCProgs;
 
-#ifdef HAS_CXX11_TYPETRAITS
+#ifdef HAS_CXX11_TYPE_TRAITS
   // Checks some assumption about RootInterval
   static_assert( std::is_move_constructible<RootInterval>::value,
   	             "RootInterval is not move constructible." );  
@@ -41,7 +41,7 @@ using namespace DCProgs;
 static_assert(std::is_standard_layout<RootInterval>::value, "RootInterval is not a standard layout." );
 static_assert(std::is_standard_layout<Root>::value, "Root is not a standard layout." );
 
-#ifdef HAS_CXX11_TRIVIALTYPETRAITS
+#ifdef HAS_CXX11_TRIVIAL_TYPE_TRAITS
 // Another MSWindows Fail(TM)
 # ifndef MSVC
   static_assert( std::is_trivially_move_constructible<RootInterval>::value,

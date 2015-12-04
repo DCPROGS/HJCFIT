@@ -1,5 +1,28 @@
+########################
+#   DCProgs computes missed-events likelihood as described in
+#   Hawkes, Jalali and Colquhoun (1990, 1992)
+#
+#   Copyright (C) 2013  University College London
+#
+#   This program is free software: you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation, either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#########################
+
+if(EIGEN3_INCLUDE_DIR)
+  include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+endif()
+
+
+
 if (DOXYGEN_FOUND)
-  add_custom_target ( doxydocs 
+  add_custom_target ( doxydocs
     COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
     SOURCES ${CMAKE_BINARY_DIR}/Doxyfile )
 endif(DOXYGEN_FOUND)
@@ -7,8 +30,8 @@ endif(DOXYGEN_FOUND)
 if(SPHINX_FOUND)
 
   if(WIN32)
-    set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
-    set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+    set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/site-packages)
+    set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/Library/bin)
   else()
     set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
     set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
@@ -26,14 +49,14 @@ if(SPHINX_FOUND)
                        source/manual/missedeventsG.rst source/manual/occupancies.rst
                        source/manual/qmatrix.rst source/manual.rst)
 
-  add_custom_target(documentation 
+  add_custom_target(documentation
     ${SPHINX_EXECUTABLE}
     -q -b ${SPHINX_BUILDER}
     -c ${CMAKE_BINARY_DIR}
     "${CMAKE_CURRENT_SOURCE_DIR}/source"
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
-    WORKING_DIRECTORY ${WORKINGDIR} 
+    WORKING_DIRECTORY ${WORKINGDIR}
     DEPENDS doxydocs )
 
 endif(SPHINX_FOUND)
@@ -62,22 +85,22 @@ if(compileDocs)
 
   if(tests)
     if(WIN32)
-      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/dcprogs/python-pkg/)
-      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/dcprogs/DLLs)
+      set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/site-packages)
+      set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/Library/bin)
     else()
       set(WORKINGDIR ${TEST_INSTALL_ABSPATH}/lib/python${PYTHON_VERSION}/site-packages)
       set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
     endif(WIN32)
-    if(MSVC OR MSYS) 
+    if(MSVC OR MSYS)
       set(ENV_STRING "${ADD_TO_PATH};$ENV{PATH}")
       STRING(REPLACE "\\;" ";" ENV_STRING "${ENV_STRING}")
       STRING(REPLACE ";" "\\;" ENV_STRING "${ENV_STRING}")
       set(ENV_STRING "PATH=${ENV_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-      set(ENV_STRING 
+      set(ENV_STRING
           "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")
     elseif(UNIX)
-      set(ENV_STRING 
+      set(ENV_STRING
           "LD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{LD_LIBRARY_PATH};PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH}")
     endif(MSVC OR MSYS)
 
