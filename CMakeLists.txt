@@ -23,7 +23,9 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 
 # Provides backwards compatibility and prevents MACOS_RPATH warning
-cmake_policy(VERSION 3.0)
+if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
+      cmake_policy(SET CMP0042 OLD)
+endif()
 
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
