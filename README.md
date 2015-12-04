@@ -8,7 +8,7 @@ The name of the program is an acronym for Hawkes, Jalali & Colquhoun, whose pape
 The input for HJCFIT is a list of idealised open and shut time intervals.  A kinetic mechanism is specified with some initial guesses for the rate constants. Fitting is done using the Simplex algorithm to maximise the likelihood.
 
 
-The documentation for this package can be found [here](http://ucl.github.io/dcprogs/index.html).
+The documentation for this package can be found [here](http://dcprogs.github.io/HJCFIT).
 
 Explanations on compiling and installing the package can be found in the
 [wiki](https://github.com/UCL/dcprogs/wiki).
