@@ -9,6 +9,10 @@
 module unload cmake
 module load cmake/3.2.3
 
+# Use GNU compiler suite environment
+module unload PrgEnv-cray
+module load PrgEnv-gnu/5.2.56
+
 # Swig is needed by the python bindings
 module load swig
 
