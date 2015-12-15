@@ -1,11 +1,10 @@
-#%Module
-#
-# DCProgs
-#
+#!/bin/bash
 
-#module-whatis "Loads modules to compile and test DCProgs in ARCHER."
+# This scripts loads all the necessary modules and environment configuration 
+# to build HJCFIT
 
-# Use the right version of CMake - Note only CMake 2.6 is available in the compute nodes
+# Use the right version of CMake 
+# Note only CMake 2.6 seems to be available in the compute nodes
 module unload cmake
 module load cmake/3.2.3
 
