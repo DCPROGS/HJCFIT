@@ -1,0 +1,24 @@
+sudo: required
+dist: trusty
+
+language: python
+
+matrix:
+  include:
+    - python: 2.7
+    - python: 3.5
+
+install:
+    
+    pip install --upgrade pip
+    pip install --upgrade wheel
+    pip install --upgrade setuptools
+    pip install numpy
+    pip install behave
+    mkdir build
+    cd build
+    cmake ..
+    make
+
+script:
+    ctest
