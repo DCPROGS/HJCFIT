@@ -3,6 +3,11 @@ dist: trusty
 
 language: python
 
+addons:
+  apt:
+    packages:
+        - swig
+
 matrix:
   include:
     - python: 2.7
