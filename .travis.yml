@@ -10,16 +10,16 @@ matrix:
 
 install:
     - |
-    pip install --upgrade pip
-    pip install --upgrade wheel
-    pip install --upgrade setuptools
-    pip install numpy
-    pip install behave
-    mkdir build
-    cd build
-    cmake ..
-    make
+        pip install --upgrade pip
+        pip install --upgrade wheel
+        pip install --upgrade setuptools
+        pip install numpy
+        pip install behave
+        mkdir build
+        cd build
+        cmake ..
+        make
 
 script:
-    - |
-    ctest
+  - |
+        ctest
