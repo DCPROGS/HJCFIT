@@ -28,4 +28,4 @@ install:
 
 script:
   - |
-        ctest
+        ctest --output-on-failure
