@@ -9,7 +9,7 @@ matrix:
     - python: 3.5
 
 install:
-    
+    - |
     pip install --upgrade pip
     pip install --upgrade wheel
     pip install --upgrade setuptools
@@ -21,4 +21,5 @@ install:
     make
 
 script:
+    - |
     ctest
