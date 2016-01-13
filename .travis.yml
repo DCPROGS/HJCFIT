@@ -19,6 +19,7 @@ addons:
         - zlib1g-dev
         - texlive-fonts-recommended
         - doxygen
+        - mscgen
 
 matrix:
   include:
