@@ -18,6 +18,7 @@ addons:
         - libpng-dev
         - zlib1g-dev
         - texlive-fonts-recommended
+        - doxygen
 
 matrix:
   include:
@@ -32,10 +33,12 @@ install:
         pip install numpy
         pip install scipy
         pip install behave
+        pip install sphinx sphinxcontrib-bibtex Breathe
         mkdir build
         cd build
         cmake ..
         make
+        make documentation
 
 script:
   - |
