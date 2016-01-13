@@ -20,6 +20,10 @@ addons:
         - texlive-fonts-recommended
         - doxygen
         - mscgen
+        - texlive-latex-base
+        - texlive-latex-extra
+        - texlive-fonts-recommended
+        - texlive-latex-recommended
 
 matrix:
   include:
