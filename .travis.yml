@@ -19,7 +19,6 @@ addons:
         - zlib1g-dev
         - texlive-fonts-recommended
         - doxygen
-        - mscgen
         - texlive-latex-base
         - texlive-latex-extra
         - texlive-fonts-recommended
@@ -30,8 +29,11 @@ matrix:
     - python: 2.7
     - python: 3.5
 
+# mscgen is not currently allowed in travis so we explicitly sudo it
+# See https://github.com/travis-ci/apt-package-whitelist/issues/2243
 install:
     - |
+        sudo apt-get install mscgen
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
@@ -39,12 +41,14 @@ install:
         pip install scipy
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
-        mkdir build
-        cd build
-        cmake ..
-        make
+
 
 script:
   - |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/
+        make
         ctest --output-on-failure
+        make install
         make documentation
