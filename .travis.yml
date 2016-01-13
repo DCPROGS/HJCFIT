@@ -43,8 +43,8 @@ install:
         cd build
         cmake ..
         make
-        make documentation
 
 script:
   - |
         ctest --output-on-failure
+        make documentation
