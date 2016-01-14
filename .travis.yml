@@ -54,3 +54,30 @@ script:
         make install
         export LD_LIBRARY_PATH=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/lib:$LD_LIBRARY_PATH
         make documentation
+
+
+after_success:
+  - |
+        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'development' ]]; then
+            cd build
+            echo "Uploading documentation"
+            openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in .travis/dcprogsDeploykey.enc -out .travis/dcprogsDeploykey -d
+            eval `ssh-agent -s`
+            chmod 600 .travis/dcprogsDeployKey
+            ssh-add .travis/dcprogsDeployKey
+            cd ../../
+            git clone git@github.com:DCPROGS/HJCFITdevdocs.git
+            cd HJCFITdevdocs
+            git checkout --orphan gh-pages
+            git reset --hard first_commit
+            cp -R ../HJCFIT/build/documentation/sphinx/. .
+            touch .nojekyll
+            git config --global user.email "DCProgsTravisBot@nomail"
+            git config --global user.name "DCProgsTravisBot"
+            git config --global push.default simple
+            git add .
+            git commit -m "Docs build of $TRAVIS_COMMIT"
+            git push --set-upstream origin gh-pages --force
+        else
+            echo "Will only deploy docs build from development branch"
+        fi
