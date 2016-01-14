@@ -1,0 +1,1 @@
+This dir holds static files for sphinx. Sphinx dependes on it being there even if empty.

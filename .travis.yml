@@ -18,25 +18,69 @@ addons:
         - libpng-dev
         - zlib1g-dev
         - texlive-fonts-recommended
+        - doxygen
+        - texlive-latex-base
+        - texlive-latex-extra
+        - texlive-fonts-recommended
+        - texlive-latex-recommended
+        - texlive-font-utils
 
 matrix:
   include:
     - python: 2.7
     - python: 3.5
 
+# mscgen is not currently allowed in travis so we explicitly sudo it
+# See https://github.com/travis-ci/apt-package-whitelist/issues/2243
 install:
     - |
+        sudo apt-get install mscgen
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
         pip install numpy
         pip install scipy
         pip install behave
-        mkdir build
-        cd build
-        cmake ..
-        make
+        pip install sphinx sphinxcontrib-bibtex Breathe
+
 
 script:
   - |
+        mkdir build
+        cd build
+        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/
+        make
         ctest --output-on-failure
+        make install
+        export LD_LIBRARY_PATH=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/lib:$LD_LIBRARY_PATH
+        make documentation
+
+
+after_success:
+  - |
+        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'development' && TRAVIS_PYTHON_VERSION = '3.5' ]]; then
+            cd build
+            echo "Uploading documentation"
+            openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in .travis/dcprogsDeploykey.enc -out .travis/dcprogsDeploykey -d
+            eval `ssh-agent -s`
+            chmod 600 .travis/dcprogsDeployKey
+            ssh-add .travis/dcprogsDeployKey
+            cd ../../
+            pwd
+            ls -la
+            git clone git@github.com:DCPROGS/HJCFITdevdocs.git
+            cd HJCFITdevdocs
+            git checkout --orphan gh-pages
+            git reset --hard first_commit
+            ls -la
+            cp -R ../HJCFIT/build/documentation/sphinx/. .
+            touch .nojekyll
+            # git config --global user.email "DCProgsTravisBot@nomail"
+            # git config --global user.name "DCProgsTravisBot"
+            # git config --global push.default simple
+            # git add .
+            # git commit -m "Docs build of $TRAVIS_COMMIT"
+            # git push --set-upstream origin gh-pages --force
+        else
+            echo "Will only deploy docs build from development branch"
+        fi

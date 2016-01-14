@@ -42,7 +42,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'@PROJECT_NAME@'
-copyright = u'2013, Mayeul d\'Avezac'
+copyright = u'2013-2016, University College London'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -293,7 +293,7 @@ breathe_default_project = "@PROJECT_NAME@"
 
 rst_epilog = """
 .. _scipy: http://www.scipy.org/
-.. _matplotlib: http://matplotlib.sourceforge.net/
+.. _matplotlib: http://matplotlib.org/
 .. _ipython: http://ipython.org/
 .. _eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
 """
