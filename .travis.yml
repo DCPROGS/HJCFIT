@@ -62,7 +62,7 @@ after_success:
         echo $TRAVIS_REPO_SLUG
         echo $TRAVIS_BRANCH
         echo $TRAVIS_PYTHON_VERSION
-        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'develop' && TRAVIS_PYTHON_VERSION = '3.5' ]]; then
+        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'develop' && $TRAVIS_PYTHON_VERSION == '3.5' ]]; then
             cd build
             echo "Uploading documentation"
             openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in .travis/dcprogsDeploykey.enc -out .travis/dcprogsDeploykey -d
