@@ -82,7 +82,7 @@ after_success:
             git add .
             git commit -m "Docs build of $TRAVIS_COMMIT"
             git status
-            # git push --set-upstream origin gh-pages --force
+            git push --set-upstream origin gh-pages --force
         else
             echo "Will only deploy docs build from development branch"
         fi
