@@ -66,7 +66,7 @@ if(compileDocs)
   file(GLOB CXX_SOURCE_FILES code/*.cc)
   file(GLOB PY_SOURCE_FILES code/*.py)
   # Some example files will not compile on propietary compilers
-  if(NOT HAS_CXX11_UNIQUE_INITIALIZATION)
+  if(NOT HAS_CXX11_INITIALIZATION)
     foreach(pathfile ${CXX_SOURCE_FILES})
       get_filename_component(pathname ${pathfile} NAME_WE)
       if("${pathname}" STREQUAL "missedeventsG"
@@ -74,7 +74,7 @@ if(compileDocs)
         list(REMOVE_ITEM CXX_SOURCE_FILES ${pathfile})
       endif()
     endforeach()
-  endif(NOT HAS_CXX11_UNIQUE_INITIALIZATION)
+  endif(NOT HAS_CXX11_INITIALIZATION)
 
   foreach(pathfile ${CXX_SOURCE_FILES})
     get_filename_component(pathname ${pathfile} NAME_WE)
