@@ -63,7 +63,8 @@ namespace DCProgs {
   //! \param[in] _final final occupancies.
   template<class T_G>
     t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
-                                     t_initvec const &_initial, t_rvector const &_final, t_int const threads) {
+                                     t_initvec const &_initial, t_rvector const &_final,
+                                     t_int const threads, bool const openmphighlevel) {
       auto _begin = burst.begin();
       auto _end = burst.end();
       t_int const intervals = _end - _begin;
@@ -75,7 +76,8 @@ namespace DCProgs {
       const auto identity = t_rmatrix::Identity(cols, cols);
       std::vector<t_rmatrix> current_vec(threads, identity);
       std::vector<t_int> exponents(threads, 0);
-      #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(intervals>100)
+      bool openmplowlevel = (intervals>100) && (!openmphighlevel);
+      #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(openmplowlevel)
       {
         t_int thread;
         #if defined(_OPENMP)
