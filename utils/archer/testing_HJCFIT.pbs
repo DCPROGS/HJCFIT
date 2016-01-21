@@ -54,3 +54,5 @@ aprun -n 1 behave $WORK/HJCFIT/documentation/code/idealG.py
 aprun -n 1 behave $WORK/HJCFIT/documentation/code/roots.py
 aprun -n 1 behave $WORK/HJCFIT/documentation/code/log10.py
 aprun -n 1 behave $WORK/HJCFIT/documentation/code/qmatrix.py
+
+source deactivate 
