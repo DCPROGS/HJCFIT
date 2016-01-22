@@ -19,6 +19,7 @@ addons:
         - zlib1g-dev
         - texlive-fonts-recommended
         - doxygen
+        - mscgen
         - texlive-latex-base
         - texlive-latex-extra
         - texlive-fonts-recommended
@@ -34,7 +35,6 @@ matrix:
 # See https://github.com/travis-ci/apt-package-whitelist/issues/2243
 install:
     - |
-        sudo apt-get install mscgen
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
