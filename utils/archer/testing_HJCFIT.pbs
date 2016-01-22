@@ -7,52 +7,33 @@
 
 # This shifts to the directory that you submitted the job from
 cd $WORK
+
+# Make sure we load the correct conda environment for the compute nodes
 module load anaconda-compute/2.2.0-python2
+
+# We need to manually set this so the virtual env is found where it's been
+# installed. OTherwise it'll look for it in $HOME, which is not visible
+# from the compute nodes.
 export CONDA_ENVS_PATH=$WORK/.conda/envs
+
+# Load virtual env
 source activate dcprogs
+
+# Manually set this env var so that behave is found. Otherwise it defaults
+# to conda installation.
 export PYTHONUSERBASE=$CONDA_ENV_PATH
 
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_qmatrix
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_idealG
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_idealG_exponentials
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_idealG_laplacian
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_occupancies
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_time_filter
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_laplace_survivor
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_determinant_equation
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_recursion
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_exact_survivor
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_root_finder_intervals
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_root_finder_lower_bound
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_asymptotes
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_brentq
-aprun -n 1 $WORK/HJCFIT/build/likelihood/test_likelihood
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_approx_survivor
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_missedeventsG
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_qmatrix
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_log10
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_roots
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_exact_survivor
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_occupancies
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_determinanteq
-aprun -n 1 $WORK/HJCFIT/build/documentation/doc_cxx_idealG
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/qmatrix.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/determinant_equation.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/find_roots.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/asymptotes.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/idealg.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/missed_eventsG.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/approx_survivor.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/reduce_likelihood.feature
-aprun -n 1 behave $WORK/HJCFIT/likelihood/python/features/time_filter.feature
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/exact_survivorpy
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/occupancies.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/determinanteq.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/approx_survivor.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/missedeventsG.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/idealG.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/roots.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/log10.py
-aprun -n 1 behave $WORK/HJCFIT/documentation/code/qmatrix.py
+# Find C++ test files and trigger a job for each of them
+for testfile in `find $WORK/HJCFIT/build/likelihood/ $WORK/HJCFIT/build/documentation -name "test_*" -o -name "doc_cxx_*" -maxdepth 1`
+do
+   aprun -n 1 $testfile
+done
 
-source deactivate 
+# Same for the python tests
+for testfile in `find $WORK/HJCFIT/likelihood/python/features/ $WORK/HJCFIT/documentation/code  -name "*feature" -o -name "*.py" -maxdepth 1`
+do
+    aprun -n 1 behave $testfile
+done
+
+# Exit virtual env
+source deactivate
