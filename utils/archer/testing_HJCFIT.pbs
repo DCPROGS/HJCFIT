@@ -1,0 +1,39 @@
+#!/bin/bash --login
+
+#PBS -N testing_HJCFIT
+#PBS -l select=1
+#PBS -l walltime=0:5:0
+#PBS -A $BUDGET
+
+# This shifts to the directory that you submitted the job from
+cd $WORK
+
+# Make sure we load the correct conda environment for the compute nodes
+module load anaconda-compute/2.2.0-python2
+
+# We need to manually set this so the virtual env is found where it's been
+# installed. OTherwise it'll look for it in $HOME, which is not visible
+# from the compute nodes.
+export CONDA_ENVS_PATH=$WORK/.conda/envs
+
+# Load virtual env
+source activate dcprogs
+
+# Manually set this env var so that behave is found. Otherwise it defaults
+# to conda installation.
+export PYTHONUSERBASE=$CONDA_ENV_PATH
+
+# Find C++ test files and trigger a job for each of them
+for testfile in `find $WORK/HJCFIT/build/likelihood/ $WORK/HJCFIT/build/documentation -name "test_*" -o -name "doc_cxx_*" -maxdepth 1`
+do
+   aprun -n 1 $testfile
+done
+
+# Same for the python tests
+for testfile in `find $WORK/HJCFIT/likelihood/python/features/ $WORK/HJCFIT/documentation/code  -name "*feature" -o -name "*.py" -maxdepth 1`
+do
+    aprun -n 1 behave $testfile
+done
+
+# Exit virtual env
+source deactivate

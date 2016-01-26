@@ -104,7 +104,7 @@ if(tests)
       STRING(REPLACE "\\;" ";" PYTHONPATH "${PYTHON_PATH};$ENV{PYTHONPATH}")
       STRING(REPLACE ";" "\\;" PYTHON_PATH "${PYTHON_PATH}")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
-                           "PATH=${PATH_STRING};PYTHONPATH=${PYTHON_PATH}")
+                           "PYTHONPATH=${PYTHON_PATH};PATH=${PATH_STRING}")
     elseif(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
       set_tests_properties(python_${name} PROPERTIES ENVIRONMENT
                            "PYTHONPATH=${WORKINGDIR}:$ENV{PYTHONPATH};DYLD_LIBRARY_PATH=${ADD_TO_PATH}:$ENV{DYLD_LIBRARY_PATH} ")

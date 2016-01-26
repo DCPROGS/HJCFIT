@@ -21,10 +21,16 @@ PROJECT(DCProgs)
 option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
+option(openmp         "Enable OpenMP parallelization."          off)
 
 # Provides backwards compatibility and prevents MACOS_RPATH warning
 if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
       cmake_policy(SET CMP0042 OLD)
+endif()
+
+# Set a default build type to Release if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 endif()
 
 # Enable ExternalProject CMake module
@@ -41,9 +47,14 @@ include(PackageLookup)
 
 if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
-  # Unless explicitly initialized from command line, set install prefix to
-  # CookOff-set path to python interpreter.
-  if (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+  # Unless explicitly initialized from command line or installation occurs in a
+  # virtual environment, set install prefix to CookOff-set path to python
+  # interpreter.
+  if (EXISTS $ENV{VIRTUAL_ENV})
+    set(CMAKE_INSTALL_PREFIX "$ENV{VIRTUAL_ENV}" CACHE string "" FORCE)
+  elseif (EXISTS $ENV{CONDA_ENV_PATH})
+      set(CMAKE_INSTALL_PREFIX "$ENV{CONDA_ENV_PATH}" CACHE string "" FORCE)
+  elseif (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
       FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
       set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
   endif()
@@ -64,6 +75,19 @@ cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
                     REQUIRED auto lambda static_assert rvalue_references decltype
                     enable_if type_traits shared_ptr initialization)
 include(CheckIsNaN)
+
+if(openmp)
+    FIND_PACKAGE(OpenMP REQUIRED)
+    if(NOT (${CMAKE_C_FLAGS} MATCHES ${OpenMP_C_FLAGS}))
+        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" CACHE STRING "" FORCE)
+    endif()
+    if(NOT (${CMAKE_CXX_FLAGS} MATCHES ${OpenMP_CXX_FLAGS}))
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" CACHE STRING "" FORCE)
+    endif()
+    if(NOT ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${OpenMP_EXE_LINKER_FLAGS}"))
+        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
+    endif()
+endif(openmp)
 
 if(tests)
   enable_testing()
