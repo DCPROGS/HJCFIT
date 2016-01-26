@@ -28,6 +28,11 @@ if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
       cmake_policy(SET CMP0042 OLD)
 endif()
 
+# Set a default build type to Release if none was specified
+if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
+  set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
+endif()
+
 # Enable ExternalProject CMake module
 INCLUDE(ExternalProject)
 # Set default ExternalProject root directory

@@ -1,0 +1,42 @@
+#!/bin/bash --login
+
+#PBS -N profiler_1n
+#PBS -l select=1
+#PBS -l walltime=0:8:0
+#PBS -A ecse0506
+
+# Set up a few variables to pass to aprun
+PROCESSES=1
+OUTPUT_DIR=$WORK/output/python_profiler/
+SUFFIX=`date +"%Y%m%d_%H%M%S"`
+SORTBY="-s cumulative"
+R1PROF="-o $OUTPUT_DIR/fitAChR1_${NODES}n_$SUFFIX.prof"
+R4PROF="-o $OUTPUT_DIR/fitGlyR4_${NODES}n_$SUFFIX.prof"
+
+# This shifts to the directory that you submitted the job from
+cd $WORK/HJCFIT/exploration
+
+# Make sure we load the correct conda environment for the compute nodes
+module load anaconda-compute/2.2.0-python2
+
+# We need to manually set this so the virtual env is found where it's been
+# installed. OTherwise it'll look for it in $HOME, which is not visible
+# from the compute nodes.
+export CONDA_ENVS_PATH=$WORK/.conda/envs
+
+# Load virtual env
+source activate dcprogs
+
+# Manually set this env var so that behave is found. Otherwise it defaults
+# to conda installation.
+export PYTHONUSERBASE=$CONDA_ENV_PATH
+
+# Add virtual env path to LD_LIBRARY_PATH, otherwise it complains about not finding liblikelihood.so
+export LD_LIBRARY_PATH=$CONDA_ENV_PATH/lib/
+
+# Profile exploration data
+aprun -n $PROCESSES time python -m cProfile $SORTBY $R1PROF fitAChR1.py
+aprun -n $PROCESSES time python -m cProfile $SORTBY $R4PROF fitGlyR4.py
+
+# Exit virtual env
+source deactivate
