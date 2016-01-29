@@ -28,12 +28,12 @@
 
 test -s ~/.alias && . ~/.alias || true
 
-# Load HJCFIT modules and environment
-source $HOME/HJCFIT/utils/loadArcherModules.sh
-
 # Some handy env vars
 export WORK=/work/ecse0506/ecse0506/$USER
 export SHARED=/work/ecse0506/ecse0506/shared
+
+# Load HJCFIT modules and environment
+source $WORK/HJCFIT/utils/loadArcherModules.sh
 
 # Some handy aliases
 alias qstatu="qstat -u $USER"
