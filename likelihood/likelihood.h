@@ -59,17 +59,21 @@ namespace DCProgs {
   //!                member function, where the argument is the length of an open or shut interval.
   //! \param[in] _initial initial occupancies.
   //! \param[in] _final final occupancies.
-  template<class T_INTERVAL_ITERATOR, class T_G>
-    t_real chained_log10_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin,
-                                     T_INTERVAL_ITERATOR _end, 
+  template<class T_G>
+    t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
                                      t_initvec const &_initial, t_rvector const &_final ) {
-      if( (_end - _begin) % 2 != 1 )
+      auto _begin = burst.begin();
+      auto _end = burst.end();
+      t_int const intervals = _end - _begin;
+      if( (intervals) % 2 != 1 )
         throw errors::Domain("Expected a burst with odd number of intervals");
       t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
       t_int exponent(0);
-      while(++_begin != _end) {
-        current = current * _g.fa(static_cast<t_real>(*_begin));
-        current = current * _g.af(static_cast<t_real>(*(++_begin)));
+      t_int i(0);
+      //#pragma omp parallel for default(none), shared(_g,exponent), reduction(+:current)
+      for(i=1; i<intervals-1; i=i+2) {
+        current = current * _g.fa(static_cast<t_real>(burst[i]));
+        current = current * _g.af(static_cast<t_real>(burst[i+1]));
         t_real const max_coeff = current.array().abs().maxCoeff();
         if(max_coeff > 1e50) {
           current  *= 1e-50;
@@ -165,4 +169,3 @@ namespace DCProgs {
 }
 
 #endif 
-

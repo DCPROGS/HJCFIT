@@ -80,7 +80,7 @@ namespace DCProgs {
                                 
     t_real result(0);
     for(t_Burst const &burst: bursts) 
-      result += chained_log10_likelihood(eG, burst.begin(), burst.end(), initial, final);
+      result += chained_log10_likelihood(eG, burst, initial, final);
     return result;
   }
   t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
@@ -101,7 +101,7 @@ namespace DCProgs {
     t_rvector result(bursts.size());
     t_int i(0);
     for(t_Burst const &burst: bursts) {
-      result(i++) = chained_log10_likelihood(eG, burst.begin(), burst.end(), initial, final);
+      result(i++) = chained_log10_likelihood(eG, burst, initial, final);
     }
     return result;
   }
