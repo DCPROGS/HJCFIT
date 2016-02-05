@@ -23,8 +23,8 @@ def dcprogslik(x):
 def printiter(theta):
     global iternum
     iternum += 1
-    lik = dcprogslik(theta)
-    if iternum % 10 == 0:
+    if iternum % 100 == 0:
+        lik = dcprogslik(theta)
         print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
         print(np.exp(theta))
 
@@ -70,11 +70,14 @@ likelihood = Log10Likelihood(bursts, mec.kA, tres, tcrit)
 
 iternum = 0
 start = time.clock()
+start_wall = time.time()
 res = minimize(dcprogslik, np.log(theta), method='Nelder-Mead', callback=printiter,)
 t3 = time.clock() - start
+t3_wall = time.time() - start_wall
 print ("\n\n\nScyPy.minimize (Nelder-Mead) Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
     %time.localtime()[0:6])
-print ('time in ScyPy.minimize (Nelder-Mead)=', t3)
+print ('CPU time in ScyPy.minimize (Nelder-Mead)=', t3)
+print ('Wall clock time in ScyPy.minimize (Nelder-Mead)=', t3_wall)
 print ('xout', res.x)
 mec.theta_unsqueeze(np.exp(res.x))
 print ("\n Final rate constants:")
