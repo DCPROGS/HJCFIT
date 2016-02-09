@@ -26,13 +26,18 @@ addons:
         - texlive-latex-recommended
         - texlive-font-utils
 
+env:
+  global:
+    - DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=OFF"
 matrix:
   include:
     - python: 2.7
     - python: 3.5
+    - python: 3.5
+      env: DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=ON"
 
-# mscgen is not currently allowed in travis so we explicitly sudo it
-# See https://github.com/travis-ci/apt-package-whitelist/issues/2243
+
+
 install:
     - |
         pip install --upgrade pip
@@ -48,7 +53,7 @@ script:
   - |
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/
+        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
         make
         ctest --output-on-failure
         make install
