@@ -89,9 +89,10 @@ TEST_F(DeterminantEqTest, FF_resolution_is_zero) {
 
   Eigen::EigenSolver<t_rmatrix> eigsolver(qmatrix.ff());
   t_rvector const eigs = eigsolver.eigenvalues().real();
-  EXPECT_TRUE(std::abs(det(eigs(0))) < std::max(1e0, std::abs(eigs(0))) * 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(1))) < std::max(1e0, std::abs(eigs(1))) * 1e-5);
-  EXPECT_TRUE(std::abs(det(eigs(2))) < std::max(1e0, std::abs(eigs(2))) * 1e-5)
+  t_real one = 1e0;
+  EXPECT_TRUE(std::abs(det(eigs(0))) < std::max(one, std::abs(eigs(0))) * 1e-5);
+  EXPECT_TRUE(std::abs(det(eigs(1))) < std::max(one, std::abs(eigs(1))) * 1e-5);
+  EXPECT_TRUE(std::abs(det(eigs(2))) < std::max(one, std::abs(eigs(2))) * 1e-5)
     << eigs(2) << std::endl
     << det(eigs(2)) << std::endl;
     
@@ -211,4 +212,3 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-
