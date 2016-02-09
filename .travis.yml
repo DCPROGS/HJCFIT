@@ -29,10 +29,12 @@ addons:
 env:
   global:
     - DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=OFF"
+    - UPLOADDOCS=false
 matrix:
   include:
     - python: 2.7
     - python: 3.5
+      env: UPLOADDOCS=true
     - python: 3.5
       env: DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=ON"
 
@@ -63,7 +65,7 @@ script:
 
 after_success:
   - |
-        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'develop' && $TRAVIS_PYTHON_VERSION == '3.5' ]]; then
+        if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_BRANCH == 'develop' && "$UPLOADDOCS" == true ]]; then
             echo "Uploading documentation"
             pwd
             cd ..
