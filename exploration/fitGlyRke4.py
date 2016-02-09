@@ -89,14 +89,15 @@ iternum = 0
 def printiter(theta):
     global iternum
     iternum += 1
-    lik = dcprogslik(theta)
     if iternum % 100 == 0:
+        lik = dcprogslik(theta)
         print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
         print(np.exp(theta))
 
 lik = dcprogslik(theta)
 print ("\nStarting likelihood = {0:.6f}".format(-lik))
 start = time.clock()
+wallclock_start = time.time()
 success = False
 result = None
 while not success:
@@ -110,9 +111,11 @@ while not success:
         theta = result.x
         
 end = time.clock()
+wallclock_end = time.time()
 print ("\nHJCFIT Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
         %time.localtime()[0:6])
-print ('time in simplex=', end - start)
+print ('CPU time in simplex=', end - start)
+print ('Wallclock time in simplex=', wallclock_end - wallclock_start)
 print ('\n\nresult=')
 print (result)
 
