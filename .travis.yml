@@ -53,11 +53,14 @@ install:
 
 script:
   - |
+        # Building
         mkdir build
         cd build
         cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
         make
         ctest --output-on-failure
+  - |
+        # Building documentation
         make install
         export LD_LIBRARY_PATH=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/lib:$LD_LIBRARY_PATH
         make documentation
