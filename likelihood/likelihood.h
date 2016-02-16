@@ -64,7 +64,7 @@ namespace DCProgs {
   //! \param[in] _final final occupancies.
   template<class T_G>
     t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
-                                     t_initvec const &_initial, t_rvector const &_final ) {
+                                     t_initvec const &_initial, t_rvector const &_final, t_int const threads) {
       auto _begin = burst.begin();
       auto _end = burst.end();
       t_int const intervals = _end - _begin;
@@ -72,18 +72,6 @@ namespace DCProgs {
         throw errors::Domain("Expected a burst with odd number of intervals");
       t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
       t_int exponent(0);
-      t_int threads;
-      #pragma omp parallel default(none), shared(threads)
-      {
-        #pragma omp single
-        {
-          #if defined(_OPENMP)
-          threads = omp_get_num_threads();
-          #else
-          threads = 1;
-          #endif
-        }
-      }
       const t_int cols = current.cols();
       const auto identity = t_rmatrix::Identity(cols, cols);
       std::vector<t_rmatrix> current_vec(threads);
@@ -155,7 +143,7 @@ namespace DCProgs {
       //! Upper bound bracketing all roots.
       t_real upper_bound;
 
-
+      t_int omp_num_threads;
       //! Constructor
       //! \param[in] _bursts A vector of bursts. Each burst is a vector of intervals, starting with
       //!            an open interval. The intervals should be prefiltered for the maximum
@@ -182,7 +170,19 @@ namespace DCProgs {
                           t_real _upperbound=quiet_nan ) 
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax),
-                        lower_bound(_lowerbound), upper_bound(_upperbound) {}
+                        lower_bound(_lowerbound), upper_bound(_upperbound) {
+                          #pragma omp parallel default(none)
+                          {
+                            #pragma omp single
+                            {
+                              #if defined(_OPENMP)
+                              omp_num_threads = omp_get_num_threads();
+                              #else
+                              omp_num_threads = 1;
+                              #endif
+                            }
+                          }
+                        }
      
       //! \brief Computes likelihood for each burst
       //! \return a DCProgs::t_rvector 
