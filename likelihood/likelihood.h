@@ -25,6 +25,9 @@
 
 #include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
 
 #include "qmatrix.h"
 #include "errors.h"
@@ -69,20 +72,52 @@ namespace DCProgs {
         throw errors::Domain("Expected a burst with odd number of intervals");
       t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
       t_int exponent(0);
-      t_int i(0);
-      //#pragma omp parallel for default(none), shared(_g,exponent), reduction(+:current)
-      for(i=1; i<intervals-1; i=i+2) {
-        current = current * _g.fa(static_cast<t_real>(burst[i]));
-        current = current * _g.af(static_cast<t_real>(burst[i+1]));
-        t_real const max_coeff = current.array().abs().maxCoeff();
-        if(max_coeff > 1e50) {
-          current  *= 1e-50;
-          exponent += 50;
-        } else if(max_coeff < 1e-50) {
-          current  *= 1e+50;
-          exponent -= 50;
+      t_int threads;
+      #pragma omp parallel default(none), shared(threads)
+      {
+        #pragma omp single
+        {
+          #if defined(_OPENMP)
+          threads = omp_get_num_threads();
+          #else
+          threads = 1;
+          #endif
         }
       }
+      const t_int cols = current.cols();
+      const auto identity = t_rmatrix::Identity(cols, cols);
+      std::vector<t_rmatrix> current_vec(threads);
+      std::vector<t_int> exponents(threads);
+      #pragma omp parallel default(none), shared(_g, current_vec, exponents)
+      {
+        t_int thread;
+        #if defined(_OPENMP)
+          thread = omp_get_thread_num();
+        #else
+          thread = 0;
+        #endif
+        exponents[thread] = 0;
+        current_vec[thread] = identity;
+        #pragma omp for schedule(static)
+        for(t_int j=1; j<intervals-1; j=j+2) {
+          auto result1 = _g.fa(static_cast<t_real>(burst[j]));
+          auto result2 = _g.af(static_cast<t_real>(burst[j+1]));
+          current_vec[thread] = current_vec[thread] * result1;
+          current_vec[thread] = current_vec[thread] * result2;
+          t_real const max_coeff = current_vec[thread].array().abs().maxCoeff();
+          if(max_coeff > 1e50) {
+            current_vec[thread]  *= 1e-50;
+            exponents[thread] += 50;
+          } else if(max_coeff < 1e-50) {
+            current_vec[thread]  *= 1e+50;
+            exponents[thread] -= 50;
+          }
+        }
+      }
+      for (t_int tmpexp : exponents)
+        exponent += tmpexp;
+      for (auto tmpcurrent : current_vec)
+        current = current * tmpcurrent;
       return std::log10(current * _final) + exponent;
     }
 
