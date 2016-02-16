@@ -1,4 +1,4 @@
-build/
+build*
 include/
 nbproject/
 dcprogs/
