@@ -1,0 +1,9 @@
+#!/bin/bash -l
+#$ -S /bin/bash
+#$ -P RCSoftDev
+#$ -l h_rt=0:0:30
+#$ -N OMPExample
+#$ -pe smp ${processes}
+#$ -wd ${run_at}
+module swap compilers compilers/gnu/4.9.2
+python ${deploy_to}/HJCFIT/exploration/fitGlyR4.py
