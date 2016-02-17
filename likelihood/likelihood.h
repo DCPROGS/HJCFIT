@@ -22,7 +22,7 @@
 #define DCPROGS_LIKELIHOOD_H
 
 #include <DCProgsConfig.h>
-
+#include <iostream>
 #include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
 #if defined(_OPENMP)
@@ -74,9 +74,9 @@ namespace DCProgs {
       t_int exponent(0);
       const t_int cols = current.cols();
       const auto identity = t_rmatrix::Identity(cols, cols);
-      std::vector<t_rmatrix> current_vec(threads);
-      std::vector<t_int> exponents(threads);
-      #pragma omp parallel default(none), shared(_g, current_vec, exponents)
+      std::vector<t_rmatrix> current_vec(threads, identity);
+      std::vector<t_int> exponents(threads, 0);
+      #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(intervals>100)
       {
         t_int thread;
         #if defined(_OPENMP)
@@ -182,6 +182,7 @@ namespace DCProgs {
                               #endif
                             }
                           }
+                          std::cout << omp_num_threads << std::endl;
                         }
      
       //! \brief Computes likelihood for each burst
