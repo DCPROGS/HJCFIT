@@ -22,7 +22,6 @@
 #define DCPROGS_LIKELIHOOD_H
 
 #include <DCProgsConfig.h>
-#include <iostream>
 #include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
 #if defined(_OPENMP)
@@ -88,10 +87,8 @@ namespace DCProgs {
         current_vec[thread] = identity;
         #pragma omp for schedule(static)
         for(t_int j=1; j<intervals-1; j=j+2) {
-          auto result1 = _g.fa(static_cast<t_real>(burst[j]));
-          auto result2 = _g.af(static_cast<t_real>(burst[j+1]));
-          current_vec[thread] = current_vec[thread] * result1;
-          current_vec[thread] = current_vec[thread] * result2;
+          current_vec[thread] = current_vec[thread] * _g.fa(static_cast<t_real>(burst[j]));
+          current_vec[thread] = current_vec[thread] * _g.af(static_cast<t_real>(burst[j+1]));
           t_real const max_coeff = current_vec[thread].array().abs().maxCoeff();
           if(max_coeff > 1e50) {
             current_vec[thread]  *= 1e-50;
@@ -182,7 +179,6 @@ namespace DCProgs {
                               #endif
                             }
                           }
-                          std::cout << omp_num_threads << std::endl;
                         }
      
       //! \brief Computes likelihood for each burst
