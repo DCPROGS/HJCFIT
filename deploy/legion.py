@@ -75,7 +75,7 @@ def benchmark_python(example='fitGlyR4.py'):
             script_file.write(script)
     with cd(env.deploy_to):
         put(script_local_path, 'benchmark_python.sh')
-        run('qsub example.sh')
+        run('qsub benchmark_python.sh')
 
 
 @task
