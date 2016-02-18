@@ -10,6 +10,7 @@ module swap compilers compilers/gnu/4.9.2
 
 for i in {1..4}
 do
+    echo "Running with $1 cores"
     export OMP_NUM_THREADS=$i
     python ${deploy_to}/HJCFIT/exploration/${example}
 done
