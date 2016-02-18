@@ -1,7 +1,7 @@
 #!/bin/bash -l
 #$ -S /bin/bash
 #$ -P RCSoftDev
-#$ -l h_rt=0:0:30
+#$ -l h_rt=0:30:0
 #$ -N OMPExample
 #$ -pe smp ${processes}
 #$ -wd ${run_at}
