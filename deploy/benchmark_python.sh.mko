@@ -1,0 +1,15 @@
+#!/bin/bash -l
+#$ -S /bin/bash
+#$ -P RCSoftDev
+#$ -l h_rt=0:0:30
+#$ -N OMPExample
+#$ -pe smp 16
+#$ -wd ${run_at}
+module swap compilers compilers/gnu/4.9.2
+
+
+for i in {1..4}
+do
+    export OMP_NUM_THREADS=$i
+    python ${deploy_to}/HJCFIT/exploration/${example}
+done

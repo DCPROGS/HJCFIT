@@ -20,7 +20,7 @@ modules = nested(
 
 
 @task
-def cold(branch='develop'):
+def cold(branch='develop', cmakeflags=''):
     run('rm -rf '+env.deploy_to)
     run('mkdir -p '+env.deploy_to)
     run('mkdir -p '+env.run_at)
@@ -30,19 +30,19 @@ def cold(branch='develop'):
             run('mkdir HJCFIT/build')
             with cd('HJCFIT/build'):
                 run('git checkout '+branch)
-                run('cmake ..')
+                run('cmake .. ' + cmakeflags)
                 run('make')
                 run('make install')
                 run('ctest')
 
 
 @task
-def warm(branch='develop'):
+def warm(branch='develop', cmakeflags=''):
     with cd(env.deploy_to+'/HJCFIT/build'):
         with modules:
             run('git checkout '+branch)
             run('git pull')
-            run('cmake ..')
+            run('cmake .. ' + cmakeflags)
             run('make')
             run('make install')
             run('ctest')
@@ -60,6 +60,22 @@ def patch():
                 run('cmake ..')
                 run('make')
                 run('test/catch')
+
+
+@task
+def benchmark_python(example='fitGlyR4.py'):
+    env.example = example
+    template_file_path = os.path.join(os.path.dirname(__file__),
+                                      'benchmark_python.sh.mko')
+    script_local_path = os.path.join(os.path.dirname(__file__),
+                                     'benchmark_python.sh')
+    with open(template_file_path) as template:
+        script = Template(template.read()).render(**env)
+        with open(script_local_path, 'w') as script_file:
+            script_file.write(script)
+    with cd(env.deploy_to):
+        put(script_local_path, 'benchmark_python.sh')
+        run('qsub example.sh')
 
 
 @task
