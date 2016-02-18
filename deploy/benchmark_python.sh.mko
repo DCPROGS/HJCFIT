@@ -12,5 +12,6 @@ for i in {1..16}
 do
     echo "Running with $i cores"
     export OMP_NUM_THREADS=$i
+    export PYTHONUNBUFFERED='1'
     python ${deploy_to}/HJCFIT/exploration/${example}
 done
