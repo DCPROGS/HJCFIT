@@ -2,7 +2,7 @@
 #$ -S /bin/bash
 #$ -P RCSoftDev
 #$ -l h_rt=0:0:30
-#$ -N OMPExample
+#$ -N python_benchmark_${example}
 #$ -pe smp 16
 #$ -wd ${run_at}
 module swap compilers compilers/gnu/4.9.2
