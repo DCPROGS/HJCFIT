@@ -12,15 +12,12 @@ export CONDA_ENVS_PATH=$WORK/.conda/envs
 
 # Create dcprogs virtual env in $WORK folder. Note it can only have Anaconda-compute's python 2
 # since anaconda+python3 is not available in the MOM nodes.
-conda create -p $CONDA_ENVS_PATH/dcprogs python numpy scipy six pip -y
+conda create -n dcprogs python=3.5 numpy scipy six pip -y
 
 # Behave needs to be installed with pip from inside the virtual env, so activate it
 source activate dcprogs
 
-# To pip install behave with --user in the right place, we need to set up another env var.
-# Note $CONDA_ENV_PATH points to $CONDA_ENVS_PATH/<virtual_env_name> after activating.
-export PYTHONUSERBASE=$CONDA_ENV_PATH
-pip install --user behave
+pip install behave
 
 # Get out from the virtual environment
 source deactivate

@@ -21,21 +21,21 @@ module load swig
 # Load Anaconda for compute nodes with Python2
 # Note there is an anaconda-compute module with Python3 available in the
 # login nodes, but that only the Python2 one is available in the MOM nodes
+# The module load messes with LO_LIBRARY_PATH we may have to unset this but
+# leave it for the moment.
+# export OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+# export OLD_LIBRARY_PATH=$LIBRARY_PATH
 module load anaconda-compute/2.2.0-python2
+# export LD_LIBRARY_PATH=$OLD_LD_LIBRARY_PATH
+# export LIBRARY_PATH=$OLD_LIBRARY_PATH
+# The anaconda module sets PYTHONHOME Which is wrong and breaks conda envs so remove it
+unset PYTHONHOME
 
 # Aparently that anaconda-compute module makes git fail, and that is needed by CookOff, etc, so:
 module load git
 
 # Environmental variables needed for the "dcprogs" virtual environment to work
 export CONDA_ENVS_PATH=$WORK/.conda/envs
-export PYTHONUSERBASE=$CONDA_ENVS_PATH/dcprogs
-
-# Note the folllowing is better done only from the a conda virtual environment
-# Python tests are run with behave.
-# Behave won't work unless we add its install location to $PATH
-# pip install --user behave
-# export PATH=~/.local/bin:$PATH
 
 # Needed to dynamically link libraries
 export CRAYPE_LINK_TYPE=dynamic
-
