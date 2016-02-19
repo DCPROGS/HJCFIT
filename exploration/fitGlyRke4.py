@@ -100,18 +100,16 @@ start = time.clock()
 wallclock_start = time.time()
 success = False
 result = None
-while not success:
-    #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit, options={'maxiter': 5000, 'disp': True})
-    result = minimize(dcprogslik, theta, method='Nelder-Mead', callback=printiter,
-        options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
-        'disp': True})
-    if result.success:
-        success = True
-    else:
-        theta = result.x
+
+result = minimize(dcprogslik, theta, method='Nelder-Mead', callback=printiter,
+    options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 50000, 'maxfev': 100000,
+    'disp': True})
+if result.success:
+    success = True
         
 end = time.clock()
 wallclock_end = time.time()
+
 print ("\nHJCFIT Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
         %time.localtime()[0:6])
 print ('CPU time in simplex=', end - start)
