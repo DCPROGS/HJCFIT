@@ -1,4 +1,5 @@
-build/
+build*
+deploy/*.sh
 include/
 nbproject/
 dcprogs/

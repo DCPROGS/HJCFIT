@@ -1,0 +1,17 @@
+#!/bin/bash -l
+#$ -S /bin/bash
+#$ -P RCSoftDev
+#$ -l h_rt=2:00:0
+#$ -N python_benchmark_${example}
+#$ -pe smp 16
+#$ -wd ${run_at}
+module swap compilers compilers/gnu/4.9.2
+
+
+for i in {1..16}
+do
+    echo "Running with $i cores"
+    export OMP_NUM_THREADS=$i
+    export PYTHONUNBUFFERED='1'
+    python ${deploy_to}/HJCFIT/exploration/${example}
+done
