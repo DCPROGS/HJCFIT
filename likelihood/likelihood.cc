@@ -81,10 +81,17 @@ namespace DCProgs {
     t_real result(0);
     t_int i(0);
     const bool openmphighlevel = bursts.size() > 100;
-    #pragma omp parallel for default(none), reduction(+:result), shared(final), if(openmphighlevel)
-    for (i=0; i<bursts.size(); i++) {
-      t_Burst const &burst = bursts[i];
-      result += chained_log10_likelihood(eG, burst, initial, final, omp_num_threads, openmphighlevel);
+    if(openmphighlevel) {
+      #pragma omp parallel for default(none), reduction(+:result), shared(final)
+      for (i=0; i<bursts.size(); i++) {
+        t_Burst const &burst = bursts[i];
+        result += chained_log10_likelihood(eG, burst, initial, final);
+      }
+    } else {
+      for (i=0; i<bursts.size(); i++) {
+        t_Burst const &burst = bursts[i];
+        result += parallel_chained_log10_likelihood(eG, burst, initial, final, omp_num_threads);
+      }
     }
     return result;
   }
@@ -109,7 +116,7 @@ namespace DCProgs {
     #pragma omp parallel for default(none), shared(final,result), if(openmphighlevel)
     for (i=0; i<bursts.size(); i++) {
       t_Burst const &burst = bursts[i];
-      result(i) = chained_log10_likelihood(eG, burst, initial, final, omp_num_threads, openmphighlevel);
+      result(i) = chained_log10_likelihood(eG, burst, initial, final);
     }
     return result;
   }

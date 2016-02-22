@@ -63,8 +63,39 @@ namespace DCProgs {
   //! \param[in] _final final occupancies.
   template<class T_G>
     t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
+                                     t_initvec const &_initial, t_rvector const &_final ) {
+      auto _begin = burst.begin();
+      auto _end = burst.end();
+      if( (_end - _begin) % 2 != 1 )
+        throw errors::Domain("Expected a burst with odd number of intervals");
+      t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
+      t_int exponent(0);
+      while(++_begin != _end) {
+        current = current * _g.fa(static_cast<t_real>(*_begin));
+        current = current * _g.af(static_cast<t_real>(*(++_begin)));
+        t_real const max_coeff = current.array().abs().maxCoeff();
+        if(max_coeff > 1e50) {
+          current  *= 1e-50;
+          exponent += 50;
+        } else if(max_coeff < 1e-50) {
+          current  *= 1e+50;
+          exponent -= 50;
+        }
+      }
+      return std::log10(current * _final) + exponent;
+    }
+  //! \brief Computes log10-likelihood of a time series.
+  //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
+  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
+  //! \param[in] _end One past last interval.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //!                member function, where the argument is the length of an open or shut interval.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
+  template<class T_G>
+    t_real parallel_chained_log10_likelihood( T_G const & _g, const t_Burst burst,
                                      t_initvec const &_initial, t_rvector const &_final,
-                                     t_int const threads, bool const openmphighlevel) {
+                                     t_int const threads) {
       auto _begin = burst.begin();
       auto _end = burst.end();
       t_int const intervals = _end - _begin;
@@ -76,7 +107,7 @@ namespace DCProgs {
       const auto identity = t_rmatrix::Identity(cols, cols);
       std::vector<t_rmatrix> current_vec(threads, identity);
       std::vector<t_int> exponents(threads, 0);
-      bool openmplowlevel = (intervals>100) && (!openmphighlevel);
+      bool openmplowlevel = (intervals>100);
       #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(openmplowlevel)
       {
         t_int thread;
