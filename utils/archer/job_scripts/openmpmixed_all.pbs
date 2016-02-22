@@ -1,0 +1,37 @@
+#!/bin/bash --login
+
+#PBS -N openmp_perf
+#PBS -l select=1
+#PBS -l walltime=16:0:0
+#PBS -A ecse0506
+
+#Set up a few variables to pass to aprun
+NODES=1
+SUFFIX=`date +"%Y%m%d_%H%M%S"`
+OUTPUT_DIR=$WORK/output/openmpmixed/$SUFFIX
+LOGFILE=$OUTPUT_DIR/openmpmixed
+mkdir -p $OUTPUT_DIR
+
+#This shifts to the directory that you submitted the job from
+cd $WORK/HJCFIT/exploration
+
+#Load all the necessary tools and set the work environment
+source ../utils/archer/loadArcherModules.sh
+
+#Load virtual env
+source activate dcprogs
+
+#Add virtual env path to LD_LIBRARY_PATH, otherwise it complains about not finding liblikelihood.so
+export LD_LIBRARY_PATH=$CONDA_ENV_PATH/lib:$LD_LIBRARY_PATH
+
+#Profile exploration data with 1 to 24 nodes. Time for each execution will be
+#outputted from the python code
+for threads in {1..24}
+do
+    echo "Executing fitGlyR4 with $threads threads in $NODES node/s. "
+    export OMP_NUM_THREADS=$threads
+    aprun -n $NODES -d $threads python fitGlyR4.py > ${LOGFILE}_$threads.log 2>&1
+done
+
+#Exit virtual env
+source deactivate
