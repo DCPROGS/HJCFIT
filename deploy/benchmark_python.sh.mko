@@ -5,6 +5,8 @@
 #$ -N python_benchmark_${example}
 #$ -pe smp 16
 #$ -wd ${run_at}
+#$ -ac allow="U"
+
 module swap compilers compilers/gnu/4.9.2
 
 
