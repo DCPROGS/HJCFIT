@@ -9,10 +9,12 @@ from dcpyps import dataset
 from dcpyps import mechanism
 from dcprogs.likelihood import Log10Likelihood
 
+
+
 # LOAD DATA: Burzomato 2004 example set.
-scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"], 
+scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
             ["../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
-            ["../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"], 
+            ["../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"],
             ["../../DCPYPS/dcpyps/samples/glydemo/D-1000.scn"]]
 tres = [0.000030, 0.000030, 0.000030, 0.000030]
 tcrit = [0.004, -1, -0.06, -0.02]
@@ -20,12 +22,13 @@ conc = [10e-6, 30e-6, 100e-6, 1000e-6]
 
 recs = []
 bursts = []
-for i in range(len(scnfiles)):
-    rec = dataset.SCRecord(scnfiles[i], conc[i], tres[i], tcrit[i])
-    rec.record_type = 'recorded'
-    recs.append(rec)
-    bursts.append(rec.bursts.intervals())
-    rec.printout()
+
+for scnfile, concentration, resolution, gap in zip(scnfiles, conc, tres, tcrit):
+    record = dataset.SCRecord(scnfile, concentration, resolution, gap)
+    record.record_type = 'recorded'
+    recs.append(record)
+    bursts.append(record.bursts.intervals())
+    record.printout()
 
 # LOAD FLIP MECHANISM USED Burzomato et al 2004
 mecfn = "../../DCPYPS/dcpyps/samples/mec/demomec.mec"
@@ -42,8 +45,8 @@ mec.set_rateconstants(rates)
 #fixed = np.array([False, False, False, False, False, False, False, True,
 #    False, False, False, False, False, False])
 #if fixed.size == len(mec.Rates):
-for i in range(len(mec.Rates)):
-    mec.Rates[i].fixed = False
+for rate in mec.Rates:
+    rate.fixed = False
 
 # Constrained rates.
 mec.Rates[21].is_constrained = True
@@ -76,16 +79,20 @@ kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
     'lower_bound': -1e6, 'upper_bound': 0}
 likelihood = []
 
-for i in range(len(recs)):
-    likelihood.append(Log10Likelihood(bursts[i], mec.kA,
-        recs[i].tres, recs[i].tcrit, **kwargs))
+for record, burst in zip(recs, bursts):
+    likelihood.append(Log10Likelihood(burst, mec.kA,
+        record.tres, record.tcrit, **kwargs))
 
 def dcprogslik(x, args=None):
     mec.theta_unsqueeze(np.exp(x))
     lik = 0
-    for i in range(len(conc)):
-        mec.set_eff('c', conc[i])
-        lik += -likelihood[i](mec.Q) * math.log(10)
+    start = time.clock()
+
+    for index, concentration in enumerate(conc):
+        mec.set_eff('c', concentration)
+        lik += -likelihood[index](mec.Q) * math.log(10)
+    end = time.clock()
+    print 'CPU time for concentration loop = {}'.format(end - start)
     return lik
 
 iternum = 0
@@ -103,6 +110,7 @@ start = time.clock()
 wallclock_start = time.time()
 success = False
 result = None
+
 while not success:
     #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit, options={'maxiter': 5000, 'disp': True})
     result = minimize(dcprogslik, theta, method='Nelder-Mead', callback=printiter,
@@ -112,7 +120,7 @@ while not success:
         success = True
     else:
         theta = result.x
-        
+
 end = time.clock()
 wallclock_end = time.time()
 print ("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
