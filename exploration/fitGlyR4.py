@@ -83,23 +83,12 @@ for record, burst in zip(recs, bursts):
     likelihood.append(Log10Likelihood(burst, mec.kA,
         record.tres, record.tcrit, **kwargs))
 
-print likelihood
-
-from tempfile import mkdtemp
-cachedir = mkdtemp()
-from joblib import Memory
-memory = Memory(cachedir=cachedir, mmap_mode='r')
-
-# for likelihd in likelihood:
-#     memory.cache(likelihd)
-
-@memory.cache
 def dcprogslik(x, args=None):
     mec.theta_unsqueeze(np.exp(x))
     lik = 0
     start = time.clock()
-
     for index, concentration in enumerate(conc):
+        #Sets concentration in mechanism and updates submatrices.
         mec.set_eff('c', concentration)
         lik += -likelihood[index](mec.Q) * math.log(10)
     end = time.clock()
