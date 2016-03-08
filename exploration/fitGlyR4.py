@@ -9,11 +9,6 @@ from dcpyps import dataset
 from dcpyps import mechanism
 from dcprogs.likelihood import Log10Likelihood
 
-#Use ipyparallel
-from ipyparallel import Client
-rc = Client()
-dview = rc[:] # use all engines
-
 # LOAD DATA: Burzomato 2004 example set.
 scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
             ["../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
@@ -95,7 +90,6 @@ def dcprogslik(x, args=None):
 
     for index, concentration in enumerate(conc):
         #Sets concentration in mechanism and updates submatrices.
-        dview.push(mec)
         mec.set_eff('c', concentration)
         lik += -likelihood[index](mec.Q) * math.log(10)
     end = time.clock()
