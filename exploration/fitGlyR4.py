@@ -9,6 +9,11 @@ from dcpyps import dataset
 from dcpyps import mechanism
 from dcprogs.likelihood import Log10Likelihood
 
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+
+
+
 # LOAD DATA: Burzomato 2004 example set.
 scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
             ["../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
@@ -34,8 +39,12 @@ version, meclist, max_mecnum = dcio.mec_get_list(mecfn)
 mec = dcio.mec_load(mecfn, meclist[2][0])
 
 # PREPARE RATE CONSTANTS.
-#rates = [5000.0, 500.0, 2700.0, 2000.0, 800.0, 15000.0, 300.0, 0.1200E+06, 6000.0, 0.4500E+09, 1500.0, 12000.0, 4000.0, 0.9000E+09, 7500.0, 1200.0, 3000.0, 0.4500E+07, 2000.0, 0.9000E+07, 1000, 0.135000E+08]
-rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0, 0.1100E+06, 4900.0, 0.4000E+09, 1850.0, 10000.0, 5000.0, 0.7500E+09, 8500.0, 1050.0, 3500.0, 0.5000E+07, 2300.0, 0.9500E+07, 1950, 0.130000E+08]
+#rates = [5000.0, 500.0, 2700.0, 2000.0, 800.0, 15000.0, 300.0, 0.1200E+06, 6000.0,
+#         0.4500E+09, 1500.0, 12000.0, 4000.0, 0.9000E+09, 7500.0, 1200.0, 3000.0,
+#         0.4500E+07, 2000.0, 0.9000E+07, 1000, 0.135000E+08]
+rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0, 0.1100E+06, 4900.0,
+         0.4000E+09, 1850.0, 10000.0, 5000.0, 0.7500E+09, 8500.0, 1050.0, 3500.0,
+         0.5000E+07, 2300.0, 0.9500E+07, 1950, 0.130000E+08]
 
 mec.set_rateconstants(rates)
 
@@ -86,12 +95,74 @@ def dcprogslik(x, args=None):
     lik = 0
     start = time.clock()
 
+    comm.Barrier()
+    t_start = MPI.Wtime()
 
+    partition_size = len(conc)/comm.size #What to do if not divisible?
+    whole_size = len(conc)
 
-    for index, concentration in enumerate(conc):
-        #Sets concentration in mechanism and updates submatrices.
-        mec.set_eff('c', concentration)
-        lik += -likelihood[index](mec.Q) * math.log(10)
+    if comm.rank == 0:
+        whole = np.array(conc)
+    else:
+        whole = np.empty(whole_size, dtype=np.float64)
+
+    partition = np.empty(partition_size, dtype=np.float64)
+
+    # Scatter data into partition arrays
+    comm.Scatter( [whole, MPI.DOUBLE], [partition, MPI.DOUBLE] )
+
+    # Stopping here just so that I can print things
+    comm.Barrier()
+
+    for r in range(comm.size):
+        if comm.rank == r:
+            print "[%d] %s" % (comm.rank, partition)
+        comm.Barrier()
+
+    #Recalculate likelihood, handling mec object (with sendrecv?)
+    # received = False
+    # if comm.rank == 0:
+    #     mec.set_eff('c', conc[comm.rank])
+    #     partial_lik = -likelihood[comm.rank](mec.Q) * math.log(10)
+    #     sent = comm.isend(mec, dest=0, tag=0)
+    # else:
+    #     while not(received):
+    #         received = comm.recv(mec, source=MPI.ANY_SOURCE, tag=0)
+    #     mec.set_eff('c', conc[comm.rank])
+    #     partial_lik = -likelihood[comm.rank](mec.Q) * math.log(10)
+
+    mec.set_eff('c', partition[0])
+    partial_lik = -likelihood[comm.rank](mec.Q) * math.log(10)
+
+    # gather likelihood results and sum reduce
+    whole = comm.gather(partial_lik, root=0)
+    if comm.rank == 0:
+        for i in whole:
+            lik += i
+
+    # lik = whole.sum()
+    #
+    # for r in xrange(comm.size):
+    #     if comm.rank == r:
+    #         print "[%d] %s" % (comm.rank, whole)
+    #     comm.Barrier()
+
+    # result = 0
+    # comm.Reduce(
+    #     [partial_lik, MPI.DOUBLE],
+    #     [result, MPI.DOUBLE],
+    #     op = MPI.SUM,
+    #     root = 0
+    # )
+    comm.Barrier()
+
+    t_diff = MPI.Wtime() - t_start
+    if comm.rank==0: print "MPI time: " + str(t_diff)
+
+    # for index, concentration in enumerate(conc):
+    #     #Sets concentration in mechanism and updates submatrices.
+    #     mec.set_eff('c', concentration)
+    #     lik += -likelihood[index](mec.Q) * math.log(10)
     end = time.clock()
     print 'CPU time for concentration loop = {}'.format(end - start)
     return lik
@@ -113,7 +184,8 @@ success = False
 result = None
 
 while not success:
-    #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit, options={'maxiter': 5000, 'disp': True})
+    #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit,
+    # options={'maxiter': 5000, 'disp': True})
     result = minimize(dcprogslik, theta, method='Nelder-Mead', callback=printiter,
         options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
         'disp': True})
