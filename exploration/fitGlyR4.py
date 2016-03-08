@@ -39,8 +39,12 @@ version, meclist, max_mecnum = dcio.mec_get_list(mecfn)
 mec = dcio.mec_load(mecfn, meclist[2][0])
 
 # PREPARE RATE CONSTANTS.
-#rates = [5000.0, 500.0, 2700.0, 2000.0, 800.0, 15000.0, 300.0, 0.1200E+06, 6000.0, 0.4500E+09, 1500.0, 12000.0, 4000.0, 0.9000E+09, 7500.0, 1200.0, 3000.0, 0.4500E+07, 2000.0, 0.9000E+07, 1000, 0.135000E+08]
-rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0, 0.1100E+06, 4900.0, 0.4000E+09, 1850.0, 10000.0, 5000.0, 0.7500E+09, 8500.0, 1050.0, 3500.0, 0.5000E+07, 2300.0, 0.9500E+07, 1950, 0.130000E+08]
+#rates = [5000.0, 500.0, 2700.0, 2000.0, 800.0, 15000.0, 300.0, 0.1200E+06, 6000.0,
+# 0.4500E+09, 1500.0, 12000.0, 4000.0, 0.9000E+09, 7500.0, 1200.0, 3000.0, 0.4500E+07,
+# 2000.0, 0.9000E+07, 1000, 0.135000E+08]
+rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0, 0.1100E+06, 4900.0,
+         0.4000E+09, 1850.0, 10000.0, 5000.0, 0.7500E+09, 8500.0, 1050.0, 3500.0,
+         0.5000E+07, 2300.0, 0.9500E+07, 1950, 0.130000E+08]
 
 mec.set_rateconstants(rates)
 
@@ -81,52 +85,79 @@ theta = np.log(mec.theta())
 kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
     'lower_bound': -1e6, 'upper_bound': 0}
 likelihood = []
+dview.push(dict(mec=mec, conc=conc, recs=recs, bursts=bursts, kwargs=kwargs))
+dview.execute('likelihood = []')
 
-for record, burst in zip(recs, bursts):
-    likelihood.append(Log10Likelihood(burst, mec.kA,
-        record.tres, record.tcrit, **kwargs))
+@dview.remote(block=True)
+def setuplikelihood():
+    from dcprogs.likelihood import Log10Likelihood
+    import numpy
+    global likelihood
+    for record, burst in zip(recs, bursts):
+        likelihood.append(Log10Likelihood(burst, mec.kA,
+            record.tres, record.tcrit, **kwargs))
 
-def dcprogslik(x, args=None):
+setuplikelihood()
+
+
+
+def singledcprogslik(index):
+    import numpy as np
+    import os
+    import math
     mec.theta_unsqueeze(np.exp(x))
-    lik = 0
-    start = time.clock()
-
-
-
-    for index, concentration in enumerate(conc):
-        #Sets concentration in mechanism and updates submatrices.
-        dview.push(mec)
-        mec.set_eff('c', concentration)
-        lik += -likelihood[index](mec.Q) * math.log(10)
-    end = time.clock()
-    print 'CPU time for concentration loop = {}'.format(end - start)
+    mec.set_eff('c', conc[index])
+    lik = -likelihood[index](mec.Q) * math.log(10)
     return lik
 
+def totlikelihood(x, args=None):
+    dview.push(dict(x=x))
+    results = dview.map_sync(singledcprogslik, range(4))
+    lik = 0
+    for i in results:
+        lik += i
+    return lik
+
+# def dcprogslik(x, args=None):
+#     mec.theta_unsqueeze(np.exp(x))
+#     lik = 0
+#     start = time.clock()
+#     for index, concentration in enumerate(conc):
+#         #Sets concentration in mechanism and updates submatrices.
+#         #dview.push(mec)
+#         mec.set_eff('c', concentration)
+#         lik += -likelihood[index](mec.Q) * math.log(10)
+#     end = time.clock()
+#     print 'CPU time for concentration loop = {}'.format(end - start)
+#     return lik
+#
 iternum = 0
 def printiter(theta):
     global iternum
     iternum += 1
     if iternum % 100 == 0:
-        lik = dcprogslik(theta)
-        print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
+        #lik = dcprogslik(theta)
+        #print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
+        print("iteration # {0:d}".format(iternum))
         print(np.exp(theta))
 
-lik = dcprogslik(theta)
-print ("\nStarting likelihood (DCprogs)= {0:.6f}".format(-lik))
+#lik = dcprogslik(theta)
+#print ("\nStarting likelihood (DCprogs)= {0:.6f}".format(-lik))
 start = time.clock()
 wallclock_start = time.time()
 success = False
 result = None
 
-while not success:
-    #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit, options={'maxiter': 5000, 'disp': True})
-    result = minimize(dcprogslik, theta, method='Nelder-Mead', callback=printiter,
-        options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
-        'disp': True})
-    if result.success:
-        success = True
-    else:
-        theta = result.x
+# while not success:
+    #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit,
+    # options={'maxiter': 5000, 'disp': True})
+result = minimize(totlikelihood, theta, method='Nelder-Mead', callback=printiter,
+    options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
+    'disp': True})
+    # if result.success:
+    #     success = True
+    # else:
+    #     theta = result.x
 
 end = time.clock()
 wallclock_end = time.time()
