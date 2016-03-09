@@ -80,7 +80,6 @@ if(tests)
     set(TEST_INSTALL_ABSPATH ${CMAKE_BINARY_DIR}/${TEST_INSTALL_DIRECTORY})
   endif(NOT DEFINED TEST_INSTALL_DIRECTORY)
 
-  include(${CMAKE_SCRIPTS}/CTestCustomPreWorkAround.cmake)
 
   # A macro to run tests via python or behave.
   function(_python_test name filename thiscommand)

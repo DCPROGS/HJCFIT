@@ -91,6 +91,7 @@ endif(openmp)
 
 if(tests)
   enable_testing()
+  include(${CMAKE_SCRIPTS}/CTestCustomPreWorkAround.cmake)
   # Use the CookOff way of including GTest
   include(AddGTest)
 endif(tests)
