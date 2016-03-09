@@ -15,7 +15,7 @@ rc = Client()
 dview = rc[:] # use all engines
 
 def main():
-    mec, theta = setup()
+    mec, theta, conc = setup()
 
     global iternum
     iternum = 0
@@ -28,7 +28,7 @@ def main():
     # while not success:
         #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit,
         # options={'maxiter': 5000, 'disp': True})
-    result = minimize(totlikelihood, theta, method='Nelder-Mead', callback=printiter,
+    result = minimize(totlikelihood, theta, args=(len(conc)), method='Nelder-Mead', callback=printiter,
         options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
         'disp': True})
         # if result.success:
@@ -129,7 +129,7 @@ def setup():
     dview.execute('likelihood = []')
 
     setuplikelihood()
-    return mec, theta
+    return mec, theta, conc
 
 @dview.remote(block=True)
 def setuplikelihood():
@@ -151,7 +151,8 @@ def singledcprogslik(index):
 
 def totlikelihood(x, args=None):
     dview.push(dict(x=x))
-    results = dview.map_sync(singledcprogslik, range(len(conc)))
+    ncons = args
+    results = dview.map_sync(singledcprogslik, range(ncons))
     return sum(results)
 
 def printiter(theta):
