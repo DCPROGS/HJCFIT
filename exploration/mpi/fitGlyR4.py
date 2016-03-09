@@ -14,7 +14,6 @@ from ipyparallel import Client
 rc = Client()
 dview = rc[:] # use all engines
 
-
 def main():
     mec, theta = setup()
 
@@ -56,10 +55,10 @@ def main():
 
 def setup():
     # LOAD DATA: Burzomato 2004 example set.
-    scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
-                ["../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
-                ["../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"],
-                ["../../DCPYPS/dcpyps/samples/glydemo/D-1000.scn"]]
+    scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
+                ["../../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
+                ["../../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"],
+                ["../../../DCPYPS/dcpyps/samples/glydemo/D-1000.scn"]]
     tres = [0.000030, 0.000030, 0.000030, 0.000030]
     tcrit = [0.004, -1, -0.06, -0.02]
     conc = [10e-6, 30e-6, 100e-6, 1000e-6]
@@ -75,9 +74,8 @@ def setup():
         record.printout()
 
     # LOAD FLIP MECHANISM USED Burzomato et al 2004
-    mecfn = "../../DCPYPS/dcpyps/samples/mec/demomec.mec"
+    mecfn = "../../../DCPYPS/dcpyps/samples/mec/demomec.mec"
     version, meclist, max_mecnum = dcio.mec_get_list(mecfn)
-    global mec
     mec = dcio.mec_load(mecfn, meclist[2][0])
 
     # PREPARE RATE CONSTANTS.
@@ -122,7 +120,6 @@ def setup():
     mec.set_mr(True, 15, 1)
 
     mec.printout(sys.stdout)
-    global theta
     theta = np.log(mec.theta())
 
     kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
@@ -154,7 +151,7 @@ def singledcprogslik(index):
 
 def totlikelihood(x, args=None):
     dview.push(dict(x=x))
-    results = dview.map_sync(singledcprogslik, len(conc))
+    results = dview.map_sync(singledcprogslik, range(len(conc)))
     return sum(results)
 
 def printiter(theta):
