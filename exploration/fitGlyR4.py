@@ -30,7 +30,7 @@ def main():
         #res = minimize(dcprogslik, np.log(theta), method='Powell', callback=printit,
         # options={'maxiter': 5000, 'disp': True})
     result = minimize(totlikelihood, theta, method='Nelder-Mead', callback=printiter,
-        options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 110, 'maxfev': 10000,
+        options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
         'disp': True})
         # if result.success:
         #     success = True
