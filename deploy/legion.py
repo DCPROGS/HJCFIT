@@ -107,7 +107,7 @@ def wait():
 
 @task
 def fetch():
-    with lcd(os.path.join(os.path.dirname(os.path.dirname(__file__)),
-             'results')):
+    with lcd(os.path.join(os.path.dirname(os.path.dirname(__file__)), '..',
+             'benckmark_results')):
         with cd(env.run_at):
             get('*')
