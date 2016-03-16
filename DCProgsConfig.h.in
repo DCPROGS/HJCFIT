@@ -27,6 +27,10 @@
 #include <type_traits>
 #include <Eigen/Dense>
 
+#ifndef EIGEN_DONT_PARALLELIZE
+# define EIGEN_DONT_PARALLELIZE
+#endif
+
 #cmakedefine HAS_CXX11_TYPE_TRAITS
 #cmakedefine HAS_CXX11_TRIVIAL_TYPE_TRAITS
 #cmakedefine HAS_CXX11_CONSTEXPR
