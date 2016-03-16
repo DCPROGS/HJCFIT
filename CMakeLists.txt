@@ -88,7 +88,11 @@ if(openmp)
         set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
     endif()
 endif(openmp)
-
+if ( CMAKE_COMPILER_IS_GNUCC )
+    # W-deprecated-declarations is triggered several times by eigen code in C++11. We disable it here.
+    # This should be removed ones Eigen fixes this. Probably in Eigen V3.3
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" CACHE STRING "" FORCE)
+endif ( CMAKE_COMPILER_IS_GNUCC )
 if(tests)
   enable_testing()
   include(${CMAKE_SCRIPTS}/CTestCustomPreWorkAround.cmake)
