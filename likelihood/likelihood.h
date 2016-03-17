@@ -206,6 +206,7 @@ namespace DCProgs {
                             #pragma omp single
                             {
                               #if defined(_OPENMP)
+                              Eigen::initParallel();
                               omp_num_threads = omp_get_num_threads();
                               #else
                               omp_num_threads = 1;
