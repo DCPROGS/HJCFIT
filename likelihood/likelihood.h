@@ -201,12 +201,14 @@ namespace DCProgs {
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax),
                         lower_bound(_lowerbound), upper_bound(_upperbound) {
+                          #if defined(_OPENMP)
+                          Eigen::initParallel();
+                          #endif
                           #pragma omp parallel default(none)
                           {
                             #pragma omp single
                             {
                               #if defined(_OPENMP)
-                              Eigen::initParallel();
                               omp_num_threads = omp_get_num_threads();
                               #else
                               omp_num_threads = 1;
