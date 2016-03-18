@@ -93,6 +93,8 @@
 #cmakedefine DCPROGS_LONG_DOUBLE
 #cmakedefine DCPROGS_PYTHON3
 
+#define DCPROGS_STACK_MATRIX_MAX 50
+
 namespace DCProgs {
 # ifdef DCPROGS_LONG_DOUBLE
     //! Types of reals across DCProgs.
@@ -108,7 +110,9 @@ namespace DCProgs {
   //! Types of unsigned integers across DCProgs.
   typedef std::make_unsigned<t_int>::type t_uint;
   //! Types of real matrices across DCProgs.
-  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
+  //! Types of real matrices across DCProgs guaranteed to be allocated on the stack. Max size DCPROGS_STACK_MATRIX_MAX by DCPROGS_STACK_MATRIX_MAX
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, DCPROGS_STACK_MATRIX_MAX, DCPROGS_STACK_MATRIX_MAX> t_srmatrix;
   //! Types of boolean matrices across DCProgs.
   typedef Eigen::Matrix<bool, ::Eigen::Dynamic, ::Eigen::Dynamic> t_bmatrix;
   //! Types of initial state vectors across DCProgs.
