@@ -31,7 +31,11 @@ endif()
 # Only add it to RPath if not.
 LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 if("${isSystemDir}" STREQUAL "-1")
-  set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  if(WIN32)
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/Library/bin")
+  else()
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  endif(WIN32)
 endif()
 # Set a default build type to Release if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
