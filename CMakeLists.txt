@@ -25,8 +25,9 @@ option(openmp         "Enable OpenMP parallelization."          off)
 
 # Provides backwards compatibility and prevents MACOS_RPATH warning
 if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
-      cmake_policy(SET CMP0042 OLD)
+      set(CMAKE_MACOSX_RPATH 1)
 endif()
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Set a default build type to Release if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
