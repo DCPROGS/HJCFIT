@@ -114,15 +114,15 @@ namespace DCProgs {
   //! Types of real matrices across DCProgs guaranteed to be allocated on the stack. Max size DCPROGS_STACK_MATRIX_MAX by DCPROGS_STACK_MATRIX_MAX
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, DCPROGS_STACK_MATRIX_MAX, DCPROGS_STACK_MATRIX_MAX> t_srmatrix;
   //! Types of boolean matrices across DCProgs.
-  typedef Eigen::Matrix<bool, ::Eigen::Dynamic, ::Eigen::Dynamic> t_bmatrix;
+  typedef Eigen::Matrix<bool, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_bmatrix;
   //! Types of initial state vectors across DCProgs.
-  typedef Eigen::Matrix<t_real, 1, ::Eigen::Dynamic> t_initvec;
+  typedef Eigen::Matrix<t_real, 1, ::Eigen::Dynamic, ::Eigen::RowMajor, 1, ::Eigen::Dynamic> t_initvec;
   //! Types of final state vectors across DCProgs.
-  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, 1> t_rvector;
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_rvector;
   //! Type of complex matrices.
-  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
+  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
   //! Type of complex vectors.
-  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1> t_cvector;
+  typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_cvector;
 
   //! Type of a burst
   typedef std::vector<t_real> t_Burst;
