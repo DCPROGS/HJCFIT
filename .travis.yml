@@ -62,7 +62,6 @@ script:
   - |
         # Building documentation
         make install
-        export LD_LIBRARY_PATH=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/lib:$LD_LIBRARY_PATH
         make documentation
 
 
