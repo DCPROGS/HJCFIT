@@ -19,9 +19,8 @@ export CONDA_ENVS_PATH=$WORK/.conda/envs
 # Load virtual env
 source activate dcprogs
 
-# Manually set this env var so that behave is found. Otherwise it defaults
-# to conda installation.
-export PYTHONUSERBASE=$CONDA_ENV_PATH
+# The anaconda module sets PYTHONHOME Which is wrong and breaks conda envs so remove it
+unset PYTHONHOME
 
 # Find C++ test files and trigger a job for each of them
 for testfile in `find $WORK/HJCFIT/build/likelihood/ $WORK/HJCFIT/build/documentation -name "test_*" -o -name "doc_cxx_*" -maxdepth 1`

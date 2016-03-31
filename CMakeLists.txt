@@ -25,9 +25,16 @@ option(openmp         "Enable OpenMP parallelization."          off)
 
 # Provides backwards compatibility and prevents MACOS_RPATH warning
 if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
-      cmake_policy(SET CMP0042 OLD)
+      set(CMAKE_MACOSX_RPATH 1)
 endif()
-
+# Check if our link directory is already an implicit link directory
+# Only add it to RPath if not.
+if(NOT WIN32)
+  LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+  if("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+  endif()
+endif()
 # Set a default build type to Release if none was specified
 if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
@@ -53,10 +60,10 @@ if(pythonBindings)
   if (EXISTS $ENV{VIRTUAL_ENV})
     set(CMAKE_INSTALL_PREFIX "$ENV{VIRTUAL_ENV}" CACHE string "" FORCE)
   elseif (EXISTS $ENV{CONDA_ENV_PATH})
-      set(CMAKE_INSTALL_PREFIX "$ENV{CONDA_ENV_PATH}" CACHE string "" FORCE)
+    set(CMAKE_INSTALL_PREFIX "$ENV{CONDA_ENV_PATH}" CACHE string "" FORCE)
   elseif (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-      FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
-      set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
+    FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
+    set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
   endif()
 endif(pythonBindings)
 
@@ -77,21 +84,21 @@ cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
 include(CheckIsNaN)
 
 if(openmp)
-    FIND_PACKAGE(OpenMP REQUIRED)
-    if(NOT (${CMAKE_C_FLAGS} MATCHES ${OpenMP_C_FLAGS}))
-        set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" CACHE STRING "" FORCE)
-    endif()
-    if(NOT (${CMAKE_CXX_FLAGS} MATCHES ${OpenMP_CXX_FLAGS}))
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" CACHE STRING "" FORCE)
-    endif()
-    if(NOT ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${OpenMP_EXE_LINKER_FLAGS}"))
-        set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
-    endif()
+  FIND_PACKAGE(OpenMP REQUIRED)
+  if(NOT (${CMAKE_C_FLAGS} MATCHES ${OpenMP_C_FLAGS}))
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" CACHE STRING "" FORCE)
+  endif()
+  if(NOT (${CMAKE_CXX_FLAGS} MATCHES ${OpenMP_CXX_FLAGS}))
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}" CACHE STRING "" FORCE)
+  endif()
+  if(NOT ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${OpenMP_EXE_LINKER_FLAGS}"))
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
+  endif()
 endif(openmp)
 if ( CMAKE_COMPILER_IS_GNUCC )
-    # W-deprecated-declarations is triggered several times by eigen code in C++11. We disable it here.
-    # This should be removed ones Eigen fixes this. Probably in Eigen V3.3
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" CACHE STRING "" FORCE)
+  # W-deprecated-declarations is triggered several times by eigen code in C++11. We disable it here.
+  # This should be removed ones Eigen fixes this. Probably in Eigen V3.3
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" CACHE STRING "" FORCE)
 endif ( CMAKE_COMPILER_IS_GNUCC )
 if(tests)
   enable_testing()
