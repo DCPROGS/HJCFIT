@@ -72,9 +72,9 @@ namespace DCProgs {
                       t_real _upperbound=quiet_nan );
 
       //! Open to close transitions 
-      t_rmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }
+      t_srmatrix af(t_real _t) const { return asymptotes_af_->operator()(_t); }
       //! Close to open transitions
-      t_rmatrix fa(t_real _t) const { return asymptotes_fa_->operator()(_t); }
+      t_srmatrix fa(t_real _t) const { return asymptotes_fa_->operator()(_t); }
       //! Number of exponential components for af
       t_uint nb_af_components() const { return static_cast<t_uint>(asymptotes_af_->size()); }
       //! Number of exponential components for fa
@@ -111,4 +111,3 @@ namespace DCProgs {
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, ApproxSurvivor const &_self);
 }
 #endif 
-

@@ -87,7 +87,7 @@ namespace DCProgs {
     QMatrix const transitions = _doAF ? _qmatrix: _qmatrix.transpose();
 
     // Solves eigenvalue problem
-    Eigen::EigenSolver<t_rmatrix> eigsolver(transitions.matrix);
+    Eigen::EigenSolver<t_srmatrix> eigsolver(transitions.matrix);
     if(eigsolver.info() != Eigen::Success) 
         throw errors::Mass("Could not solve eigenvalue problem.");
 
@@ -98,8 +98,8 @@ namespace DCProgs {
     eigenvalues_ = -eigsolver.eigenvalues().real();
 
     // Initializes recursion formula for m == l == 0
-    t_rmatrix const eigenvectors = eigsolver.eigenvectors().real();
-    t_rmatrix const eigenvectors_inv = eigsolver.eigenvectors().inverse().real();
+    t_srmatrix const eigenvectors = eigsolver.eigenvectors().real();
+    t_srmatrix const eigenvectors_inv = eigsolver.eigenvectors().inverse().real();
     for(t_rvector::Index i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).head(transitions.nopen);
@@ -107,7 +107,7 @@ namespace DCProgs {
     }
 
     // Computes all Di values
-    t_rmatrix const exponential_factor = (_tau * transitions.ff()).exp() * transitions.fa();
+    t_srmatrix const exponential_factor = (_tau * transitions.ff()).exp() * transitions.fa();
     for(t_rvector::Index i(0); i < eigenvalues_.size(); ++i) {
       auto left = eigenvectors.col(i).head(transitions.nopen);
       auto right = eigenvectors_inv.row(i).tail(transitions.nshut());
@@ -139,7 +139,7 @@ namespace DCProgs {
     //! \details See Theorem below equation 3.12
     template<class T> 
       typename T::t_element B_im_of_t(T &_C, t_uint _i, t_uint _m, t_real _t) {
-        t_rmatrix result = _C(_i, _m, 0);
+        t_srmatrix result = _C(_i, _m, 0);
         t_real t(_t);
         for(t_uint r(1); r <= _m; ++r, t *= _t) result += _C(_i, _m, r) * t;
         return result;
@@ -149,7 +149,7 @@ namespace DCProgs {
     template<class T> 
       typename T::t_element M_m_of_t(T &_C, t_uint _m, t_real _t) {
 
-        t_rmatrix result = B_im_of_t(_C, 0, _m, _t) * std::exp(-_C.get_eigvals(0)*_t);
+        t_srmatrix result = B_im_of_t(_C, 0, _m, _t) * std::exp(-_C.get_eigvals(0)*_t);
         for(t_uint i(1); i < _C.nbeigvals(); ++i)
           result += B_im_of_t(_C, i, _m, _t) * std::exp(-_C.get_eigvals(i)*_t);
         return result;
@@ -161,7 +161,7 @@ namespace DCProgs {
       typename T::t_element R_of_t(T &_C, t_real _t, t_real _tau) {
 
         t_real current_t(_t);
-        t_rmatrix result = M_m_of_t(_C, 0, _t);
+        t_srmatrix result = M_m_of_t(_C, 0, _t);
         t_uint m=1;
         
         for(current_t -= _tau; current_t > 0; current_t -= _tau, ++m)  {
@@ -173,35 +173,35 @@ namespace DCProgs {
 
   }
 
-  t_rmatrix ExactSurvivor :: af(t_real _t) const {
+  t_srmatrix ExactSurvivor :: af(t_real _t) const {
     if(_t < 0e0) return recursion_af_->zero();
     return R_of_t(*recursion_af_, _t, tau_);
   }
-  t_rmatrix ExactSurvivor :: fa(t_real _t) const {
+  t_srmatrix ExactSurvivor :: fa(t_real _t) const {
     if(_t < 0e0) return recursion_fa_->zero();
     return R_of_t(*recursion_fa_, _t, tau_);
   }
 
-  t_rmatrix ExactSurvivor :: recursion_af(t_uint _i, t_uint _m, t_uint _l) const {
+  t_srmatrix ExactSurvivor :: recursion_af(t_uint _i, t_uint _m, t_uint _l) const {
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     if(_m > 10) throw errors::Index("m index should be smaller than 10.");
     return  recursion_af_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactSurvivor :: recursion_fa(t_uint _i, t_uint _m, t_uint _l) const {
+  t_srmatrix ExactSurvivor :: recursion_fa(t_uint _i, t_uint _m, t_uint _l) const {
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     if(_l > _m) throw errors::Index("l index should be smaller than m index.");
     if(_m > 10) throw errors::Index("m index should be smaller than 10.");
     return  recursion_fa_->operator()(_i, _m, _l);
   }
-  t_rmatrix ExactSurvivor :: D_af(t_uint _i) const {
+  t_srmatrix ExactSurvivor :: D_af(t_uint _i) const {
     if(_i >= recursion_af_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_af_->getD(_i);
   }
-  t_rmatrix ExactSurvivor :: D_fa(t_uint _i) const {
+  t_srmatrix ExactSurvivor :: D_fa(t_uint _i) const {
     if(_i >= recursion_fa_->nbeigvals())  
       throw errors::Index("i index should be smaller than the number of eigenvalues.");
     return  recursion_fa_->getD(_i);
