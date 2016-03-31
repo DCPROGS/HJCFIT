@@ -16,21 +16,11 @@ R4PROF="-o $OUTPUT_DIR/fitGlyR4_${NODES}n_$SUFFIX.prof"
 # This shifts to the directory that you submitted the job from
 cd $WORK/HJCFIT/exploration
 
-# Make sure we load the correct conda environment for the compute nodes
-module load anaconda-compute/2.2.0-python2
+#Load all the necessary tools and set the work environment
+source ../utils/archer/loadArcherModules.sh
 
-# We need to manually set this so the virtual env is found where it's been
-# installed. OTherwise it'll look for it in $HOME, which is not visible
-# from the compute nodes.
-export CONDA_ENVS_PATH=$WORK/.conda/envs
-
-# Load virtual env
+#Load virtual env
 source activate dcprogs
-
-# Manually set this env var so that behave is found. Otherwise it defaults
-# to conda installation.
-export PYTHONUSERBASE=$CONDA_ENV_PATH
-
 
 # Profile exploration data
 aprun -n $PROCESSES time python -m cProfile $SORTBY $R1PROF fitAChR1.py
