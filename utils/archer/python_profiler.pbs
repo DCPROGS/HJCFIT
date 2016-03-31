@@ -31,8 +31,6 @@ source activate dcprogs
 # to conda installation.
 export PYTHONUSERBASE=$CONDA_ENV_PATH
 
-# Add virtual env path to LD_LIBRARY_PATH, otherwise it complains about not finding liblikelihood.so
-export LD_LIBRARY_PATH=$CONDA_ENV_PATH/lib/
 
 # Profile exploration data
 aprun -n $PROCESSES time python -m cProfile $SORTBY $R1PROF fitAChR1.py

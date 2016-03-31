@@ -21,9 +21,6 @@ source ../utils/archer/loadArcherModules.sh
 #Load virtual env
 source activate dcprogs
 
-#Add virtual env path to LD_LIBRARY_PATH, otherwise it complains about not finding liblikelihood.so
-export LD_LIBRARY_PATH=$CONDA_ENV_PATH/lib:$LD_LIBRARY_PATH
-
 #Profile exploration data with 1 to 24 nodes. Time for each execution will be
 #outputted from the python code
 for threads in {1..24}
