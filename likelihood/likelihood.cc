@@ -77,7 +77,7 @@ namespace DCProgs {
     t_rvector final;
 
     if(eq_vector)
-        final = t_rmatrix::Ones(_matrix.nshut(),1);
+        final = t_rvector::Ones(_matrix.nshut(),1);
     else
         final = CHS_occupancies(eG, tcritical, false).transpose();
 
