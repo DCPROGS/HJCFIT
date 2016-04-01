@@ -47,14 +47,17 @@ namespace DCProgs {
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix Partitioned matrix with open states in top left corner.
       //! \param[in] _tau Missed event cutoff time.
-      ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) { set(_qmatrix, _tau); }
+      ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) {
+        set(_qmatrix, _tau);
+        verify_qmatrix(_qmatrix);}
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix A transition matrix with open states in top left corner
       //! \param[in] _nopen Number of open states. 
       //! \param[in] _tau Missed event cutoff time.
       template<class T>
-        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau)
-          { set(QMatrix(_qmatrix, _nopen), _tau); }
+        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau) {
+          set(QMatrix(_qmatrix, _nopen), _tau);
+          verify_qmatrix(_qmatrix);}
       //! Move constructor
       ExactSurvivor   (ExactSurvivor &&_c) 
                     : recursion_af_(std::move(_c.recursion_af_)),
@@ -107,6 +110,8 @@ namespace DCProgs {
       t_RecursionPtr recursion_fa_;
       //! Max length of missed events.
       t_real tau_;
+    private:
+      void verify_qmatrix(QMatrix const &_qmatrix);
   };
 
 
