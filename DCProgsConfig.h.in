@@ -152,5 +152,7 @@ namespace DCProgs {
 
   //! The quiet NaN value
   t_real static const quiet_nan = std::numeric_limits<t_real>::quiet_NaN();
+
+  t_uint static const dcprogs_stack_matrix = DCPROGS_STACK_MATRIX_MAX;
 }
 #endif
