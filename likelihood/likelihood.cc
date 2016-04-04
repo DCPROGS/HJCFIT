@@ -63,8 +63,6 @@ namespace DCProgs {
   }
 
   t_real Log10Likelihood::operator()(QMatrix const &_matrix) const {
-    MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
-                                            lower_bound, upper_bound );
     if (_matrix.matrix.rows() > dcprogs_stack_matrix or _matrix.matrix.cols() > dcprogs_stack_matrix) {
       std::ostringstream _stream;
       _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
@@ -72,6 +70,9 @@ namespace DCProgs {
               " Please change in DCProgsConfig.h.in and recompile to support a larger QMatrix";
       throw errors::Domain(_stream.str());
     }
+    MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
+                                            lower_bound, upper_bound );
+
     bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
 
     t_rvector final;
