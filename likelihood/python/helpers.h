@@ -62,8 +62,8 @@ namespace {
           npy_intp out_stride_;
      };
 
-    template<class T, int I, int N, size_t reduce>
-      struct NumpyApplySpecialized<Eigen::Matrix<T, I, N>, reduce> : public DCProgs::numpy::type<T> {
+    template<class T, int I, int N, int IS, int NS, size_t reduce>
+      struct NumpyApplySpecialized<Eigen::Matrix<T, I, N, 0, IS, NS>, reduce> : public DCProgs::numpy::type<T> {
         public:
           using DCProgs::numpy::type<T>::value;
           using typename DCProgs::numpy::type<T>::np_type;
@@ -76,7 +76,7 @@ namespace {
           };
   
           //! Creates output array.
-          PyArrayObject* output(Eigen::Matrix<T, I, N> const &_first) {
+          PyArrayObject* output(Eigen::Matrix<T, I, N, 0, IS, NS> const &_first) {
             std::vector<npy_intp> dims(in_N_ + add_dims - reduce);
             std::copy(PyArray_DIMS(~input_),
                       PyArray_DIMS(~input_) + in_N_ - reduce, dims.begin());
@@ -125,12 +125,12 @@ namespace {
           //! Stride to move to next element.
           npy_intp out_stride_;
           //! Stride to move to next element.
-          typename Eigen::Matrix<T, I, N>::Index out_sizes_[2];
+          typename Eigen::Matrix<T, I, N, 0, IS, NS>::Index out_sizes_[2];
           //! Creates stride for copying to output.
-          typename Eigen::Matrix<T, I, N>::Index data_strides_[2];
+          typename Eigen::Matrix<T, I, N, 0, IS, NS>::Index data_strides_[2];
       };
-    template<class T, int I, int N, size_t reduce>
-      npy_intp const NumpyApplySpecialized<Eigen::Matrix<T, I, N>, reduce> 
+    template<class T, int I, int N, int IS, int NS, size_t reduce>
+      npy_intp const NumpyApplySpecialized<Eigen::Matrix<T, I, N, 0, IS, NS>, reduce>
                      :: add_dims = static_cast<DCProgs::t_int>(I != 1)
                                    + static_cast<DCProgs::t_int>(N != 1);
 
