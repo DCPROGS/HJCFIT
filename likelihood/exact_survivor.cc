@@ -80,7 +80,7 @@ namespace DCProgs {
   }
 
   void ExactSurvivor :: verify_qmatrix(QMatrix const &_qmatrix) {
-    if (_qmatrix.matrix.rows() > dcprogs_stack_matrix or _qmatrix.matrix.cols() > dcprogs_stack_matrix) {
+    if (_qmatrix.matrix.cols() > dcprogs_stack_matrix) {
       std::ostringstream _stream;
       _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
               dcprogs_stack_matrix <<
