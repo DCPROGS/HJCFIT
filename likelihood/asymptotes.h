@@ -43,8 +43,6 @@ namespace DCProgs {
       //! \brief Container holding the parameters for each exponential
       typedef std::vector<t_MatrixAndRoot> t_MatricesAndRoots;
 
-      //! Constructor. 
-      Asymptotes(t_MatricesAndRoots const &_values ) : matrices_and_roots_(_values) {} 
       //! Creates functor from equation and roots.
       Asymptotes(DeterminantEq const &_equation, std::vector<Root> const &_roots);
 
