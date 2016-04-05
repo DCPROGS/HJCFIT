@@ -46,8 +46,8 @@ namespace DCProgs {
   Asymptotes :: Asymptotes   (DeterminantEq const &_equation, std::vector<Root> const &_roots)
                            : matrices_and_roots_() {
 
+    verify_qmatrix(_equation.get_qmatrix());
     matrices_and_roots_.reserve(_roots.size());
-
     for(Root const & root: _roots) {
 
       t_srmatrix const H(_equation.H(root.root));
@@ -85,6 +85,16 @@ namespace DCProgs {
 
       // Finally, add to vector of matrices and roots
       matrices_and_roots_.emplace_back(std::move(Ri), root.root);
+    }
+  }
+
+  void Asymptotes :: verify_qmatrix(QMatrix const &_qmatrix) {
+    if (_qmatrix.matrix.cols() > dcprogs_stack_matrix) {
+      std::ostringstream _stream;
+      _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
+              dcprogs_stack_matrix <<
+              " Please change in DCProgsConfig.h.in and recompile to support a larger QMatrix";
+      throw errors::Domain(_stream.str());
     }
   }
 
