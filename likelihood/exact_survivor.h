@@ -108,8 +108,6 @@ namespace DCProgs {
       t_RecursionPtr recursion_fa_;
       //! Max length of missed events.
       t_real tau_;
-    private:
-      void verify_qmatrix(QMatrix const &_qmatrix);
   };
 
 

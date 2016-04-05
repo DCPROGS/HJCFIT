@@ -88,16 +88,6 @@ namespace DCProgs {
     }
   }
 
-  void Asymptotes :: verify_qmatrix(QMatrix const &_qmatrix) {
-    if (_qmatrix.matrix.cols() > dcprogs_stack_matrix) {
-      std::ostringstream _stream;
-      _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
-              dcprogs_stack_matrix <<
-              " Please change in DCProgsConfig.h.in and recompile to support a larger QMatrix";
-      throw errors::Domain(_stream.str());
-    }
-  }
-
   // Matrix with which to compute \f$H_{FA}\f$ for  the CHS vectors.
   t_srmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
                                           t_real _tau, t_real _tcrit ) {

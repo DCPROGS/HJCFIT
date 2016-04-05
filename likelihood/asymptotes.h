@@ -73,8 +73,6 @@ namespace DCProgs {
     protected:
       //! Holds the weight and the exponent of the exponential functions.
       t_MatricesAndRoots matrices_and_roots_;
-    private:
-      void verify_qmatrix(QMatrix const &_qmatrix);
   };
 
   //! \brief Partial computation of \f$H_{FA}\f$ for CHS vectors.

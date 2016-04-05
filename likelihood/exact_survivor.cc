@@ -79,16 +79,6 @@ namespace DCProgs {
     tau_ = _tau;
   }
 
-  void ExactSurvivor :: verify_qmatrix(QMatrix const &_qmatrix) {
-    if (_qmatrix.matrix.cols() > dcprogs_stack_matrix) {
-      std::ostringstream _stream;
-      _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
-              dcprogs_stack_matrix <<
-              " Please change in DCProgsConfig.h.in and recompile to support a larger QMatrix";
-      throw errors::Domain(_stream.str());
-    }
-  }
-
   ExactSurvivor :: RecursionInterface::RecursionInterface( QMatrix const & _qmatrix,
                                                            t_real _tau, bool _doAF ) {
                    

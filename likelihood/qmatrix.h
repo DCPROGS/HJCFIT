@@ -92,6 +92,8 @@ namespace DCProgs {
 
   //! Dumps object to stream.
   MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat);
+
+  void verify_qmatrix(QMatrix const &_qmatrix);
 }
 
 #endif
