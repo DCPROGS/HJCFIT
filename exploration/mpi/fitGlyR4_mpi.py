@@ -109,9 +109,7 @@ def mpidcprogslik(x, args=None):
     like = np.array(0.0, 'd')
     mec.set_eff('c', conc[rank])
     lik += -likelihood[rank](mec.Q) * math.log(10)
-    #print("lik is {}".format(lik))
     comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
-    #print("like is {}".format(like))
     return like
 
 def mpislavedcprogslik():
@@ -121,12 +119,10 @@ def mpislavedcprogslik():
         return False
     x = np.empty(14, dtype='d')
     comm.Bcast([x, MPI.DOUBLE], root=0)
-    #print(x)
     mec.theta_unsqueeze(np.exp(x))
     mec.set_eff('c', conc[rank])
     lik = np.array(0.0, 'd')
     lik += -likelihood[rank](mec.Q) * math.log(10)
-    #print("on slave {} lik is {}".format(rank, lik))
     comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
     return True
 
