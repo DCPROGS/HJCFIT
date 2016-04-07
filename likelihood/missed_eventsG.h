@@ -111,19 +111,19 @@ namespace DCProgs {
                       fa_factor_(std::move(_c.fa_factor_)) {}
 
       //! Open to close transitions 
-      t_srmatrix af(t_real _t) const {
+      t_stack_rmatrix af(t_real _t) const {
         return survivor_af(_t - ExactSurvivor::get_tau()) * af_factor_; 
       }
       //! Close to open transitions
-      t_srmatrix fa(t_real _t) const {
+      t_stack_rmatrix fa(t_real _t) const {
         return survivor_fa(_t - ExactSurvivor::get_tau()) * fa_factor_; 
       }
       //! Probability of no shut times detected between 0 and t.
-      t_srmatrix survivor_af(t_real _t) const {
+      t_stack_rmatrix survivor_af(t_real _t) const {
         return _t > tmax_ ? ApproxSurvivor::af(_t): ExactSurvivor::af(_t);
       }
       //! Probability of no open times detected between 0 and t.
-      t_srmatrix survivor_fa(t_real _t) const {
+      t_stack_rmatrix survivor_fa(t_real _t) const {
         return _t > tmax_ ? ApproxSurvivor::fa(_t): ExactSurvivor::fa(_t);
       }
 
@@ -140,9 +140,9 @@ namespace DCProgs {
       t_real get_tmax() const { return tmax_; }
 
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
-      t_srmatrix const & get_af_factor() const { return af_factor_; }
+      t_stack_rmatrix const & get_af_factor() const { return af_factor_; }
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
-      t_srmatrix const & get_fa_factor() const { return fa_factor_; }
+      t_stack_rmatrix const & get_fa_factor() const { return fa_factor_; }
 
       //! Exact laplace of AF
       t_rmatrix laplace_af(t_real _s) const {
@@ -175,9 +175,9 @@ namespace DCProgs {
       //! there.
       t_real tmax_;
       //! \f$Q_{AF}e^{-Q_{FF}\tau} \f$
-      t_srmatrix af_factor_;
+      t_stack_rmatrix af_factor_;
       //! \f$Q_{FA}e^{-Q_{AA}\tau} \f$
-      t_srmatrix fa_factor_;
+      t_stack_rmatrix fa_factor_;
   };
 
   //! Dumps Missed-Events likelihood to stream

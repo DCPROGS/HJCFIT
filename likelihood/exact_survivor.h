@@ -66,21 +66,21 @@ namespace DCProgs {
       void set(QMatrix const &_qmatrix, t_real _tau);
 
       //! Probability of no shut times detected between 0 and t.
-      t_srmatrix af(t_real t) const;
+      t_stack_rmatrix af(t_real t) const;
       //! Probability of no open times detected between 0 and t.
-      t_srmatrix fa(t_real t) const;
+      t_stack_rmatrix fa(t_real t) const;
 
       //! Gets the value of tau;
       t_real get_tau() const { return tau_; }
   
       //! Returns recursion matrix for af
-      t_srmatrix recursion_af(t_uint _i, t_uint _m, t_uint _l) const;
+      t_stack_rmatrix recursion_af(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns recursion matrix for af
-      t_srmatrix recursion_fa(t_uint _i, t_uint _m, t_uint _l) const;
+      t_stack_rmatrix recursion_fa(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns Di  matrix for af
-      t_srmatrix D_af(t_uint _i) const;
+      t_stack_rmatrix D_af(t_uint _i) const;
       //! Returns Di matrix for af
-      t_srmatrix D_fa(t_uint _i) const;
+      t_stack_rmatrix D_fa(t_uint _i) const;
       //! Returns eigenvalues for af matrix
       t_rvector eigenvalues_af() const;
       //! Returns eigenvalues for fa matrix
@@ -120,7 +120,7 @@ namespace DCProgs {
   
     public:
       //! Element on which to perform recursion.
-      typedef t_srmatrix t_element;
+      typedef t_stack_rmatrix t_element;
       //! Constructor. 
       //! \param[in] _qmatrix The transition state matrix for which to compute
       //!                     \f$^eR_{AF}(t\rightarrow\infty)\f$
@@ -147,7 +147,7 @@ namespace DCProgs {
       //! Reference to eigenvalues
       t_rvector const & eigenvalues() const { return eigenvalues_; }
       //! A null matrix of appropriate size
-      decltype(t_srmatrix::Zero(1,1)) zero() const { return t_srmatrix::Zero(nopen, nopen); };
+      decltype(t_stack_rmatrix::Zero(1,1)) zero() const { return t_stack_rmatrix::Zero(nopen, nopen); };
 
     protected:
   
