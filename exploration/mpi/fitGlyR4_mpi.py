@@ -34,7 +34,8 @@ for i in range(len(scnfiles)):
     rec.record_type = 'recorded'
     recs.append(rec)
     bursts.append(rec.bursts.intervals())
-    rec.printout()
+    if rank == 0:
+        rec.printout()
 
 # LOAD FLIP MECHANISM USED Burzomato et al 2004
 mecfn = "../../../DCPYPS/dcpyps/samples/mec/demomec.mec"
@@ -78,7 +79,9 @@ mec.update_constrains()
 mec.set_mr(True, 7, 0)
 mec.set_mr(True, 15, 1)
 
-mec.printout(sys.stdout)
+if rank == 0:
+    mec.printout(sys.stdout)
+
 theta = np.log(mec.theta())
 kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
     'lower_bound': -1e6, 'upper_bound': 0}
@@ -137,7 +140,8 @@ def printiter(theta):
         print(np.exp(theta))
 
 lik = dcprogslik(theta)
-print ("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, rank))
+if rank == 0:
+    print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, rank))
 start = time.clock()
 wallclock_start = time.time()
 success = False
@@ -158,17 +162,17 @@ else:
 if rank == 0:
     end = time.clock()
     wallclock_end = time.time()
-    print ("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
+    print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
             %time.localtime()[0:6])
-    print ('CPU time in simplex=', end - start)
-    print ('Wallclock time in simplex=', wallclock_end - wallclock_start)
-    print ('\n\nresult=')
-    print (result)
+    print('CPU time in simplex=', end - start)
+    print('Wallclock time in simplex=', wallclock_end - wallclock_start)
+    print('\n\nresult=')
+    print(result)
 
-    print ('\n Final log-likelihood = {0:.6f}'.format(-result.fun))
-    print ('\n Number of iterations = {0:d}'.format(result.nit))
-    print ('\n Number of evaluations = {0:d}'.format(result.nfev))
+    print('\n Final log-likelihood = {0:.6f}'.format(-result.fun))
+    print('\n Number of iterations = {0:d}'.format(result.nit))
+    print('\n Number of evaluations = {0:d}'.format(result.nfev))
     mec.theta_unsqueeze(np.exp(result.x))
-    print ("\n Final rate constants:")
+    print("\n Final rate constants:")
     mec.printout(sys.stdout)
-    print ('\n\n')
+    print('\n\n')
