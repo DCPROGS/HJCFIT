@@ -19,9 +19,9 @@ rank = MPI.COMM_WORLD.Get_rank()
 size = MPI.COMM_WORLD.Get_size()
 
 # LOAD DATA: Burzomato 2004 example set.
-scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"], 
+scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
             ["../../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
-            ["../../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"], 
+            ["../../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"],
             ["../../../DCPYPS/dcpyps/samples/glydemo/D-1000.scn"]]
 tres = [0.000030, 0.000030, 0.000030, 0.000030]
 tcrit = [0.004, -1, -0.06, -0.02]
@@ -43,15 +43,12 @@ version, meclist, max_mecnum = dcio.mec_get_list(mecfn)
 mec = dcio.mec_load(mecfn, meclist[2][0])
 
 # PREPARE RATE CONSTANTS.
-#rates = [5000.0, 500.0, 2700.0, 2000.0, 800.0, 15000.0, 300.0, 0.1200E+06, 6000.0, 0.4500E+09, 1500.0, 12000.0, 4000.0, 0.9000E+09, 7500.0, 1200.0, 3000.0, 0.4500E+07, 2000.0, 0.9000E+07, 1000, 0.135000E+08]
-rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0, 0.1100E+06, 4900.0, 0.4000E+09, 1850.0, 10000.0, 5000.0, 0.7500E+09, 8500.0, 1050.0, 3500.0, 0.5000E+07, 2300.0, 0.9500E+07, 1950, 0.130000E+08]
+rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0,
+         0.1100E+06, 4900.0, 0.4000E+09, 1850.0, 10000.0, 5000.0,
+         0.7500E+09, 8500.0, 1050.0, 3500.0, 0.5000E+07, 2300.0,
+         0.9500E+07, 1950, 0.130000E+08]
 
 mec.set_rateconstants(rates)
-
-# Fixed rates.
-#fixed = np.array([False, False, False, False, False, False, False, True,
-#    False, False, False, False, False, False])
-#if fixed.size == len(mec.Rates):
 for i in range(len(mec.Rates)):
     mec.Rates[i].fixed = False
 
@@ -84,12 +81,13 @@ if rank == 0:
 
 theta = np.log(mec.theta())
 kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
-    'lower_bound': -1e6, 'upper_bound': 0}
+          'lower_bound': -1e6, 'upper_bound': 0}
 likelihood = []
 
 for i in range(len(recs)):
     likelihood.append(Log10Likelihood(bursts[i], mec.kA,
-        recs[i].tres, recs[i].tcrit, **kwargs))
+                      recs[i].tres, recs[i].tcrit, **kwargs))
+
 
 def dcprogslik(x, args=None):
     mec.theta_unsqueeze(np.exp(x))
@@ -101,8 +99,7 @@ def dcprogslik(x, args=None):
 
 
 def mpidcprogslik(x, args=None):
-    status = np.array(1, 'i')
-    comm.Bcast([status, MPI.INT], root=0)
+    comm.Bcast([mpi_status, MPI.INT], root=0)
     comm.Bcast([x, MPI.DOUBLE], root=0)
     mec.theta_unsqueeze(np.exp(x))
     lik = np.array(0.0, 'd')
@@ -112,11 +109,11 @@ def mpidcprogslik(x, args=None):
     comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
     return like
 
+
 def mpislavedcprogslik():
-    status = np.array(0, 'i')
-    comm.Bcast([status, MPI.INT], root=0)
-    if not status:
-        return False
+    comm.Bcast([mpi_status, MPI.INT], root=0)
+    if not mpi_status:
+        return mpi_status
     x = np.empty(14, dtype='d')
     comm.Bcast([x, MPI.DOUBLE], root=0)
     mec.theta_unsqueeze(np.exp(x))
@@ -124,9 +121,9 @@ def mpislavedcprogslik():
     lik = np.array(0.0, 'd')
     lik += -likelihood[rank](mec.Q) * math.log(10)
     comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
-    return True
+    return mpi_status
 
-iternum = 0
+
 def printiter(theta):
     global iternum
     iternum += 1
@@ -135,25 +132,26 @@ def printiter(theta):
         print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
         print(np.exp(theta))
 
+
+iternum = 0
 lik = dcprogslik(theta)
+mpi_status = np.array(1, 'int')
 if rank == 0:
     print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, rank))
-start = time.clock()
-wallclock_start = time.time()
-success = False
-result = None
-
-if rank == 0:
-    result = minimize(mpidcprogslik, theta, method='Nelder-Mead', callback=printiter,
-        options={'xtol':1e-4, 'ftol':1e-4, 'maxiter': 5000, 'maxfev': 10000,
-        'disp': True})
+    start = time.clock()
+    wallclock_start = time.time()
+    success = False
+    result = None
+    options={'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
+             'maxfev': 10000, 'disp': True}
+    result = minimize(mpidcprogslik, theta, method='Nelder-Mead',
+                      callback=printiter, options=options)
     # Signal slaves to stop
-    status = np.array(0, 'i')
-    comm.Bcast([status, MPI.INT], root=0)
+    mpi_status = np.array(0, 'int')
+    comm.Bcast([mpi_status, MPI.INT], root=0)
 else:
-    status = True
-    while status:
-        status = mpislavedcprogslik()
+    while mpi_status:
+        mpi_status = mpislavedcprogslik()
 
 if rank == 0:
     end = time.clock()
