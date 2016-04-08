@@ -112,7 +112,7 @@ namespace DCProgs {
   //! Types of real matrices across DCProgs.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
   //! Types of real matrices across DCProgs guaranteed to be allocated on the stack. Max size DCPROGS_STACK_MATRIX_MAX by DCPROGS_STACK_MATRIX_MAX
-  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, DCPROGS_STACK_MATRIX_MAX, DCPROGS_STACK_MATRIX_MAX> t_srmatrix;
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, DCPROGS_STACK_MATRIX_MAX, DCPROGS_STACK_MATRIX_MAX> t_stack_rmatrix;
   //! Types of boolean matrices across DCProgs.
   typedef Eigen::Matrix<bool, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_bmatrix;
   //! Types of initial state vectors across DCProgs.
@@ -152,5 +152,7 @@ namespace DCProgs {
 
   //! The quiet NaN value
   t_real static const quiet_nan = std::numeric_limits<t_real>::quiet_NaN();
+
+  t_uint static const dcprogs_stack_matrix = DCPROGS_STACK_MATRIX_MAX;
 }
 #endif

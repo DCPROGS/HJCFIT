@@ -92,6 +92,10 @@ namespace DCProgs {
 
   //! Dumps object to stream.
   MSWINDOBE std::ostream & operator<< (std::ostream &_stream, QMatrix const &_mat);
+
+  //! Verify that a QMatrix is not to large to be used in a stack allocated
+  //! likelihood, exact_survivor or asymptotes calculation.
+  void verify_qmatrix(QMatrix const &_qmatrix);
 }
 
 #endif

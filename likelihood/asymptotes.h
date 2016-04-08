@@ -37,14 +37,12 @@ namespace DCProgs {
       //! \brief Holds a pair defining each exponential function.
       //! \details - The first item is the weigh (as an matrix) of the exponential.
       //! - The second item is the exponent of the exponential.
-      typedef std::pair<t_rmatrix, t_real> t_MatrixAndRoot;
+      typedef std::pair<t_stack_rmatrix, t_real> t_MatrixAndRoot;
 
       //| \typedef  std::vector<t_MatrixAndRoot> t_MatricesAndRoots
       //! \brief Container holding the parameters for each exponential
       typedef std::vector<t_MatrixAndRoot> t_MatricesAndRoots;
 
-      //! Constructor. 
-      Asymptotes(t_MatricesAndRoots const &_values ) : matrices_and_roots_(_values) {} 
       //! Creates functor from equation and roots.
       Asymptotes(DeterminantEq const &_equation, std::vector<Root> const &_roots);
 
@@ -52,7 +50,7 @@ namespace DCProgs {
       //! \details The \f$s_i\f$ are the roots. \f$R_i\f$ matrices are weighted
       //! projections of the eigenvectors corresponding to the roots:
       //! \f$R_i = \frac{c_i\times r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$.
-      t_rmatrix operator()(t_real _t) const;
+      t_stack_rmatrix operator()(t_real _t) const;
 
       //! Access to matrices and roots
       //! The matrices are \f$^AR_i = \frac{c_i\cdot r_i}{r_i \cdot W'(s_i) \cdot c_i}\f$, where
@@ -83,7 +81,7 @@ namespace DCProgs {
   //! \note This is somewhat outside the remit of Asymptotes, although the calculations are similar
   //!       for good reasons. In any case, we keep this function outside the class itself, so as to
   //!       not confuse the purpose of the class itself.
-  t_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
+  t_stack_rmatrix MSWINDOBE partial_CHS_matrix( Asymptotes const &_asymptotes,
                                           t_real _tau, t_real _tcrit );
 }
 #endif 

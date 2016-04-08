@@ -71,6 +71,16 @@ TEST_P(TestAsymptotes, correct_size) {
   EXPECT_EQ(result.cols(), result.rows());
 }
 
+// Checks the size of the matrices is correct.
+TEST_F(TestAsymptotes, throws) {
+  std::vector<Root> roots;
+  roots.emplace_back(-17090.192769236815, 1);
+  t_rmatrix Q = t_rmatrix::Zero(dcprogs_stack_matrix+2, dcprogs_stack_matrix+2);
+  QMatrix qmatrix = QMatrix(Q, dcprogs_stack_matrix/2);
+  DeterminantEq equation(qmatrix, 1e-4);
+  EXPECT_THROW(Asymptotes asymptotes(equation, roots), errors::Domain);
+}
+
 // Checks that left and right apply leave matrix untouched
 TEST_P(TestAsymptotes, is_projection_matrix) {
 
@@ -126,4 +136,3 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

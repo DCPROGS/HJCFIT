@@ -63,14 +63,16 @@ namespace DCProgs {
   }
 
   t_real Log10Likelihood::operator()(QMatrix const &_matrix) const {
+    verify_qmatrix(_matrix);
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
+
     bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
 
     t_rvector final;
 
     if(eq_vector)
-        final = t_rmatrix::Ones(_matrix.nshut(),1);
+        final = t_rvector::Ones(_matrix.nshut(),1);
     else
         final = CHS_occupancies(eG, tcritical, false).transpose();
 
@@ -82,6 +84,7 @@ namespace DCProgs {
     return result;
   }
   t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
+    verify_qmatrix(_matrix);
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
     bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;

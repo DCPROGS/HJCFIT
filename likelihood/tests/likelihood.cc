@@ -174,8 +174,13 @@ TEST_F(TestLikelihood, odd_intervals) {
   EXPECT_THROW((*likelihood)(qmatrix), errors::Domain);
 }
 
+// Makes sure that code throws if qmatrix is too large to fit the stack
+TEST_F(TestLikelihood, exceeds_stack_throws) {
+  qmatrix.matrix.resize(dcprogs_stack_matrix+1,dcprogs_stack_matrix+1);
+  likelihood->bursts = t_Bursts(1, t_Burst(1, 1.5e-4) );
+  EXPECT_THROW((*likelihood)(qmatrix), errors::Domain);
+}
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

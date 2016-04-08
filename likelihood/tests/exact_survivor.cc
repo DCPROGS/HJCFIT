@@ -126,6 +126,14 @@ TEST_F(ExactSurvivorTest, negative_times) {
   EXPECT_EQ(survivor.fa(-1e-5).cols(), 3);
 }
 
+// Makes sure that code throws if qmatrix is too large to fit the stack
+TEST_F(ExactSurvivorTest, exceeds_stack_throws) {
+  Q.resize(dcprogs_stack_matrix+1,dcprogs_stack_matrix+1);
+  QMatrix qmatrix(Q, dcprogs_stack_matrix/2);
+  EXPECT_THROW(ExactSurvivor survivor(qmatrix, 1e-4), errors::Domain);
+  EXPECT_THROW(ExactSurvivor survivor(Q, dcprogs_stack_matrix/2, 1e-4), errors::Domain);
+}
+
 // Compares recursive implementation to the expanded one in this file.
 TEST_F(ExactSurvivorTest, first_interval) {
   std::cout.precision(15);
@@ -302,4 +310,3 @@ int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
-

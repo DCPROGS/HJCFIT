@@ -27,7 +27,7 @@ Eigen/Math types
 .. doxygentypedef:: DCProgs::t_bmatrix
 
 .. doxygentypedef:: DCProgs::t_rmatrix
-.. doxygentypedef:: DCProgs::t_srmatrix
+.. doxygentypedef:: DCProgs::t_stack_rmatrix
 .. doxygentypedef:: DCProgs::t_cmatrix
 
 .. doxygentypedef:: DCProgs::t_Bursts

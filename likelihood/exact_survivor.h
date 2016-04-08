@@ -47,14 +47,15 @@ namespace DCProgs {
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix Partitioned matrix with open states in top left corner.
       //! \param[in] _tau Missed event cutoff time.
-      ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) { set(_qmatrix, _tau); }
+      ExactSurvivor(QMatrix const &_qmatrix, t_real _tau) {
+        set(_qmatrix, _tau);}
       //! Initializes exact survivor functor.
       //! \param[in] _qmatrix A transition matrix with open states in top left corner
       //! \param[in] _nopen Number of open states. 
       //! \param[in] _tau Missed event cutoff time.
       template<class T>
-        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau)
-          { set(QMatrix(_qmatrix, _nopen), _tau); }
+        ExactSurvivor(Eigen::DenseBase<T> const &_qmatrix, t_uint _nopen, t_real _tau) {
+          set(QMatrix(_qmatrix, _nopen), _tau);}
       //! Move constructor
       ExactSurvivor   (ExactSurvivor &&_c) 
                     : recursion_af_(std::move(_c.recursion_af_)),
@@ -65,21 +66,21 @@ namespace DCProgs {
       void set(QMatrix const &_qmatrix, t_real _tau);
 
       //! Probability of no shut times detected between 0 and t.
-      t_rmatrix af(t_real t) const;
+      t_stack_rmatrix af(t_real t) const;
       //! Probability of no open times detected between 0 and t.
-      t_rmatrix fa(t_real t) const;
+      t_stack_rmatrix fa(t_real t) const;
 
       //! Gets the value of tau;
       t_real get_tau() const { return tau_; }
   
       //! Returns recursion matrix for af
-      t_rmatrix recursion_af(t_uint _i, t_uint _m, t_uint _l) const;
+      t_stack_rmatrix recursion_af(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns recursion matrix for af
-      t_rmatrix recursion_fa(t_uint _i, t_uint _m, t_uint _l) const;
+      t_stack_rmatrix recursion_fa(t_uint _i, t_uint _m, t_uint _l) const;
       //! Returns Di  matrix for af
-      t_rmatrix D_af(t_uint _i) const;
+      t_stack_rmatrix D_af(t_uint _i) const;
       //! Returns Di matrix for af
-      t_rmatrix D_fa(t_uint _i) const;
+      t_stack_rmatrix D_fa(t_uint _i) const;
       //! Returns eigenvalues for af matrix
       t_rvector eigenvalues_af() const;
       //! Returns eigenvalues for fa matrix
@@ -119,7 +120,7 @@ namespace DCProgs {
   
     public:
       //! Element on which to perform recursion.
-      typedef t_rmatrix t_element;
+      typedef t_stack_rmatrix t_element;
       //! Constructor. 
       //! \param[in] _qmatrix The transition state matrix for which to compute
       //!                     \f$^eR_{AF}(t\rightarrow\infty)\f$
@@ -146,7 +147,7 @@ namespace DCProgs {
       //! Reference to eigenvalues
       t_rvector const & eigenvalues() const { return eigenvalues_; }
       //! A null matrix of appropriate size
-      decltype(t_rmatrix::Zero(1,1)) zero() const { return t_rmatrix::Zero(nopen, nopen); };
+      decltype(t_stack_rmatrix::Zero(1,1)) zero() const { return t_stack_rmatrix::Zero(nopen, nopen); };
 
     protected:
   
@@ -164,4 +165,3 @@ namespace DCProgs {
 }
 
 #endif 
-
