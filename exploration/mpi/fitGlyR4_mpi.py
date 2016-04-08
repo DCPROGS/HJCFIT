@@ -142,8 +142,8 @@ if rank == 0:
     wallclock_start = time.time()
     success = False
     result = None
-    options={'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
-             'maxfev': 10000, 'disp': True}
+    options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
+               'maxfev': 10000, 'disp': True}
     result = minimize(mpidcprogslik, theta, method='Nelder-Mead',
                       callback=printiter, options=options)
     # Signal slaves to stop
@@ -157,7 +157,7 @@ if rank == 0:
     end = time.clock()
     wallclock_end = time.time()
     print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
-            %time.localtime()[0:6])
+          %time.localtime()[0:6])
     print('CPU time in simplex=', end - start)
     print('Wallclock time in simplex=', wallclock_end - wallclock_start)
     print('\n\nresult=')
