@@ -104,8 +104,8 @@ namespace DCProgs {
       t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
       t_int exponent(0);
       const t_int cols = current.cols();
-      const t_srmatrix identity = t_srmatrix::Identity(cols, cols);
-      std::vector<t_srmatrix> current_vec(threads, identity);
+      const t_stack_rmatrix identity = t_stack_rmatrix::Identity(cols, cols);
+      std::vector<t_stack_rmatrix> current_vec(threads, identity);
       std::vector<t_int> exponents(threads, 0);
       bool openmplowlevel = (intervals>100);
       #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(openmplowlevel)
