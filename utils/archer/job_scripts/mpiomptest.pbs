@@ -1,0 +1,42 @@
+#!/bin/bash --login
+
+#PBS -N mpi_omp_test
+#PBS -l select=1
+#PBS -l walltime=00:20:0
+#PBS -A ecse0506
+
+#Set up a few variables to pass to aprun
+SUFFIX=`date +"%Y%m%d_%H%M%S"`
+OUTPUT_DIR=$WORK/output/mpiomptest/$SUFFIX
+LOGFILE=$OUTPUT_DIR/mpiomptest
+mkdir -p $OUTPUT_DIR
+
+#This shifts to the directory that you submitted the job from
+cd $WORK/HJCFIT/exploration/mpi
+
+#Load all the necessary tools and set the work environment
+source $WORK/HJCFIT/utils/archer/loadArcherModules.sh
+
+#Load virtual env
+source activate dcprogs
+
+#Profile exploration data with 1 to 24 nodes. Time for each execution will be
+#outputted from the python code
+echo "Executing fitGlyR4 with 4 mpi processes."
+for threads in {1..6}
+do
+    echo "Executing fitGlyR4 with $threads threads"
+    export OMP_NUM_THREADS=$threads
+    aprun -b -n 4 -d $threads python fitGlyR4_mpi.py > ${LOGFILE}_mpi4omp$threads.log 2>&1
+done
+cd ..
+echo "Executing fitGlyr4 with one process"
+for threads in {1..6}
+do
+    echo "Executing fitGlyR4 with $threads threads"
+    export OMP_NUM_THREADS=$threads
+    aprun -b -n 1 -d $threads python fitGlyR4.py > ${LOGFILE}_omp$threads.log 2>&1
+done
+
+#Exit virtual env
+source deactivate
