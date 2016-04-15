@@ -27,6 +27,12 @@ tres = [0.000030, 0.000030, 0.000030, 0.000030]
 tcrit = [0.004, -1, -0.06, -0.02]
 conc = [10e-6, 30e-6, 100e-6, 1000e-6]
 
+if size != len(conc):
+    outputstring = ("Number of MPI processes much match number of"
+                    "concentrations. Got {} MPI processes "
+                    "and {} concentrations.".format(size, len(conc)))
+    raise RuntimeError(outputstring)
+
 recs = []
 bursts = []
 for i in range(len(scnfiles)):
