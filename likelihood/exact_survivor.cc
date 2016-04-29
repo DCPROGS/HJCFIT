@@ -69,11 +69,11 @@ namespace DCProgs {
     if(_tau < 0e0) throw errors::Domain("The resolution time tau cannot be negative.");
     verify_qmatrix(_qmatrix);
     // Two step process. Otherwise, reset would catch any exception thrown. 
-    RecursionInterface afinterface(_qmatrix, _tau, true);
-    RecursionInterface fainterface(_qmatrix, _tau, false);
-    recursion_af_.reset(new RecursionInterface(std::move(afinterface)));
+    RecursionInterface* afinterface = new RecursionInterface(_qmatrix, _tau, true);
+    RecursionInterface* fainterface = new RecursionInterface(_qmatrix, _tau, false);
+    recursion_af_.reset(afinterface);
     if(not recursion_af_.get()) throw errors::Runtime("Could not initialize unique_ptr");
-    recursion_fa_.reset(new RecursionInterface(std::move(fainterface)));
+    recursion_fa_.reset(fainterface);
     if(not recursion_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
 
     tau_ = _tau;
