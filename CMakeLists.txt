@@ -98,7 +98,15 @@ endif(openmp)
 if ( CMAKE_COMPILER_IS_GNUCC )
   # W-deprecated-declarations is triggered several times by eigen code in C++11. We disable it here.
   # This should be removed ones Eigen fixes this. Probably in Eigen V3.3
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations" CACHE STRING "" FORCE)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-deprecated-declarations")
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_GREATER 6.0)
+  # GCC 6.1 triggers a huge number of warnings like
+  # .../Eigen/src/Core/arch/SSE/PacketMath.h:29:39: warning: ignoring attributes on template argument
+  #  '__m128 {aka __vector(4) float}' [-Wignored-attributes]
+  # see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=69884
+  # We disable these here. Check if they are fixed in a later release of gcc/eigen
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-ignored-attributes")
+  endif()
 endif ( CMAKE_COMPILER_IS_GNUCC )
 if(tests)
   enable_testing()
