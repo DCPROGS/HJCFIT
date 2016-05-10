@@ -100,7 +100,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-12, **kwargs):
 
      H = determinant.H(root)
      if len(H) > 1:
-       # Use Eigen's eigenvalue pb so that we can do 128 bit reals. 
+       # Use Eigen's eigenvalue pb so that we can do long doubles.
        eigenvalues = eig(determinant.H(root))[0]
        multiplicity = count_nonzero(abs(eigenvalues - root) < tolerance)
      else: multiplicity = 1
@@ -271,4 +271,3 @@ def plot_time_series(series, ax=None, **kwargs):
 def plot_time_intervals(series, start=0, ax = None):
   """ Plots time intervals """
   return plot_time_series(series_to_intervals(series, start), ax=ax)
-
