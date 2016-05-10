@@ -53,7 +53,7 @@ contain a single root (e.g. a single eigenvalue of H(s)).
      :lines: 44, 45
 
 The third step is performed by calling (by default) the :py:func:`brentq` subroutine. This method is
-copied straight from numpy, with some modifications to allow it to cope with 128bit reals, if need
+copied straight from Scipy, with some modifications to allow it to cope with 128bit reals, if need
 be.
 
 :python: 
@@ -84,4 +84,3 @@ allowing users to by-pass the first step if need be.
   .. literalinclude:: ../../code/roots.cc
      :language: c++
      :lines: 55-58
-
