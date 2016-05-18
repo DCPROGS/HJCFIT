@@ -3,6 +3,10 @@ dist: trusty
 
 language: python
 
+cache:
+  directories:
+    - $HOME/.cache/pip
+
 addons:
   apt:
     packages:

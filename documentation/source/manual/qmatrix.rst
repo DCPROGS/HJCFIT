@@ -34,7 +34,7 @@ zero over rows (this condition is not enforced by the :cpp:class:`QMatrix` objec
 :python: 
 
   The matrix is a numpy array. As such, it can be used within any of the efficient numerical
-  algorithms provided. There are some restrictions if this package is compiled with 128 bit reals.
+  algorithms provided. There are some restrictions if this package is compiled with long doubles.
 
   .. literalinclude:: ../../code/qmatrix.py
      :language: python
@@ -65,4 +65,3 @@ can and *should* be used within numerical algorithms.
   .. literalinclude:: ../../code/qmatrix.cc
      :language: c++
      :lines: 35-39
-

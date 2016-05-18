@@ -39,7 +39,7 @@ It provides the ideal likelihood as a function of time, as well as the laplace t
 
   .. note::
 
-     This package can be compiled to use real number of 128bits. However, despite providing arrays
+     This package can be compiled to use long doubles. However, despite providing arrays
      for reals of that size, numpy does not include the corresponding linear algebra functions. A
      few useful functions, such as ``expm`` in this example, are provided to remediate to this
      situation.
