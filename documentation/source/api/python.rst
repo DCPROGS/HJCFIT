@@ -37,7 +37,7 @@ Otherwise, the package defaults to garden variety 64-bit doubles.
 Linear Algebra
 ++++++++++++++
 
-Numpy does provides only a subset of its utilities for arrays consisting of long doubles. As a
+Numpy only provides a subset of its utilities for arrays consisting of long doubles. As a
 result, this package exposes some of Eigen_'s capabilities, as needed. Their interface is generally
 reminiscent of the numpy utility they mirror.
 
