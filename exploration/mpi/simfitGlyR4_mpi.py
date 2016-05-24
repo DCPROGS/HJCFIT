@@ -139,6 +139,12 @@ def mpislavedcprogslik():
     comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
     return mpi_status
 
+if size != len(conc):
+    outputstring = ("Number of MPI processes much match number of"
+                    "concentrations. Got {} MPI processes "
+                    "and {} concentrations.".format(size, len(conc)))
+    raise RuntimeError(outputstring)
+
 
 mpi_status = np.array(1, 'int')
 if rank == 0:
