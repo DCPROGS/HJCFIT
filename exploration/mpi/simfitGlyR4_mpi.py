@@ -90,10 +90,16 @@ kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
 simplex_options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
                    'maxfev': 10000, 'disp': True}
 
-start = time.clock()
-bursts = simulate_bursts(conc, mec_true, tr, inst, nintmax)
-end = time.clock()
-print('CPU time in simulation=', end - start)
+if rank == 0:
+    start = time.clock()
+    burstdata = simulate_bursts(conc, mec_true, tr, inst, nintmax)
+    data = {'bursts': burstdata}
+    end = time.clock()
+    print('CPU time in simulation=', end - start)
+else:
+    data = None
+data = comm.bcast(data, root=0)
+bursts = data['bursts']
 # Set initial guesses
 mec.set_rateconstants(ig2)
 mec = constrain(mec)
