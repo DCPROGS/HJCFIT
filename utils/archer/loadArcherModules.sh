@@ -30,6 +30,8 @@ module load anaconda-compute/2.2.0-python2
 # export LIBRARY_PATH=$OLD_LIBRARY_PATH
 # The anaconda module sets PYTHONHOME Which is wrong and breaks conda envs so remove it
 unset PYTHONHOME
+# unload xalt which injects python2 only code via PYTHONPATH!!!!!!!!!
+module unload xalt
 
 # Aparently that anaconda-compute module makes git fail, and that is needed by CookOff, etc, so:
 module load git
