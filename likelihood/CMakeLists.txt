@@ -22,8 +22,9 @@ set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h occupancies.h time_filter.h r
                        exact_survivor.h root_finder.h determinant_equation.h asymptotes.h
                        approx_survivor.h missed_eventsG.h laplace_survivor.h likelihood.h brentq.h)
 
+include_directories(${PROJECT_BINARY_DIR})
 if(EIGEN3_INCLUDE_DIR)
-	include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+  include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 endif()
 
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
