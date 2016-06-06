@@ -14,9 +14,9 @@
 #   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 #   GNU General Public License for more details.
 #########################
-
+include_directories(${PROJECT_BINARY_DIR})
 if(EIGEN3_INCLUDE_DIR)
-  include_directories(${EIGEN3_INCLUDE_DIR} ${PROJECT_BINARY_DIR})
+  include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 endif()
 
 
