@@ -36,16 +36,27 @@ env:
     - UPLOADDOCS=false
 matrix:
   include:
-    - python: 2.7
-    - python: 3.5
+    - os: linux
+      python: 2.7
+    - os: linux
+      python: 3.5
       env: UPLOADDOCS=true
-    - python: 3.5
+    - os: linux
+      python: 3.5
       env: DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=ON"
-
+    - os: osx
+      osx_image: xcode7.3
+      python: 2.7
+      language: generic
 
 
 install:
     - |
+        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+          brew update
+          brew install python cmake
+          python --version
+        fi
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
@@ -54,13 +65,16 @@ install:
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
 
-
 script:
   - |
         # Building
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
+        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+          cmake ..
+        else
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
+        fi
         make
         ctest --output-on-failure
   - |
