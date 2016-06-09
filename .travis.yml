@@ -54,7 +54,7 @@ install:
     - |
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
-          brew install python cmake
+          brew install python cmake swig eigen
           python --version
         fi
         pip install --upgrade pip
