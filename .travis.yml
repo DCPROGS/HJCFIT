@@ -6,6 +6,7 @@ language: python
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/Library/Caches/pip
 
 addons:
   apt:
@@ -54,7 +55,7 @@ install:
     - |
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
-          brew install python cmake swig eigen doxygen
+          brew install python cmake swig eigen
           python --version
         fi
         pip install --upgrade pip
@@ -78,10 +79,12 @@ script:
         make
         ctest --output-on-failure
   - |
-        # Building documentation
-        make install
-        make documentation
-
+        # Too time consuming to install latex on OSX
+        if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
+          # Building documentation
+          make install
+          make documentation
+        fi
 
 after_success:
   - |
