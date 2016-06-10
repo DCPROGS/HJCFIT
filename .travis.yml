@@ -53,11 +53,14 @@ matrix:
 
 install:
     - |
+        # Install OSX dependencies
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
           brew install python cmake swig eigen
           python --version
         fi
+    - |
+        # install python dependencies
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
@@ -68,7 +71,7 @@ install:
 
 script:
   - |
-        # Building
+        # build and run tests
         mkdir build
         cd build
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
@@ -79,7 +82,8 @@ script:
         make
         ctest --output-on-failure
   - |
-        # Too time consuming to install latex on OSX
+        # Build documentation.
+        # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
           # Building documentation
           make install
