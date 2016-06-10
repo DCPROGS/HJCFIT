@@ -6,6 +6,7 @@ language: python
 cache:
   directories:
     - $HOME/.cache/pip
+    - $HOME/Library/Caches/pip
 
 addons:
   apt:
@@ -36,16 +37,30 @@ env:
     - UPLOADDOCS=false
 matrix:
   include:
-    - python: 2.7
-    - python: 3.5
+    - os: linux
+      python: 2.7
+    - os: linux
+      python: 3.5
       env: UPLOADDOCS=true
-    - python: 3.5
+    - os: linux
+      python: 3.5
       env: DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=ON"
-
+    - os: osx
+      osx_image: xcode7.3
+      python: 2.7
+      language: generic
 
 
 install:
     - |
+        # Install OSX dependencies
+        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+          brew update
+          brew install python cmake swig eigen
+          python --version
+        fi
+    - |
+        # install python dependencies
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install --upgrade setuptools
@@ -54,20 +69,26 @@ install:
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
 
-
 script:
   - |
-        # Building
+        # build and run tests
         mkdir build
         cd build
-        cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
+        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+          cmake ..
+        else
+          cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
+        fi
         make
         ctest --output-on-failure
   - |
-        # Building documentation
-        make install
-        make documentation
-
+        # Build documentation.
+        # Too time consuming to install latex on OSX.
+        if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
+          # Building documentation
+          make install
+          make documentation
+        fi
 
 after_success:
   - |
