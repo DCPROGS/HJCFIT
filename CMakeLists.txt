@@ -27,6 +27,13 @@ option(openmp         "Enable OpenMP parallelization."          off)
 if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
       set(CMAKE_MACOSX_RPATH 1)
 endif()
+
+find_program(CCACHE_FOUND ccache)
+if(CCACHE_FOUND)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
+endif(CCACHE_FOUND)
+
 # Check if our link directory is already an implicit link directory
 # Only add it to RPath if not.
 if(NOT WIN32)
