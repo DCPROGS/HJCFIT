@@ -6,6 +6,8 @@ from dcpyps import mechanism
 from dcprogs.likelihood import Log10Likelihood
 import math
 import numpy as np
+from scipy.optimize import minimize
+import time
 
 
 class MPIHelper:
@@ -46,15 +48,18 @@ class MPIHelper:
         if self.rank == 0:
             self.mec.printout(target)
 
-    def set_likelihood_func(self, kwargs):
+    def set_likelihood_func(self, likelihood_kwargs=None):
         self.likelihood = []
-
+        if likelihood_kwargs is None:
+            likelihood_kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12,
+                                 'itermax': 100, 'lower_bound': -1e6,
+                                 'upper_bound': 0}
         for i in range(len(self.recs)):
             self.likelihood.append(Log10Likelihood(self.bursts[i],
                                                    self.mec.kA,
                                                    self.recs[i].tres,
                                                    self.recs[i].tcrit,
-                                                   **kwargs))
+                                                   **likelihood_kwargs))
 
     def mpi_master_likelihood(self, x, args=None):
         self.comm.Bcast([self.mpi_status, MPI.INT], root=0)
@@ -98,3 +103,44 @@ class MPIHelper:
             print("iteration # {0:d}; log-lik = {1:.6f}".format(self.iternum,
                                                                 -lik))
             print(np.exp(theta))
+
+    def run_optimizer(self, options=None, method='Nelder-Mead'):
+        if self.rank == 0:
+            theta = np.log(self.mec.theta())
+            lik = self.complete_likelihood(theta)
+            print("\nStarting likelihood (DCprogs)= "
+                  "{0:.6f}".format(-lik))
+            start = time.clock()
+            wallclock_start = time.time()
+            self.result = None
+            if options is None:
+                options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
+                           'maxfev': 10000, 'disp': True}
+            self.result = minimize(self.mpi_master_likelihood,
+                                   theta,
+                                   method=method,
+                                   callback=self.print_likelihood_status,
+                                   options=options)
+            # Signal slaves to stop
+            self.mpi_status = np.array(0, 'int')
+            self.comm.Bcast([self.mpi_status, MPI.INT], root=0)
+        else:
+            while self.mpi_status:
+                self.mpi_slave_likelihood()
+        if self.rank == 0:
+            end = time.clock()
+            wallclock_end = time.time()
+            print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
+                  %time.localtime()[0:6])
+            print('CPU time in simplex=', end - start)
+            print('Wallclock time in simplex=', wallclock_end - wallclock_start)
+            print('\n\nresult=')
+            print(self.result)
+
+            print('\n Final log-likelihood = {0:.6f}'.format(-self.result.fun))
+            print('\n Number of iterations = {0:d}'.format(self.result.nit))
+            print('\n Number of evaluations = {0:d}'.format(self.result.nfev))
+            self.mec.theta_unsqueeze(np.exp(self.result.x))
+            print("\n Final rate constants:")
+            self.mec.printout(sys.stdout)
+            print('\n\n')

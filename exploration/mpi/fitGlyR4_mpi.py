@@ -1,14 +1,4 @@
-import time
-import math
-import sys
-import numpy as np
-from scipy.optimize import minimize
-
-from dcpyps import dcio
-from dcpyps import dataset
 from dcpyps import mechanism
-from dcprogs.likelihood import Log10Likelihood
-from mpi4py import MPI
 from mpihelpers import MPIHelper
 
 # LOAD DATA: Burzomato 2004 example set.
@@ -64,47 +54,6 @@ mympi.mec.set_mr(True, 15, 1)
 
 mympi.mec_printout()
 
-theta = np.log(mympi.mec.theta())
-likelihood_kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
-          'lower_bound': -1e6, 'upper_bound': 0}
+mympi.set_likelihood_func()
 
-mympi.set_likelihood_func(likelihood_kwargs)
-
-lik = mympi.complete_likelihood(theta)
-if mympi.rank == 0:
-    print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, mympi.rank))
-    start = time.clock()
-    wallclock_start = time.time()
-    success = False
-    result = None
-    options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
-               'maxfev': 10000, 'disp': True}
-    result = minimize(mympi.mpi_master_likelihood,
-                      theta,
-                      method='Nelder-Mead',
-                      callback=mympi.print_likelihood_status,
-                      options=options)
-    # Signal slaves to stop
-    mympi.mpi_status = np.array(0, 'int')
-    mympi.comm.Bcast([mympi.mpi_status, MPI.INT], root=0)
-else:
-    while mympi.mpi_status:
-        mympi.mpi_slave_likelihood()
-
-if mympi.rank == 0:
-    end = time.clock()
-    wallclock_end = time.time()
-    print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
-          %time.localtime()[0:6])
-    print('CPU time in simplex=', end - start)
-    print('Wallclock time in simplex=', wallclock_end - wallclock_start)
-    print('\n\nresult=')
-    print(result)
-
-    print('\n Final log-likelihood = {0:.6f}'.format(-result.fun))
-    print('\n Number of iterations = {0:d}'.format(result.nit))
-    print('\n Number of evaluations = {0:d}'.format(result.nfev))
-    mympi.mec.theta_unsqueeze(np.exp(result.x))
-    print("\n Final rate constants:")
-    mympi.mec.printout(sys.stdout)
-    print('\n\n')
+mympi.run_optimizer()
