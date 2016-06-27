@@ -70,54 +70,7 @@ likelihood_kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
 
 mympi.set_likelihood_func(likelihood_kwargs)
 
-
-def dcprogslik(x, args=None):
-    mympi.mec.theta_unsqueeze(np.exp(x))
-    lik = 0
-    for i in range(len(conc)):
-        mympi.mec.set_eff('c', conc[i])
-        lik += -mympi.likelihood[i](mympi.mec.Q) * math.log(10)
-    return lik
-
-
-# def mpidcprogslik(x, args=None):
-#     mympi.comm.Bcast([mpi_status, MPI.INT], root=0)
-#     mympi.comm.Bcast([x, MPI.DOUBLE], root=0)
-#     mympi.mec.theta_unsqueeze(np.exp(x))
-#     lik = np.array(0.0, 'd')
-#     like = np.array(0.0, 'd')
-#     mympi.mec.set_eff('c', conc[mympi.rank])
-#     lik += -mympi.likelihood[mympi.rank](mympi.mec.Q) * math.log(10)
-#     mympi.comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
-#     return like
-
-
-def mpislavedcprogslik():
-    mympi.comm.Bcast([mympi.mpi_status, MPI.INT], root=0)
-    if not mympi.mpi_status:
-        return mympi.mpi_status
-    x = np.empty(14, dtype='d')
-    mympi.comm.Bcast([x, MPI.DOUBLE], root=0)
-    mympi.mec.theta_unsqueeze(np.exp(x))
-    mympi.mec.set_eff('c', conc[mympi.rank])
-    lik = np.array(0.0, 'd')
-    lik += -mympi.likelihood[mympi.rank](mympi.mec.Q) * math.log(10)
-    mympi.comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
-    return mympi.mpi_status
-
-
-def printiter(theta):
-    global iternum
-    iternum += 1
-    if iternum % 100 == 0:
-        lik = dcprogslik(theta)
-        print("iteration # {0:d}; log-lik = {1:.6f}".format(iternum, -lik))
-        print(np.exp(theta))
-
-
-iternum = 0
-lik = dcprogslik(theta)
-mympi.mpi_status = np.array(1, 'int')
+lik = mympi.complete_likelihood(theta)
 if mympi.rank == 0:
     print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, mympi.rank))
     start = time.clock()
@@ -126,14 +79,17 @@ if mympi.rank == 0:
     result = None
     options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
                'maxfev': 10000, 'disp': True}
-    result = minimize(mympi.mpi_master_likelihood, theta, method='Nelder-Mead',
-                      callback=printiter, options=options)
+    result = minimize(mympi.mpi_master_likelihood,
+                      theta,
+                      method='Nelder-Mead',
+                      callback=mympi.print_likelihood_status,
+                      options=options)
     # Signal slaves to stop
     mympi.mpi_status = np.array(0, 'int')
     mympi.comm.Bcast([mympi.mpi_status, MPI.INT], root=0)
 else:
     while mympi.mpi_status:
-        mympi.mpi_status = mpislavedcprogslik()
+        mympi.mpi_slave_likelihood()
 
 if mympi.rank == 0:
     end = time.clock()

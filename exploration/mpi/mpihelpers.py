@@ -15,7 +15,9 @@ class MPIHelper:
         self.comm = MPI.COMM_WORLD
         self.rank = MPI.COMM_WORLD.Get_rank()
         self.size = MPI.COMM_WORLD.Get_size()
-        self.mpi_status = np.array(0, 'int')
+        self.mpi_status = np.array(1, 'int')
+        self.iternum = 0
+        self.print_freq = 100
 
     def load_data(self, scnfiles, tres, tcrit, conc, verbose=True):
         self.recs = []
@@ -62,5 +64,37 @@ class MPIHelper:
         like = np.array(0.0, 'd')
         self.mec.set_eff('c', self.conc[self.rank])
         lik += -self.likelihood[self.rank](self.mec.Q) * math.log(10)
-        self.comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
+        self.comm.Reduce([lik, MPI.DOUBLE],
+                         [like, MPI.DOUBLE],
+                         op=MPI.SUM,
+                         root=0)
         return like
+
+    def mpi_slave_likelihood(self):
+        self.comm.Bcast([self.mpi_status, MPI.INT], root=0)
+        if not self.mpi_status:
+            return
+        x = np.empty(14, dtype='d')
+        self.comm.Bcast([x, MPI.DOUBLE], root=0)
+        self.mec.theta_unsqueeze(np.exp(x))
+        self.mec.set_eff('c', self.conc[self.rank])
+        lik = np.array(0.0, 'd')
+        lik += -self.likelihood[self.rank](self.mec.Q) * math.log(10)
+        self.comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
+        return
+
+    def complete_likelihood(self, x, args=None):
+        self.mec.theta_unsqueeze(np.exp(x))
+        lik = 0
+        for i in range(len(self.conc)):
+            self.mec.set_eff('c', self.conc[i])
+            lik += -self.likelihood[i](self.mec.Q) * math.log(10)
+        return lik
+
+    def print_likelihood_status(self, theta):
+        self.iternum += 1
+        if self.iternum % self.print_freq == 0:
+            lik = self.complete_likelihood(theta)
+            print("iteration # {0:d}; log-lik = {1:.6f}".format(self.iternum,
+                                                                -lik))
+            print(np.exp(theta))
