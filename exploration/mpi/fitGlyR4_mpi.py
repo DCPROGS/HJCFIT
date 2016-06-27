@@ -9,14 +9,7 @@ from dcpyps import dataset
 from dcpyps import mechanism
 from dcprogs.likelihood import Log10Likelihood
 from mpi4py import MPI
-
-if not MPI.Is_initialized():
-    MPI.Init()
-
-# getting basic info
-comm = MPI.COMM_WORLD
-rank = MPI.COMM_WORLD.Get_rank()
-size = MPI.COMM_WORLD.Get_size()
+from mpihelpers import MPIHelper
 
 # LOAD DATA: Burzomato 2004 example set.
 scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
@@ -27,21 +20,20 @@ tres = [0.000030, 0.000030, 0.000030, 0.000030]
 tcrit = [0.004, -1, -0.06, -0.02]
 conc = [10e-6, 30e-6, 100e-6, 1000e-6]
 
-if size != len(conc):
-    outputstring = ("Number of MPI processes much match number of"
-                    "concentrations. Got {} MPI processes "
-                    "and {} concentrations.".format(size, len(conc)))
-    raise RuntimeError(outputstring)
+mympi = MPIHelper()
+mympi.load_data(scnfiles, tres, tcrit, conc)
+# recs = []
+# bursts = []
+# for i in range(len(scnfiles)):
+#     rec = dataset.SCRecord(scnfiles[i], conc[i], tres[i], tcrit[i])
+#     rec.record_type = 'recorded'
+#     recs.append(rec)
+#     bursts.append(rec.bursts.intervals())
+#     if mympi.rank == 0:
+#         rec.printout()
 
-recs = []
-bursts = []
-for i in range(len(scnfiles)):
-    rec = dataset.SCRecord(scnfiles[i], conc[i], tres[i], tcrit[i])
-    rec.record_type = 'recorded'
-    recs.append(rec)
-    bursts.append(rec.bursts.intervals())
-    if rank == 0:
-        rec.printout()
+recs = mympi.recs
+bursts = mympi.bursts
 
 # LOAD FLIP MECHANISM USED Burzomato et al 2004
 mecfn = "../../../DCPYPS/dcpyps/samples/mec/demomec.mec"
@@ -82,7 +74,7 @@ mec.update_constrains()
 mec.set_mr(True, 7, 0)
 mec.set_mr(True, 15, 1)
 
-if rank == 0:
+if mympi.rank == 0:
     mec.printout(sys.stdout)
 
 theta = np.log(mec.theta())
@@ -105,28 +97,28 @@ def dcprogslik(x, args=None):
 
 
 def mpidcprogslik(x, args=None):
-    comm.Bcast([mpi_status, MPI.INT], root=0)
-    comm.Bcast([x, MPI.DOUBLE], root=0)
+    mympi.comm.Bcast([mpi_status, MPI.INT], root=0)
+    mympi.comm.Bcast([x, MPI.DOUBLE], root=0)
     mec.theta_unsqueeze(np.exp(x))
     lik = np.array(0.0, 'd')
     like = np.array(0.0, 'd')
-    mec.set_eff('c', conc[rank])
-    lik += -likelihood[rank](mec.Q) * math.log(10)
-    comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
+    mec.set_eff('c', conc[mympi.rank])
+    lik += -likelihood[mympi.rank](mec.Q) * math.log(10)
+    mympi.comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
     return like
 
 
 def mpislavedcprogslik():
-    comm.Bcast([mpi_status, MPI.INT], root=0)
+    mympi.comm.Bcast([mpi_status, MPI.INT], root=0)
     if not mpi_status:
         return mpi_status
     x = np.empty(14, dtype='d')
-    comm.Bcast([x, MPI.DOUBLE], root=0)
+    mympi.comm.Bcast([x, MPI.DOUBLE], root=0)
     mec.theta_unsqueeze(np.exp(x))
-    mec.set_eff('c', conc[rank])
+    mec.set_eff('c', conc[mympi.rank])
     lik = np.array(0.0, 'd')
-    lik += -likelihood[rank](mec.Q) * math.log(10)
-    comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
+    lik += -likelihood[mympi.rank](mec.Q) * math.log(10)
+    mympi.comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
     return mpi_status
 
 
@@ -142,8 +134,8 @@ def printiter(theta):
 iternum = 0
 lik = dcprogslik(theta)
 mpi_status = np.array(1, 'int')
-if rank == 0:
-    print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, rank))
+if mympi.rank == 0:
+    print("\nStarting likelihood (DCprogs)= {0:.6f} on {1}".format(-lik, mympi.rank))
     start = time.clock()
     wallclock_start = time.time()
     success = False
@@ -154,12 +146,12 @@ if rank == 0:
                       callback=printiter, options=options)
     # Signal slaves to stop
     mpi_status = np.array(0, 'int')
-    comm.Bcast([mpi_status, MPI.INT], root=0)
+    mympi.comm.Bcast([mpi_status, MPI.INT], root=0)
 else:
     while mpi_status:
         mpi_status = mpislavedcprogslik()
 
-if rank == 0:
+if mympi.rank == 0:
     end = time.clock()
     wallclock_end = time.time()
     print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
