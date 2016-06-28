@@ -10,8 +10,8 @@ from scipy.optimize import minimize
 import time
 
 
-class MPIHelper:
-    def __init__(self):
+class MPILikelihoodSolver:
+    def __init__(self, print_freq=100):
         if not MPI.Is_initialized():
             MPI.Init()
         self.comm = MPI.COMM_WORLD
@@ -19,7 +19,7 @@ class MPIHelper:
         self.size = MPI.COMM_WORLD.Get_size()
         self.mpi_status = np.array(1, 'int')
         self.iternum = 0
-        self.print_freq = 100
+        self.print_freq = print_freq
 
     def load_data(self, scnfiles, tres, tcrit, conc, verbose=True):
         self.recs = []
