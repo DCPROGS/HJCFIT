@@ -24,6 +24,8 @@ class MPILikelihoodSolver:
     def load_data(self, scnfiles, tres, tcrit, conc, verbose=True):
         self.recs = []
         self.bursts = []
+        self.tcrit = tcrit
+        self.tres = tres
         self.conc = conc
         for i in range(len(scnfiles)):
             rec = dataset.SCRecord(scnfiles[i], conc[i], tres[i], tcrit[i])
@@ -50,15 +52,16 @@ class MPILikelihoodSolver:
 
     def set_likelihood_func(self, likelihood_kwargs=None):
         self.likelihood = []
+        assert len(self.tres) == len(self.tcrit) == len(self.conc)
         if likelihood_kwargs is None:
             likelihood_kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12,
                                  'itermax': 100, 'lower_bound': -1e6,
                                  'upper_bound': 0}
-        for i in range(len(self.recs)):
+        for i in range(len(self.tres)):
             self.likelihood.append(Log10Likelihood(self.bursts[i],
                                                    self.mec.kA,
-                                                   self.recs[i].tres,
-                                                   self.recs[i].tcrit,
+                                                   self.tres[i],
+                                                   self.tcrit[i],
                                                    **likelihood_kwargs))
 
     def mpi_master_likelihood(self, x, args=None):
@@ -132,8 +135,10 @@ class MPILikelihoodSolver:
             wallclock_end = time.time()
             print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
                   %time.localtime()[0:6])
-            print('CPU time in simplex=', end - start)
-            print('Wallclock time in simplex=', wallclock_end - wallclock_start)
+            self.cpu_time = end - start
+            self.wallclock_time = wallclock_end - wallclock_start
+            print('CPU time in simplex=', self.cpu_time)
+            print('Wallclock time in simplex=', self.wallclock_time)
             print('\n\nresult=')
             print(self.result)
 
