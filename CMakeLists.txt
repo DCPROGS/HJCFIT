@@ -127,10 +127,10 @@ if(NOT DCPROGS_LONG_DOUBLE)
       "If True, will use long doubles rather than simple doubles.")
 endif(NOT DCPROGS_LONG_DOUBLE)
 
-if(NOT DCPROGS_MPRF_DOUBLE)
-  set(DCPROGS_MPRF_DOUBLE False CACHE BOOL
-  "If True, will use mprf arbitrary precision floats rather than simple doubles.")
-endif(NOT DCPROGS_MPRF_DOUBLE)
+if(NOT DCPROGS_USE_MPFR)
+  set(DCPROGS_USE_MPFR False CACHE BOOL
+  "If True, will use MPFR arbitrary precision floats as fall back if regular double calculations fail.")
+endif(NOT DCPROGS_USE_MPFR)
 
 if(DCPROGS_MPRF_DOUBLE)
   find_package(GMP REQUIRED)

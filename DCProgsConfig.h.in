@@ -26,9 +26,9 @@
 #include <limits>
 #include <type_traits>
 #include <Eigen/Dense>
-#cmakedefine DCPROGS_MPRF_DOUBLE
+#cmakedefine DCPROGS_USE_MPFR
 
-#ifdef DCPROGS_MPRF_DOUBLE
+#ifdef DCPROGS_USE_MPFR
 #  include <unsupported/Eigen/MPRealSupport>
 #endif
 
@@ -38,10 +38,10 @@
 
 #cmakedefine HAS_CXX11_TYPE_TRAITS
 #cmakedefine HAS_CXX11_TRIVIAL_TYPE_TRAITS
-// #cmakedefine HAS_CXX11_CONSTEXPR
+#cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine noexcept throw()
 #cmakedefine MSWINDOBE __declspec(dllimport)
-//# cmakedefine HAS_CXX11_CONSTEXPR
+#cmakedefine HAS_CXX11_CONSTEXPR
 #cmakedefine HAS_CXX11_RANDOM_DEVICE
 #cmakedefine HAS_CXX11_UNIQUE_PTR
 #cmakedefine HAS_CXX11_CONSTRUCTOR_DELEGATE
@@ -101,10 +101,7 @@
 #define DCPROGS_STACK_MATRIX_MAX 50
 
 namespace DCProgs {
-# ifdef DCPROGS_MPRF_DOUBLE
-    //mpfr::mpreal::set_default_prec(256);
-    typedef mpfr::mpreal t_real;
-# elif DCPROGS_LONG_DOUBLE
+# ifdef DCPROGS_LONG_DOUBLE
     //! Types of reals across DCProgs.
     typedef long double t_real;
 # else
