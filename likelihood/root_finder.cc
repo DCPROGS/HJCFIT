@@ -118,15 +118,15 @@ namespace DCProgs {
     
     // Computes trial upper bound for result
     // The upper bound should always be such that the root is positive. 
-    template<class T_SELECT_EIG, class T_COMPARE, class T_CHANGE> 
-      t_real MSWINDOBE find_eigs_bound( DeterminantEq const &_det, 
-                                        t_real _start, t_uint _itermax,
+    template<class T_SELECT_EIG, class T_COMPARE, class T_CHANGE, typename real_type> 
+      real_type MSWINDOBE find_eigs_bound( DeterminantEq const &_det, 
+                                        real_type _start, t_uint _itermax,
                                         T_SELECT_EIG const &_select_eig,
                                         T_COMPARE const & _compare_func, 
                                         T_CHANGE const &_change_func ) {
     
         // First look for bound such that all eigenvalues are smaller 
-        t_real root = _start; 
+        real_type root = _start; 
         for(t_uint i(0); i < _itermax; ++i) {
         
            t_rmatrix const H(_det.H(root));
@@ -152,7 +152,7 @@ namespace DCProgs {
              throw errors::Mass(sstr.str());
            }
         
-           t_real const eigenvalue( _select_eig(eigsolver.eigenvalues()) ); //.minCoeff());
+           real_type const eigenvalue( _select_eig(eigsolver.eigenvalues()) ); //.minCoeff());
            if(_compare_func(eigenvalue, root)) return root;
            root = _change_func(eigenvalue, root);
         }
