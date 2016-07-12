@@ -170,6 +170,65 @@ namespace DCProgs {
         throw errors::MaxIterations(sstr.str());
       }
 
+# ifdef DCPROGS_USE_MPFR
+      // Computes trial upper bound for result using mpfr
+      // This is a fallback for when the regular float version fails.
+      // The upper bound should always be such that the root is positive.
+      template<class T_SELECT_EIG, class T_COMPARE, class T_CHANGE>
+        t_real MSWINDOBE find_eigs_bound_mpfr( DeterminantEq const &_det,
+                                          t_real _start, t_uint _itermax,
+                                          T_SELECT_EIG const &_select_eig,
+                                          T_COMPARE const & _compare_func,
+                                          T_CHANGE const &_change_func ) {
+
+          // First look for bound such that all eigenvalues are smaller
+          t_real root = _start;
+          for(t_uint i(0); i < _itermax; ++i) {
+
+             t_rmatrix const H(_det.H(root));
+             // checks that it is valid.
+             // If condition below is true, then means at least one element is NaN.
+             if(eigen_nan(H)) {
+               if(std::abs(root) < 1e-1) {
+                 std::ostringstream sstr;
+                 sstr << "when computing matrix H(" << root << "):\n"
+                      << numpy_io(H.cast<t_real>()) << "\n" << _det;
+                 throw errors::NaN(sstr.str());
+               }
+               root = 0.9 * root;
+               continue;
+             }
+             t_mpfr_rmatrix const H2 = H.cast<t_mpfr_real>();
+             // Computes eigenvalues of midpoint.
+             Eigen::EigenSolver<t_mpfr_rmatrix> eigsolver(H2);
+             if(eigsolver.info() != Eigen::Success) {
+               std::ostringstream sstr;
+               sstr << _det << "\n" << "Could not solve eigenvalue problem at " << root << ".";
+               throw errors::Mass(sstr.str());
+             }
+
+            t_mpfr_real const _eigenvalue( _select_eig(eigsolver.eigenvalues()) ); //.minCoeff());
+            t_real const eigenvalue = static_cast<t_real>(_eigenvalue);
+            if(_compare_func(eigenvalue, root)) return root;
+            root = _change_func(eigenvalue, root);
+          }
+          std::ostringstream sstr;
+          sstr << "Searching for upper or lower bound.\n\n"
+               << _det
+               << "  * starting point " << _start << "\n"
+               << "  * current location: " << root << "\n";
+          try {
+            t_rmatrix const H(_det.H(root));
+            t_mpfr_rmatrix const H2 = H.cast<t_mpfr_real>();
+            Eigen::EigenSolver<t_mpfr_rmatrix> eigsolver(H2);
+            t_mpfr_real const eigvalue = _select_eig(eigsolver.eigenvalues());
+            sstr  << "  * current eigenvalues: " << numpy_io(eigsolver.eigenvalues().transpose()) << "\n"
+                  << "  * current bouding eigenvalue: " << static_cast<t_real>(eigvalue) << "\n";
+          } catch(...) {};
+            throw errors::MaxIterations(sstr.str());
+        }
+# endif
+
    // The upper bound should always be such that the root is positive. 
    template<class T_CHANGE>
      t_real change_bound_till_sign( DeterminantEq const &_det, t_real _start, 
@@ -210,17 +269,34 @@ namespace DCProgs {
 
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
                                               t_real _alpha, t_uint _itermax) {
-
-    return find_eigs_bound(
-        _det, _start, _itermax,
-        [](t_cvector const &_eigs) { return _eigs.real().minCoeff(); },
-        [](t_real _a, t_real _b) { return _a > _b; },
-        [_alpha](t_real _value, t_real _root) {
-          return _value - _alpha * std::min(_root - _value, 0.1 * std::abs(_value));
-        } 
-    );
+# ifdef DCPROGS_USE_MPFR
+    try {
+# endif
+      return find_eigs_bound(
+          _det, _start, _itermax,
+          [](t_cvector const &_eigs) { return _eigs.real().minCoeff(); },
+          [](t_real _a, t_real _b) { return _a > _b; },
+          [_alpha](t_real _value, t_real _root) {
+            return _value - _alpha * std::min(_root - _value, 0.1 * std::abs(_value));
+          }
+      );
+# ifdef DCPROGS_USE_MPFR
+    }
+    catch (errors::Mass) {
+      std::cout << "THIS IS NOT THE CASE" << std::endl;
+      t_mpfr_real::set_default_prec(128);
+      return find_eigs_bound_mpfr(
+          _det, _start, _itermax,
+          [](t_mpfr_cvector const &_eigs) { return _eigs.real().minCoeff(); },
+          [](t_real _a, t_real _b) { return _a > _b; },
+          [_alpha](t_real _value, t_real _root) {
+            return _value - _alpha * std::min(_root - _value, 0.1 * std::abs(_value));
+          }
+      );
+    }
+ # endif
   }
- 
+
   // Computes trial upper bound for result
   // The upper bound should always be such that the root is positive. 
   t_real MSWINDOBE find_upper_bound_for_roots(DeterminantEq const &_det, t_real _start,
