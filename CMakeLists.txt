@@ -132,11 +132,11 @@ if(NOT DCPROGS_USE_MPFR)
   "If True, will use MPFR arbitrary precision floats as fall back if regular double calculations fail.")
 endif(NOT DCPROGS_USE_MPFR)
 
-if(DCPROGS_MPRF_DOUBLE)
+if(DCPROGS_USE_MPFR)
   find_package(GMP REQUIRED)
   find_package(MPFR 3.0.0)
   include_directories(${PROJECT_SOURCE_DIR})
-endif(DCPROGS_MPRF_DOUBLE)
+endif(DCPROGS_USE_MPFR)
 configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"

@@ -134,6 +134,13 @@ namespace DCProgs {
   //! Type holding the bursts.
   typedef std::vector<t_Burst> t_Bursts;
 
+# ifdef DCPROGS_USE_MPFR
+    typedef mpfr::mpreal t_mpfr_real;
+    typedef std::complex<t_mpfr_real> t_mpft_complex;
+    typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_mpfr_cvector;
+    typedef Eigen::Matrix<t_mpfr_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_mpfr_rmatrix;
+
+# endif
   //! Dumps eigen array in format we can copy/paste to python
   template<class T>
     auto numpy_io(Eigen::DenseBase<T> const &_matrix, std::string const &_indent="")

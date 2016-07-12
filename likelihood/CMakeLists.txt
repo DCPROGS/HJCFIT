@@ -30,6 +30,11 @@ endif()
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
 add_dependencies(likelihood lookup_dependencies)
 
+if(DCPROGS_USE_MPFR)
+  target_link_libraries(likelihood ${GMP_LIBRARIES})
+  target_link_libraries(likelihood ${MPFR_LIBRARIES})
+endif(DCPROGS_USE_MPFR)
+
 # Windows + Visual studio specifics.
 if(MSVC)
   set_target_properties(likelihood PROPERTIES DEFINE_SYMBOL DCPROGS_LIKELIHOOD_DLLEXPORT)
