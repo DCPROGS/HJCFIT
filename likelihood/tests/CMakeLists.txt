@@ -27,6 +27,9 @@ if(tests)
   add_gtest(determinant_equation determinant_equation.cc likelihood)
   add_gtest(recursion recursion_formula.cc likelihood)
   add_gtest(exact_survivor exact_survivor.cc likelihood)
+  if(DCPROGS_USE_MPFR AND NOT DCPROGS_LONG_DOUBLE)
+    add_gtest(mpfr_root_bounds mpfr_root_bounds.cc likelihood)
+  endif(DCPROGS_USE_MPFR AND NOT DCPROGS_LONG_DOUBLE)
   add_gtest(root_finder_intervals
            "root_finder_intervals.cc;random_matrix.h;random_matrix.cc" 
            likelihood)
