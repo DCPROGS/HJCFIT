@@ -283,7 +283,6 @@ namespace DCProgs {
 # ifdef DCPROGS_USE_MPFR
     }
     catch (errors::Mass) {
-      std::cout << "THIS IS NOT THE CASE" << std::endl;
       t_mpfr_real::set_default_prec(128);
       return find_eigs_bound_mpfr(
           _det, _start, _itermax,
