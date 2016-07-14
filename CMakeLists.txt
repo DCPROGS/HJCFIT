@@ -17,7 +17,7 @@
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
 
-set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
 
 # Downloads and installs GreatCMakeCookOff
 # It contains a number of cmake recipes
@@ -155,6 +155,7 @@ install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 
+find_or_add_hunter_package(GMP)
 add_subdirectory(likelihood)
 add_subdirectory(data)
 add_subdirectory(python)
