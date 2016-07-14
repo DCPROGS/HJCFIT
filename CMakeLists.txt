@@ -16,6 +16,18 @@
 #########################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
+
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
+
+# Downloads and installs GreatCMakeCookOff
+# It contains a number of cmake recipes
+include(LookUp-GreatCMakeCookOff)
+
+# Hunter helps us download stuff automatically
+include(AddHunter)
+set(HUNTER_ROOT ${CMAKE_BINARY_DIR}/hunter_root)
+initialize_hunter(HUNTER_ROOT ${HUNTER_ROOT} LOCAL)
+
 PROJECT(HJCFIT)
 
 option(tests          "Enable testing."                         on)
@@ -54,11 +66,7 @@ INCLUDE(ExternalProject)
 # Set default ExternalProject root directory
 set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-# Downloads and installs GreatCMakeCookOff
-# It contains a number of cmake recipes
-include(LookUp-GreatCMakeCookOff)
 include(PackageLookup)
 
 if(pythonBindings)
