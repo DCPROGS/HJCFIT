@@ -35,6 +35,7 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
+option(DCPROGS_USE_MPFR "Enable fallback to MPFR Multi precision" on)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
@@ -141,8 +142,10 @@ if(NOT DCPROGS_USE_MPFR)
 endif(NOT DCPROGS_USE_MPFR)
 
 if(DCPROGS_USE_MPFR)
-  find_package(GMP REQUIRED)
-  find_package(MPFR 3.0.0)
+  find_or_add_hunter_package(GMP)
+  find_or_add_hunter_package(MPFR)
+  include_directories(SYSTEM ${GMP_INCLUDES})
+  include_directories(SYSTEM ${MPFR_INCLUDES})
   include_directories(${PROJECT_SOURCE_DIR})
 endif(DCPROGS_USE_MPFR)
 configure_file (
@@ -155,7 +158,6 @@ install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 
-find_or_add_hunter_package(GMP)
 add_subdirectory(likelihood)
 add_subdirectory(data)
 add_subdirectory(python)
