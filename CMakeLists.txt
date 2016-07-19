@@ -15,14 +15,14 @@
 #   GNU General Public License for more details.
 #########################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
 
 # Downloads and installs GreatCMakeCookOff
 # It contains a number of cmake recipes
 include(LookUp-GreatCMakeCookOff)
-
+include(CMakeDependentOption)
 # Hunter helps us download stuff automatically
 include(AddHunter)
 set(HUNTER_ROOT ${CMAKE_BINARY_DIR}/hunter_root)
@@ -35,7 +35,7 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
-option(DCPROGS_USE_MPFR "Enable fallback to MPFR Multi precision" on)
+CMAKE_DEPENDENT_OPTION(DCPROGS_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
