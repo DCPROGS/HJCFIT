@@ -55,8 +55,8 @@ namespace DCProgs {
 
   //! \brief Computes log10-likelihood of a time series.
   //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
-  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end One past last interval.
+  //! \param[in] burst the series of bursts that the likelihood is calculated over. Must start 
+  //!                with an open burst.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
   //! \param[in] _initial initial occupancies.
@@ -84,14 +84,15 @@ namespace DCProgs {
       }
       return std::log10(current * _final) + exponent;
     }
-  //! \brief Computes log10-likelihood of a time series.
+  //! \brief Computes log10-likelihood of a time series in parallel.
   //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
-  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end One past last interval.
+  //! \param[in] burst the series of bursts that the likelihood is calculated over. Must start 
+  //!                with an open burst.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
   //! \param[in] _initial initial occupancies.
   //! \param[in] _final final occupancies.
+  //! \param[in] threads number of threads to use.
   template<class T_G>
     t_real parallel_chained_log10_likelihood( T_G const & _g, const t_Burst burst,
                                      t_initvec const &_initial, t_rvector const &_final,
@@ -172,7 +173,7 @@ namespace DCProgs {
       t_real lower_bound;
       //! Upper bound bracketing all roots.
       t_real upper_bound;
-
+      //! Number of openmp threads to use in parallel likelihood calculations
       t_int omp_num_threads;
       //! Constructor
       //! \param[in] _bursts A vector of bursts. Each burst is a vector of intervals, starting with
