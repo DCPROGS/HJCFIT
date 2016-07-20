@@ -24,6 +24,8 @@ Contents:
 
    api.rst
 
+   install.rst
+
 Indices and tables
 ==================
 
