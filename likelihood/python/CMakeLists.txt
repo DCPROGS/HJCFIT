@@ -23,7 +23,7 @@ if(pythonBindings)
   if(PYTHON_VERSION VERSION_LESS "3.0.0")
     set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
   else()
-    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall;-py3" )
+    set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
   endif(PYTHON_VERSION VERSION_LESS "3.0.0")
   set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
