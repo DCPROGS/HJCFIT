@@ -65,9 +65,9 @@ The code must be installed and accessible before trying to compile the
 documentation, at least when the python bindings are compiled.
 This means:
 
-1. The library is in the ``PATH`` (windows), ``DYLD_LIBRARY_PATH`` (Mac), 
+#. The library is in the ``PATH`` (windows), ``DYLD_LIBRARY_PATH`` (Mac), 
    or the ``LD_LIBRARY_PATH`` (Linux)
-1. The python bindings are in the ``sys.path`` 
+#. The python bindings are in the ``sys.path`` 
    (e.g. ``python -c "import dcprogs.likelihood"`` does not fail)
 
 The reason for this is that python documentation software will interrogate 
@@ -86,6 +86,62 @@ Once HJCFIT is installed and available, do:
 The documentation should be available at 
 ``path/to/build/documentation/sphinx/index.html``.
 
+Updating the web-page
+=====================
+
+The data for the web page resides on the same git repository that the code does 
+in a special branch called ``gh-pages``. And conversely, github knows to 
+render `here <http://dcprogs.github.io/HJCFITdevdocs/>`__. anything that is in 
+the branch ``gh-pages``. 
+
+It is possible to update the data and the web-page with the following commands:
+
+#. Commit any changes to the code that should be kept safe.
+#. Go to the build directory
+#. Update the docs
+
+.. code-block:: bash
+
+  make documentation 
+
+
+#. Checkout the gh_pages using one the two lines below:
+
+.. code-block:: bash
+
+    git checkout -t origin/gh-pages # If first time, if the branch does not exist 
+    git checkout gh-pages 
+
+
+At this point, the source directory does not contain code anymore. It contains data for the documentation webpage.
+
+1. Copy the new documentation from the build directory to the source directory:
+
+.. code-block:: bash
+
+  rsync -r documentation/sphinx/* ..
+
+1. Commit the changes to the documentation. If nothing happens, 
+   there were likely no changes:
+
+.. code-block:: bash
+
+  git commit -a
+
+At this juncture, the data has been updated on the local computer. All that 
+needs to be done is to push it to github, so github knows to render it.
+
+1. Push the changes back to github so the web-site can be updated:
+
+.. code-block:: bash
+  
+  git push
+      
+1. Checkout the master branch again
+
+.. code-block:: bash
+  
+  git checkout master
 
 Compiling the documentation without Python bindings
 ===================================================
