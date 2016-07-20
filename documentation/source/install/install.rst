@@ -1,6 +1,6 @@
-*****************************************
-Building and installing on Linux and OSX:
-*****************************************
+*******************************
+Building and installing HJCFIT:
+*******************************
 
 
 Compiling DCProgs
@@ -56,7 +56,8 @@ installed. HJCFIT supports both Python 2.7 and Python 3
 #. Behave. A behavior driven developement framework for Python.
 
 Compilation on Mac:
--------------------
+===================
+
 Make sure that you have the needed dependencies installed. We recomend using
 `Homebrew`_ to manage depedencies on OSX. Follow the Homebrew documentation to
 install it. The instructions below assumes that you are running a working 
@@ -79,10 +80,15 @@ Then configure and build the code:
   cmake ..
   make
   make test
+
+Assuming everything works as expected we can now install HJCFIT
+
+  .. code-block:: bash
+
   make install
 
 Compilation on Legion:
-----------------------
+======================
 
 For any compiler, do:
 
@@ -111,3 +117,70 @@ Then:
   cmake ..
   make
   make test
+
+Assuming everything works as expected we can now install HJCFIT
+
+  .. code-block:: bash
+
+  make install
+
+Compilation on Windows:
+=======================
+
+
+Several different ways of building and installing on Windows exist. It should
+be possible to build the code with both MS Visual Studio and MinGW. Currently 
+we recommend building using MS Visual Studio 2015. The free `Community edition 
+of Visual Studio <https://www.visualstudio.com/en-us/products/visual-studio-community-vs.aspx>`_
+is sufficient to build HJCFIT. Note that older versions of Visual Studio did not
+ship 64 bit compilers in the free version. This is no longer an issue with the 
+2015 version. Python 3.5 in normally build with Visual Studio 2015 where as 
+older versions are build with older versions of Visual Studio so to reduce
+any issues it is recommended to use Visual Studio 2015 and Python 3.5.
+
+Visual Studio 2015:
+-------------------
+
+First ensure Visual Studio is installed. Make sure to select the C++ components
+during the installation.
+
+You then need to install the dependencies Swig, CMake. You can install curl from
+Anaconda to enable automatic download of Eigen. It's recommended to install 
+CMake and Swig from their respective homepages. Make sure that you select add
+to path when installing CMake. Following this open a command prompt.
+
+To put the relevant Microsoft compilers on Path you should run the relevant
+bat sript. On most systems it should be something like:
+
+.. code-block:: bash
+
+  "C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" amd64
+
+You can verify that Visual Studio is correctly loaded by execution ``cl`` as
+
+
+To install Eigen we need wget, curl or mercurial. Curl can be installed directly
+from conda. To run the Python tests we need to install behave.
+  
+.. code-block:: bash
+
+  conda install curl
+  pip install behave
+
+
+We can now build the code and run the tests.
+
+.. code-block:: bash
+
+  cd /path/to/HJCFIT
+  mkdir build && cd build
+  cmake .. -DCMAKE_BUILD_TYPE=Release -G "NMake Makefiles" 
+  nmake
+  nmake test
+
+Assuming everything works as expected we can now install HJCFIT
+
+.. code-block:: bash
+
+  nmake install
+  
