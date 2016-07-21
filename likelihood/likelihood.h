@@ -121,8 +121,8 @@ namespace DCProgs {
         current_vec[thread] = identity;
         #pragma omp for schedule(static)
         for(t_int j=1; j<intervals-1; j=j+2) {
-          current_vec[thread] = current_vec[thread] * _g.fa(static_cast<t_real>(burst[j]));
-          current_vec[thread] = current_vec[thread] * _g.af(static_cast<t_real>(burst[j+1]));
+          current_vec[thread] *= _g.fa(static_cast<t_real>(burst[j]));
+          current_vec[thread] *= _g.af(static_cast<t_real>(burst[j+1]));
           t_real const max_coeff = current_vec[thread].array().abs().maxCoeff();
           if(max_coeff > 1e20) {
             current_vec[thread]  *= 1e-20;
