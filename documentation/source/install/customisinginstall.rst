@@ -73,11 +73,29 @@ At this juncture, functions that return python scalars are still returning real
 numbers of 64bit. Functions that return numpy arrays have the correct size, however.
 
 
-Enabling OpenMP
+Disable OpenMP
 ===============
 
-(but [this](http://eigen.tuxfamily.org/dox/unsupported/group__MPRealSupport__Module.html) is a step in the right direction), however.\
+OpenMP support is automatically enabled provided that your compiler supports it.
+You can explicitly disable it by doing:
 
+.. code-block:: bash
+
+  cd /path/to/dcprogs/build
+  cmake .. -Dopenmp=off
+
+
+Python Bindings
+===============
+
+The Python bindings are automatically enabled but can be disabled by doing:
+
+.. code-block:: bash
+
+  cd /path/to/dcprogs/build
+  cmake .. -DpythonBindings=off
 
 Enabling fallback to Multi precision arithmetic
 ===============================================
+
+Todo.
