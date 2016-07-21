@@ -22,9 +22,11 @@
 #define DCPROGS_LIKELIHOOD_H
 
 #include <DCProgsConfig.h>
-
 #include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
+#if defined(_OPENMP)
+#include <omp.h>
+#endif
 
 #include "qmatrix.h"
 #include "errors.h"
@@ -53,16 +55,17 @@ namespace DCProgs {
 
   //! \brief Computes log10-likelihood of a time series.
   //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
-  //! \param[in] _begin First interval in the time series. This must be an "open" interval.
-  //! \param[in] _end One past last interval.
+  //! \param[in] burst the series of bursts that the likelihood is calculated over. Must start 
+  //!                with an open burst.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
   //! \param[in] _initial initial occupancies.
   //! \param[in] _final final occupancies.
-  template<class T_INTERVAL_ITERATOR, class T_G>
-    t_real chained_log10_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin,
-                                     T_INTERVAL_ITERATOR _end, 
+  template<class T_G>
+    t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
                                      t_initvec const &_initial, t_rvector const &_final ) {
+      auto _begin = burst.begin();
+      auto _end = burst.end();
       if( (_end - _begin) % 2 != 1 )
         throw errors::Domain("Expected a burst with odd number of intervals");
       t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
@@ -79,6 +82,61 @@ namespace DCProgs {
           exponent -= 50;
         }
       }
+      return std::log10(current * _final) + exponent;
+    }
+  //! \brief Computes log10-likelihood of a time series in parallel.
+  //! \details Adds a bit of trickery to take care of exponent. May make this a bit more stable.
+  //! \param[in] burst the series of bursts that the likelihood is calculated over. Must start 
+  //!                with an open burst.
+  //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
+  //!                member function, where the argument is the length of an open or shut interval.
+  //! \param[in] _initial initial occupancies.
+  //! \param[in] _final final occupancies.
+  //! \param[in] threads number of threads to use.
+  template<class T_G>
+    t_real parallel_chained_log10_likelihood( T_G const & _g, const t_Burst burst,
+                                     t_initvec const &_initial, t_rvector const &_final,
+                                     t_int const threads) {
+      auto _begin = burst.begin();
+      auto _end = burst.end();
+      t_int const intervals = _end - _begin;
+      if( (intervals) % 2 != 1 )
+        throw errors::Domain("Expected a burst with odd number of intervals");
+      t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
+      t_int exponent(0);
+      const t_int cols = current.cols();
+      const t_stack_rmatrix identity = t_stack_rmatrix::Identity(cols, cols);
+      std::vector<t_stack_rmatrix> current_vec(threads, identity);
+      std::vector<t_int> exponents(threads, 0);
+      bool openmplowlevel = (intervals>100);
+      #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(openmplowlevel)
+      {
+        t_int thread;
+        #if defined(_OPENMP)
+          thread = omp_get_thread_num();
+        #else
+          thread = 0;
+        #endif
+        exponents[thread] = 0;
+        current_vec[thread] = identity;
+        #pragma omp for schedule(static)
+        for(t_int j=1; j<intervals-1; j=j+2) {
+          current_vec[thread] *= _g.fa(static_cast<t_real>(burst[j]));
+          current_vec[thread] *= _g.af(static_cast<t_real>(burst[j+1]));
+          t_real const max_coeff = current_vec[thread].array().abs().maxCoeff();
+          if(max_coeff > 1e20) {
+            current_vec[thread]  *= 1e-20;
+            exponents[thread] += 20;
+          } else if(max_coeff < 1e-20) {
+            current_vec[thread]  *= 1e+20;
+            exponents[thread] -= 20;
+          }
+        }
+      }
+      for (t_int tmpexp : exponents)
+        exponent += tmpexp;
+      for (auto tmpcurrent : current_vec)
+        current = current * tmpcurrent;
       return std::log10(current * _final) + exponent;
     }
 
@@ -115,8 +173,8 @@ namespace DCProgs {
       t_real lower_bound;
       //! Upper bound bracketing all roots.
       t_real upper_bound;
-
-
+      //! Number of openmp threads to use in parallel likelihood calculations
+      t_int omp_num_threads;
       //! Constructor
       //! \param[in] _bursts A vector of bursts. Each burst is a vector of intervals, starting with
       //!            an open interval. The intervals should be prefiltered for the maximum
@@ -143,7 +201,22 @@ namespace DCProgs {
                           t_real _upperbound=quiet_nan ) 
                       : bursts(_bursts), nopen(_nopen), tau(_tau), tcritical(_tcritical),
                         nmax(_nmax), xtol(_xtol), rtol(_rtol), itermax(_itermax),
-                        lower_bound(_lowerbound), upper_bound(_upperbound) {}
+                        lower_bound(_lowerbound), upper_bound(_upperbound) {
+                          #if defined(_OPENMP)
+                          Eigen::initParallel();
+                          #endif
+                          #pragma omp parallel default(none)
+                          {
+                            #pragma omp single
+                            {
+                              #if defined(_OPENMP)
+                              omp_num_threads = omp_get_num_threads();
+                              #else
+                              omp_num_threads = 1;
+                              #endif
+                            }
+                          }
+                        }
      
       //! \brief Computes likelihood for each burst
       //! \return a DCProgs::t_rvector 
@@ -165,4 +238,3 @@ namespace DCProgs {
 }
 
 #endif 
-
