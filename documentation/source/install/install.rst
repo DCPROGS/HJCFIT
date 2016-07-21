@@ -6,7 +6,7 @@ Building and installing HJCFIT:
 Compiling DCProgs
 =================
 
-A couple of desing decisions affect the compilation of DCProgs.
+A couple of design  decisions affect the compilation of DCProgs.
 
   * `c++11 <http://en.wikipedia.org/wiki/C%2B%2B11>`_ is the new standard for 
     the C++ programming languages. It is almost fully implemented by modern 
@@ -51,20 +51,20 @@ Multiple different ways of installing python exist. In general we recommend
 as well.  In any case Python along with ``numpy`` and ``scipy`` should be 
 installed. HJCFIT supports both Python 2.7 and Python 3
 
-#. `SWIG <http://www.swig.org/>`_ used to generate the wrappings beween C++ and
+#. `SWIG <http://www.swig.org/>`_ used to generate the wrappings between C++ and
    Python.
 #. Behave. A behavior driven developement framework for Python.
 
 Compilation on Mac:
 ===================
 
-Make sure that you have the needed dependencies installed. We recomend using
-`Homebrew`_ to manage depedencies on OSX. Follow the Homebrew documentation to
+Make sure that you have the needed dependencies installed. We recommend using
+`Homebrew`_ to manage dependencies on OSX. Follow the Homebrew documentation to
 install it. The instructions below assumes that you are running a working 
 python installation with ``Numpy`` and ```Scipy``. Behave is not currently in
 Anaconda and should be installed using ``pip`` in any case.
 
-Installing depdendencies using Homebrew:
+Installing dependencies using Homebrew:
 
 .. code-block:: bash
 
@@ -150,7 +150,7 @@ CMake and Swig from their respective homepages. Make sure that you select add
 to path when installing CMake. Following this open a command prompt.
 
 To put the relevant Microsoft compilers on Path you should run the relevant
-bat sript. On most systems it should be something like:
+bat script. On most systems it should be something like:
 
 .. code-block:: bash
 
@@ -168,7 +168,8 @@ from conda. To run the Python tests we need to install behave.
   pip install behave
 
 
-We can now build the code and run the tests.
+We can now build the code and run the tests. Unlike linux and OSX we need to 
+explicitly tell CMake that we want a Release build.
 
 .. code-block:: bash
 
