@@ -257,7 +257,7 @@ def plot_time_series(series, ax=None, **kwargs):
   """ Plots time series """
   from numpy import array, min, max, arange
   from matplotlib.pylab import figure
-  x = [series[0]] + [series[i/2] for i in range(2, 2*len(series)-1)]
+  x = [series[0]] + [series[i//2] for i in range(2, 2*len(series)-1)]
   y = (arange(0, len(x)) % 4 >= 2).astype('int')
   if ax is None:
     fig = figure()
