@@ -4,13 +4,14 @@
    contain the root `toctree` directive.
 
 ###################################
-Welcome to DCProgs's documentation!
+Welcome to HJCFIT's documentation!
 ###################################
 
-The goal of DCProgs is to provide a collection of tools for scientific research on ion channels. The
-package is derived from the DCPROGS_ suite and will consist of a Python port and wrap of Fortran
-code with ~30 years usage at University College London. The rationale is to preserve and cultivate
-these tools for future research applications.
+The goal of HJCFIT is to provide a collection of tools for scientific research on ion channels. The
+package is derived from the DCPROGS_ suite and consists of a C++ implementation of the Likelihood
+calculations along with Python wrappers. The code is a port of Fortran code with ~30 years usage at
+University College London. The rationale is to preserve and cultivate these tools for future research
+applications.
 
 For a description  of the methods involved, see :cite:`colquhoun:1982`, :cite:`hawkes:1992`,
 :cite:`colquhoun:1995a`, :cite:`colquhoun:1995b`, :cite:`colquhoun:1996`.

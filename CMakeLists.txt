@@ -16,7 +16,7 @@
 #########################
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
-PROJECT(DCProgs)
+PROJECT(HJCFIT)
 
 option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
