@@ -19,7 +19,13 @@ if(EIGEN3_INCLUDE_DIR)
   include_directories(SYSTEM ${EIGEN3_INCLUDE_DIR})
 endif()
 
-
+if(PANDOC_FOUND AND NBCONVERT_FOUND)
+  add_custom_target ( ipynbdocs
+    COMMAND jupyter-nbconvert ${CMAKE_SOURCE_DIR}/exploration/*.ipynb --to rst --output-dir=${CMAKE_SOURCE_DIR}/documentation/source/notebooks)
+else()
+  add_custom_target ( ipynbdocs
+    COMMAND echo "not including Jupyter notebooks in docs")
+endif(PANDOC_FOUND AND NBCONVERT_FOUND)
 
 if (DOXYGEN_FOUND)
   add_custom_target ( doxydocs
@@ -57,7 +63,7 @@ if(SPHINX_FOUND)
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
     WORKING_DIRECTORY ${WORKINGDIR}
-    DEPENDS doxydocs )
+    DEPENDS doxydocs ipynbdocs )
 
 endif(SPHINX_FOUND)
 
