@@ -79,16 +79,15 @@ namespace DCProgs {
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_real result(0);
-    t_int i(0);
     const bool openmphighlevel = bursts.size() > 100;
     if(openmphighlevel) {
       #pragma omp parallel for default(none), reduction(+:result), shared(final)
-      for (i=0; i<bursts.size(); i++) {
+      for (t_int i=0; i<bursts.size(); i++) {
         t_Burst const &burst = bursts[i];
         result += chained_log10_likelihood(eG, burst, initial, final);
       }
     } else {
-      for (i=0; i<bursts.size(); i++) {
+      for (t_int i=0; i<bursts.size(); i++) {
         t_Burst const &burst = bursts[i];
         result += parallel_chained_log10_likelihood(eG, burst, initial, final, omp_num_threads);
       }
@@ -111,10 +110,9 @@ namespace DCProgs {
     t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
                                 
     t_rvector result(bursts.size());
-    t_int i(0);
     const bool openmphighlevel = bursts.size() > 100;
     #pragma omp parallel for default(none), shared(final,result), if(openmphighlevel)
-    for (i=0; i<bursts.size(); i++) {
+    for (t_int i=0; i<bursts.size(); i++) {
       t_Burst const &burst = bursts[i];
       result(i) = chained_log10_likelihood(eG, burst, initial, final);
     }
