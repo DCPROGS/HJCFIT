@@ -24,6 +24,8 @@ Contents:
 
    api.rst
 
+   examples.rst
+
    parallel.rst
 
    install.rst

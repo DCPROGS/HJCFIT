@@ -9,3 +9,4 @@ dcprogs/
 wiki
 *.*~
 .travis/dcprogsDeploykey
+documentation/source/notebooks
