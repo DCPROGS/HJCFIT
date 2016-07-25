@@ -21,9 +21,14 @@ endif()
 
 if(PANDOC_FOUND AND NBCONVERT_FOUND)
   add_custom_target ( ipynbdocs
-    COMMAND jupyter-nbconvert ${CMAKE_SOURCE_DIR}/exploration/*.ipynb --to rst --output-dir=${CMAKE_SOURCE_DIR}/documentation/source/notebooks)
+    COMMAND jupyter-nbconvert ${CMAKE_SOURCE_DIR}/documentation/source/notebooks/*.ipynb --to rst --output-dir=${CMAKE_SOURCE_DIR}/documentation/source/notebooks
+    DEPENDS ipynbexecdocs)
+  add_custom_target ( ipynbexecdocs
+    COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py)
 else()
   add_custom_target ( ipynbdocs
+    COMMAND echo "not including Jupyter notebooks in docs")
+  add_custom_target ( ipynbexecdocs
     COMMAND echo "not including Jupyter notebooks in docs")
 endif(PANDOC_FOUND AND NBCONVERT_FOUND)
 
@@ -63,7 +68,7 @@ if(SPHINX_FOUND)
     "${CMAKE_BINARY_DIR}/documentation/sphinx"
     COMMENT "Building HTML documentation with Sphinx"
     WORKING_DIRECTORY ${WORKINGDIR}
-    DEPENDS doxydocs ipynbdocs )
+    DEPENDS doxydocs ipynbdocs ipynbexecdocs)
 
 endif(SPHINX_FOUND)
 
