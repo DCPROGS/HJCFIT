@@ -20,16 +20,19 @@ if(EIGEN3_INCLUDE_DIR)
 endif()
 
 if(PANDOC_FOUND AND NBCONVERT_FOUND)
-  if(PYTHON_VERSION VERSION_LESS "3.0.0")
-    set(MYKERNEL "python2")
-  else()
-    set(MYKERNEL "python3")
+  if("${JUPYTER_KERNEL}" STREQUAL "")
+    if(PYTHON_VERSION VERSION_LESS "3.0.0")
+      set(JUPYTER_KERNEL "python2")
+    else()
+      set(JUPYTER_KERNEL "python3")
+    endif()
   endif()
+  MESSAGE(STATUS "JUPYTER_KERNEL is ${JUPYTER_KERNEL}")
   add_custom_target ( ipynbdocs
     COMMAND jupyter-nbconvert ${CMAKE_SOURCE_DIR}/documentation/source/notebooks/*.ipynb --to rst --output-dir=${CMAKE_SOURCE_DIR}/documentation/source/notebooks
     DEPENDS ipynbexecdocs)
   add_custom_target ( ipynbexecdocs
-    COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py --kernel=${MYKERNEL})
+    COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py --kernel=${JUPYTER_KERNEL})
 else()
   add_custom_target ( ipynbdocs
     COMMAND echo "not including Jupyter notebooks in docs")
