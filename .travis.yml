@@ -7,6 +7,7 @@ cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/Library/Caches/pip
+    - $HOME/.ccache
 
 addons:
   apt:
@@ -57,8 +58,11 @@ install:
         # Install OSX dependencies
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
-          brew install python cmake swig eigen
+          brew install python cmake swig eigen ccache
           python --version
+          export PATH=/usr/local/opt/ccache/libexec:$PATH
+        else
+          export PATH=/usr/lib/ccache:$PATH
         fi
     - |
         # install python dependencies
