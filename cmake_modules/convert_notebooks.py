@@ -40,8 +40,7 @@ for notebook in notebooks:
         with open(notebook) as f:
             nb = nbformat.read(f, as_version=4)
             ep.preprocess(nb, {'metadata': {'path': input_dir}})
-        with open(executed_nbname, 'wt') as f:
-            nbformat.write(nb, f)
+        nbformat.write(nb, executed_nbname)
     else:
         print("{} excluded from execution".format(notebook))
         shutil.copyfile(notebook, executed_nbname)
