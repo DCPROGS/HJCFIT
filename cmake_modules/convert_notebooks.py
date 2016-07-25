@@ -15,7 +15,6 @@ parser.add_argument('--kernel', metavar='kernel', type=str, nargs=1,
 args = parser.parse_args()
 
 excluded_notebooks = ['CB.ipynb',
-                      'CH82 -- optimization.ipynb',
                       'DC-pyps comparison.ipynb',
                       'Example_MLL_Fit_GlyR_4patches.ipynb']
 full_path = os.path.realpath(__file__)
