@@ -13,8 +13,6 @@ parser.add_argument('--kernel', metavar='kernel', type=str, nargs=1,
                     'will use the current kernel')
 
 args = parser.parse_args()
-print(args)
-print(args.kernel)
 
 excluded_notebooks = ['CB.ipynb',
                       'CH82 -- optimization.ipynb',
@@ -36,10 +34,10 @@ for notebook in notebooks:
     executed_nbname = os.path.join(output_dir, filename)
     if filename not in excluded_notebooks:
         print("Executing {}".format(notebook))
-        print("Saving to {}".format(executed_nbname))
         with open(notebook) as f:
             nb = nbformat.read(f, as_version=4)
             ep.preprocess(nb, {'metadata': {'path': input_dir}})
+        print("Saving to {}".format(executed_nbname))
         nbformat.write(nb, executed_nbname)
     else:
         print("{} excluded from execution".format(notebook))
