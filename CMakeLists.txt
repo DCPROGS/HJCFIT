@@ -21,7 +21,7 @@ PROJECT(DCProgs)
 option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
-option(openmp         "Enable OpenMP parallelization."          off)
+option(openmp         "Enable OpenMP parallelization."          on)
 
 # Provides backwards compatibility and prevents MACOS_RPATH warning
 if((CMAKE_MAJOR_VERSION GREATER 3) OR (CMAKE_MAJOR_VERSION EQUAL 3))
@@ -89,9 +89,11 @@ cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
                     REQUIRED auto lambda static_assert rvalue_references decltype
                     enable_if type_traits shared_ptr initialization)
 include(CheckIsNaN)
-
 if(openmp)
-  FIND_PACKAGE(OpenMP REQUIRED)
+  FIND_PACKAGE(OpenMP)
+endif()
+
+if(OPENMP_FOUND)
   if(NOT (${CMAKE_C_FLAGS} MATCHES ${OpenMP_C_FLAGS}))
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" CACHE STRING "" FORCE)
   endif()
@@ -101,7 +103,9 @@ if(openmp)
   if(NOT ("${CMAKE_EXE_LINKER_FLAGS}" MATCHES "${OpenMP_EXE_LINKER_FLAGS}"))
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
   endif()
-endif(openmp)
+elseif(openmp)
+  MESSAGE(STATUS "Code will be compiled without OpenMP support.")
+endif(OPENMP_FOUND)
 if ( CMAKE_COMPILER_IS_GNUCC )
   set(CMAKE_INCLUDE_SYSTEM_FLAG_CXX "-isystem ")
 endif ( CMAKE_COMPILER_IS_GNUCC )
