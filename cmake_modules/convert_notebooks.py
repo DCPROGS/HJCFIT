@@ -14,8 +14,7 @@ parser.add_argument('--kernel', metavar='kernel', type=str, nargs=1,
 
 args = parser.parse_args()
 
-excluded_notebooks = ['CB.ipynb',
-                      'DC-pyps comparison.ipynb',  # need porting to new dcpyps
+excluded_notebooks = ['DC-pyps comparison.ipynb',  # need porting to new dcpyps
                       'Example_MLL_Fit_GlyR_4patches.ipynb']  # to slow
 full_path = os.path.realpath(__file__)
 mydir, a = os.path.split(full_path)
