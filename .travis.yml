@@ -73,7 +73,7 @@ install:
         pip install scipy
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
-        pip install jupyter matplotlib networkx
+        pip install ipykernel nbconvert matplotlib networkx
         pip install git+https://github.com/DCPROGS/DCPYPS.git
 
 script:
