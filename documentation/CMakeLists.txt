@@ -31,8 +31,13 @@ if(PANDOC_FOUND AND NBCONVERT_FOUND)
   add_custom_target ( ipynbdocs
     COMMAND jupyter-nbconvert ${CMAKE_SOURCE_DIR}/documentation/source/notebooks/*.ipynb --to rst --output-dir=${CMAKE_SOURCE_DIR}/documentation/source/notebooks
     DEPENDS ipynbexecdocs)
-  add_custom_target ( ipynbexecdocs
-    COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py --kernel=${JUPYTER_KERNEL})
+  if(executenotebooks)
+    add_custom_target ( ipynbexecdocs
+      COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py --kernel=${JUPYTER_KERNEL})
+  else()
+    add_custom_target ( ipynbexecdocs
+      COMMAND python ${CMAKE_SOURCE_DIR}/cmake_modules/convert_notebooks.py --kernel=${JUPYTER_KERNEL} --copyonly)
+  endif()
 else()
   add_custom_target ( ipynbdocs
     COMMAND echo "not including Jupyter notebooks in docs")

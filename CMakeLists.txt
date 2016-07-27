@@ -22,7 +22,7 @@ option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 option(openmp         "Enable OpenMP parallelization."          on)
-
+option(executenotebooks "Execute example Jupyter notebooks."    on)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
