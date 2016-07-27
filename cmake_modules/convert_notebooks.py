@@ -11,7 +11,8 @@ parser = argparse.ArgumentParser(description='Execute notebooks for inclusion '
 parser.add_argument('--kernel', metavar='kernel', type=str, nargs=1,
                     help='Kernel to execute the notebooks with. If none'
                     'will use the current kernel')
-
+parser.add_argument('--copyonly', action='store_true', help='If passed will '
+                                         'copy notebooks and not execute them')
 args = parser.parse_args()
 
 excluded_notebooks = ['DC-pyps comparison.ipynb',  # need porting to new dcpyps
@@ -30,7 +31,7 @@ ep = ExecutePreprocessor(timeout=600, kernel_name=kernel_name)
 for notebook in notebooks:
     _, filename = os.path.split(notebook)
     executed_nbname = os.path.join(output_dir, filename)
-    if filename not in excluded_notebooks:
+    if filename not in excluded_notebooks and not args.copyonly:
         print("Executing {}".format(notebook))
         with open(notebook) as f:
             nb = nbformat.read(f, as_version=4)
