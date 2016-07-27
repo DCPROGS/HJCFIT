@@ -44,7 +44,7 @@ Customising Compiler
 
 It is also possible to set the compiler explicitly. However, this *must* be done at the very
 start. If CMake was run in the build directory, then everything in that directory should be
-deleted[^delete the build, not the source directory!] before attempting to set the compiler.
+deleted (delete the build, not the source directory!) before attempting to set the compiler.
 
 .. code-block:: bash
 
@@ -58,8 +58,8 @@ deleted[^delete the build, not the source directory!] before attempting to set t
 Enable Long Double numbers
 ==========================
 
-Finally, it is possible to compile the code to run with long double numbers
-(long doubles are 80bit on most platforms appart from MS Visual Studio where
+It is possible to compile the code to run with long double numbers
+(long doubles are 80bit on most platforms apart from MS Visual Studio where
 they are identical to doubles i.e. 64bit). This could alleviate some of the
 overflow/underflow errors at the cost of performance. It is not a solution but
 a step in the right direction.
