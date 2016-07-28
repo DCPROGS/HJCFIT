@@ -144,8 +144,6 @@ endif(NOT DCPROGS_USE_MPFR)
 if(DCPROGS_USE_MPFR)
   find_or_add_hunter_package(GMP)
   find_or_add_hunter_package(MPFR)
-  include_directories(SYSTEM ${GMP_INCLUDES})
-  include_directories(SYSTEM ${MPFR_INCLUDES})
   include_directories(${PROJECT_SOURCE_DIR})
 endif(DCPROGS_USE_MPFR)
 configure_file (
