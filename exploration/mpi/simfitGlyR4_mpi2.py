@@ -12,7 +12,7 @@ from dcpyps import mechanism
 from dcpyps.sccalc import scsim
 from dcprogs.likelihood import Log10Likelihood
 from mpi4py import MPI
-from mpihelpers import MPILikelihoodSolver
+from dcprogs.mpihelpers import MPILikelihoodSolver
 
 
 def simulate_bursts(conc, mec, tr, inst, nmax):

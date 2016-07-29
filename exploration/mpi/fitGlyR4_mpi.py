@@ -1,5 +1,5 @@
 from dcpyps import mechanism
-from mpihelpers import MPILikelihoodSolver
+from dcprogs.mpihelpers import MPILikelihoodSolver
 
 # LOAD DATA: Burzomato 2004 example set.
 scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
