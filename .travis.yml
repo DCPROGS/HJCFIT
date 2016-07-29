@@ -86,7 +86,7 @@ script:
         # build and run tests
         mkdir build
         cd build
-        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
+        if [[ $TRAVIS_OS_NAME == 'true' ]]; then
           cmake ..
         else
           cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
