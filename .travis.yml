@@ -93,7 +93,7 @@ script:
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
           # Building documentation
-          rm -rf $HOME/.cache/matplotlib
+          fc-list
           python -c "import matplotlib.pyplot as plt"
           python -c "import matplotlib.pyplot as plt"
           ls -la $HOME/.cache/matplotlib
