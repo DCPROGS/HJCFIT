@@ -23,16 +23,18 @@ from . import likelihood
 from .likelihood._likelihood import _dcprogs_dtype
 
 internal_dtype = _dcprogs_dtype()
-""" Type of the numpy array used internally. 
+""" Type of the numpy array used internally.
 
-    Using this type should make some conversion from python to c++ faster or even unnecessary.
+    Using this type should make some conversion from python to c++ faster or
+    even unnecessary.
 
     >>> array([0, 1], dtype=internal_dtype)
 """
 
-def read_idealized_bursts(filename, tau, tcrit): 
-  """ Reads bursts data from *.scn file. 
- 
+
+def read_idealized_bursts(filename, tau, tcrit):
+  """ Reads bursts data from *.scn file.
+
       This functions is a wrapper around dc-pyps.
 
       :param string filename:
@@ -42,14 +44,15 @@ def read_idealized_bursts(filename, tau, tcrit):
       :param float tcrit:
         Critical time, in seconds
 
-      :returns: 
-        A list of lists of intervals in milliseconds. Inner lists represent bursts.
+      :returns:
+        A list of lists of intervals in milliseconds. Inner lists represent
+        bursts.
   """
   from glob import iglob
   from os.path import exists, dirname, join, abspath, basename, splitext
   from numpy import array, all, abs
   from dcpyps.dataset import SCRecord
-  
+
   if not exists(filename):
     # Check that we are not trying to read a sample data
     # First, finds all data files in directory.
@@ -65,7 +68,4 @@ def read_idealized_bursts(filename, tau, tcrit):
 
   time_series = SCRecord([filename], tres=tau, tcrit=tcrit)
 
-  return [array(u, dtype=internal_dtype) for u in time_series.bursts]
- 
-
-
+  return [array(u, dtype=internal_dtype) for u in time_series.bursts.intervals()]

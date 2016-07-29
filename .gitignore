@@ -9,3 +9,6 @@ dcprogs/
 wiki
 *.*~
 .travis/dcprogsDeploykey
+documentation/source/notebooks/*.rst
+documentation/source/notebooks/*.ipynb
+documentation/source/notebooks/*/

@@ -250,7 +250,7 @@ texinfo_documents = [
 epub_title = u'@PROJECT_NAME@'
 epub_author = u'Mayeul d\'Avezac'
 epub_publisher = u'Mayeul d\'Avezac'
-epub_copyright = u'2013, Mayeul d\'Avezac'
+epub_copyright = u'2013-2016, University College London'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

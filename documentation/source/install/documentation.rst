@@ -86,6 +86,42 @@ Once HJCFIT is installed and available, do:
 The documentation should be available at 
 ``path/to/build/documentation/sphinx/index.html``.
 
+Including Jupyter Notebooks in documentation
+============================================
+
+``make documentation`` will attempt to convert and include all Jupyter 
+notebooks in ``exploration`` to be included in the documentation. This requires
+``pandoc`` and ``nbconvert`` to be installed. If these dependencies are not
+found the build will skip this step. ```nbconvert`` can be installed from your
+regular python package manager (conda or pip). ``pandoc`` can be installed with
+os packages managers. On OSX:
+
+.. code-block:: bash
+  
+  brew install pandoc
+
+on Linux:
+
+.. code-block:: bash
+
+  apt-get install pandoc
+  
+as well as from conda.
+
+``make documentation`` will also attempt to execute the notebooks before 
+including them. This requires ``ipykernel`` to be installed which can be
+installed in the same way as ``nbconvert`` above. In addition it requires 
+all dependencies of the notebooks to be installed. These are currently
+``matplotlib`` and ``networkx`` 
+
+You can also control the Jupyter kernel used to execute the notebooks by
+setting the CMake variable ``JUPYTER_KERNEL`` This defaults to ``python2`` or
+``python3`` depending on the python version used but can be useful to override
+if you need to use a custom environment.
+
+The execution of notebooks can also explicitly be disabled by setting the 
+variable ``executenotebooks`` to off.
+
 Updating the web-page
 =====================
 
