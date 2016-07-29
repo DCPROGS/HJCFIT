@@ -93,6 +93,7 @@ script:
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
           # Building documentation
+          python -c "import matplotlib.pyplot as plt"
           make install
           make documentation
         fi
