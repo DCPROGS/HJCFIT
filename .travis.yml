@@ -74,11 +74,11 @@ install:
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
         pip install ipykernel nbconvert networkx
-        if [[ $UPLOADDOCS == 'osx' ]]; then
+        if [[ $UPLOADDOCS == 'true' ]]; then
           pip install matplotlib==1.5.0 # work around warning about font cacing in output
         else
           pip install matplotlib
-        endif
+        fi
         pip install git+https://github.com/DCPROGS/DCPYPS.git
 
 script:
@@ -86,7 +86,7 @@ script:
         # build and run tests
         mkdir build
         cd build
-        if [[ $TRAVIS_OS_NAME == 'true' ]]; then
+        if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           cmake ..
         else
           cmake .. -DCMAKE_INSTALL_PREFIX=/home/travis/virtualenv/python${TRAVIS_PYTHON_VERSION}/ ${DOLONGDOUBLE}
