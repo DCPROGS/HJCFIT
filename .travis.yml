@@ -73,7 +73,12 @@ install:
         pip install scipy
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
-        pip install ipykernel nbconvert matplotlib networkx
+        pip install ipykernel nbconvert networkx
+        if [[ $UPLOADDOCS == 'osx' ]]; then
+          pip install matplotlib==1.5.0 # work around warning about font cacing in output
+        else
+          pip install matplotlib
+        endif
         pip install git+https://github.com/DCPROGS/DCPYPS.git
 
 script:
@@ -92,8 +97,6 @@ script:
         # Build documentation.
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
-          # Building documentation
-          fc-list
           python -c "import matplotlib.pyplot as plt"
           python -c "import matplotlib.pyplot as plt"
           ls -la $HOME/.cache/matplotlib
