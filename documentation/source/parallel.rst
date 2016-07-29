@@ -8,7 +8,7 @@ Running likelihood calculations in parallel
 OpenMP
 ======
 
-HJCFIT will by default be complied with openmp support. The parallelisation
+HJCFIT will by default be compiled with openmp support. The parallelisation
 is by default over either the number of bursts or over the individual open
 close transitions within the burst. Typically experiments either have many
 short bursts or a few long bursts so it really only makes sense to parallelise
