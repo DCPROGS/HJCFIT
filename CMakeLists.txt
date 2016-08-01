@@ -86,7 +86,8 @@ if(pythonBindings)
 endif(pythonBindings)
 
 # Install Eigen the CookOff way
-lookup_package(Eigen3 REQUIRED)
+# Need at least eigen 3.2 to support mpfr
+lookup_package(Eigen3 REQUIRED 3.2.0)
 
 # Adds flags to compiler to launch it into c++11 land
 include(AddCPP11Flags)
