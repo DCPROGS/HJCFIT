@@ -135,9 +135,13 @@ namespace DCProgs {
   typedef std::vector<t_Burst> t_Bursts;
 
 # ifdef DCPROGS_USE_MPFR
+    //! Types of multi-precision float across DCProgs.
     typedef mpfr::mpreal t_mpfr_real;
+    //! Types of multi-precision complex across DCProgs.
     typedef std::complex<t_mpfr_real> t_mpfr_complex;
+    //! Types of multi-precision complex vector across DCProgs.
     typedef Eigen::Matrix<t_mpfr_complex, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_mpfr_cvector;
+    //! Types of multi-precision real matrix across DCProgs.
     typedef Eigen::Matrix<t_mpfr_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_mpfr_rmatrix;
 
 # endif

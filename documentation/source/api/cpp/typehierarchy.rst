@@ -33,6 +33,13 @@ Eigen/Math types
 .. doxygentypedef:: DCProgs::t_Bursts
 .. doxygentypedef:: DCProgs::t_Burst
 
+Multi-precision types
++++++++++++++++++++++
+
+.. doxygentypedef:: DCProgs::t_mpfr_real
+.. doxygentypedef:: DCProgs::t_mpfr_complex
+.. doxygentypedef:: DCProgs::t_mpfr_cvector
+.. doxygentypedef:: DCProgs::t_mpfr_rmatrix
 
 Global Data
 +++++++++++
