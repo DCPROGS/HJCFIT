@@ -35,16 +35,24 @@ Eigen/Math types
 
 Multi-precision types
 +++++++++++++++++++++
+.. unfortunately this will trigger a warning with missing symbols if
+.. DCPROGS_USE_MPFR == False since the non included section is parsed anyway
+.. see https://github.com/sphinx-doc/sphinx/issues/1635
+.. ifconfig:: DCPROGS_USE_MPFR==True
 
-.. doxygentypedef:: DCProgs::t_mpfr_real
-.. doxygentypedef:: DCProgs::t_mpfr_complex
-.. doxygentypedef:: DCProgs::t_mpfr_cvector
-.. doxygentypedef:: DCProgs::t_mpfr_rmatrix
+    .. doxygentypedef:: DCProgs::t_mpfr_real
+    .. doxygentypedef:: DCProgs::t_mpfr_complex
+    .. doxygentypedef:: DCProgs::t_mpfr_cvector
+    .. doxygentypedef:: DCProgs::t_mpfr_rmatrix
+
+.. ifconfig:: DCPROGS_USE_MPFR==False
+
+    HJCFIT is build without Multi-precision support
 
 Global Data
 +++++++++++
 
 .. c:var:: DCProgs::quiet_nan
 
-   Holds an alias to `NaN` representation in :cpp:type:`DCProgs::t_real`. The code will fail to
-   compile if `NaN` cannot be represented in this type.
+    Holds an alias to `NaN` representation in :cpp:type:`DCProgs::t_real`. The code will fail to
+    compile if `NaN` cannot be represented in this type.

@@ -16,7 +16,11 @@ if(SPHINX_FOUND)
   else()
     set(SPHINX_EXTENSIONS "'sphinxcontrib.bibtex'")
   endif(DOXYGEN_FOUND)
-
+  if(DCPROGS_USE_MPFR)
+    set(SPHINX_DCPROGS_USE_MPFR "True")
+  else()
+    set(SPHINX_DCPROGS_USE_MPFR "False")
+  endif(DCPROGS_USE_MPFR)
 endif(SPHINX_FOUND)
 
 if (DOXYGEN_FOUND)
