@@ -12,14 +12,7 @@ from dcpyps import mechanism
 from dcpyps.sccalc import scsim
 from dcprogs.likelihood import Log10Likelihood
 from mpi4py import MPI
-
-if not MPI.Is_initialized():
-    MPI.Init()
-
-# getting basic info
-comm = MPI.COMM_WORLD
-rank = MPI.COMM_WORLD.Get_rank()
-size = MPI.COMM_WORLD.Get_size()
+from dcprogs.mpihelpers import MPILikelihoodSolver
 
 
 def simulate_bursts(conc, mec, tr, inst, nmax):
@@ -64,6 +57,7 @@ def constrain(mec):
     mec.update_constrains()
     return mec
 
+mysolver = MPILikelihoodSolver()
 
 # LOAD Burzomato 2004 mechanism (GlyR, glycine, WT)
 mec_true = samples.GlyR_flip()
@@ -71,7 +65,9 @@ ig = [4200, 28000, 130000, 3400, 2100, 6700, 180, 6800, 22000,
       29266, 18000, 948, 302, 604, 906, 1.77e6, 1.18e6, 0.59e6, 300e6, 150e6,
       2500, 3750]
 mec_true.set_rateconstants(ig)
-mrc_true = constrain(mec_true)
+mec_true = constrain(mec_true)
+if mysolver.rank == 0:
+    theta_true = np.log(mec_true.theta())
 mec = samples.GlyR_flip()
 tr = 0.000030
 tres = [0.000030, 0.000030, 0.000030, 0.000030]
@@ -90,7 +86,7 @@ kwargs = {'nmax': 2, 'xtol': 1e-12, 'rtol': 1e-12, 'itermax': 100,
 simplex_options = {'xtol': 1e-4, 'ftol': 1e-4, 'maxiter': 5000,
                    'maxfev': 10000, 'disp': True}
 
-if rank == 0:
+if mysolver.rank == 0:
     start = time.clock()
     burstdata = simulate_bursts(conc, mec_true, tr, inst, nintmax)
     data = {'bursts': burstdata}
@@ -98,86 +94,38 @@ if rank == 0:
     print('CPU time in simulation=', end - start)
 else:
     data = None
-data = comm.bcast(data, root=0)
+
+data = mysolver.comm.bcast(data, root=0)
 bursts = data['bursts']
 # Set initial guesses
 mec.set_rateconstants(ig2)
 mec = constrain(mec)
 
-theta = np.log(mec.theta())
-likelihood = []
-for i in range(len(bursts)):
-    likelihood.append(Log10Likelihood(bursts[i], mec.kA,
-                                      tres[i], tcrit[i], **kwargs))
+mysolver = MPILikelihoodSolver()
+mysolver.mec = mec
+mysolver.bursts = bursts
+mysolver.conc = conc
+mysolver.tres = tres
+mysolver.tcrit = tcrit
 
+mysolver.set_likelihood_func(kwargs)
 
-def dcprogslik(x, args=None):
-    mec.theta_unsqueeze(np.exp(x))
-    lik = 0
-    for i in range(len(conc)):
-        mec.set_eff('c', conc[i])
-        lik += -likelihood[i](mec.Q) * math.log(10)
-    return lik
+if mysolver.rank == 0:
+    likelihood_true = mysolver.complete_likelihood(theta_true)
+    mysolver.mec.set_rateconstants(ig2)
+    print("Generated likelihood {}".format(-likelihood_true))
 
+mysolver.run_optimizer()
 
-def mpidcprogslik(x, args=None):
-    comm.Bcast([mpi_status, MPI.INT], root=0)
-    comm.Bcast([x, MPI.DOUBLE], root=0)
-    mec.theta_unsqueeze(np.exp(x))
-    lik = np.array(0.0, 'd')
-    like = np.array(0.0, 'd')
-    mec.set_eff('c', conc[rank])
-    lik += -likelihood[rank](mec.Q) * math.log(10)
-    comm.Reduce([lik, MPI.DOUBLE], [like, MPI.DOUBLE], op=MPI.SUM, root=0)
-    return like
-
-
-def mpislavedcprogslik():
-    comm.Bcast([mpi_status, MPI.INT], root=0)
-    if not mpi_status:
-        return mpi_status
-    x = np.empty(14, dtype='d')
-    comm.Bcast([x, MPI.DOUBLE], root=0)
-    mec.theta_unsqueeze(np.exp(x))
-    mec.set_eff('c', conc[rank])
-    lik = np.array(0.0, 'd')
-    lik += -likelihood[rank](mec.Q) * math.log(10)
-    comm.Reduce([lik, MPI.DOUBLE], None, op=MPI.SUM, root=0)
-    return mpi_status
-
-if size != len(conc):
-    outputstring = ("Number of MPI processes much match number of"
-                    "concentrations. Got {} MPI processes "
-                    "and {} concentrations.".format(size, len(conc)))
-    raise RuntimeError(outputstring)
-
-
-mpi_status = np.array(1, 'int')
-if rank == 0:
-    start = time.clock()
-    wallclock_start = time.time()
-    success = False
-    result = None
-    result = minimize(mpidcprogslik, theta, method='Nelder-Mead',
-                      options=simplex_options)
-    # Signal slaves to stop
-    mpi_status = np.array(0, 'int')
-    comm.Bcast([mpi_status, MPI.INT], root=0)
-else:
-    while mpi_status:
-        mpi_status = mpislavedcprogslik()
-
-if rank == 0:
-    end = time.clock()
-    wallclock_end = time.time()
-    print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
-          %time.localtime()[0:6])
-    print('CPU time in simplex=', end - start)
-    print('Wallclock time in simplex=', wallclock_end - wallclock_start)
-
+if mysolver.rank == 0:
     directory = 'results'
     if not os.path.exists(directory):
         os.makedirs(directory)
     fname = directory + '/' + time.strftime("%Y%m%d-%H%M%S") + '.result'
     f = open(fname, 'wb')
-    pickle.dump([result, end - start], f, pickle.HIGHEST_PROTOCOL)
+    pickle.dump([mysolver.result,
+                 mysolver.cpu_time,
+                 mysolver.wallclock_time,
+                 likelihood_true],
+                f,
+                pickle.HIGHEST_PROTOCOL)

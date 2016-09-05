@@ -18,6 +18,5 @@
 if(pythonBindings)
 
   install(FILES  __init__.py DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
-
+  install(FILES  mpihelpers.py DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
 endif(pythonBindings)
-
