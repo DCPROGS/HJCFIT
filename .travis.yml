@@ -33,6 +33,7 @@ addons:
         - texlive-font-utils
         - pandoc
         - libopenmpi-dev
+        - openmpi-bin
 
 env:
   global:
