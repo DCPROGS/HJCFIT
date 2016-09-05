@@ -98,7 +98,7 @@ script:
         ctest --output-on-failure
         make install
         cd ../exploration/mpi
-        mpiexec -np 4 python fitGlyR4_mpi.py
+        mpiexec -np 4 python fitGlyR4_mpi.py --maxiter 101
   - |
         # Build documentation.
         # Too time consuming to install latex on OSX.
