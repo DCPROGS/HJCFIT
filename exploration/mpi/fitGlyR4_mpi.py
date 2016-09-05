@@ -2,10 +2,10 @@ from dcpyps import mechanism
 from dcprogs.mpihelpers import MPILikelihoodSolver
 
 # LOAD DATA: Burzomato 2004 example set.
-scnfiles = [["../../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"],
-            ["../../../DCPYPS/dcpyps/samples/glydemo/B-30.scn"],
-            ["../../../DCPYPS/dcpyps/samples/glydemo/C-100.scn"],
-            ["../../../DCPYPS/dcpyps/samples/glydemo/D-1000.scn"]]
+scnfiles = [["../samples/glydemo/A-10.scn"],
+            ["../samples/glydemo/B-30.scn"],
+            ["../samples/glydemo/C-100.scn"],
+            ["../samples/glydemo/D-1000.scn"]]
 tres = [0.000030, 0.000030, 0.000030, 0.000030]
 tcrit = [0.004, -1, -0.06, -0.02]
 conc = [10e-6, 30e-6, 100e-6, 1000e-6]
@@ -17,7 +17,7 @@ recs = mysolver.recs
 bursts = mysolver.bursts
 
 # LOAD FLIP MECHANISM USED Burzomato et al 2004
-mecfn = "../../../DCPYPS/dcpyps/samples/mec/demomec.mec"
+mecfn = "../samples/mec/demomec.mec"
 # PREPARE RATE CONSTANTS.
 rates = [4500.0, 700.0, 2500.0, 1800.0, 900.0, 18000.0, 200.0,
          0.1100E+06, 4900.0, 0.4000E+09, 1850.0, 10000.0, 5000.0,
