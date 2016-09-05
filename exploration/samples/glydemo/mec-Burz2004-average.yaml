@@ -1,0 +1,665 @@
+!!python/object:dcpyps.mechanism.Mechanism
+Cycles:
+- !!python/object:dcpyps.mechanism.Cycle
+  mrconstr: &id001 []
+  states: [A3R, A3F, A2F, A2R]
+- !!python/object:dcpyps.mechanism.Cycle
+  mrconstr: *id001
+  states: [AF, A2F, A2R, AR]
+KBlk: null
+Q: !!python/object/apply:numpy.core.multiarray._reconstruct
+  args:
+  - &id002 !!python/name:numpy.ndarray ''
+  - !!python/tuple [0]
+  - b
+  state: !!python/tuple
+  - 1
+  - !!python/tuple [10, 10]
+  - !!python/object/apply:numpy.dtype
+    args: [f8, 0, 1]
+    state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+  - false
+  - !!binary |
+    AAAAAADaqsAAAAAAAAAAAAAAAAAAAAAAAAAAAADaqkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOD/daDAAAAAAAAAAAAAAAAAAAAAAAAA
+    AOD/daBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAKimwAAAAAAAAAAAAAAAAAAAAAAAAAAAAKimQAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAABvsEAAAAAAAAAAAAAAAAAAAAAAAACA+DXlscEAAABAsOSxQQAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAABgUt1AAAAAAAAAAAAAAAAAAAAAAAAAACAAcNtAAAAAAAAA
+    AAAAAAAAAGKjQAAAAvop5qHBAAAAQLDkoUEAAAAAAAAAAAAAACAAW9FAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAOH5QAAAAAAAAAAAAAAAAAATrUAAAICPTgD7wAAAAMBHW4tA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAOA/ZtRAAAAA4b9I1cAAAAAgAFCMQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAjLpAAAAAAAAAAAAAAADg/94hQQAAAODPGCLBAAAA
+    AADggkAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOD//2ZAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAADjeMUEAAP//HeAxwQAAAAAA4HJAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABIzzpBAAAAAEjP
+    OsE=
+Rates:
+- !!python/object:dcpyps.mechanism.Rate
+  State1: &id004 !!python/object:dcpyps.mechanism.State {conductance: 4.0e-11, name: AF*,
+    'no': 0, statetype: A}
+  State2: &id003 !!python/object:dcpyps.mechanism.State {conductance: 0, name: AF,
+    'no': 3, statetype: B}
+  _effectors: [null]
+  _func: &id005 !!python/name:dcpyps.mechanism.identity ''
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!python/str "\0\0\0\0\0\u06AA@"
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'alpha1    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id003
+  State2: *id004
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAABvsEA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'beta1     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: &id007 !!python/object:dcpyps.mechanism.State {conductance: 4.0e-11, name: A2F*,
+    'no': 1, statetype: A}
+  State2: &id006 !!python/object:dcpyps.mechanism.State {conductance: 0, name: A2F,
+    'no': 4, statetype: B}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAAB2oEA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'alpha2    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id006
+  State2: *id007
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAABw20A=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'beta2     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: &id009 !!python/object:dcpyps.mechanism.State {conductance: 4.0e-11, name: A3F*,
+    'no': 2, statetype: A}
+  State2: &id008 !!python/object:dcpyps.mechanism.State {conductance: 0, name: A3F,
+    'no': 5, statetype: B}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAAD+uUA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'alpha3    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id008
+  State2: *id009
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAIBt/0A=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'beta3     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id008
+  State2: &id010 !!python/object:dcpyps.mechanism.State {conductance: 0, name: A3R,
+    'no': 6, statetype: B}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAAAAjUA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'gama3     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id010
+  State2: *id008
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAEBm1EA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'delta3    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id008
+  State2: *id006
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAAASrUA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '3kf(-3)   '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id006
+  State2: *id008
+  _effectors: c
+  _func: &id012 !!python/name:dcpyps.mechanism.multiply ''
+  _limits:
+  - [1.0e-15, 1000000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAQLDkoUE=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'kf(+3)    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id006
+  State2: &id011 !!python/object:dcpyps.mechanism.State {conductance: 0, name: A2R,
+    'no': 7, statetype: B}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAIABb0UA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'gama2     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id011
+  State2: *id006
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAACMukA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'delta2    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id006
+  State2: *id003
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAABio0A=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '2kf(-2)   '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id003
+  State2: *id006
+  _effectors: c
+  _func: *id012
+  _limits:
+  - [1.0e-15, 1000000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAQLDksUE=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '2kf(+2)   '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id003
+  State2: &id013 !!python/object:dcpyps.mechanism.State {conductance: 0, name: AR,
+    'no': 8, statetype: B}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAID520A=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'gama1     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id013
+  State2: *id003
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - "\0\0\0\0\0\0g@"
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'delta1    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id010
+  State2: *id011
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAIABQjEA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '3k(-3)    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id011
+  State2: *id010
+  _effectors: c
+  _func: *id012
+  _limits:
+  - [1.0e-15, 1000000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAA4P/eIUE=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'k(+3)     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id011
+  State2: *id013
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAADggkA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '2k(-2)    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id013
+  State2: *id011
+  _effectors: c
+  _func: *id012
+  _limits:
+  - [1.0e-15, 1000000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAADjeMUE=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '2k(+2)    '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id013
+  State2: &id014 !!python/object:dcpyps.mechanism.State {conductance: 0, name: R,
+    'no': 9, statetype: C}
+  _effectors: [null]
+  _func: *id005
+  _limits:
+  - [1.0e-15, 1000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAADgckA=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: 'k(-1)     '
+- !!python/object:dcpyps.mechanism.Rate
+  State1: *id014
+  State2: *id013
+  _effectors: c
+  _func: *id012
+  _limits:
+  - [1.0e-15, 1000000000.0]
+  _rateconstants: !!python/object/apply:numpy.core.multiarray._reconstruct
+    args:
+    - *id002
+    - !!python/tuple [0]
+    - b
+    state: !!python/tuple
+    - 1
+    - !!python/tuple [1]
+    - !!python/object/apply:numpy.dtype
+      args: [f8, 0, 1]
+      state: !!python/tuple [3, <, null, null, null, -1, -1, 0]
+    - false
+    - !!binary |
+      AAAAAEjPOkE=
+  constrain_args: null
+  constrain_func: null
+  fixed: false
+  is_constrained: false
+  mr: false
+  name: '3k(+1)    '
+States:
+- *id004
+- *id007
+- *id009
+- *id003
+- *id006
+- *id008
+- *id010
+- *id011
+- *id013
+- *id014
+_effdict: {c: 1.0}
+fastblk: false
+k: 10
+kA: 3
+kB: 6
+kC: 1
+kD: 0
+kE: 9
+kF: 7
+kG: 10
+kH: 1
+kI: 7
+mtitle: 'Burzomato et al 2004 ''flip''                                               '
+rtitle: 'Burzomato et al. 2004 average rate constants                              '
