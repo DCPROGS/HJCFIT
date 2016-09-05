@@ -15,7 +15,7 @@ parser.add_argument('--copyonly', action='store_true', help='If passed will '
                                          'copy notebooks and not execute them')
 args = parser.parse_args()
 
-excluded_notebooks = ['Example_MLL_Fit_GlyR_4patches.ipynb']  # to slow
+excluded_notebooks = []
 full_path = os.path.realpath(__file__)
 mydir, a = os.path.split(full_path)
 
