@@ -103,7 +103,7 @@ script:
         # Build documentation.
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
-          ls -la $HOME/.cache/matplotlib
+          cd ../../build
           make documentation
         fi
 
