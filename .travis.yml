@@ -96,16 +96,14 @@ script:
         fi
         make
         ctest --output-on-failure
+        make install
         cd ../exploration/mpi
         mpiexec -np 4 python fitGlyR4_mpi.py
   - |
         # Build documentation.
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
-          python -c "import matplotlib.pyplot as plt"
-          python -c "import matplotlib.pyplot as plt"
           ls -la $HOME/.cache/matplotlib
-          make install
           make documentation
         fi
 
