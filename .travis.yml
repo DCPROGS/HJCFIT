@@ -59,7 +59,7 @@ install:
         # Install OSX dependencies
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
-          brew install python cmake swig eigen ccache
+          brew install python cmake swig eigen ccache openmpi
           python --version
           export PATH=/usr/local/opt/ccache/libexec:$PATH
         else
