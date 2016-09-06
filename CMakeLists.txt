@@ -15,7 +15,19 @@
 #   GNU General Public License for more details.
 #########################
 
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6.4 FATAL_ERROR)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.0.0 FATAL_ERROR)
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
+
+# Downloads and installs GreatCMakeCookOff
+# It contains a number of cmake recipes
+include(LookUp-GreatCMakeCookOff)
+include(CMakeDependentOption)
+# Hunter helps us download stuff automatically
+include(AddHunter)
+set(HUNTER_ROOT ${CMAKE_BINARY_DIR}/hunter_root)
+initialize_hunter(HUNTER_ROOT ${HUNTER_ROOT} LOCAL)
+
 PROJECT(HJCFIT)
 
 option(tests          "Enable testing."                         on)
@@ -23,6 +35,7 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
+CMAKE_DEPENDENT_OPTION(DCPROGS_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
@@ -54,11 +67,7 @@ INCLUDE(ExternalProject)
 # Set default ExternalProject root directory
 set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
 
-# Downloads and installs GreatCMakeCookOff
-# It contains a number of cmake recipes
-include(LookUp-GreatCMakeCookOff)
 include(PackageLookup)
 
 if(pythonBindings)
@@ -77,7 +86,8 @@ if(pythonBindings)
 endif(pythonBindings)
 
 # Install Eigen the CookOff way
-lookup_package(Eigen3 REQUIRED)
+# Need at least eigen 3.2 to support mpfr
+lookup_package(Eigen3 REQUIRED 3.2.0)
 
 # Adds flags to compiler to launch it into c++11 land
 include(AddCPP11Flags)
@@ -127,6 +137,16 @@ if(NOT DCPROGS_LONG_DOUBLE)
       "If True, will use long doubles rather than simple doubles.")
 endif(NOT DCPROGS_LONG_DOUBLE)
 
+if(NOT DCPROGS_USE_MPFR)
+  set(DCPROGS_USE_MPFR False CACHE BOOL
+  "If True, will use MPFR arbitrary precision floats as fall back if regular double calculations fail.")
+endif(NOT DCPROGS_USE_MPFR)
+
+if(DCPROGS_USE_MPFR)
+  find_or_add_hunter_package(GMP)
+  find_or_add_hunter_package(MPFR)
+  include_directories(${PROJECT_SOURCE_DIR}/mpfr)
+endif(DCPROGS_USE_MPFR)
 configure_file (
  "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
  "${PROJECT_BINARY_DIR}/DCProgsConfig.h"

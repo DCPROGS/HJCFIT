@@ -25,7 +25,10 @@ import sys, os
 
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.coverage', 'sphinx.ext.mathjax',
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.coverage',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.ifconfig',
               'sphinx.ext.viewcode'] + [@SPHINX_EXTENSIONS@]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -287,7 +290,8 @@ epub_copyright = u'2013-2016, University College London'
 #epub_tocdup = True
 
 breathe_projects = {
-    "@PROJECT_NAME@": os.path.join('@PROJECT_BINARY_DIR@', "documentation", "xml"),
+    "@PROJECT_NAME@": os.path.join('@PROJECT_BINARY_DIR@',
+                                   "documentation", "xml"),
 }
 breathe_default_project = "@PROJECT_NAME@"
 
@@ -298,8 +302,13 @@ rst_epilog = """
 .. _eigen: http://eigen.tuxfamily.org/index.php?title=Main_Page
 """
 
-def setup(app): 
-  app.add_config_value('python_bindings', "@pythonBindings@", True)
+
+def setup(app):
+    app.add_config_value('python_bindings', "@pythonBindings@", True)
+    app.add_config_value('DCPROGS_USE_MPFR',
+                         @SPHINX_DCPROGS_USE_MPFR@, 'env')
+
 
 python_bindings = "@pythonBindings@"
-spelling_word_list_filename=os.path.join("@SPHINX_SOURCE_DIR@", "spelling_wordlist.txt")
+spelling_word_list_filename = os.path.join("@SPHINX_SOURCE_DIR@",
+                                           "spelling_wordlist.txt")

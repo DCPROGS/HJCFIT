@@ -29,6 +29,8 @@ Contents:
 
    parallel.rst
 
+   mpfr.rst
+
    install.rst
 
 Indices and tables
