@@ -32,6 +32,8 @@ addons:
         - texlive-latex-recommended
         - texlive-font-utils
         - pandoc
+        - libopenmpi-dev
+        - openmpi-bin
 
 env:
   global:
@@ -58,7 +60,7 @@ install:
         # Install OSX dependencies
         if [[ $TRAVIS_OS_NAME == 'osx' ]]; then
           brew update
-          brew install python cmake swig eigen ccache
+          brew install python cmake swig eigen ccache openmpi
           python --version
           export PATH=/usr/local/opt/ccache/libexec:$PATH
         else
@@ -74,6 +76,7 @@ install:
         pip install behave
         pip install sphinx sphinxcontrib-bibtex Breathe
         pip install ipykernel nbconvert networkx
+        pip install mpi4py
         if [[ $UPLOADDOCS == 'true' ]]; then
           pip install matplotlib==1.5.0 # work around warning about font cacing in output
         else
@@ -93,14 +96,14 @@ script:
         fi
         make
         ctest --output-on-failure
+        make install
+        cd ../exploration/mpi
+        mpiexec -np 4 python fitGlyR4_mpi.py --maxiter 101
   - |
         # Build documentation.
         # Too time consuming to install latex on OSX.
         if [[ $TRAVIS_OS_NAME != 'osx' ]]; then
-          python -c "import matplotlib.pyplot as plt"
-          python -c "import matplotlib.pyplot as plt"
-          ls -la $HOME/.cache/matplotlib
-          make install
+          cd ../../build
           make documentation
         fi
 
