@@ -26,7 +26,7 @@ if args.kernel:
     kernel_name = args.kernel[0]
 else:
     kernel_name = ''
-ep = ExecutePreprocessor(timeout=600, kernel_name=kernel_name)
+ep = ExecutePreprocessor(timeout=1000, kernel_name=kernel_name)
 for notebook in notebooks:
     _, filename = os.path.split(notebook)
     executed_nbname = os.path.join(output_dir, filename)
