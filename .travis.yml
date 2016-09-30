@@ -62,18 +62,18 @@ after_success:
             echo "Uploading documentation"
             pwd
             cd ..
-            openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in deploykeys.tar.enc -out deploykeys.tar -d
+            openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in .travis/deploykeys.tar.enc -out deploykeys.tar -d
             tar -zxvf deploykeys.tar
             if [[ $TRAVIS_BRANCH == 'develop' ]]; then
-              cp .travis/DCPROGSDeployKeyDevelop .travis/DCPROGSDeployKey
+              cp DCPROGSDeployKeyDevelop DCPROGSDeployKey
               export DOCSREPONAME=HJCFITdevdocs
             elif [[ $TRAVIS_BRANCH == 'master' ]]; then
-              cp .travis/DCPROGSDeployKeyMaster .travis/DCPROGSDeployKey
+              cp DCPROGSDeployKeyMaster DCPROGSDeployKey
               export DOCSREPONAME=HJCFITmasterdocs
             fi
             eval `ssh-agent -s`
-            chmod 600 .travis/DCPROGSDeployKey
-            ssh-add .travis/DCPROGSDeployKey
+            chmod 600 DCPROGSDeployKey
+            ssh-add DCPROGSDeployKey
             cd ..
             pwd
             git clone git@github.com:DCPROGS/${DOCSREPONAME}.git
