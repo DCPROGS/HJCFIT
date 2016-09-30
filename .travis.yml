@@ -60,10 +60,9 @@ after_success:
   - |
         if [[ $TRAVIS_PULL_REQUEST == false && $TRAVIS_REPO_SLUG == 'DCPROGS/HJCFIT' && $TRAVIS_PYTHON_VERSION == '3.5' && ($TRAVIS_BRANCH == 'develop' || $TRAVIS_BRANCH == 'master')]]; then
             echo "Uploading documentation"
-            pwd
             cd ..
             openssl aes-256-cbc -K $encrypted_ca9944a40522_key -iv $encrypted_ca9944a40522_iv -in .travis/deploykeys.tar.enc -out deploykeys.tar -d
-            tar -zxvf deploykeys.tar
+            tar -xvf deploykeys.tar
             if [[ $TRAVIS_BRANCH == 'develop' ]]; then
               cp DCPROGSDeployKeyDevelop DCPROGSDeployKey
               export DOCSREPONAME=HJCFITdevdocs
