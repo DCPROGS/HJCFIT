@@ -8,13 +8,13 @@ Compiling DCProgs
 
 A couple of design  decisions affect the compilation of DCProgs.
 
-  * `c++11 <http://en.wikipedia.org/wiki/C%2B%2B11>`_ is the new standard for 
+* `c++11 <http://en.wikipedia.org/wiki/C%2B%2B11>`_ is the new standard for 
     the C++ programming languages. It is almost fully implemented by modern 
     (2013) compilers. However, access to c++11 is now always default, and not 
     always straight-forward. However, c++11 introduces a number of features that 
     simplifies programming (e.g. `move semantics <http://www.cprogramming.com/c++11/rvalue-references-and-move-semantics-in-c++11.html>`_)
     greatly. This is a forward looking solution implying some temporary hassle.
-  * [GTest](https://code.google.com/p/googletest/) is the c++ unit-test 
+* [GTest](https://code.google.com/p/googletest/) is the c++ unit-test 
     framework from google. It is required when running DCProgs' unit tests only.
     However, `GTest <https://code.google.com/p/googletest/>`_ must be compiled 
     by the code it is testing. This means it should be shipped with DCProgs, 
@@ -22,7 +22,7 @@ A couple of design  decisions affect the compilation of DCProgs.
     the option we have chosen. When compiling tests,
     `CMake <http://www.cmake.org/>`_ will automatically download and compile
     `GTest`_
-  * The math is done using `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_,
+* The math is done using `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_,
     an efficient and widely used C++ numerical library. 
 
 Dependencies
@@ -126,7 +126,19 @@ Assuming everything works as expected we can now install HJCFIT
 
 Compilation on Archer:
 ======================
+See  :ref:`runningonarcher` for more information on running HJCFIT on Archer.
+Assuming that you have modules setup as in that document building HJCFIT should
+be as simple as:
 
+.. code-block:: bash
+
+   git clone -b develop https://github.com/DCPROGS/HJCFIT.git
+   cd HJCFIT
+   mkdir build
+   cd build
+   cmake ..
+   make install
+   make test
 
 Building MPI4Py:
 ----------------

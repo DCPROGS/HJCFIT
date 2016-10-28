@@ -1,3 +1,5 @@
+.. _runningonarcher:
+
 *************************
 Running HJCFIT on Archer:
 *************************
