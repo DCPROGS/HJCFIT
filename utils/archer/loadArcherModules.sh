@@ -22,7 +22,7 @@ module load swig
 # Note there is an anaconda-compute module with Python3 available in the
 # login nodes, but that only the Python2 one is available in the MOM nodes
 # The module load messes with LO_LIBRARY_PATH we may have to unset this but
-# leave it for the moment.
+# leave it for the moment.
 # export OLD_LD_LIBRARY_PATH=$LD_LIBRARY_PATH
 # export OLD_LIBRARY_PATH=$LIBRARY_PATH
 module load anaconda-compute/2.2.0-python2
