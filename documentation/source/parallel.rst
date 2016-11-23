@@ -31,4 +31,18 @@ off.
 MPI
 ===
 
-Write something about MPI
+The MPI parallelisation over experiments (antagonist concentrations) is
+implemented in the Python layer. This means that in an example such as
+``exploration/fitGly$4.py`` the MPI code would be implemented directly in the
+example complicating the individual examples. In order to simplify this a
+wrapper python class has been implemented in ``mpihelpers.MPILikelihoodSolver``.
+An example of using this for the same purpose can be seen in
+``exploration/mpi/fitGlyR4_mpi.py``. To launch this example you should run
+something like ``mpiexec np -4 python fitGlyR4_mpi.py``. This runes 4 MPI
+processes (matching the 4 experiments in the fitGlyR4 example) Each MPI
+processes may in addition use OpenMP as detailed above to parallelize the
+computations of the likelihood for the individual simulations. I.e on a 24 core
+Archer node you would most likely want to use 4 MPI processes who in turn  runs
+6 OpenMP threads each. The syntax for running a MPI job will depend on the
+specific cluster that you are running on so it's recommended to check the
+clusters documentation to see how to launch a job. 
