@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -34,10 +34,10 @@ if(pythonBindings)
   swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
 
   
-  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
+  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
   install(FILES  random.py _methods.py optimization.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
-          DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs/likelihood)
+          DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
 endif(pythonBindings)
 
 if(pythonBindings AND tests)

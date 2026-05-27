@@ -1,5 +1,5 @@
 ***********************
-Building documentation:
+Building documentation
 ***********************
 
 The documentation is written using `doxygen <http://www.doxygen.org>`_ for c++, 
@@ -28,10 +28,7 @@ package.
 
 * Linux: 
     apt-get, yum, pip or conda depending on your setup.
-* Mac: ``pip install sphinx`` or ``conda install sphinx``
-* Windows: Depending on your setup
-    - ``conda.bat install sphinx``
-    - or, ``pip install sphinx``
+* Mac and Windows: ``pip install sphinx`` or ``conda install sphinx``
 
 .. warning::
     If using a virtual environment, it is recommended to run 
@@ -68,7 +65,7 @@ This means:
 #. The library is in the ``PATH`` (windows), ``DYLD_LIBRARY_PATH`` (Mac), 
    or the ``LD_LIBRARY_PATH`` (Linux)
 #. The python bindings are in the ``sys.path`` 
-   (e.g. ``python -c "import dcprogs.likelihood"`` does not fail)
+   (e.g. ``python -c "import HJCFIT.likelihood"`` does not fail)
 
 The reason for this is that python documentation software will interrogate 
 the package to find out what it contains. Hence the package needs to be 
@@ -127,57 +124,39 @@ Updating the web-page
 
 The data for the web page resides on the same git repository that the code does 
 in a special branch called ``gh-pages``. And conversely, github knows to 
-render `here <http://dcprogs.github.io/HJCFITdevdocs/>`__. anything that is in 
+render `here <http://dcprogs.github.io/HJCFITdevdocs/>`__ anything that is in 
 the branch ``gh-pages``. 
 
 It is possible to update the data and the web-page with the following commands:
 
 #. Commit any changes to the code that should be kept safe.
-#. Go to the build directory
-#. Update the docs
 
-.. code-block:: bash
+#. Go to the build directory ``cd /path/to/build/``.
 
-  make documentation 
-
+#. Update the docs with ``make documentation`` (or ``nmake documentation`` on Windows).
 
 #. Checkout the gh_pages using one the two lines below:
 
-.. code-block:: bash
+ .. code-block:: bash
 
-    git checkout -t origin/gh-pages # If first time, if the branch does not exist 
-    git checkout gh-pages 
+   git checkout -t origin/gh-pages # If first time, if the branch does not exist 
+   git checkout gh-pages 
 
+ At this point, the source directory does not contain code anymore. It contains data for the documentation webpage.
 
-At this point, the source directory does not contain code anymore. It contains data for the documentation webpage.
+5. Copy the new documentation from the build directory to the source directory:
 
-1. Copy the new documentation from the build directory to the source directory:
+ .. code-block:: bash
 
-.. code-block:: bash
+   rsync -r documentation/sphinx/* ..
 
-  rsync -r documentation/sphinx/* ..
-
-1. Commit the changes to the documentation. If nothing happens, 
-   there were likely no changes:
-
-.. code-block:: bash
-
-  git commit -a
-
+6. Commit the changes to the documentation ``git commit -a``. If nothing happens, there were likely no changes.
 At this juncture, the data has been updated on the local computer. All that 
 needs to be done is to push it to github, so github knows to render it.
 
-1. Push the changes back to github so the web-site can be updated:
-
-.. code-block:: bash
-  
-  git push
+7. Push the changes back to github so the web-site can be updated ``git push``.
       
-1. Checkout the master branch again
-
-.. code-block:: bash
-  
-  git checkout master
+8. Checkout the master branch again ``git checkout master``.
 
 Compiling the documentation without Python bindings
 ===================================================

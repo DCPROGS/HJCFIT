@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -40,7 +40,7 @@ def step(context):
 @when('a determinant equation is instantiated')
 def step(context):
   from sys import exc_info
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
 
   print(context.matrix)
   try: context.determinant = DeterminantEq(context.matrix, context.nopen, context.tau)
@@ -53,21 +53,21 @@ def step(context, tau):
 @when("a determinant equation is instantiated from a state matrix and {tau:Float}")
 def step(context, tau):
   from sys import exc_info
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
 
   try: context.determinant = DeterminantEq(context.qmatrix, tau)
   except: context.initialization_exception = exc_info() 
 
 @when("The determinant equation is computed for {s:Float}")
 def step(context, s):
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
   context.result = DeterminantEq(context.matrix, context.nopen, context.tau)(s)
 
 @given("the transition matrix below with {nopen:Integer} open states")
 def step(context, nopen):
   from numpy import array
-  from dcprogs.likelihood import QMatrix
-  from dcprogs import internal_dtype
+  from HJCFIT.likelihood import QMatrix
+  from HJCFIT import internal_dtype
 
   matrix = context.text.lstrip().rstrip().splitlines()
   matrix = array([[eval(v) for v in u.split(',')] for u in matrix], dtype=internal_dtype)
@@ -77,7 +77,7 @@ def step(context, nopen):
 @when("the {event}-state determinant is computed for s=({s}) and tau={tau:Float}")
 def step(context, event, s, tau):
   import numpy
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
   s = eval(s, globals().copy(), numpy.__dict__.copy())
   if event == "open": context.result = DeterminantEq(context.qmatrix, tau)(s)
   else:               context.result = DeterminantEq(context.qmatrix.transpose(), tau)(s)

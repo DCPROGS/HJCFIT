@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# DCProgs documentation build configuration file, created by
+# HJCFIT documentation build configuration file, created by
 # sphinx-quickstart on Wed Jul 31 17:46:57 2013.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -218,7 +218,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'dcprogs', u'@PROJECT_NAME@ Documentation',
+    ('index', 'HJCFIT', u'@PROJECT_NAME@ Documentation',
      [u'Mayeul d\'Avezac'], 1)
 ]
 
@@ -305,8 +305,8 @@ rst_epilog = """
 
 def setup(app):
     app.add_config_value('python_bindings', "@pythonBindings@", True)
-    app.add_config_value('DCPROGS_USE_MPFR',
-                         @SPHINX_DCPROGS_USE_MPFR@, 'env')
+    app.add_config_value('HJCFIT_USE_MPFR',
+                         @SPHINX_HJCFIT_USE_MPFR@, 'env')
 
 
 python_bindings = "@pythonBindings@"

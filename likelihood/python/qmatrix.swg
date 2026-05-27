@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -33,31 +33,31 @@ class QMatrix {
 
 
   // Number of open states.
-  DCProgs::t_int nopen; 
+  HJCFIT::t_int nopen; 
   // Tells SWIG how to convert eigen matrices to numpy matrices.
-  %typemap(in) DCProgs::t_rmatrix matrix { 
-    try { $1 = DCProgs::numpy::map_to_rmatrix($input); }
-    DCPROGS_CATCH(SWIG_fail);
+  %typemap(in) HJCFIT::t_rmatrix matrix { 
+    try { $1 = HJCFIT::numpy::map_to_rmatrix($input); }
+    HJCFIT_CATCH(SWIG_fail);
   }
   // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
   // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
-  %typemap(out) DCProgs::t_rmatrix matrix { 
-    try { $result = DCProgs::numpy::wrap_to_numpy(arg1->matrix, $self); }
-    DCPROGS_CATCH(SWIG_fail);
+  %typemap(out) HJCFIT::t_rmatrix matrix { 
+    try { $result = HJCFIT::numpy::wrap_to_numpy(arg1->matrix, $self); }
+    HJCFIT_CATCH(SWIG_fail);
   }
   //! The matrix itself.
-  DCProgs::t_rmatrix matrix; 
+  HJCFIT::t_rmatrix matrix; 
 
   // This is the end of automatic conversion from eigen to numpy.
   // It is removed because elsewhere we don't know who will own the memory to the eigen matrix.
-  %clear DCProgs::t_rmatrix matrix;
+  %clear HJCFIT::t_rmatrix matrix;
 
   QMatrix();
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    QMatrix(PyObject *_py_matrix, DCProgs::t_uint _nopen) {
-      using namespace DCProgs;
+    QMatrix(PyObject *_py_matrix, HJCFIT::t_uint _nopen) {
+      using namespace HJCFIT;
       t_rmatrix const matrix = numpy::map_to_rmatrix(_py_matrix);
       if(_nopen > static_cast<t_uint>(std::max(matrix.rows(), matrix.cols())) )
         throw errors::PythonValueError(
@@ -78,7 +78,7 @@ class QMatrix {
       if($self->matrix.rows() == 0 or $self->matrix.cols() == 0)
         return PyString_FromString("QMatrix()");
       std::ostringstream sstr;
-      sstr << "QMatrix( array(" << DCProgs::numpy_io($self->matrix) << "), "
+      sstr << "QMatrix( array(" << HJCFIT::numpy_io($self->matrix) << "), "
            << $self->nopen << ")";
       return PyString_FromString(sstr.str().c_str());
     }

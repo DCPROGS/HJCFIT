@@ -3,4 +3,4 @@
 IdealG
 ------
 
-.. doxygenclass:: DCProgs::IdealG
+.. doxygenclass:: HJCFIT::IdealG

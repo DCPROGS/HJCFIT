@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -19,7 +19,7 @@
 def Matrix(string): 
   """ Creates matrices from specific strings """
   from numpy import array, identity
-  from dcprogs.likelihood.random import rate_matrix as random_rate_matrix
+  from HJCFIT.likelihood.random import rate_matrix as random_rate_matrix
   if string == "classic":
     return array([[ -3050,        50,  3000,      0,    0 ], 
                   [ 2./3., -1502./3.,     0,    500,    0 ],  
@@ -119,8 +119,8 @@ def Matrix(string):
 
 def QMat(string):
   """ Creates matrices from specific strings """
-  from dcprogs.likelihood.random import qmatrix as random_qmatrix
-  from dcprogs.likelihood import QMatrix
+  from HJCFIT.likelihood.random import qmatrix as random_qmatrix
+  from HJCFIT.likelihood import QMatrix
 
   string = string.lower().rstrip().lstrip()
   if 'transpose' in string:
@@ -137,7 +137,7 @@ def QMat(string):
 
 def eG(string):
   """ Creates missed-events likelihood from specific strings """
-  from dcprogs.likelihood import MissedEventsG
+  from HJCFIT.likelihood import MissedEventsG
   string = string.lower().rstrip().lstrip()
   if 'transpose' in string:
     return eG(string.replace('transpose', '')).transpose()
@@ -150,7 +150,7 @@ def eG(string):
 
 
 def DetModel(string):
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
   string = string.lower().rstrip().lstrip()
   if 'transpose' in string:
     return DetModel(string.replace('transpose', '')).transpose()

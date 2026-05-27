@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,16 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
+#include "HJCFITConfig.h"
 
 #include <memory>
 #include <gtest/gtest.h>
 #include "../likelihood.h"
 #include "../missed_eventsG.h"
-#include "../occupancies.h"
+#include "../vectors.h"
 
-using namespace DCProgs;
+using namespace HJCFIT;
 
 class TestLikelihood : public ::testing::Test {
   
@@ -110,7 +110,7 @@ TEST_F(TestLikelihood, manual_check) {
 
   likelihood->tcritical = -1e0;
   MissedEventsG eG(qmatrix, 1e-4);
-  t_initvec const initial = occupancies(eG);
+  t_initvec const initial = vectors(eG);
   t_rvector const final = t_rvector::Ones(3,1);
 
   t_rmatrix matrix = eG.af( likelihood->bursts.back()[0] );
@@ -138,10 +138,10 @@ TEST_F(TestLikelihood, manual_check_CHS) {
 
   likelihood->tcritical = 1e-3;
   MissedEventsG eG(qmatrix, 1e-4);
-  t_initvec const initial_eq = occupancies(eG);
-  t_rvector const final_eq = occupancies(eG, false).transpose();
-  t_initvec const initial = CHS_occupancies(eG, likelihood->tcritical);
-  t_rvector const final = CHS_occupancies(eG, likelihood->tcritical, false).transpose();
+  t_initvec const initial_eq = vectors(eG);
+  t_rvector const final_eq = vectors(eG, false).transpose();
+  t_initvec const initial = CHS_vectors(eG, likelihood->tcritical);
+  t_rvector const final = CHS_vectors(eG, likelihood->tcritical, false).transpose();
 
   t_rmatrix matrix = eG.af( likelihood->bursts.back()[0] );
 
@@ -176,7 +176,7 @@ TEST_F(TestLikelihood, odd_intervals) {
 
 // Makes sure that code throws if qmatrix is too large to fit the stack
 TEST_F(TestLikelihood, exceeds_stack_throws) {
-  qmatrix.matrix.resize(dcprogs_stack_matrix+1,dcprogs_stack_matrix+1);
+  qmatrix.matrix.resize(HJCFIT_stack_matrix+1,HJCFIT_stack_matrix+1);
   likelihood->bursts = t_Bursts(1, t_Burst(1, 1.5e-4) );
   EXPECT_THROW((*likelihood)(qmatrix), errors::Domain);
 }

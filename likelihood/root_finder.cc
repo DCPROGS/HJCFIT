@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <iostream>
 
 #include "root_finder.h"
 #include "brentq.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
 
   // Some functions we need here and nowhere else.
@@ -170,7 +170,7 @@ namespace DCProgs {
         throw errors::MaxIterations(sstr.str());
       }
 
-# ifdef DCPROGS_USE_MPFR
+# ifdef HJCFIT_USE_MPFR
       // Computes trial upper bound for result using mpfr
       // This is a fallback for when the regular float version fails.
       // The upper bound should always be such that the root is positive.
@@ -238,7 +238,7 @@ namespace DCProgs {
        for(t_uint i(0); i < _itermax; ++i) {
        
          t_real const determinant = _det(root);
-         if(DCPROGS_ISNAN(determinant)) {
+         if(HJCFIT_ISNAN(determinant)) {
            if(std::abs(root) < 1e-8)
              throw errors::Runtime("Could not determine upper bound for roots.");
            root *= 0.9;
@@ -254,8 +254,8 @@ namespace DCProgs {
   std::vector<RootInterval> MSWINDOBE
     find_root_intervals(DeterminantEq const &_det, t_real _mins, t_real _maxs, t_real _tolerance) {
 
-    bool const is_min_nan = DCPROGS_ISNAN(_mins);
-    bool const is_max_nan = DCPROGS_ISNAN(_maxs);
+    bool const is_min_nan = HJCFIT_ISNAN(_mins);
+    bool const is_max_nan = HJCFIT_ISNAN(_maxs);
     if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
       throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
     t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
@@ -269,7 +269,7 @@ namespace DCProgs {
 
   t_real MSWINDOBE find_lower_bound_for_roots(DeterminantEq const &_det, t_real _start,
                                               t_real _alpha, t_uint _itermax) {
-# ifdef DCPROGS_USE_MPFR
+# ifdef HJCFIT_USE_MPFR
     try {
 # endif
       return find_eigs_bound(
@@ -280,7 +280,7 @@ namespace DCProgs {
             return _value - _alpha * std::min(_root - _value, 0.1 * std::abs(_value));
           }
       );
-# ifdef DCPROGS_USE_MPFR
+# ifdef HJCFIT_USE_MPFR
     }
     catch (errors::Mass) {
       t_mpfr_real::set_default_prec(128);
@@ -321,8 +321,8 @@ namespace DCProgs {
     find_root_intervals_brute_force( DeterminantEq const &_det, 
                                      t_real _resolution, t_real _mins,
                                      t_real _maxs, t_real _root_tolerance) {
-      bool const is_min_nan = DCPROGS_ISNAN(_mins);
-      bool const is_max_nan = DCPROGS_ISNAN(_maxs);
+      bool const is_min_nan = HJCFIT_ISNAN(_mins);
+      bool const is_max_nan = HJCFIT_ISNAN(_maxs);
       if( (not is_min_nan) and (not is_max_nan) and _mins > _maxs) 
         throw errors::Domain("Lower bound larger than upper bound in find_root_intervals");
       t_real const mins = is_min_nan ? find_lower_bound_for_roots(_det): _mins;
@@ -340,7 +340,7 @@ namespace DCProgs {
         t_real current = _det(s);
    
         // Checks we have sensible values. 
-        if(not (DCPROGS_ISNAN(current) or DCPROGS_ISNAN(previous)))
+        if(not (HJCFIT_ISNAN(current) or HJCFIT_ISNAN(previous)))
         {
           // Sign changed. There should be at least one root.
           if(current * previous < 0e0) {

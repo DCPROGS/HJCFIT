@@ -23,7 +23,7 @@ cd $WORK/HJCFIT/exploration
 source ../utils/archer/loadArcherModules.sh
 
 # Load virtual env
-source activate dcprogs
+source activate HJCFIT
 
 # Profile exploration data with 1 to 24 nodes. Time for each execution will be
 # outputted from the python code

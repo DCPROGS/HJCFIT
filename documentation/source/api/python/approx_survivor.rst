@@ -3,7 +3,7 @@
 ApproxSurvivor
 --------------
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autoclass:: ApproxSurvivor
    :members:
    :special-members: __call__

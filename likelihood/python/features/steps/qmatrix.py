@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -21,7 +21,7 @@ register_type()
 
 @given("QMatrix is accessible")
 def step(context):
-  from dcprogs.likelihood import QMatrix
+  from HJCFIT.likelihood import QMatrix
   context.QMatrix = QMatrix
 
 @when("we instantiate QMatrix without arguments")
@@ -36,7 +36,7 @@ def step(context, matrix, nopen):
 
 @given('a QMatrix instantiated with {matrix:Matrix} and {nopen:Integer}')
 def step(context, matrix, nopen):
-  from dcprogs.likelihood import QMatrix
+  from HJCFIT.likelihood import QMatrix
   context.qmatrix = QMatrix(matrix, nopen)
 
 @then('nopen is {nopen:Integer}')
@@ -80,5 +80,5 @@ def step(context, value):
 
 @given('a list of {n:Integer} random q-matrices')
 def step(context, n):
-  from dcprogs.likelihood.random import qmatrix as random_qmatrix
+  from HJCFIT.likelihood.random import qmatrix as random_qmatrix
   context.qmatrices = [random_qmatrix() for u in range(n)]

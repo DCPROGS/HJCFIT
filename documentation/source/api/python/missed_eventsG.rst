@@ -3,7 +3,7 @@
 MissedEventsG
 -------------
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autoclass:: MissedEventsG
    :members:
    :special-members: __call__

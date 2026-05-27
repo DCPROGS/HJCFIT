@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -39,7 +39,7 @@ def steps(context):
 
 @when('the reduced likelihood is created')
 def step(context):
-  from dcprogs.likelihood.optimization import reduce_likelihood
+  from HJCFIT.likelihood.optimization import reduce_likelihood
 
   class MockLikelihood(object):
     def __init__(self, nopen=2): 

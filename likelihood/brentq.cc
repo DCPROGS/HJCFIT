@@ -6,10 +6,10 @@
 **/
 
 /* Written by Charles Harris charles.harris@sdl.usu.edu 
- * Taken from Scipy and adapted for use in dcprogs.
+ * Taken from Scipy and adapted for use in HJCFIT.
  * */
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 #include "errors.h"
 #include "brentq.h"
 
@@ -43,7 +43,7 @@
 
 */
 
-namespace DCProgs {
+namespace HJCFIT {
 
   MSWINDOBE std::tuple<t_real, t_uint, t_uint>
     brentq( std::function<t_real(t_real)> const &_function, 

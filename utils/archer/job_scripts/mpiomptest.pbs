@@ -12,13 +12,13 @@ LOGFILE=$OUTPUT_DIR/mpiomptest
 mkdir -p $OUTPUT_DIR
 
 #This shifts to the directory that you submitted the job from
-cd $WORK/HJCFIT/exploration/mpi
+cd $WORK/HJCFIT/exploration
 
 #Load all the necessary tools and set the work environment
 source $WORK/HJCFIT/utils/archer/loadArcherModules.sh
 
 #Load virtual env
-source activate dcprogs
+source activate HJCFIT
 
 #Profile exploration data with 1 to 24 nodes. Time for each execution will be
 #outputted from the python code

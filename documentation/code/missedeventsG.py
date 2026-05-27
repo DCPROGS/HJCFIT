@@ -1,5 +1,5 @@
 from numpy import all, abs, arange
-from dcprogs.likelihood import QMatrix, DeterminantEq, MissedEventsG
+from HJCFIT.likelihood import QMatrix, DeterminantEq, MissedEventsG
 
 # Define parameters.
 qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0], 

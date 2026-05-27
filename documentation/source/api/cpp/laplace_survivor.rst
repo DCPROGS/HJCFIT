@@ -3,6 +3,6 @@
 LaplaceSurvivor
 ---------------
 
-.. doxygenclass:: DCProgs::LaplaceSurvivor
+.. doxygenclass:: HJCFIT::LaplaceSurvivor
    :members:
 

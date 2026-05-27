@@ -1,8 +1,8 @@
-Ideal Likelihood :math:`\mathcal{G}(t)`
+Ideal transition densities :math:`\mathcal{G}(t)`
 =======================================
 
-A wrapper around :py:class:`~dcprogs.likelihood.QMatrix` is provided which allows the calculation of
-the ideal likelihood:
+A wrapper around :py:class:`~HJCFIT.likelihood.QMatrix` is provided which allows the calculation of
+the ideal transition densities:
 
 .. math::
 
@@ -16,22 +16,22 @@ the ideal likelihood:
 
 This object can be initialized directly from a :py:class:`QMatrix`.
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/idealG.py
      :language: python
      :lines: 2-11
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/idealG.cc
      :language: c++
      :lines: 1-20, 30-
 
-It provides the ideal likelihood as a function of time, as well as the laplace transforms:
+It provides the ideal likelihood as a function of time, as well as the Laplace transforms:
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/idealG.py
      :language: python
@@ -44,7 +44,7 @@ It provides the ideal likelihood as a function of time, as well as the laplace t
      few useful functions, such as ``expm`` in this example, are provided to remediate to this
      situation.
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/idealG.cc
      :language: c++

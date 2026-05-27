@@ -7,7 +7,7 @@ Log10Likelihood
    :start-after: General Description Start
    :end-before: General Description End
 
-.. currentmodule:: dcprogs.likelihood 
+.. currentmodule:: HJCFIT.likelihood 
 
 .. autoclass:: Log10Likelihood
    :members: 

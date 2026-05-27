@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <iostream>
-#include "occupancies.h"
+#include "vectors.h"
 #include "idealG.h"
 #include "missed_eventsG.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   namespace {
     // Creates the input of problem Ax = 0, with sum x_i = 1.
@@ -49,7 +49,7 @@ namespace DCProgs {
     // Should work for both IdealG and MissedEventsG.
     // Creates basic input matrix for open and shut cases
     // Retrieves Ax = b problem and solves it using Eigen.
-    template<class T> t_initvec occupancies_impl_(T const &_gmatrix, bool _open) {
+    template<class T> t_initvec vectors_impl_(T const &_gmatrix, bool _open) {
         
       std::tuple<t_rmatrix, t_rvector> problem = _open ?
         lstsq_impl_( _gmatrix.laplace_af(0) * _gmatrix.laplace_fa(0) ):
@@ -64,21 +64,21 @@ namespace DCProgs {
 
   // \cond
   // Untemplates the templates.
-  t_initvec MSWINDOBE occupancies(IdealG const &_idealg, bool _initial) {
-    return occupancies_impl_(_idealg, _initial);
+  t_initvec MSWINDOBE vectors(IdealG const &_idealg, bool _initial) {
+    return vectors_impl_(_idealg, _initial);
   }
   // \endcond
 
-  t_initvec MSWINDOBE occupancies(MissedEventsG const &_missedeventsG, bool _initial) {
-    return occupancies_impl_(_missedeventsG, _initial);
+  t_initvec MSWINDOBE vectors(MissedEventsG const &_missedeventsG, bool _initial) {
+    return vectors_impl_(_missedeventsG, _initial);
   }
 
-  t_initvec MSWINDOBE CHS_occupancies(MissedEventsG const &_G, t_real _tcrit, bool _initial) {
+  t_initvec MSWINDOBE CHS_vectors(MissedEventsG const &_G, t_real _tcrit, bool _initial) {
     
     t_rmatrix const Hfa = CHS_matrix_Hfa(_G, _tcrit);
     if(_initial) {
       // \f$\phi_F H_{FA}\f$
-      t_initvec const phif_times_Hfa = occupancies(_G, false) * Hfa;
+      t_initvec const phif_times_Hfa = vectors(_G, false) * Hfa;
       // \f$\phi_F H_{FA} / \phi_F H_FA u_A\f$
       return phif_times_Hfa / phif_times_Hfa.array().sum();
     } else {

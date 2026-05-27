@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,15 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_TEST_RANDOM_MATRIX_H
-#define DCPROGS_TEST_RANDOM_MATRIX_H
+#ifndef HJCFIT_TEST_RANDOM_MATRIX_H
+#define HJCFIT_TEST_RANDOM_MATRIX_H
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include "../qmatrix.h"
 
 #include <random>
 
-namespace DCProgs {
+namespace HJCFIT {
 
   std::mt19937 & global_mersenne();
   //! Computes a fake rate_matrix. 

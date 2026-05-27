@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -46,7 +46,7 @@
          "This object can be instantiated from a square matrix, the number of open states, and the\n"
          "resolution, or maximum length of missed events :math:`\\\\tau`:\n\n"
          ">>> DeterminantEq(matrix, nopen, tau)\n\n"
-         "or, it can be instantiated from a :py:class:`~dcprogs.likelihood.QMatrix` instance \n"
+         "or, it can be instantiated from a :py:class:`~HJCFIT.likelihood.QMatrix` instance \n"
          "and :math:`\\\\tau`\n\n"
          ">>> DeterminantEq(qmatrix, tau)\n\n"
          ":param matrix:\n"
@@ -76,21 +76,21 @@ class DeterminantEq {
 
   // Extends the constructors so they can take numpy arrays as input.
   %extend {
-    DeterminantEq(PyObject *_in, DCProgs::t_uint _nopen, DCProgs::t_real _tau) {
-      using namespace DCProgs;
+    DeterminantEq(PyObject *_in, HJCFIT::t_uint _nopen, HJCFIT::t_real _tau) {
+      using namespace HJCFIT;
       if(_nopen == 0)
         throw errors::PythonValueError("Number of open states cannot be negative or zero.");
-      t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_in);
+      t_rmatrix const matrix = HJCFIT::numpy::map_to_rmatrix(_in);
       if(matrix.rows() != matrix.cols())
         throw errors::PythonValueError("Expected a square matrix on input.");
       if(matrix.rows() == 0)
         throw errors::PythonValueError("Expected a non-empty square matrix on input.");
       if(_nopen >= static_cast<t_uint>(matrix.rows()))
         throw errors::PythonValueError("Number of closed states cannot be zero.");
-      return new DeterminantEq( DCProgs::QMatrix(std::move(matrix), _nopen), _tau );
+      return new DeterminantEq( HJCFIT::QMatrix(std::move(matrix), _nopen), _tau );
     }
-    DeterminantEq(QMatrix *_in, DCProgs::t_real _tau) {
-      using namespace DCProgs;
+    DeterminantEq(QMatrix *_in, HJCFIT::t_real _tau) {
+      using namespace HJCFIT;
       if(_in->nopen == 0) 
         throw errors::PythonValueError("Number of open states cannot be negative or zero.");
       if(_in->matrix.rows() != _in->matrix.cols()) 
@@ -103,13 +103,13 @@ class DeterminantEq {
     }
   }
 
-  DCProgs::DeterminantEq transpose();
+  HJCFIT::DeterminantEq transpose();
   // Rename get_, set_tau so they are hidden (private) in python.
   %rename(_get_tau) get_tau() const; 
-  %rename(_set_tau) set_tau(DCProgs::t_real); 
+  %rename(_set_tau) set_tau(HJCFIT::t_real); 
   // Converts get_, set_tau to property.
-  DCProgs::t_real get_tau() const;
-  void set_tau(DCProgs::t_real);
+  HJCFIT::t_real get_tau() const;
+  void set_tau(HJCFIT::t_real);
   %pythoncode %{
     __swig_getmethods__["tau"] = _get_tau
     __swig_setmethods__["tau"] = _set_tau
@@ -117,9 +117,9 @@ class DeterminantEq {
   %}
 
   // Defines determinant function for a scalar
-  DCProgs::t_real operator()(DCProgs::t_real _s);
+  HJCFIT::t_real operator()(HJCFIT::t_real _s);
   // Defines determinant function for a scalar + changing tau
-  DCProgs::t_real operator()(DCProgs::t_real _s, DCProgs::t_real _tau);
+  HJCFIT::t_real operator()(HJCFIT::t_real _s, HJCFIT::t_real _tau);
   // The following functions enhance the behavior of the function in python by allowing users to
   // input numpy arrays and get the determinants for each value. 
   // Unfortunately, It doesn't seem to work with overload for tau.
@@ -140,16 +140,16 @@ class DeterminantEq {
                      
   // Add the ability to pass in numpy arrays.
   // Unfortunately, no tau overload.
-  DCProgs::t_rmatrix H(DCProgs::t_real s);
-  DCProgs::t_rmatrix H(DCProgs::t_real s, DCProgs::t_real tau);
-  DCProgs::t_rmatrix s_derivative(DCProgs::t_real s);
-  DCProgs::t_rmatrix s_derivative(DCProgs::t_real s, DCProgs::t_real tau);
+  HJCFIT::t_rmatrix H(HJCFIT::t_real s);
+  HJCFIT::t_rmatrix H(HJCFIT::t_real s, HJCFIT::t_real tau);
+  HJCFIT::t_rmatrix s_derivative(HJCFIT::t_real s);
+  HJCFIT::t_rmatrix s_derivative(HJCFIT::t_real s, HJCFIT::t_real tau);
   %extend {
     PyObject* H(PyObject *_s) {
-      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->H(s); }); 
+      return apply_numpy(_s, [$self](HJCFIT::t_real s) { return $self->H(s); }); 
     }
     PyObject* s_derivative(PyObject *_s) {
-      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->s_derivative(s); }); 
+      return apply_numpy(_s, [$self](HJCFIT::t_real s) { return $self->s_derivative(s); }); 
     }
   }
 

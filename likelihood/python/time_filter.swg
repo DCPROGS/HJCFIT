@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -40,8 +40,8 @@
 
     //! Calls either time_filter or interval filter.
     template<class T_FUNC>
-      PyObject* filters_impl_(PyObject* _input, DCProgs::t_real _tau, T_FUNC const &_func) {
-        using namespace DCProgs;
+      PyObject* filters_impl_(PyObject* _input, HJCFIT::t_real _tau, T_FUNC const &_func) {
+        using namespace HJCFIT;
         if(not PySequence_Check(_input))
           throw errors::PythonTypeError("Expected a sequence on input.");
 
@@ -65,16 +65,16 @@
       }
 
     //! Bindings for time_filter.
-    PyObject* time_filter(PyObject* _input, DCProgs::t_real _tau) {
-      return filters_impl_(_input, _tau, DCProgs::time_filter);
+    PyObject* time_filter(PyObject* _input, HJCFIT::t_real _tau) {
+      return filters_impl_(_input, _tau, HJCFIT::time_filter);
     }
     //! Bindings for interval_filter.
-    PyObject* interval_filter(PyObject* _input, DCProgs::t_real _tau) {
-      return filters_impl_(_input, _tau, DCProgs::interval_filter);
+    PyObject* interval_filter(PyObject* _input, HJCFIT::t_real _tau) {
+      return filters_impl_(_input, _tau, HJCFIT::interval_filter);
     }
 
   }
 %}
 
-PyObject* time_filter(PyObject* _input, DCProgs::t_real _tau);
-PyObject* interval_filter(PyObject* _input, DCProgs::t_real _tau);
+PyObject* time_filter(PyObject* _input, HJCFIT::t_real _tau);
+PyObject* interval_filter(PyObject* _input, HJCFIT::t_real _tau);

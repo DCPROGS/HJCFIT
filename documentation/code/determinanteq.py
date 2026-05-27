@@ -1,6 +1,6 @@
 from numpy import abs, all, array
-from dcprogs import internal_dtype
-from dcprogs.likelihood import DeterminantEq, QMatrix
+from HJCFIT import internal_dtype
+from HJCFIT.likelihood import DeterminantEq, QMatrix
 
 # Define parameters.
 matrix = [ [-3050,        50,  3000,      0,    0], 

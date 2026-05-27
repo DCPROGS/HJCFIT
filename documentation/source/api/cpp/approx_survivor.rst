@@ -3,5 +3,5 @@
 ApproxSurvivor
 --------------
 
-.. doxygenclass:: DCProgs::ApproxSurvivor
+.. doxygenclass:: HJCFIT::ApproxSurvivor
    :members:

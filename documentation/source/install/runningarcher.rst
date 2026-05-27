@@ -1,8 +1,8 @@
 .. _runningonarcher:
 
-*************************
-Running HJCFIT on Archer:
-*************************
+************************
+Running HJCFIT on Archer
+************************
 
 There's good documentation about ARCHER on `their website
 <http://www.archer.ac.uk>`__, but here's an extract of what is useful for
@@ -22,9 +22,6 @@ Once logged in ARCHER, there are two different filesystems we need to be aware o
   nodes and other files that the compute nodes need to have access to when running 
   those executables.
 
-Note we have a shared folder for RSDG and DCProgs team under
-``/work/ecse0506/ecse0506/shared`` where we can place test data sets, etc.
-
 
 .bashrc
 =======
@@ -35,8 +32,8 @@ to create variables to move around the filesystem:
 
 .. code-block:: bash
 
-   export WORK=/work/ecse0506/ecse0506/$USER
-   export SHARED=/work/ecse0506/ecse0506/shared
+   export WORK=/work/your/path/$USER
+   export SHARED=/work/your/path/shared
 
 You can also configure aliases, like:
  
@@ -55,7 +52,7 @@ Python Virtual Environment
 To work with Python on ARCHER, we are using a virtual environment, which is the strategy recommended by ARCHER. 
 
 To create it, you can run `this script <https://github.com/DCPROGS/HJCFIT/blob/develop/utils/archer/createVirtualEnv.sh>`__
-that will install all the necessary packages to run HJCFIT in a virtual environment called ``dcprogs``. 
+that will install all the necessary packages to run HJCFIT in a virtual environment called ``HJCFIT``. 
 
 You will also need to install any extra packages or projects you need, for example
 to work with DCPYPS, you'll need to clone it and then install it:
@@ -69,8 +66,8 @@ Once the virtual environment is ready, you can activate or deactivate it with:
 
 .. code-block:: bash
 
-   source activate dcprogs
-   source deactivate dcprogs
+   source activate HJCFIT
+   source deactivate HJCFIT
 
 
 Loging in to ARCHER and getting HJCFIT

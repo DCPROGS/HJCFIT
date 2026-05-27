@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,10 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_H
-#define DCPROGS_LIKELIHOOD_H
+#ifndef HJCFIT_LIKELIHOOD_H
+#define HJCFIT_LIKELIHOOD_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 #include <vector>
 #include <unsupported/Eigen/MatrixFunctions>
 #if defined(_OPENMP)
@@ -31,15 +31,15 @@
 #include "qmatrix.h"
 #include "errors.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   //! Computes likelihood of a time series.
   //! \param[in] _begin First interval in the time series. This must be an "open" interval.
   //! \param[in] _end One past last interval.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial initial occupancies.
-  //! \param[in] _final final occupancies.
+  //! \param[in] _initial initial vectors.
+  //! \param[in] _final final vectors.
   template<class T_INTERVAL_ITERATOR, class T_G>
     t_real chained_likelihood( T_G const & _g, T_INTERVAL_ITERATOR _begin, T_INTERVAL_ITERATOR _end, 
                                t_initvec const &_initial, t_rvector const &_final ) {
@@ -59,8 +59,8 @@ namespace DCProgs {
   //!                with an open burst.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial initial occupancies.
-  //! \param[in] _final final occupancies.
+  //! \param[in] _initial initial vectors.
+  //! \param[in] _final final vectors.
   template<class T_G>
     t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
                                      t_initvec const &_initial, t_rvector const &_final ) {
@@ -90,8 +90,8 @@ namespace DCProgs {
   //!                with an open burst.
   //! \param[in] _g The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
   //!                member function, where the argument is the length of an open or shut interval.
-  //! \param[in] _initial initial occupancies.
-  //! \param[in] _final final occupancies.
+  //! \param[in] _initial initial vectors.
+  //! \param[in] _final final vectors.
   //! \param[in] threads number of threads to use.
   template<class T_G>
     t_real parallel_chained_log10_likelihood( T_G const & _g, const t_Burst burst,
@@ -158,8 +158,8 @@ namespace DCProgs {
       //! Max length of missed events
       t_real tau;
       //! \brief \f$t_{\mathrm{crit}}\f$. 
-      //! \details If negative or null, will use equilibrium occupancies rather than CHS
-      //!          occupancies.
+      //! \details If negative or null, will use equilibrium vectors rather than CHS
+      //!          vectors.
       t_real tcritical;
       //! Number of intervals for which to compute exact result.
       t_uint nmax;
@@ -183,7 +183,7 @@ namespace DCProgs {
       //!            the Q-matrix.
       //! \param[in] _tau Maximum length of the missed events
       //! \param[in] _tcritical Parameter for CHS vectors (see \cite colquhoun:1996) if positive. If
-      //!            negative, then equilibrium occupancies will be used as initial and final
+      //!            negative, then equilibrium vectors will be used as initial and final
       //!            states (as in \cite colquhoun:1982)
       //! \param[in] _nmax The exact missed-event likelihood will be computed for 
       //!            \f$ t < n_{\mathrm{max}} \tau\f$
@@ -219,10 +219,10 @@ namespace DCProgs {
                         }
      
       //! \brief Computes likelihood for each burst
-      //! \return a DCProgs::t_rvector 
+      //! \return a HJCFIT::t_rvector 
       t_rvector vector(t_rmatrix const &_Q) const { return vector(QMatrix(_Q, nopen)); }
       //! \brief Computes likelihood for each burst
-      //! \return a DCProgs::t_rvector 
+      //! \return a HJCFIT::t_rvector 
       t_rvector vector(QMatrix const &_Q) const;
       //! Log-likelihood 
       t_real operator()(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen)); }

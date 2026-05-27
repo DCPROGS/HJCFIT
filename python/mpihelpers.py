@@ -3,7 +3,7 @@ import sys
 from dcpyps import dataset
 from dcpyps import dcio
 from dcpyps import mechanism
-from dcprogs.likelihood import Log10Likelihood
+from HJCFIT.likelihood import Log10Likelihood
 import math
 import numpy as np
 from scipy.optimize import minimize
@@ -111,7 +111,7 @@ class MPILikelihoodSolver:
         if self.rank == 0:
             theta = np.log(self.mec.theta())
             lik = self.complete_likelihood(theta)
-            print("\nStarting likelihood (DCprogs)= "
+            print("\nStarting likelihood (HJCFIT)= "
                   "{0:.6f}".format(-lik))
             start = time.clock()
             wallclock_start = time.time()
@@ -133,7 +133,7 @@ class MPILikelihoodSolver:
         if self.rank == 0:
             end = time.clock()
             wallclock_end = time.time()
-            print("\nDCPROGS Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
+            print("\nHJCFIT Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
                   %time.localtime()[0:6])
             self.cpu_time = end - start
             self.wallclock_time = wallclock_end - wallclock_start

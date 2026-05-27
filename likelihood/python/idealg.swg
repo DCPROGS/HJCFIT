@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -49,14 +49,14 @@
          ":param s:\n"
          "   A scalar or something to a numpy array. In the latter case, the return is an array\n"
          "   of matrices.\n") IdealG::laplace_fa(PyObject*);
-%feature("autodoc", "Equilibrium occupancies for initial states.\n\n"
+%feature("autodoc", "Equilibrium vectors for initial states.\n\n"
          "Computes the left eigenvector of :math:`\\mathcal{G}_{AF}\\mathcal{G}_{FA}`, where\n"
          ":math:`\\mathcal{G}_{AF}` is the laplacian for :math:`s=0` of the likelihood.")
-         IdealG::initial_occupancies;
-%feature("autodoc", "Equilibrium occupancies for final states.\n\n"
+         IdealG::initial_vectors;
+%feature("autodoc", "Equilibrium vectors for final states.\n\n"
          "Computes the right eigenvector of :math:`\\mathcal{G}_{FA}\\mathcal{G}_{AF}`, where\n"
          ":math:`\\mathcal{G}_{FA}` is the laplacian for :math:`s=0` of the likelihood.")
-         IdealG::final_occupancies;
+         IdealG::final_vectors;
 %feature("autodoc", "Number of open-states.") IdealG::nopen;
 %feature("autodoc", "Number of shut-states.") IdealG::nshut;
 
@@ -68,60 +68,60 @@ class IdealG {
 
   // Some constructors.
   %extend { 
-    IdealG(PyObject* _py_matrix, DCProgs::t_uint _nopen) {
-      using namespace DCProgs;
+    IdealG(PyObject* _py_matrix, HJCFIT::t_uint _nopen) {
+      using namespace HJCFIT;
       if(_nopen == 0) 
         throw errors::PythonValueError("Number of open states cannot be negative or zero.");
-      t_rmatrix const matrix = DCProgs::numpy::map_to_rmatrix(_py_matrix);
+      t_rmatrix const matrix = HJCFIT::numpy::map_to_rmatrix(_py_matrix);
       if(_nopen > static_cast<t_uint>(std::max(matrix.rows(), matrix.cols())) )
         throw errors::PythonValueError(
                 "Number of open states cannot be larger than the number states.");
       return new IdealG(std::move(matrix), _nopen); 
     }
   }
-  IdealG(DCProgs::QMatrix const &states);
+  IdealG(HJCFIT::QMatrix const &states);
 
   // Adds some quantities as properties
   %extend {
-    DCProgs::t_initvec const initial_occupancies;
-    DCProgs::t_rvector const final_occupancies;
-    DCProgs::t_uint const nopen;
-    DCProgs::t_uint const nshut;
+    HJCFIT::t_initvec const initial_vectors;
+    HJCFIT::t_rvector const final_vectors;
+    HJCFIT::t_uint const nopen;
+    HJCFIT::t_uint const nshut;
   }
   %{
-    DCProgs::t_initvec DCProgs_IdealG_initial_occupancies_get(DCProgs::IdealG *_in) {
-      return DCProgs::occupancies(*_in, true);
+    HJCFIT::t_initvec HJCFIT_IdealG_initial_vectors_get(HJCFIT::IdealG *_in) {
+      return HJCFIT::vectors(*_in, true);
     }
-    DCProgs::t_rvector DCProgs_IdealG_final_occupancies_get(DCProgs::IdealG *_in) {
-      return DCProgs::occupancies(*_in, false).transpose();
+    HJCFIT::t_rvector HJCFIT_IdealG_final_vectors_get(HJCFIT::IdealG *_in) {
+      return HJCFIT::vectors(*_in, false).transpose();
     }
-    DCProgs::t_uint DCProgs_IdealG_nopen_get(DCProgs::IdealG *_in) { return _in->get_nopen(); }
-    DCProgs::t_uint DCProgs_IdealG_nshut_get(DCProgs::IdealG *_in) { return _in->get_nshut(); }
+    HJCFIT::t_uint HJCFIT_IdealG_nopen_get(HJCFIT::IdealG *_in) { return _in->get_nopen(); }
+    HJCFIT::t_uint HJCFIT_IdealG_nshut_get(HJCFIT::IdealG *_in) { return _in->get_nshut(); }
   %}
 
-  DCProgs::t_rmatrix af(DCProgs::t_real t) const;
-  DCProgs::t_rmatrix fa(DCProgs::t_real t) const;
+  HJCFIT::t_rmatrix af(HJCFIT::t_real t) const;
+  HJCFIT::t_rmatrix fa(HJCFIT::t_real t) const;
   %extend {
     PyObject* af(PyObject *t) {
-      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix { return $self->af(_t); };
+      auto lambda = [$self](HJCFIT::t_real _t) -> HJCFIT::t_rmatrix { return $self->af(_t); };
       return apply_numpy(t, lambda); 
     }
     PyObject* fa(PyObject *t) {
-      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix { return $self->fa(_t); };
+      auto lambda = [$self](HJCFIT::t_real _t) -> HJCFIT::t_rmatrix { return $self->fa(_t); };
       return apply_numpy(t, lambda); 
     }
   }
-  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s) const;
-  DCProgs::t_rmatrix laplace_af(DCProgs::t_real s) const;
+  HJCFIT::t_rmatrix laplace_fa(HJCFIT::t_real s) const;
+  HJCFIT::t_rmatrix laplace_af(HJCFIT::t_real s) const;
   %extend {
     PyObject* laplace_af(PyObject *t) {
-      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix {
+      auto lambda = [$self](HJCFIT::t_real _t) -> HJCFIT::t_rmatrix {
         return $self->laplace_af(_t); 
       };
       return apply_numpy(t, lambda); 
     }
     PyObject* laplace_fa(PyObject *t) {
-      auto lambda = [$self](DCProgs::t_real _t) -> DCProgs::t_rmatrix {
+      auto lambda = [$self](HJCFIT::t_real _t) -> HJCFIT::t_rmatrix {
         return $self->laplace_fa(_t); 
       };
       return apply_numpy(t, lambda); 

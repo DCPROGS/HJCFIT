@@ -1,5 +1,5 @@
 from numpy import sum, abs, all
-from dcprogs.likelihood import QMatrix
+from HJCFIT.likelihood import QMatrix
 
 matrix = [ [-3050,        50,  3000,      0,    0], 
            [2./3., -1502./3.,     0,    500,    0], 

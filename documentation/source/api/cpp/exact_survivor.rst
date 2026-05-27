@@ -3,5 +3,5 @@
 ExactSurvivor
 -------------
 
-.. doxygenclass:: DCProgs::ExactSurvivor
+.. doxygenclass:: HJCFIT::ExactSurvivor
    :members:

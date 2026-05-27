@@ -13,7 +13,7 @@ from dcpyps.samples import samples
 from dcpyps import dataset
 from dcpyps import mechanism
 
-from dcprogs.likelihood import Log10Likelihood
+from HJCFIT.likelihood import Log10Likelihood
 
 def dcprogslik(x):
     mec.theta_unsqueeze(np.exp(x))

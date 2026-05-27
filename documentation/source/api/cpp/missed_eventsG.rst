@@ -3,5 +3,5 @@
 MissedEventsG
 -------------
 
-.. doxygenclass:: DCProgs::MissedEventsG
+.. doxygenclass:: HJCFIT::MissedEventsG
    :members:

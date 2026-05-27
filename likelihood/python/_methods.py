@@ -1,5 +1,5 @@
 #######################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -190,9 +190,9 @@ def missed_events_pdf(qmatrix, tau, nmax=2, shut=False, tcrit=None):
   g = MissedEventsG(qmatrix, tau, nmax)
 
   if tcrit is not None:
-    phi = g.final_CHS_occupancies(tcrit) if shut else g.initial_CHS_occupancies(tcrit) 
+    phi = g.final_CHS_vectors(tcrit) if shut else g.initial_CHS_vectors(tcrit) 
   else: 
-    phi = g.final_occupancies if shut else g.initial_occupancies
+    phi = g.final_vectors if shut else g.initial_vectors
   return _create_pdf(phi, g, shut)
     
 def ideal_pdf(qmatrix, shut=False):
@@ -201,7 +201,7 @@ def ideal_pdf(qmatrix, shut=False):
 
   g = IdealG(qmatrix)
 
-  phi = g.final_occupancies if shut else g.initial_occupancies
+  phi = g.final_vectors if shut else g.initial_vectors
   return _create_pdf(phi, g, shut)
       
 def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
@@ -217,9 +217,9 @@ def exponential_pdfs(qmatrix, tau, shut=False, tcrit=None):
 
   g = MissedEventsG(qmatrix, tau) 
   if tcrit is not None:
-    phi = g.final_CHS_occupancies(tcrit) if shut else g.initial_CHS_occupancies(tcrit) 
+    phi = g.final_CHS_vectors(tcrit) if shut else g.initial_CHS_vectors(tcrit) 
   else: 
-    phi = g.final_occupancies if shut else g.initial_occupancies
+    phi = g.final_vectors if shut else g.initial_vectors
 
   if shut: 
     components = ApproxSurvivor(qmatrix, tau).fa_components

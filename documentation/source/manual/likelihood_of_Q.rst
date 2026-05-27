@@ -19,23 +19,23 @@ The purpose of this class is to provide an interface for maximizing the likeliho
 for a given set of observed open and shut intervals, the likelihood :math:`\frac{\ln(L(Q))}{ln 10}`,
 where :math:`L(Q)` is declared in :ref:`the likelihood equation <log10likelihood_equation>`. 
 
-A callable object :math:`L(Q)` exists in both :ref:`c++ <cpp_log10_section>` and :ref:`python
+A callable object :math:`L(Q)` exists in both :ref:`C++ <cpp_log10_section>` and :ref:`Python
 <python_log10_section>`. It can be initialized as follows
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 2-15
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/log10.cc
      :language: c++
      :lines: 1-15, 28-
 
-  The initialization of `bursts` above is done in using two newer c++11 coding techniques: 
+  The initialization of `bursts` above is done in using two newer C++11 coding techniques: 
   `initializer lists <initializerlist_>`_, and `uniform initialization <uniforminit_>`_.
   It may not be available from all compilers just yet...
 
@@ -45,13 +45,13 @@ Once the objects are initialized, the input attributes can be accessed (and modi
 
 .. note:: 
 
-   :py:func:`~dcprogs.likelihood.Log10Likelihood` uses equilibrium occupancies depending on the
-   value of its attribute :py:attr:`~dcprogs.likelihood.Log10Likelihood.tcritical`:
+   :py:func:`~HJCFIT.likelihood.Log10Likelihood` uses equilibrium vectors depending on the
+   value of its attribute :py:attr:`~HJCFIT.likelihood.Log10Likelihood.tcritical`:
 
-   - if it is ``None``, ``numpy.NaN``, or negative, then the equilibrium occupancies are used
-   - if it a strictly positive real number, then the CHS vectors are computed
+   - if it is ``None``, ``numpy.NaN``, or negative, then the equilibrium vectors are used;
+   - if it is a strictly positive real number, then the CHS vectors are computed.
 
-   Similarly, in c++, ``tcritical`` can be set to :c:data:`DCProgs::quiet_nan` to trigger
+   Similarly, in C++, ``tcritical`` can be set to :c:data:`HJCFIT::quiet_nan` to trigger
    calculations with equilibrium occupancies.
 
 It is required that the bursts have been pre-filtered so that there are no intervals smaller than
@@ -63,7 +63,7 @@ the resolution :math:`\tau`. This can be done using :cpp:func:`time_filter`
 The likelihood for any Q-matrix can then be computed by calling the `likelihood` objects as though
 they were function. The following snippets are inserted at the tail end of the previous code.
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/log10.py
      :language: python
@@ -72,36 +72,36 @@ they were function. The following snippets are inserted at the tail end of the p
   The function can take any sort square matrix, whether using standard python lists or a numpy
   array. It can only take one matrix at a time. 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/log10.cc
      :language: c++
      :lines: 17-25
 
   
-The return is the log-likelihood associated with the bursts and the input Q-matrix. In both python
-and c++, the functions accepts either a matrix or an actual :cpp:class:`DCProgs::QMatrix`
-(:py:class:`python <dcprogs.likelihood.QMatrix>`) object. In the former case, the number of open
+The return is the log-likelihood associated with the bursts and the input Q-matrix. In both Python
+and C++, the functions accepts either a matrix or an actual :cpp:class:`HJCFIT::QMatrix`
+(:py:class:`python <HJCFIT.likelihood.QMatrix>`) object. In the former case, the number of open
 states is set to `nopen`.
 
-It should be noted that the python the bursts are accessed in python directly from the likelihood
+It should be noted that the bursts are accessed in Python directly from the likelihood
 using normal sequence operations. Only a small subset of sequence operations where implemented.
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/log10.py
      :language: python
      :lines: 1, 27-37
 
-:c++11:
+:C++11:
 
-  :cpp:member:`DCProgs::Log10Likelihood::bursts` is a public member and can be accessed directly.  
+  :cpp:member:`HJCFIT::Log10Likelihood::bursts` is a public member and can be accessed directly.  
 
 
 Finally, some of the attributes, namely, :py:attr:`Log10Likelihood.tcritical`,
 :py:attr:`Log10Likelihood.upper_bound`, :py:attr:`Log10Likelihood.lower_bound`, act both as
 parameters and as switch when given special values. These special values are `None` and `numpy.NaN`
-in python and :c:data:`DCProgs::quiet_nan` in c++. In python, the special values will always be transformed
+in Python and :c:data:`HJCFIT::quiet_nan` in C++. In Python, the special values will always be transformed
 to `None`. 
 
 :python:

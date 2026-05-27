@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,19 +18,19 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_ERRORS_H
-#define DCPROGS_ERRORS_H
-#include "DCProgsConfig.h"
+#ifndef HJCFIT_ERRORS_H
+#define HJCFIT_ERRORS_H
+#include "HJCFITConfig.h"
 #include <string>
 #include <exception>
 #include <stdexcept>
 
-namespace DCProgs {
+namespace HJCFIT {
 
-  //! Exceptions of DCprogs
+  //! Exceptions of HJCFIT
   namespace errors {
     
-    //! All explicit DCProgs exception derive from this, for easy catching,
+    //! All explicit HJCFIT exception derive from this, for easy catching,
     class Root : public std::exception {};
     //! Math (convergence, domain, etc) error
     class Math : public Root { };
@@ -182,7 +182,7 @@ namespace DCProgs {
     };
 
 
-#   ifdef DCPROGS_PYTHON_BINDINGS
+#   ifdef HJCFIT_PYTHON_BINDINGS
       //! Exception thrown in python modules 
       class Python : public Root {
         public:

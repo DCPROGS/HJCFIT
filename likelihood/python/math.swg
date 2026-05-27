@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -20,10 +20,10 @@
 // Some functions to convert back and forth between python and t_real.
 %{ namespace {
   // Converts input to real
-  DCProgs::t_real convert_to_real(PyObject* _in) {
-    using namespace DCProgs;
+  HJCFIT::t_real convert_to_real(PyObject* _in) {
+    using namespace HJCFIT;
     if(PyLong_Check(_in)) return static_cast<t_real>(PyLong_AsLong(_in));
-#   ifndef DCPROGS_PYTHON3
+#   ifndef HJCFIT_PYTHON3
       else if(PyInt_Check(_in)) return static_cast<t_real>(PyInt_AsLong(_in));
 #   endif
     else if(PyFloat_Check(_in)) return static_cast<t_real>(PyFloat_AsDouble(_in));
@@ -36,10 +36,10 @@
     } else throw errors::PythonTypeError("Unexpected type is not a real number.");
   }
   bool convertible_to_real(PyObject* _in) {
-    using namespace DCProgs;
+    using namespace HJCFIT;
     if(PyFloat_Check(_in)) return true;
     if(PyLong_Check(_in)) return true;
-#   ifndef DCPROGS_PYTHON3
+#   ifndef HJCFIT_PYTHON3
       if(PyInt_Check(_in)) return true;
 #   endif
     if(PyArray_CheckScalar(_in)) {
@@ -50,16 +50,16 @@
     return false;
   }
   int convert_to_real(PyObject* _in, void *_out) {
-    using namespace DCProgs;
+    using namespace HJCFIT;
     try {
       t_real result = convert_to_real(_in);
       *static_cast<t_real*>(_out) = std::move(result);
       return 1;
-    } DCPROGS_CATCH(return 0);
+    } HJCFIT_CATCH(return 0);
   }
-  PyObject* convert_real_to_python(DCProgs::t_real const & _in, PyObject *base=NULL) {
-    using namespace DCProgs;
-#   ifndef DCPROGS_LONG_DOUBLE
+  PyObject* convert_real_to_python(HJCFIT::t_real const & _in, PyObject *base=NULL) {
+    using namespace HJCFIT;
+#   ifndef HJCFIT_LONG_DOUBLE
       return PyFloat_FromDouble(_in);
 #   else
       t_real copyme(_in);
@@ -73,15 +73,15 @@
 // Tells swig about our type hierarchy. 
 // These types should make it easier to go from one system to another, but they do make it slightly
 // more difficult for swig to understand our code.
-%apply int { DCProgs::t_int }; 
+%apply int { HJCFIT::t_int }; 
 // unsigned should be checked for negative values. Otherwise swig comes out with a truly unhelpfull
 // message. Also checks for numpy scalar at the same type.
-%typemap(in) DCProgs::t_uint {
+%typemap(in) HJCFIT::t_uint {
   try {
-    using namespace DCProgs;
+    using namespace HJCFIT;
     long integer;
     if(PyLong_Check($input)) integer = PyLong_AsLong($input);
-#   ifndef DCPROGS_PYTHON3
+#   ifndef HJCFIT_PYTHON3
       else if(PyInt_Check($input)) integer = PyInt_AsLong($input);
 #   endif
     else if(PyArray_CheckScalar($input))  {
@@ -91,39 +91,39 @@
     } else throw errors::PythonTypeError("Unexpected type in burst.");
     if(integer < 0) throw errors::PythonValueError("Input integer cannot be negative.");
     $1 = static_cast<t_uint>(integer);
-  } DCPROGS_CATCH(SWIG_fail);
+  } HJCFIT_CATCH(SWIG_fail);
 }
-%typemap(out) DCProgs::t_uint = unsigned int;
-%typemap(typecheck) DCProgs::t_uint = int;
-%typemap(out) DCProgs::t_real { 
+%typemap(out) HJCFIT::t_uint = unsigned int;
+%typemap(typecheck) HJCFIT::t_uint = int;
+%typemap(out) HJCFIT::t_real { 
   try{ $result = convert_real_to_python($1); }
-  DCPROGS_CATCH(SWIG_fail);
+  HJCFIT_CATCH(SWIG_fail);
 }
-%typemap(in) DCProgs::t_real {
+%typemap(in) HJCFIT::t_real {
   try { $1 = convert_to_real($input); }
-  DCPROGS_CATCH(SWIG_fail);
+  HJCFIT_CATCH(SWIG_fail);
 }
-%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE) DCProgs::t_real {
+%typemap(typecheck, precedence=SWIG_TYPECHECK_DOUBLE) HJCFIT::t_real {
   $1 = convertible_to_real($input) ? 1: 0;
 }
-%typemap(out) DCProgs::t_rvector { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
+%typemap(out) HJCFIT::t_rvector { 
+  try { $result = HJCFIT::numpy::wrap_to_numpy($1); }
+  HJCFIT_CATCH(SWIG_fail);
 }
-%typemap(out) DCProgs::t_initvec { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1); }
-  DCPROGS_CATCH(SWIG_fail);
+%typemap(out) HJCFIT::t_initvec { 
+  try { $result = HJCFIT::numpy::wrap_to_numpy($1); }
+  HJCFIT_CATCH(SWIG_fail);
 }
-%typemap(out) DCProgs::t_rmatrix { 
-  try { $result = DCProgs::numpy::wrap_to_numpy($1, NULL, true); }
-  DCPROGS_CATCH(SWIG_fail);
+%typemap(out) HJCFIT::t_rmatrix { 
+  try { $result = HJCFIT::numpy::wrap_to_numpy($1, NULL, true); }
+  HJCFIT_CATCH(SWIG_fail);
 };
 
 
 %{
   namespace {
-    PyObject* _dcprogs_dtype() {
-      return PyArray_TypeObjectFromType(DCProgs::numpy::type<DCProgs::t_real>::value);
+    PyObject* _HJCFIT_dtype() {
+      return PyArray_TypeObjectFromType(HJCFIT::numpy::type<HJCFIT::t_real>::value);
     }
   }
 %}
@@ -134,8 +134,8 @@
   namespace {
     PyObject* eig(PyObject* _matrix) {
   
-      using namespace DCProgs;
-      DCProgs::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
+      using namespace HJCFIT;
+      HJCFIT::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
       Eigen::EigenSolver<t_rmatrix> eigsolver(matrix);
       if(eigsolver.info() != Eigen::Success)  {
         std::ostringstream sstr("Could not solve eigenvalue problem.");
@@ -158,19 +158,19 @@
       return PyTuple_Pack(2, py_eigs.release(), py_vecs.release());
     }
     PyObject* inv(PyObject* _matrix) {
-      using namespace DCProgs;
-      DCProgs::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
+      using namespace HJCFIT;
+      HJCFIT::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
       return numpy::wrap_to_numpy(matrix.inverse().eval()); 
     }
     double det(PyObject* _matrix) {
-      using namespace DCProgs;
-      DCProgs::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
+      using namespace HJCFIT;
+      HJCFIT::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
       return static_cast<t_real>(matrix.determinant());
     }
     PyObject* svd(PyObject* _matrix) {
   
-      using namespace DCProgs;
-      DCProgs::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
+      using namespace HJCFIT;
+      HJCFIT::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
       Eigen::JacobiSVD<t_rmatrix> svd(matrix, Eigen::ComputeThinU|Eigen::ComputeThinV);
       Object<> py_eigs = steal_ref(numpy::wrap_to_numpy(svd.singularValues().eval()));
       if(not py_eigs) throw errors::PythonErrorAlreadyThrown();
@@ -181,13 +181,13 @@
       return PyTuple_Pack(3, pyU.release(), py_eigs.release(), pyV.release());
     }
     PyObject* expm(PyObject* _matrix) {
-      using namespace DCProgs;
-      DCProgs::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
+      using namespace HJCFIT;
+      HJCFIT::t_rmatrix const matrix = numpy::map_to_rmatrix(_matrix);
       return numpy::wrap_to_numpy(matrix.exp().eval());
     }
   }
 %}
-PyObject* _dcprogs_dtype();
+PyObject* _HJCFIT_dtype();
 %feature("autodoc", "Computes determinant of a matrix") det;
 %feature("autodoc", "Computes eigenvalues of a matrix") eig;
 %feature("autodoc", "Computes inverse of a non-singular matrix") inv;
@@ -195,7 +195,7 @@ PyObject* _dcprogs_dtype();
 %feature("autodoc", "Computes singular value decomposition of a matrix") expm;
 PyObject* eig(PyObject* _matrix);
 PyObject* inv(PyObject* _matrix);
-DCProgs::t_real det(PyObject* _matrix);
+HJCFIT::t_real det(PyObject* _matrix);
 PyObject* svd(PyObject* _matrix);
 PyObject* expm(PyObject* _matrix);
 

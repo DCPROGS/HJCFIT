@@ -3,7 +3,7 @@
 DeterminantEq
 -------------
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autoclass:: DeterminantEq
    :members:
    :special-members: __call__

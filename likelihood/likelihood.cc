@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,15 +18,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <sstream>
 
 #include "likelihood.h"
-#include "occupancies.h"
+#include "vectors.h"
 #include "missed_eventsG.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, t_Bursts const & _self) {
     _stream << "Bursts:\n"
@@ -49,9 +49,9 @@ namespace DCProgs {
             << "=================\n\n" 
             << "  * Number of open states: " << _self.nopen << "\n"
             << "  * Resolution time tau: " << _self.tau << "\n";
-    if(DCPROGS_ISNAN(_self.tcritical)  or _self.tcritical <= 0e0)
-         _stream << "  * Using equilibrium occupancies.\n";
-    else _stream << "  * Using CHS occupancies with tcrit: "  << _self.tcritical << "\n";
+    if(HJCFIT_ISNAN(_self.tcritical)  or _self.tcritical <= 0e0)
+         _stream << "  * Using equilibrium vectors.\n";
+    else _stream << "  * Using CHS vectors with tcrit: "  << _self.tcritical << "\n";
     _stream << "  * Exact events computed for: t < "
             << _self.nmax << " tau\n\n"
             << _self.bursts
@@ -67,16 +67,16 @@ namespace DCProgs {
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
 
-    bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
+    bool const eq_vector = HJCFIT_ISNAN(tcritical) or tcritical <= 0;
 
     t_rvector final;
 
     if(eq_vector)
         final = t_rvector::Ones(_matrix.nshut(),1);
     else
-        final = CHS_occupancies(eG, tcritical, false).transpose();
+        final = CHS_vectors(eG, tcritical, false).transpose();
 
-    t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
+    t_initvec const initial = eq_vector ? vectors(eG): CHS_vectors(eG, tcritical);
                                 
     t_real result(0);
     const bool openmphighlevel = bursts.size() > 100;
@@ -98,16 +98,16 @@ namespace DCProgs {
     verify_qmatrix(_matrix);
     MissedEventsG const eG = MissedEventsG( _matrix, tau, nmax, xtol, rtol, itermax,
                                             lower_bound, upper_bound );
-    bool const eq_vector = DCPROGS_ISNAN(tcritical) or tcritical <= 0;
+    bool const eq_vector = HJCFIT_ISNAN(tcritical) or tcritical <= 0;
 
     t_rvector final;
 
     if(eq_vector)
         final = t_rmatrix::Ones(_matrix.nshut(),1);
     else
-        final = CHS_occupancies(eG, tcritical, false).transpose();
+        final = CHS_vectors(eG, tcritical, false).transpose();
 
-    t_initvec const initial = eq_vector ? occupancies(eG): CHS_occupancies(eG, tcritical);
+    t_initvec const initial = eq_vector ? vectors(eG): CHS_vectors(eG, tcritical);
                                 
     t_rvector result(bursts.size());
     const bool openmphighlevel = bursts.size() > 100;

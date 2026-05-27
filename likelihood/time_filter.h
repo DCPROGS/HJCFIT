@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_TIME_FILTER_H
-#define DCPROGS_TIME_FILTER_H
+#ifndef HJCFIT_TIME_FILTER_H
+#define HJCFIT_TIME_FILTER_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
-namespace DCProgs {
+namespace HJCFIT {
 
   //! \brief Filters an incoming time series.
   //! \param[in] _series Array of times.

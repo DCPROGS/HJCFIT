@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <tuple>
 #include <gtest/gtest.h>
 #include <unsupported/Eigen/MatrixFunctions>
 #include "../laplace_survivor.h"
-using namespace DCProgs;
+using namespace HJCFIT;
 
 #ifdef HAS_CXX11_TYPE_TRAITS
   // Checks some assumption about eigen matrix types.

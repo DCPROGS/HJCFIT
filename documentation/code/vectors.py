@@ -1,4 +1,4 @@
-from dcprogs.likelihood import QMatrix, IdealG, MissedEventsG
+from HJCFIT.likelihood import QMatrix, IdealG, MissedEventsG
 
 # Define parameters.
 qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0], 
@@ -13,7 +13,7 @@ idealG = IdealG(qmatrix)
 
 tcritical = 5e-3
 
-print("Equilibrium Occupancies\n"            \
+print("Equilibrium Vectors\n"            \
       "=======================\n\n"          \
       "Ideal Likelihood\n"                   \
       "----------------\n\n"                 \
@@ -23,7 +23,7 @@ print("Equilibrium Occupancies\n"            \
       "------------------------\n\n"         \
       "  * initial: {equi_initial!r}\n"      \
       "  * final: {equi_final!r}\n\n\n\n"    \
-      "CHS Occupancies\n"                    \
+      "CHS Vectors\n"                    \
       "===============\n\n"                  \
       "Missed-events Likelihood\n"           \
       "------------------------\n\n"         \
@@ -31,12 +31,12 @@ print("Equilibrium Occupancies\n"            \
       "  * initial: {chs_initial!r}\n"       \
       "  * final: {chs_final!r}"             \
       .format(
-        ideal_initial = idealG.initial_occupancies,
-        ideal_final   = idealG.final_occupancies,
-        equi_initial  = eG.initial_occupancies,
-        equi_final    = eG.final_occupancies,
-        chs_initial   = eG.initial_CHS_occupancies(tcritical),
-        chs_final     = eG.final_CHS_occupancies(tcritical),
+        ideal_initial = idealG.initial_vectors,
+        ideal_final   = idealG.final_vectors,
+        equi_initial  = eG.initial_vectors,
+        equi_final    = eG.final_vectors,
+        chs_initial   = eG.initial_CHS_vectors(tcritical),
+        chs_final     = eG.final_CHS_vectors(tcritical),
         tcritical     = tcritical
       )
 )

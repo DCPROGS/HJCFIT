@@ -1,4 +1,4 @@
-.. DCProgs documentation master file, created by
+.. HJCFIT documentation master file, created by
    sphinx-quickstart on Wed Jul 31 17:46:57 2013.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
@@ -7,11 +7,11 @@
 Welcome to HJCFIT's documentation!
 ###################################
 
-The goal of HJCFIT is to provide a collection of tools for scientific research on ion channels. The
-package is derived from the DCPROGS_ suite and consists of a C++ implementation of the Likelihood
-calculations along with Python wrappers. The code is a port of Fortran code with ~30 years usage at
-University College London. The rationale is to preserve and cultivate these tools for future research
-applications.
+HJCFIT provides full maximum likelihood fitting of a kinetic mechanism directly to the entire sequence of open and shut times, with exact missed events correction.
+The package is derived from the DCPROGS_ suite and consists of a C++ implementation of the Likelihood
+calculations along with Python wrappers. 
+
+The name of the program is an acronym for Hawkes, Jalali & Colquhoun, whose papers in 1990 and 1992 (HJC92) described the exact solution of the missed event problem, which is the basis of the program. The HJCFIT method was first described by Colquhoun, Hawkes & Srodzinski in 1996 (CHS96).
 
 For a description  of the methods involved, see :cite:`colquhoun:1982`, :cite:`hawkes:1992`,
 :cite:`colquhoun:1995a`, :cite:`colquhoun:1995b`, :cite:`colquhoun:1996`.

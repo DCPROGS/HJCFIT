@@ -5,33 +5,33 @@ Exceptions
 
 Exceptions are located in the file ``likelihood/errors.h``. 
 
-.. doxygenclass:: DCProgs::errors::Root
+.. doxygenclass:: HJCFIT::errors::Root
 
 
 General
 +++++++
 
-.. doxygenclass:: DCProgs::errors::Index
-.. doxygenclass:: DCProgs::errors::Runtime
-.. doxygenclass:: DCProgs::errors::NotImplemented
+.. doxygenclass:: HJCFIT::errors::Index
+.. doxygenclass:: HJCFIT::errors::Runtime
+.. doxygenclass:: HJCFIT::errors::NotImplemented
 
 
 Math
 ++++
 
-.. doxygenclass:: DCProgs::errors::Math
-.. doxygenclass:: DCProgs::errors::Mass
-.. doxygenclass:: DCProgs::errors::ComplexEigenvalues
-.. doxygenclass:: DCProgs::errors::NaN
-.. doxygenclass:: DCProgs::errors::Domain
-.. doxygenclass:: DCProgs::errors::MaxIterations
-.. doxygenclass:: DCProgs::errors::NotInvertible
+.. doxygenclass:: HJCFIT::errors::Math
+.. doxygenclass:: HJCFIT::errors::Mass
+.. doxygenclass:: HJCFIT::errors::ComplexEigenvalues
+.. doxygenclass:: HJCFIT::errors::NaN
+.. doxygenclass:: HJCFIT::errors::Domain
+.. doxygenclass:: HJCFIT::errors::MaxIterations
+.. doxygenclass:: HJCFIT::errors::NotInvertible
 
 
 Python 
 ++++++
 
-.. doxygenclass:: DCProgs::errors::Python
-.. doxygenclass:: DCProgs::errors::PythonErrorAlreadyThrown
-.. doxygenclass:: DCProgs::errors::PythonTypeError
-.. doxygenclass:: DCProgs::errors::PythonValueError
+.. doxygenclass:: HJCFIT::errors::Python
+.. doxygenclass:: HJCFIT::errors::PythonErrorAlreadyThrown
+.. doxygenclass:: HJCFIT::errors::PythonTypeError
+.. doxygenclass:: HJCFIT::errors::PythonValueError

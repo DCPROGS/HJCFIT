@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -21,7 +21,7 @@ register_type()
 
 @when('ApproxSurvivor objects are instantiated with the q-matrices and tau={tau:Float}')
 def steps(context, tau):
-  from dcprogs.likelihood import ApproxSurvivor
+  from HJCFIT.likelihood import ApproxSurvivor
   if not hasattr(context, "approx_survivors"): context.approx_survivors = []
   for i, qmatrix in enumerate(context.qmatrices):
     if qmatrix is None: context.approx_survivors.append(None); continue
@@ -37,8 +37,8 @@ def steps(context, tau):
 
 @given('a list of {n:Integer} random approximate survivor functions with tau={tau:Float}')
 def step(context, n, tau):
-  from dcprogs.likelihood.random import qmatrix as random_qmatrix
-  from dcprogs.likelihood import ApproxSurvivor
+  from HJCFIT.likelihood.random import qmatrix as random_qmatrix
+  from HJCFIT.likelihood import ApproxSurvivor
   qmatrices, survivors, i = [], [], 10*n
   while len(survivors) != n:
     i -= 1

@@ -10,9 +10,9 @@ from dcpyps.samples import samples
 from dcpyps import dataset
 from dcpyps import mechanism
 from dcpyps.sccalc import scsim
-from dcprogs.likelihood import Log10Likelihood
+from HJCFIT.likelihood import Log10Likelihood
 from mpi4py import MPI
-from dcprogs.mpihelpers import MPILikelihoodSolver
+from HJCFIT.mpihelpers import MPILikelihoodSolver
 
 
 def simulate_bursts(conc, mec, tr, inst, nmax):

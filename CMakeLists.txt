@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -35,7 +35,7 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile c++11 documentation examples."   on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
-CMAKE_DEPENDENT_OPTION(DCPROGS_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
+CMAKE_DEPENDENT_OPTION(HJCFIT_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
@@ -132,28 +132,28 @@ if(NOT HAS_CXX11_NOEXCEPT)
   set(noexcept TRUE)
 endif()
 
-if(NOT DCPROGS_LONG_DOUBLE)
-  set(DCPROGS_LONG_DOUBLE False CACHE BOOL
+if(NOT HJCFIT_LONG_DOUBLE)
+  set(HJCFIT_LONG_DOUBLE False CACHE BOOL
       "If True, will use long doubles rather than simple doubles.")
-endif(NOT DCPROGS_LONG_DOUBLE)
+endif(NOT HJCFIT_LONG_DOUBLE)
 
-if(NOT DCPROGS_USE_MPFR)
-  set(DCPROGS_USE_MPFR False CACHE BOOL
+if(NOT HJCFIT_USE_MPFR)
+  set(HJCFIT_USE_MPFR False CACHE BOOL
   "If True, will use MPFR arbitrary precision floats as fall back if regular double calculations fail.")
-endif(NOT DCPROGS_USE_MPFR)
+endif(NOT HJCFIT_USE_MPFR)
 
-if(DCPROGS_USE_MPFR)
+if(HJCFIT_USE_MPFR)
   find_or_add_hunter_package(GMP)
   find_or_add_hunter_package(MPFR)
   include_directories(${PROJECT_SOURCE_DIR}/mpfr)
-endif(DCPROGS_USE_MPFR)
+endif(HJCFIT_USE_MPFR)
 configure_file (
- "${PROJECT_SOURCE_DIR}/DCProgsConfig.h.in"
- "${PROJECT_BINARY_DIR}/DCProgsConfig.h"
+ "${PROJECT_SOURCE_DIR}/HJCFITConfig.h.in"
+ "${PROJECT_BINARY_DIR}/HJCFITConfig.h"
 )
 
-# Save all DCPROGS headers in the same place in Windows
-install(FILES ${PROJECT_BINARY_DIR}/DCProgsConfig.h DESTINATION include/dcprogs)
+# Save all HJCFIT headers in the same place in Windows
+install(FILES ${PROJECT_BINARY_DIR}/HJCFITConfig.h DESTINATION include/HJCFIT)
 
 include(${CMAKE_SCRIPTS}/documentation.cmake)
 

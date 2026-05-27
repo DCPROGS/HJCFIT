@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -55,8 +55,8 @@
          ":returns:\n"
          "  A matrix if the input is scalar, an array of matrices otherwise, \n"
          "  with the shape of the input.") MissedEventsG::laplace_fa(PyObject*);
-%feature("autodoc", "Computes initial CHS occupancies.") MissedEventsG::initial_CHS_occupancies;
-%feature("autodoc", "Computes final CHS occupancies.") MissedEventsG::final_CHS_occupancies;
+%feature("autodoc", "Computes initial CHS vectors.") MissedEventsG::initial_CHS_vectors;
+%feature("autodoc", "Computes final CHS vectors.") MissedEventsG::final_CHS_vectors;
 %feature("autodoc", "Resolution or maximum length of the missed events.") MissedEventsG::tau;
 %feature("autodoc", "Factor accounting for minimum shut time\n\n"
          "It is the likelihood :math:`\\mathcal{Q}_{AF}e^{-\\mathcal{Q}_{FF}\\tau}` of a shut\n"
@@ -64,14 +64,14 @@
 %feature("autodoc", "Factor accounting for minimum open time\n\n"
          "It is the likelihood :math:`\\mathcal{Q}_{FA}e^{-\\mathcal{Q}_{AA}\\tau}` of an open\n"
          "time of length :math:`\\tau`.") MissedEventsG::fa_factor;
-%feature("autodoc", "Equilibrium occupancies for initial states.\n\n"
+%feature("autodoc", "Equilibrium vectors for initial states.\n\n"
          "Computes the left eigenvector of :math:`{}^e\\mathcal{G}_{AF}{}^e\\mathcal{G}_{FA}`, \n"
          "where :math:`{}^e\\mathcal{G}_{AF}` is the laplacian for :math:`s=0` of the likelihood.")
-         MissedEventsG::initial_occupancies;
-%feature("autodoc", "Equilibrium occupancies for final states.\n\n"
+         MissedEventsG::initial_vectors;
+%feature("autodoc", "Equilibrium vectors for final states.\n\n"
          "Computes the right eigenvector of :math:`{}^e\\mathcal{G}_{FA}{}^e\\mathcal{G}_{AF}`, \n"
          "where :math:`{}^e\\mathcal{G}_{FA}` is the laplacian for :math:`s=0` of the likelihood.")
-         MissedEventsG::final_occupancies;
+         MissedEventsG::final_vectors;
 %feature("autodoc", "Cut-off time of exact calculations "
          ":math:`t_{\\mathrm{max}} = (n_{\\mathrm{max}}-1)\\\\tau`.\n\n"
          "For practical reasons, the minimum observation time has already"
@@ -120,14 +120,14 @@
            The exact missed event likelihood will be computed for times 
            :math:`t \in [0, n_{\mathrm{max}} \tau`. Defaults to 3.
         :param float xtol: 
-           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 1e-12.
         :param float rtol:
-           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 1e-12.
         :param float itermax:
            Maximum number of iterations when computing roots using
-           :func:`~dcprogs.likelihood.brentq`.
+           :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 100.
         :param float lower_bound:
            Lower bound for *all* roots. Defaults to None, in which the case the lower bound is
@@ -187,10 +187,10 @@ class MissedEventsG {
   public:
 
   %extend {
-    MissedEventsG(DCProgs::DeterminantEq *_af, PyObject * _roots_af, 
-                  DCProgs::DeterminantEq *_fa, PyObject * _roots_fa,
-                  DCProgs::t_uint _nmax=3 ) {
-      using namespace DCProgs;
+    MissedEventsG(HJCFIT::DeterminantEq *_af, PyObject * _roots_af, 
+                  HJCFIT::DeterminantEq *_fa, PyObject * _roots_fa,
+                  HJCFIT::t_uint _nmax=3 ) {
+      using namespace HJCFIT;
       if(_nmax > 10) throw errors::Domain("nmax cannot be larger than 10 (that's just unwise).");
       std::vector<Root> roots_af = convert_to_roots(_roots_af);
       std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
@@ -204,75 +204,75 @@ class MissedEventsG {
         sstr << "No FA roots given  on input.\n\n" << *_fa << "\n";
         throw errors::Domain(sstr.str());
       }
-      return new DCProgs::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
+      return new HJCFIT::MissedEventsG(*_af, roots_af, *_fa, roots_fa, _nmax);
     }
   }
-  MissedEventsG( QMatrix const & _qmatrix, DCProgs::t_real _tau, 
-                 DCProgs::t_uint _nmax, DCProgs::t_real _xtol,
-                 DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
-                 DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound );
+  MissedEventsG( QMatrix const & _qmatrix, HJCFIT::t_real _tau, 
+                 HJCFIT::t_uint _nmax, HJCFIT::t_real _xtol,
+                 HJCFIT::t_real _rtol, HJCFIT::t_uint _itermax,
+                 HJCFIT::t_real _lowerbound, HJCFIT::t_real _upperbound );
 
-  DCProgs::t_rmatrix af(DCProgs::t_real t);
-  DCProgs::t_rmatrix fa(DCProgs::t_real t);
+  HJCFIT::t_rmatrix af(HJCFIT::t_real t);
+  HJCFIT::t_rmatrix fa(HJCFIT::t_real t);
   %extend {
     PyObject* af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->af(t); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real t) { return $self->af(t); }); 
     }
     PyObject* fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real t) { return $self->fa(t); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real t) { return $self->fa(t); }); 
     }
   }
-  DCProgs::t_rmatrix laplace_af(DCProgs::t_real s);
-  DCProgs::t_rmatrix laplace_fa(DCProgs::t_real s);
+  HJCFIT::t_rmatrix laplace_af(HJCFIT::t_real s);
+  HJCFIT::t_rmatrix laplace_fa(HJCFIT::t_real s);
   %extend {
     PyObject* laplace_af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_af(s); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real s) { return $self->laplace_af(s); }); 
     }
     PyObject* laplace_fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real s) { return $self->laplace_fa(s); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real s) { return $self->laplace_fa(s); }); 
     }
   }
-  // Make CHS_occupancies member methods of MissedEventsG. 
+  // Make CHS_vectors member methods of MissedEventsG. 
   // Python is a glue language, so it makes sense to keep both MissedEventsG functionality and
   // CHS vector functionality together, even when it doesn't in c++.
   // Basically, c++ stuff is kept conceptual -- and separate concepts are kept separate.
   // On the other hand, python is just about being practical.
   %extend {
-    DCProgs::t_initvec initial_CHS_occupancies(DCProgs::t_real t_critical) {
-      return DCProgs::CHS_occupancies(*$self, t_critical, true); 
+    HJCFIT::t_initvec initial_CHS_vectors(HJCFIT::t_real t_critical) {
+      return HJCFIT::CHS_vectors(*$self, t_critical, true); 
     }
-    DCProgs::t_rvector final_CHS_occupancies(DCProgs::t_real t_critical) { 
-      return DCProgs::CHS_occupancies(*$self, t_critical, false); 
+    HJCFIT::t_rvector final_CHS_vectors(HJCFIT::t_real t_critical) { 
+      return HJCFIT::CHS_vectors(*$self, t_critical, false); 
     }
   }
 
   // Add extensions to compute properties
   %extend {
-    DCProgs::t_real const tau;
+    HJCFIT::t_real const tau;
     PyObject * const af_factor;
     PyObject * const fa_factor;
-    DCProgs::t_initvec const initial_occupancies;
-    DCProgs::t_rvector const final_occupancies;
+    HJCFIT::t_initvec const initial_vectors;
+    HJCFIT::t_rvector const final_vectors;
   }
   %{
-    DCProgs::t_real DCProgs_MissedEventsG_tau_get(DCProgs::MissedEventsG *_in) {
+    HJCFIT::t_real HJCFIT_MissedEventsG_tau_get(HJCFIT::MissedEventsG *_in) {
       return _in->get_tau();
     }
-    PyObject* DCProgs_MissedEventsG_af_factor_get(DCProgs::MissedEventsG *_in) {
-      PyObject* result = DCProgs::numpy::wrap_to_numpy(_in->get_af_factor());
+    PyObject* HJCFIT_MissedEventsG_af_factor_get(HJCFIT::MissedEventsG *_in) {
+      PyObject* result = HJCFIT::numpy::wrap_to_numpy(_in->get_af_factor());
       PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
       return result;
     }
-    PyObject* DCProgs_MissedEventsG_fa_factor_get(DCProgs::MissedEventsG *_in) {
-      PyObject* result = DCProgs::numpy::wrap_to_numpy(_in->get_fa_factor());
+    PyObject* HJCFIT_MissedEventsG_fa_factor_get(HJCFIT::MissedEventsG *_in) {
+      PyObject* result = HJCFIT::numpy::wrap_to_numpy(_in->get_fa_factor());
       PyArray_CLEARFLAGS((PyArrayObject*)result, NPY_ARRAY_WRITEABLE);
       return result;
     }
-    DCProgs::t_initvec DCProgs_MissedEventsG_initial_occupancies_get(DCProgs::MissedEventsG *_in) {
-      return DCProgs::occupancies(*_in, true);
+    HJCFIT::t_initvec HJCFIT_MissedEventsG_initial_vectors_get(HJCFIT::MissedEventsG *_in) {
+      return HJCFIT::vectors(*_in, true);
     }
-    DCProgs::t_rvector DCProgs_MissedEventsG_final_occupancies_get(DCProgs::MissedEventsG *_in) {
-      return DCProgs::occupancies(*_in, false).transpose();
+    HJCFIT::t_rvector HJCFIT_MissedEventsG_final_vectors_get(HJCFIT::MissedEventsG *_in) {
+      return HJCFIT::vectors(*_in, false).transpose();
     }
   %}
   // Add some printout functions.
@@ -289,25 +289,25 @@ class MissedEventsG {
 
   // Some more properties
   %extend { 
-    DCProgs::t_real const tmax; 
-    DCProgs::t_uint nmax; 
-    DCProgs::t_uint const nopen;
-    DCProgs::t_uint const nshut;
+    HJCFIT::t_real const tmax; 
+    HJCFIT::t_uint nmax; 
+    HJCFIT::t_uint const nopen;
+    HJCFIT::t_uint const nshut;
   }
   %{ namespace {
-    DCProgs::t_real DCProgs_MissedEventsG_tmax_get(DCProgs::MissedEventsG *_in) {
+    HJCFIT::t_real HJCFIT_MissedEventsG_tmax_get(HJCFIT::MissedEventsG *_in) {
       return _in->get_tmax();
     }
-    DCProgs::t_uint DCProgs_MissedEventsG_nmax_get(DCProgs::MissedEventsG *_in) {
+    HJCFIT::t_uint HJCFIT_MissedEventsG_nmax_get(HJCFIT::MissedEventsG *_in) {
       return _in->get_nmax();
     }
-    void DCProgs_MissedEventsG_nmax_set(DCProgs::MissedEventsG *_in, DCProgs::t_uint _n) {
+    void HJCFIT_MissedEventsG_nmax_set(HJCFIT::MissedEventsG *_in, HJCFIT::t_uint _n) {
       _in->set_nmax(_n);
     }
-    DCProgs::t_uint DCProgs_MissedEventsG_nopen_get(DCProgs::MissedEventsG *_in) {
+    HJCFIT::t_uint HJCFIT_MissedEventsG_nopen_get(HJCFIT::MissedEventsG *_in) {
       return _in->get_qmatrix().nopen;
     }
-    DCProgs::t_uint DCProgs_MissedEventsG_nshut_get(DCProgs::MissedEventsG *_in) {
+    HJCFIT::t_uint HJCFIT_MissedEventsG_nshut_get(HJCFIT::MissedEventsG *_in) {
       return _in->get_qmatrix().nshut();
     }
   }%}

@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -22,7 +22,7 @@ register_type()
 @then("for each root, applying H - root * I to asymptote at t={time:Float} "  \
       "yields zero (<{tolerance:Float})")
 def step(context, time, tolerance):
-  from dcprogs.likelihood import Asymptotes
+  from HJCFIT.likelihood import Asymptotes
   from numpy import identity, all, abs, dot
   for roots, equation in zip(context.roots, context.equations): 
     if roots is None: continue

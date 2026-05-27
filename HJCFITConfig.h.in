@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,17 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_CONFIG_H
-#define DCPROGS_CONFIG_H
+#ifndef HJCFIT_CONFIG_H
+#define HJCFIT_CONFIG_H
 
 #include <iso646.h>
 #include <vector>
 #include <limits>
 #include <type_traits>
 #include <Eigen/Dense>
-#cmakedefine DCPROGS_USE_MPFR
+#cmakedefine HJCFIT_USE_MPFR
 
-#ifdef DCPROGS_USE_MPFR
+#ifdef HJCFIT_USE_MPFR
 #  include <unsupported/Eigen/MPRealSupport>
 #endif
 
@@ -47,18 +47,18 @@
 #cmakedefine HAS_CXX11_CONSTRUCTOR_DELEGATE
 
 #ifdef HAS_CXX11_CONSTEXPR
-# define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) constexpr static TYPEANDNAME = VALUE
-# define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) constexpr TYPEANDNAME
+# define HJCFIT_INIT_CONSTEXPR(TYPEANDNAME, VALUE) constexpr static TYPEANDNAME = VALUE
+# define HJCFIT_DECL_CONSTEXPR(TYPEANDNAME, VALUE) constexpr TYPEANDNAME
 #else 
-# define DCPROGS_INIT_CONSTEXPR(TYPEANDNAME, VALUE) const static TYPEANDNAME
-# define DCPROGS_DECL_CONSTEXPR(TYPEANDNAME, VALUE) const TYPEANDNAME = VALUE
+# define HJCFIT_INIT_CONSTEXPR(TYPEANDNAME, VALUE) const static TYPEANDNAME
+# define HJCFIT_DECL_CONSTEXPR(TYPEANDNAME, VALUE) const TYPEANDNAME = VALUE
 #endif
 
 // one should alway known when one is working on crapware
 #cmakedefine MSVC
 
 
-#if defined(MSWINDOBE) && defined(DCPROGS_LIKELIHOOD_DLLEXPORT)
+#if defined(MSWINDOBE) && defined(HJCFIT_LIKELIHOOD_DLLEXPORT)
 # undef MSWINDOBE
 # define MSWINDOBE __declspec(dllexport)
 #endif
@@ -66,7 +66,7 @@
 # define MSWINDOBE
 #endif
 
-#cmakedefine DCPROGS_PYTHON_BINDINGS
+#cmakedefine HJCFIT_PYTHON_BINDINGS
 #cmakedefine NUMPY_NPY_LONG_DOUBLE
 #cmakedefine NUMPY_NPY_BOOL
 #cmakedefine NUMPY_NPY_ARRAY
@@ -81,48 +81,48 @@
 #cmakedefine CXX_HAS_FLOAT_H_ISNAN
 #ifdef CXX_HAS_STD_ISNAN
 #  include <cmath>
-#  define DCPROGS_ISNAN(X) std::isnan(X)
+#  define HJCFIT_ISNAN(X) std::isnan(X)
 #elif defined(CXX_HAS_ISNAN)
 #  include <math.h>
-#  define DCPROGS_ISNAN(X) ::isnan(X)
+#  define HJCFIT_ISNAN(X) ::isnan(X)
 #elif defined CXX_HAS___ISNAN
 #  include <math.h>
-#  define DCPROGS_ISNAN(X) __isnan(X)
+#  define HJCFIT_ISNAN(X) __isnan(X)
 #elif defined(CXX_HAS_FLOAT_H_ISNAN)
 #  include <float.h>
-#  define DCPROGS_ISNAN(X) _isnan(X)
+#  define HJCFIT_ISNAN(X) _isnan(X)
 #else
 #  error no macro defined for isnan
 #endif
 
-#cmakedefine DCPROGS_LONG_DOUBLE
-#cmakedefine DCPROGS_PYTHON3
+#cmakedefine HJCFIT_LONG_DOUBLE
+#cmakedefine HJCFIT_PYTHON3
 
-#define DCPROGS_STACK_MATRIX_MAX 50
+#define HJCFIT_STACK_MATRIX_MAX 50
 
-namespace DCProgs {
-# ifdef DCPROGS_LONG_DOUBLE
-    //! Types of reals across DCProgs.
+namespace HJCFIT {
+# ifdef HJCFIT_LONG_DOUBLE
+    //! Types of reals across HJCFIT.
     typedef long double t_real;
 # else
-    //! Types of reals across DCProgs.
+    //! Types of reals across HJCFIT.
     typedef double t_real;
 # endif
   //! Complex real type
   typedef std::complex<t_real> t_complex;
-  //! Types of integers across DCProgs.
+  //! Types of integers across HJCFIT.
   typedef EIGEN_DEFAULT_DENSE_INDEX_TYPE t_int;
-  //! Types of unsigned integers across DCProgs.
+  //! Types of unsigned integers across HJCFIT.
   typedef std::make_unsigned<t_int>::type t_uint;
-  //! Types of real matrices across DCProgs.
+  //! Types of real matrices across HJCFIT.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_rmatrix;
-  //! Types of real matrices across DCProgs guaranteed to be allocated on the stack. Max size DCPROGS_STACK_MATRIX_MAX by DCPROGS_STACK_MATRIX_MAX
-  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, DCPROGS_STACK_MATRIX_MAX, DCPROGS_STACK_MATRIX_MAX> t_stack_rmatrix;
-  //! Types of boolean matrices across DCProgs.
+  //! Types of real matrices across HJCFIT guaranteed to be allocated on the stack. Max size HJCFIT_STACK_MATRIX_MAX by HJCFIT_STACK_MATRIX_MAX
+  typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, HJCFIT_STACK_MATRIX_MAX, HJCFIT_STACK_MATRIX_MAX> t_stack_rmatrix;
+  //! Types of boolean matrices across HJCFIT.
   typedef Eigen::Matrix<bool, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_bmatrix;
-  //! Types of initial state vectors across DCProgs.
+  //! Types of initial state vectors across HJCFIT.
   typedef Eigen::Matrix<t_real, 1, ::Eigen::Dynamic, ::Eigen::RowMajor, 1, ::Eigen::Dynamic> t_initvec;
-  //! Types of final state vectors across DCProgs.
+  //! Types of final state vectors across HJCFIT.
   typedef Eigen::Matrix<t_real, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_rvector;
   //! Type of complex matrices.
   typedef Eigen::Matrix<t_complex, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_cmatrix;
@@ -134,14 +134,14 @@ namespace DCProgs {
   //! Type holding the bursts.
   typedef std::vector<t_Burst> t_Bursts;
 
-# ifdef DCPROGS_USE_MPFR
-    //! Types of multi-precision float across DCProgs.
+# ifdef HJCFIT_USE_MPFR
+    //! Types of multi-precision float across HJCFIT.
     typedef mpfr::mpreal t_mpfr_real;
-    //! Types of multi-precision complex across DCProgs.
+    //! Types of multi-precision complex across HJCFIT.
     typedef std::complex<t_mpfr_real> t_mpfr_complex;
-    //! Types of multi-precision complex vector across DCProgs.
+    //! Types of multi-precision complex vector across HJCFIT.
     typedef Eigen::Matrix<t_mpfr_complex, ::Eigen::Dynamic, 1, 0, ::Eigen::Dynamic, 1> t_mpfr_cvector;
-    //! Types of multi-precision real matrix across DCProgs.
+    //! Types of multi-precision real matrix across HJCFIT.
     typedef Eigen::Matrix<t_mpfr_real, ::Eigen::Dynamic, ::Eigen::Dynamic, 0, ::Eigen::Dynamic, ::Eigen::Dynamic> t_mpfr_rmatrix;
 
 # endif
@@ -158,17 +158,17 @@ namespace DCProgs {
     bool eigen_nan(Eigen::DenseBase<T> const &_matrix) {
       for(typename Eigen::DenseBase<T>::Index i(0); i < _matrix.rows(); ++i)
         for(typename Eigen::ArrayBase<T>::Index j(0); j < _matrix.cols(); ++j)
-           if(DCPROGS_ISNAN(_matrix(i, j))) return true;
+           if(HJCFIT_ISNAN(_matrix(i, j))) return true;
       return false;
     }
 
   // Check that quiet nan exists. Otherwise fails to compile here and now.
   static_assert(std::numeric_limits<t_real>::has_quiet_NaN == true,
-                "Quiet NaN is not defined for the reals used by DCProgs.");
+                "Quiet NaN is not defined for the reals used by HJCFIT.");
 
   //! The quiet NaN value
   t_real static const quiet_nan = std::numeric_limits<t_real>::quiet_NaN();
 
-  t_uint static const dcprogs_stack_matrix = DCPROGS_STACK_MATRIX_MAX;
+  t_uint static const HJCFIT_stack_matrix = HJCFIT_STACK_MATRIX_MAX;
 }
 #endif

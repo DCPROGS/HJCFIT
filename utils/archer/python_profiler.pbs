@@ -20,7 +20,7 @@ cd $WORK/HJCFIT/exploration
 source ../utils/archer/loadArcherModules.sh
 
 #Load virtual env
-source activate dcprogs
+source activate HJCFIT
 
 # Profile exploration data
 aprun -n $PROCESSES time python -m cProfile $SORTBY $R1PROF fitAChR1.py

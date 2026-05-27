@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -21,7 +21,7 @@ register_type()
 
 @given('{n:Integer} random time series with tau={tau:Float}')
 def steps(context, n, tau):
-  from dcprogs.likelihood.random import time_series
+  from HJCFIT.likelihood.random import time_series
   from numpy.random import randint
 
   if not hasattr(context, 'series'): context.series = []
@@ -32,7 +32,7 @@ def steps(context, n, tau):
 
 @when('each time series is filtered')
 def step(context):
-  from dcprogs.likelihood import time_filter
+  from HJCFIT.likelihood import time_filter
   
   if not hasattr(context, 'filtered'): context.filtered = []
   for (filtered, series), tau in context.series: 
@@ -40,7 +40,7 @@ def step(context):
 
 @when('all time series are filtered simultaneously')
 def step(context):
-  from dcprogs.likelihood import time_filter
+  from HJCFIT.likelihood import time_filter
   
   if not hasattr(context, 'filtered'): context.filtered = []
   series = []
@@ -61,7 +61,7 @@ def step(context):
 
 @given('{n:Integer} random time intervals with tau={tau:Float}')
 def steps(context, n, tau):
-  from dcprogs.likelihood.random import time_intervals
+  from HJCFIT.likelihood.random import time_intervals
   from numpy.random import randint
 
   if not hasattr(context, 'intervals'): context.intervals = []
@@ -72,7 +72,7 @@ def steps(context, n, tau):
 
 @when('each list of time intervals is filtered')
 def step(context):
-  from dcprogs.likelihood import interval_filter
+  from HJCFIT.likelihood import interval_filter
   
   if not hasattr(context, 'filtered'): context.filtered = []
   for (filtered, intervals), tau in context.intervals: 
@@ -80,7 +80,7 @@ def step(context):
 
 @when('all lists of time intervals are filtered simultaneously')
 def step(context):
-  from dcprogs.likelihood import interval_filter
+  from HJCFIT.likelihood import interval_filter
   
   if not hasattr(context, 'filtered'): context.filtered = []
   series = []

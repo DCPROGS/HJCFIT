@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -27,10 +27,10 @@ namespace {
     //! \tparam T Type of the ouput numpy array.
     //! \tparam reduce How many dimensions are gobled up by functor.
     template<class T, size_t reduce=0>
-      class NumpyApplySpecialized : public DCProgs::numpy::type<T> {
+      class NumpyApplySpecialized : public HJCFIT::numpy::type<T> {
         public:
-          using DCProgs::numpy::type<T>::value;
-          using typename DCProgs::numpy::type<T>::np_type;
+          using HJCFIT::numpy::type<T>::value;
+          using typename HJCFIT::numpy::type<T>::np_type;
        
           //! Creates functor.
           NumpyApplySpecialized(PyArrayObject *_in) : input_(acquire_ref(_in)) {
@@ -63,10 +63,10 @@ namespace {
      };
 
     template<class T, int I, int N, int IS, int NS, size_t reduce>
-      struct NumpyApplySpecialized<Eigen::Matrix<T, I, N, 0, IS, NS>, reduce> : public DCProgs::numpy::type<T> {
+      struct NumpyApplySpecialized<Eigen::Matrix<T, I, N, 0, IS, NS>, reduce> : public HJCFIT::numpy::type<T> {
         public:
-          using DCProgs::numpy::type<T>::value;
-          using typename DCProgs::numpy::type<T>::np_type;
+          using HJCFIT::numpy::type<T>::value;
+          using typename HJCFIT::numpy::type<T>::np_type;
           //! Number of dims of functor output.
           npy_intp const static add_dims;
   
@@ -116,7 +116,7 @@ namespace {
        
         private:
           typedef Eigen::Stride< ::Eigen::Dynamic, ::Eigen::Dynamic> t_Stride;
-          typedef Eigen::Map<DCProgs::t_rmatrix, 0, t_Stride> t_Map;
+          typedef Eigen::Map<HJCFIT::t_rmatrix, 0, t_Stride> t_Map;
           //! \brief Array that is the input to the functor
           //! \details Used to figure out size of output array.
           Object<PyArrayObject> input_;
@@ -131,8 +131,8 @@ namespace {
       };
     template<class T, int I, int N, int IS, int NS, size_t reduce>
       npy_intp const NumpyApplySpecialized<Eigen::Matrix<T, I, N, 0, IS, NS>, reduce>
-                     :: add_dims = static_cast<DCProgs::t_int>(I != 1)
-                                   + static_cast<DCProgs::t_int>(N != 1);
+                     :: add_dims = static_cast<HJCFIT::t_int>(I != 1)
+                                   + static_cast<HJCFIT::t_int>(N != 1);
 
     // \brief Applies functor to an input array.
     // \details The functor should return a scalar or a matrix which always has the same size.
@@ -140,7 +140,7 @@ namespace {
     //          vector or matrix). 
     template<class T_FUNC> PyObject* apply_numpy(PyObject* _in, T_FUNC const & _func) {
 
-      using namespace DCProgs;
+      using namespace HJCFIT;
       typedef typename NumpyApplySpecialized<decltype(_func(0))>::np_type t_numpy_type;
       npy_intp const numpy_value = NumpyApplySpecialized<decltype(_func(0))>::value;
 

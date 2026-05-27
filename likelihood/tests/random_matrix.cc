@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 
 #include <math.h>
 #include <cmath>
@@ -28,7 +28,7 @@
 
 #include "random_matrix.h"
 
-namespace DCProgs {
+namespace HJCFIT {
   
   std::mt19937 & global_mersenne() {
     std::mt19937 static mersenne;
@@ -72,7 +72,7 @@ namespace DCProgs {
   t_rmatrix nonnan_rate_matrix(t_uint nmin, t_uint nmax, t_real large, t_real zeroprob) {
     t_rmatrix result; 
     do { result = rate_matrix(nmin, nmax, large, zeroprob); }
-    while(DCPROGS_ISNAN(result.determinant()));
+    while(HJCFIT_ISNAN(result.determinant()));
     return result;
   }
   t_rmatrix nonsingular_rate_matrix(t_uint nmin, t_uint nmax, t_real large, t_real zeroprob) {

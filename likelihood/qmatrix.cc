@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -22,7 +22,7 @@
 #include <sstream>
 #include "qmatrix.h"
 
-namespace DCProgs {
+namespace HJCFIT {
   QMatrix QMatrix::transpose() const {
   
     QMatrix result;
@@ -53,15 +53,15 @@ namespace DCProgs {
     sstr << "Transition matrix with " << _mat.nopen << " open states:";
     _stream << sstr.str() << "\n";
     for(std::string::size_type i(0); i < sstr.str().size(); ++i) _stream << '-';
-    return _stream << "\n" << DCProgs::numpy_io(_mat.matrix) << "\n";
+    return _stream << "\n" << HJCFIT::numpy_io(_mat.matrix) << "\n";
   }
 
   void verify_qmatrix(QMatrix const &_qmatrix) {
-    if (_qmatrix.matrix.cols() > dcprogs_stack_matrix) {
+    if (_qmatrix.matrix.cols() > HJCFIT_stack_matrix) {
       std::ostringstream _stream;
-      _stream << "Maximum supported QMatrix size is " << dcprogs_stack_matrix << "x" <<
-              dcprogs_stack_matrix <<
-              " Please change in DCProgsConfig.h.in and recompile to support a larger QMatrix";
+      _stream << "Maximum supported QMatrix size is " << HJCFIT_stack_matrix << "x" <<
+              HJCFIT_stack_matrix <<
+              " Please change in HJCFITConfig.h.in and recompile to support a larger QMatrix";
       throw errors::Domain(_stream.str());
     }
   }

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -24,12 +24,12 @@
     //! \param[in] _intervals: Time intervals, starting and ending with an "open" interval.
     //! \param[in] _g: The likelihood functor. It should have an `af(t_real)` and an `fa(t_real)`
     //!                member function, where the argument is the length of an open or shut interval.
-    //! \param[in] _initial: initial occupancies.
-    //! \param[in] _final: final occupancies.
+    //! \param[in] _initial: initial vectors.
+    //! \param[in] _final: final vectors.
     template<class T_G> 
-      DCProgs::t_real py_chained_likelihood(T_G const & _g, PyObject *_intervals, 
+      HJCFIT::t_real py_chained_likelihood(T_G const & _g, PyObject *_intervals, 
                                             PyObject *_initial, PyObject *_final) {
-        using namespace DCProgs;
+        using namespace HJCFIT;
         if( (not PyArray_Check(_intervals))
             or (not (PyArray_FLAGS((PyArrayObject*)_intervals) & NPY_ARRAY_C_CONTIGUOUS)) ) {
           Object<PyObject> convert = steal_ref( (PyObject*)
@@ -44,41 +44,41 @@
         npy_intp const size = PyArray_SIZE((PyArrayObject*)_intervals);
         void * const first = PyArray_DATA((PyArrayObject*)_intervals);
   
-#       ifdef DCPROGS_MACRO
-#         error DCPROGS_MACRO is already defined.
+#       ifdef HJCFIT_MACRO
+#         error HJCFIT_MACRO is already defined.
 #       endif
-#       define DCPROGS_MACRO(TYPENAME)                                                        \
+#       define HJCFIT_MACRO(TYPENAME)                                                        \
            if(type == numpy::type<TYPENAME>::value)                                           \
              return chained_likelihood( _g, static_cast<TYPENAME*>(first),                    \
                                             static_cast<TYPENAME*>(first) + size,             \
                                         initial, final ); 
-          DCPROGS_MACRO(npy_double);
-          DCPROGS_MACRO(npy_float);
-          DCPROGS_MACRO(npy_longlong);
-          DCPROGS_MACRO(npy_ulonglong);
-          DCPROGS_MACRO(npy_long);
-          DCPROGS_MACRO(npy_ulong);
-          DCPROGS_MACRO(npy_int);
-          DCPROGS_MACRO(npy_uint);
-          DCPROGS_MACRO(npy_short);
-          DCPROGS_MACRO(npy_ushort);
-          DCPROGS_MACRO(npy_byte);
-          DCPROGS_MACRO(npy_ubyte);
+          HJCFIT_MACRO(npy_double);
+          HJCFIT_MACRO(npy_float);
+          HJCFIT_MACRO(npy_longlong);
+          HJCFIT_MACRO(npy_ulonglong);
+          HJCFIT_MACRO(npy_long);
+          HJCFIT_MACRO(npy_ulong);
+          HJCFIT_MACRO(npy_int);
+          HJCFIT_MACRO(npy_uint);
+          HJCFIT_MACRO(npy_short);
+          HJCFIT_MACRO(npy_ushort);
+          HJCFIT_MACRO(npy_byte);
+          HJCFIT_MACRO(npy_ubyte);
 #         ifdef NUMPY_NPY_LONG_DOUBLE
-            DCPROGS_MACRO(npy_longdouble);
+            HJCFIT_MACRO(npy_longdouble);
 #         endif
 #         ifdef NUMPY_NPY_LONG_DOUBLE
-            DCPROGS_MACRO(npy_bool);
+            HJCFIT_MACRO(npy_bool);
 #         endif
-#       undef DCPROGS_MACRO
+#       undef HJCFIT_MACRO
         throw errors::PythonTypeError("Unexpect numpy array type");
         return t_real(0);
       }
-    DCProgs::t_real chained_likelihood(DCProgs::IdealG *_idealg, PyObject* _intervals, 
+    HJCFIT::t_real chained_likelihood(HJCFIT::IdealG *_idealg, PyObject* _intervals, 
                                        PyObject* _initial, PyObject* _final) {
       return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
     } 
-    DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *_idealg, PyObject* _intervals, 
+    HJCFIT::t_real chained_likelihood(HJCFIT::MissedEventsG *_idealg, PyObject* _intervals, 
                                        PyObject* _initial, PyObject* _final) {
       return py_chained_likelihood(*_idealg, _intervals, _initial, _final);
     } 
@@ -94,9 +94,9 @@
          "   The initial occupancy vector.\n" 
          ":param final:\n"
          "   The final occupancy vector.\n")
-        chained_likelihood(DCProgs::IdealG *_idealg, PyObject *_intervals, 
+        chained_likelihood(HJCFIT::IdealG *_idealg, PyObject *_intervals, 
                            PyObject* _initial, PyObject* _final);
-DCProgs::t_real chained_likelihood(DCProgs::IdealG *idealg, PyObject* intervals, 
+HJCFIT::t_real chained_likelihood(HJCFIT::IdealG *idealg, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);
-DCProgs::t_real chained_likelihood(DCProgs::MissedEventsG *g, PyObject* intervals, 
+HJCFIT::t_real chained_likelihood(HJCFIT::MissedEventsG *g, PyObject* intervals, 
                                    PyObject* initial, PyObject* final);

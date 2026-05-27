@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <unsupported/Eigen/MatrixFunctions>
 
@@ -27,7 +27,7 @@
 #include "root_finder.h"
 
 
-namespace DCProgs {
+namespace HJCFIT {
 
   ApproxSurvivor :: ApproxSurvivor(DeterminantEq const &_af, std::vector<Root> const &_roots_af, 
                                    DeterminantEq const &_fa, std::vector<Root> const &_roots_fa ) {
@@ -38,11 +38,11 @@ namespace DCProgs {
     if(not asymptotes_fa_.get()) throw errors::Runtime("Could not initialize unique_ptr");
   }
  
-# ifdef DCPROGS_MACRO
-#   error DCPROGS_MACRO already defined
+# ifdef HJCFIT_MACRO
+#   error HJCFIT_MACRO already defined
 # endif
   // Macro is used to fake constructor delegation...
-# define DCPROGS_MACRO(FINDROOTS)                                                          \
+# define HJCFIT_MACRO(FINDROOTS)                                                          \
     /* First creates determinant equations. */                                             \
     DeterminantEq determinant_af(_qmatrix, _tau);                                          \
     DeterminantEq determinant_fa(determinant_af.transpose());                              \
@@ -57,7 +57,7 @@ namespace DCProgs {
 
   // Function to create approximate missed event survivor function.
   ApproxSurvivor::ApproxSurvivor(QMatrix const &_qmatrix, t_real _tau, t_RootFinder const &_findroots) {
-    DCPROGS_MACRO(_findroots);
+    HJCFIT_MACRO(_findroots);
   }
 
 
@@ -74,7 +74,7 @@ namespace DCProgs {
     auto findroots = [_xtol, _rtol, _itermax, _lowerbound, _upperbound](DeterminantEq const &_c) {
       return find_roots(_c, _xtol, _rtol, _itermax, _lowerbound, _upperbound);  
     };
-    DCPROGS_MACRO(findroots);
+    HJCFIT_MACRO(findroots);
   }
 # endif
   

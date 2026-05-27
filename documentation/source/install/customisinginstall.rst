@@ -1,6 +1,6 @@
-******************************
-Customising build and install:
-******************************
+*****************************
+Customising build and install
+*****************************
 
 Customising Installation location
 =================================
@@ -14,13 +14,13 @@ fairly easy:
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs_source/build
+  cd /path/to/HJCFIT_source/build
   cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install/to
   make
   make install
 
 The above will put executable in ``/path/to/install/to/bin``, headers in
-``/path/to/install/to/include``, and libraries in ```/path/to/install/to/lib``.
+``/path/to/install/to/include``, and libraries in ``/path/to/install/to/lib``.
 
 Specific Eigen Installation
 ===========================
@@ -31,7 +31,7 @@ done with:
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs_source/build
+  cd /path/to/HJCFIT_source/build
   cmake .. -DEIGEN3_INCLUDE_DIR=/path/to/include/eigen3
 
 
@@ -48,7 +48,7 @@ deleted (delete the build, not the source directory!) before attempting to set t
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs_source
+  cd /path/to/HJCFIT_source
   mkdir build && build
   export CC=/path/to/ccompiler
   export CXX=/path/to/cppcompiler
@@ -66,8 +66,8 @@ a step in the right direction.
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs/build
-  cmake .. -DDCPROGS_LONG_DOUBLE=TRUE
+  cd /path/to/HJCFIT/build
+  cmake .. -DHJCFIT_LONG_DOUBLE=TRUE
 
 At this juncture, functions that return python scalars are still returning real
 numbers of 64bit. Functions that return numpy arrays have the correct size, however.
@@ -81,7 +81,7 @@ You can explicitly disable it by doing:
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs/build
+  cd /path/to/HJCFIT/build
   cmake .. -Dopenmp=off
 
 
@@ -92,7 +92,7 @@ The Python bindings are automatically enabled but can be disabled by doing:
 
 .. code-block:: bash
 
-  cd /path/to/dcprogs/build
+  cd /path/to/HJCFIT/build
   cmake .. -DpythonBindings=off
 
 Enabling fallback to Multi precision arithmetic

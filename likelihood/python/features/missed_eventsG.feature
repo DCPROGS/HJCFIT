@@ -30,9 +30,9 @@ Feature: Check Missed Events G functionality
   Scenario Outline: Computation of equilibrium occupancy
     Given a list of 100 random missed-events likelihoods with tau=1e-4 and nmax=3
       And a parameter tolerance=1e-6
-     When the <name> equilibrium occupancies are computed 
-     Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
-      And the components of the <name> equilibrium occupancies sum to one
+     When the <name> equilibrium vectors are computed 
+     Then the <name> equilibrium vectors are the only solution to the equilibrium equations
+      And the components of the <name> equilibrium vectors sum to one
  
     Examples:
  
@@ -47,8 +47,8 @@ Feature: Check Missed Events G functionality
     Given a list of 10 random missed-events likelihoods with tau=1e-4 and nmax=3
       And a list of 10 random times between 1e-3 and 3e-3
       And a parameter tolerance=1e-6
-     When the <name> CHS occupancies are computed 
-     Then the <name> CHS occupancies are the solutions to the CHS equations
+     When the <name> CHS vectors are computed 
+     Then the <name> CHS vectors are the solutions to the CHS equations
  
     Examples:
  
@@ -62,8 +62,8 @@ Feature: Check Missed Events G functionality
   Scenario Outline: Test CHS vector for different models against prior calculation.
     Given the <model> missed-events likelihood
       And a parameter tolerance=1e-10
-     When we compute the <which> CHS occupancies with tcrit=<tcrit>
-     Then the <which> CHS occupancies compare to <prior> 
+     When we compute the <which> CHS vectors with tcrit=<tcrit>
+     Then the <which> CHS vectors compare to <prior> 
 
     Examples: 
 

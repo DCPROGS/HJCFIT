@@ -17,7 +17,7 @@ module load anaconda-compute/2.2.0-python2
 export CONDA_ENVS_PATH=$WORK/.conda/envs
 
 # Load virtual env
-source activate dcprogs
+source activate HJCFIT
 
 # The anaconda module sets PYTHONHOME Which is wrong and breaks conda envs so remove it
 unset PYTHONHOME

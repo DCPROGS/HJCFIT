@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -21,15 +21,15 @@ register_type()
 
 @given('the {doopen}-states determinant equation \"{qmatrix:QMatrix}\" with tau={tau:Float}')
 def step(context, doopen, qmatrix, tau):
-  from dcprogs.likelihood import DeterminantEq
+  from HJCFIT.likelihood import DeterminantEq
   context.equation = DeterminantEq(qmatrix, tau)
   if doopen != "open": context.equation = context.equation.transpose()
   print(context.equation)
 
 @given('a list of {n:Integer} random determinant equations')
 def step(context, n):
-  from dcprogs.likelihood import DeterminantEq
-  from dcprogs.likelihood.random import qmatrix as random_qmatrix
+  from HJCFIT.likelihood import DeterminantEq
+  from HJCFIT.likelihood.random import qmatrix as random_qmatrix
   context.matrices = []
   context.equations = []
   while len(context.equations) < n:
@@ -47,7 +47,7 @@ def step(context, n):
 
 @given('a determinantal equation we know has large roots')
 def step(context):
-  from dcprogs.likelihood import QMatrix, DeterminantEq
+  from HJCFIT.likelihood import QMatrix, DeterminantEq
   qmatrix = QMatrix([[ -1.89907444e+02,   0.00000000e+00,   2.17917781e+01,
                         1.68115666e+02,   0.00000000e+00,   0.00000000e+00,
                         0.00000000e+00,   0.00000000e+00,   0.00000000e+00,
@@ -96,13 +96,13 @@ def step(context):
 
 @when("the root intervals are computed")
 def step(context):
-  from dcprogs.likelihood import find_root_intervals
+  from HJCFIT.likelihood import find_root_intervals
   if hasattr(context, "exception"): raise context.exception
   context.intervals = find_root_intervals(context.equation)
 
 @when("the roots are computed for each")
 def step(context):
-  from dcprogs.likelihood import find_roots
+  from HJCFIT.likelihood import find_roots
   context.roots = []
   for equation in context.equations:
     try: roots = find_roots(equation)
@@ -112,7 +112,7 @@ def step(context):
 @when("a brute force search for roots is perfomed with resolution={resolution:Float}")
 def step(context, resolution):
   from numpy import min
-  from dcprogs.likelihood import find_root_intervals_brute_force, find_root_intervals
+  from HJCFIT.likelihood import find_root_intervals_brute_force, find_root_intervals
   if hasattr(context, "exception"): raise context.exception
   roots = find_root_intervals(context.equation)
   mini = min([r[0] for r in roots])
@@ -121,7 +121,7 @@ def step(context, resolution):
 
 @when("searching for intervals for each root")
 def step(context):
-  from dcprogs.likelihood import find_root_intervals
+  from HJCFIT.likelihood import find_root_intervals
   try: find_root_intervals(context.determinant, **context.parameters)
   except: context.noerror = False
   else: context.noerror = True
@@ -154,7 +154,7 @@ def step(context, resolution):
 
 @then("roots are found within each overlap for which sign changes")
 def step(context):
-  from dcprogs.likelihood import find_roots
+  from HJCFIT.likelihood import find_roots
 
   eigsearch = [r[0] for r in context.intervals if r[0][1]- r[0][0] > context.resolution]
   brusearch = [r[0] for r in context.intervals_brute_force]
@@ -180,7 +180,7 @@ def step(context):
 
 @then("roots are found within each interval for which sign changes")
 def step(context):
-  from dcprogs.likelihood import find_roots
+  from HJCFIT.likelihood import find_roots
 
   intervals = [r[0] for r in context.intervals]
   intervals = sorted(intervals)

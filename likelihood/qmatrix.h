@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,16 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_STATE_MATRIX_H
-#define DCPROGS_STATE_MATRIX_H
+#ifndef HJCFIT_STATE_MATRIX_H
+#define HJCFIT_STATE_MATRIX_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 #include <ostream>
 #include <tuple>
 #include "errors.h"
 
-//! General namespace for all things DCProgs.
-namespace DCProgs {
+//! General namespace for all things HJCFIT.
+namespace HJCFIT {
 
   //! \brief State matrix that can  be partitioned into open/shut states.
   //! \details In practice, this is a two tuple with some helper functions to get corners.

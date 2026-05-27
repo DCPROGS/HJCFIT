@@ -7,7 +7,7 @@ from scipy.optimize import minimize
 from dcpyps import dcio
 from dcpyps import dataset
 from dcpyps import mechanism
-from dcprogs.likelihood import Log10Likelihood
+from HJCFIT.likelihood import Log10Likelihood
 
 # LOAD DATA: Burzomato 2004 example set.
 scnfiles = [["../../DCPYPS/dcpyps/samples/glydemo/A-10.scn"], 

@@ -1,4 +1,4 @@
-from dcprogs.likelihood import QMatrix, ExactSurvivor
+from HJCFIT.likelihood import QMatrix, ExactSurvivor
 
 # Define parameters.
 qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0], 

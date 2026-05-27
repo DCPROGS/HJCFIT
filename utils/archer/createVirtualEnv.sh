@@ -12,10 +12,10 @@ export CONDA_ENVS_PATH=$WORK/.conda/envs
 
 # Create dcprogs virtual env in $WORK folder. Note it can only have Anaconda-compute's python 2
 # since anaconda+python3 is not available in the MOM nodes.
-conda create -n dcprogs python=3.5 numpy scipy six pip -y
+conda create -n HJCFIT python=3.5 numpy scipy six pip -y
 
 # Behave needs to be installed with pip from inside the virtual env, so activate it
-source activate dcprogs
+source activate HJCFIT
 
 pip install behave
 

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,20 +18,20 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
+#include "HJCFITConfig.h"
 
 #include <gtest/gtest.h>
 #include "../brentq.h"
 #include "random_matrix.h"
 
-using namespace DCProgs;
+using namespace HJCFIT;
 
 class TestPolynomial : public ::testing::TestWithParam<int> {
   
   public:
   virtual void SetUp() {
-    t_rvector randoms = DCProgs::random_vector();
+    t_rvector randoms = HJCFIT::random_vector();
     roots.resize(randoms.size());
     for(t_rvector::Index i(0); i < randoms.size(); ++i) roots(i) = randoms.head(i+1).sum();
     intervals.resize(roots.size()+1);

@@ -23,11 +23,11 @@ Internal Numpy Type
 Many of the python bindings accept both scalars and values that can be converted to numpy arrays.
 The latter are first converted to a specific numpy type, depending on how this package was compiled.
 
-.. py:data:: dcprogs.internal_dtype
+.. py:data:: HJCFIT.internal_dtype
 
    Numpy type used internally
 
-If the package is configured and compiled with ``-DCPROGS_LONG_DOUBLE`` (see wiki), then long
+If the package is configured and compiled with ``-HJCFIT_LONG_DOUBLE`` (see wiki), then long
 doubles are used through out. The exact size of long doubles is platform dependent
 and is typically 80-bit on Linux and OSX and 64-bit on Windows. See `Wikipedia
 <https://en.wikipedia.org/wiki/Long_double>`__ for more information.
@@ -42,7 +42,7 @@ result, this package exposes some of Eigen_'s capabilities, as needed. Their int
 reminiscent of the numpy utility they mirror.
 
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autofunction:: eig
 .. autofunction:: inv
 .. autofunction:: svd

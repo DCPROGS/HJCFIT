@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,75 +18,75 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_NUMPY_EIGEN
-#define DCPROGS_NUMPY_EIGEN
+#ifndef HJCFIT_NUMPY_EIGEN
+#define HJCFIT_NUMPY_EIGEN
 #include <type_traits>
 #include "../errors.h"
 #include "object.h"
 
-namespace DCProgs {
+namespace HJCFIT {
   namespace numpy {
     //! An mpl integer defining the type.
     template<class T> class type;
     
-#   ifdef DCPROGS_MACRO
-#     error DCPROGS_MACRO already defined
+#   ifdef HJCFIT_MACRO
+#     error HJCFIT_MACRO already defined
 #   endif
-#   define DCPROGS_MACRO(TYPE_NAME, TYPE_NUMBER)                     \
+#   define HJCFIT_MACRO(TYPE_NAME, TYPE_NUMBER)                     \
     template<> struct type<TYPE_NAME> {                              \
       /*! Original Type */                                           \
       typedef TYPE_NAME np_type;                                     \
       /*! Associated  number */                                      \
-      DCPROGS_INIT_CONSTEXPR(int value, TYPE_NUMBER);                \
+      HJCFIT_INIT_CONSTEXPR(int value, TYPE_NUMBER);                \
     };                                                               \
-    DCPROGS_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER)
+    HJCFIT_DECL_CONSTEXPR(int type<TYPE_NAME>::value, TYPE_NUMBER)
 
-    DCPROGS_MACRO(npy_cdouble,     NPY_CDOUBLE);
-    DCPROGS_MACRO(npy_double,      NPY_DOUBLE);
-    DCPROGS_MACRO(npy_float,       NPY_FLOAT);
-    DCPROGS_MACRO(npy_longlong,    NPY_LONGLONG);
-    DCPROGS_MACRO(npy_ulonglong,   NPY_ULONGLONG);
-    DCPROGS_MACRO(npy_long,        NPY_LONG);
-    DCPROGS_MACRO(npy_ulong,       NPY_ULONG);
-    DCPROGS_MACRO(npy_int,         NPY_INT);
-    DCPROGS_MACRO(npy_uint,        NPY_UINT);
-    DCPROGS_MACRO(npy_short,       NPY_SHORT);
-    DCPROGS_MACRO(npy_ushort,      NPY_USHORT);
-    DCPROGS_MACRO(npy_byte,        NPY_BYTE);
-    DCPROGS_MACRO(npy_ubyte,       NPY_UBYTE);
+    HJCFIT_MACRO(npy_cdouble,     NPY_CDOUBLE);
+    HJCFIT_MACRO(npy_double,      NPY_DOUBLE);
+    HJCFIT_MACRO(npy_float,       NPY_FLOAT);
+    HJCFIT_MACRO(npy_longlong,    NPY_LONGLONG);
+    HJCFIT_MACRO(npy_ulonglong,   NPY_ULONGLONG);
+    HJCFIT_MACRO(npy_long,        NPY_LONG);
+    HJCFIT_MACRO(npy_ulong,       NPY_ULONG);
+    HJCFIT_MACRO(npy_int,         NPY_INT);
+    HJCFIT_MACRO(npy_uint,        NPY_UINT);
+    HJCFIT_MACRO(npy_short,       NPY_SHORT);
+    HJCFIT_MACRO(npy_ushort,      NPY_USHORT);
+    HJCFIT_MACRO(npy_byte,        NPY_BYTE);
+    HJCFIT_MACRO(npy_ubyte,       NPY_UBYTE);
 
 #   ifdef NUMPY_NPY_LONG_DOUBLE
-      DCPROGS_MACRO(npy_longdouble, NPY_LONGDOUBLE);
-      DCPROGS_MACRO(npy_clongdouble, NPY_CLONGDOUBLE);
+      HJCFIT_MACRO(npy_longdouble, NPY_LONGDOUBLE);
+      HJCFIT_MACRO(npy_clongdouble, NPY_CLONGDOUBLE);
       template<> struct type< std::complex<npy_longdouble> > {
         /*! Original Type */
         typedef npy_clongdouble np_type;
         /*! Associated  number */
-        DCPROGS_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
+        HJCFIT_INIT_CONSTEXPR(int value, NPY_CLONGDOUBLE); 
       };
-      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_longdouble> >::value, NPY_CLONGDOUBLE);
+      HJCFIT_DECL_CONSTEXPR(int type< std::complex<npy_longdouble> >::value, NPY_CLONGDOUBLE);
 #   endif
 #   ifdef NUMPY_NPY_BOOL
-      DCPROGS_MACRO(npy_bool, NPY_BOOL);
+      HJCFIT_MACRO(npy_bool, NPY_BOOL);
 #   else
       template<> struct type<bool> {
         /*! Original Type */
         typedef npy_bool np_type;
         /*! Associated  number */
-        DCPROGS_INIT_CONSTEXPR(int value, NPY_BOOL); 
+        HJCFIT_INIT_CONSTEXPR(int value, NPY_BOOL); 
       };
-      DCPROGS_DECL_CONSTEXPR(int type<bool>::value, NPY_BOOL);
+      HJCFIT_DECL_CONSTEXPR(int type<bool>::value, NPY_BOOL);
 #   endif 
       template<> struct type< std::complex<npy_double> > {
         /*! Original Type */
         typedef npy_cdouble np_type;
         /*! Associated  number */
-        DCPROGS_INIT_CONSTEXPR(int value, NPY_CDOUBLE); 
+        HJCFIT_INIT_CONSTEXPR(int value, NPY_CDOUBLE); 
       };
-      DCPROGS_DECL_CONSTEXPR(int type< std::complex<npy_double> >::value, NPY_CDOUBLE);
+      HJCFIT_DECL_CONSTEXPR(int type< std::complex<npy_double> >::value, NPY_CDOUBLE);
       
 
-#   undef DCPROGS_MACRO
+#   undef HJCFIT_MACRO
     
     //! Convert/wrap a matrix to numpy.
     template<class T_DERIVED>
@@ -218,168 +218,168 @@ namespace DCProgs {
     //! \details It is best to check PyErr_Occurred after a call to this function.
     //! \param[in] _in a numpy array. 
     //! \return An eigen object which is a copy of the numpy input.
-    DCProgs::t_rmatrix map_to_rmatrix(PyObject *_in) {
+    HJCFIT::t_rmatrix map_to_rmatrix(PyObject *_in) {
        if(not PyArray_Check(_in)) {
           Object<> convert = steal_ref( 
-            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+            PyArray_FromObject(_in, HJCFIT::numpy::type<HJCFIT::t_real>::value, 0, 0)
           );
-          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          if(PyErr_Occurred()) throw HJCFIT::errors::PythonErrorAlreadyThrown();
           return map_to_rmatrix(~convert);
        }
        int const type = PyArray_TYPE((PyArrayObject*)_in);
-#      ifdef DCPROGS_MACRO
-#        error DCPROGS_MACRO is already defined.
+#      ifdef HJCFIT_MACRO
+#        error HJCFIT_MACRO is already defined.
 #      endif
-#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+#      define HJCFIT_MACRO(TYPE, NUM_TYPE)                                                        \
          if(type == NUM_TYPE)                                                                      \
            return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
-       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
-       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
-       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
-       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
-       else DCPROGS_MACRO( npy_int,        NPY_INT        )
-       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
-       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
-       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
-       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
-       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
-       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
-       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
-#      undef DCPROGS_MACRO
-       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       HJCFIT_MACRO( npy_float,      NPY_FLOAT)      
+       else HJCFIT_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else HJCFIT_MACRO( npy_double,     NPY_DOUBLE     )
+       else HJCFIT_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else HJCFIT_MACRO( npy_int,        NPY_INT        )
+       else HJCFIT_MACRO( npy_uint,       NPY_UINT       )
+       else HJCFIT_MACRO( npy_long,       NPY_LONG       )
+       else HJCFIT_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else HJCFIT_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else HJCFIT_MACRO( npy_ubyte,      NPY_BYTE       )
+       else HJCFIT_MACRO( npy_short,      NPY_SHORT      )
+       else HJCFIT_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef HJCFIT_MACRO
+       throw HJCFIT::errors::PythonTypeError("Unexpect numpy array type");
        return t_rmatrix();
     }
 
     //! \brief Converts numpy to an initvec
     //! \param[in] _in a numpy array. 
     //! \return An eigen object which is a copy of the numpy input.
-    DCProgs::t_initvec map_to_initvec(PyObject *_in) {
+    HJCFIT::t_initvec map_to_initvec(PyObject *_in) {
        if(not PyArray_Check(_in)) {
           Object<> convert = steal_ref( 
-            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+            PyArray_FromObject(_in, HJCFIT::numpy::type<HJCFIT::t_real>::value, 0, 0)
           );
-          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          if(PyErr_Occurred()) throw HJCFIT::errors::PythonErrorAlreadyThrown();
           return map_to_rmatrix(~convert);
        }
        // Check dimensionality
        npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
-       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       if(N == 0) throw HJCFIT::errors::PythonValueError("Input array is empty or a scalar.");
        npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
        for(npy_intp i(0); i < N - 2; i++, ++dims) 
           if(*dims > 1)
-            throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+            throw HJCFIT::errors::PythonValueError("Input array is not a (row) vector.");
           else if(*dims == 0) 
-            throw DCProgs::errors::PythonValueError("Input array is empty.");
-       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+            throw HJCFIT::errors::PythonValueError("Input array is empty.");
+       if(*dims == 0) throw HJCFIT::errors::PythonValueError("Input array is empty.");
 
 
        int const type = PyArray_TYPE((PyArrayObject*)_in);
-#      ifdef DCPROGS_MACRO
-#        error DCPROGS_MACRO is already defined.
+#      ifdef HJCFIT_MACRO
+#        error HJCFIT_MACRO is already defined.
 #      endif
-#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+#      define HJCFIT_MACRO(TYPE, NUM_TYPE)                                                        \
          if(type == NUM_TYPE)                                                                      \
            return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rmatrix::Scalar>(); 
         
-       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
-       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
-       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
-       else DCPROGS_MACRO( npy_int,        NPY_INT        )
-       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
-       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
-       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
-       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
-       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
-       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
-       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
-#      undef DCPROGS_MACRO
-       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       HJCFIT_MACRO( npy_float,      NPY_FLOAT)      
+       else HJCFIT_MACRO( npy_double,     NPY_DOUBLE     )
+       else HJCFIT_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else HJCFIT_MACRO( npy_int,        NPY_INT        )
+       else HJCFIT_MACRO( npy_uint,       NPY_UINT       )
+       else HJCFIT_MACRO( npy_long,       NPY_LONG       )
+       else HJCFIT_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else HJCFIT_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else HJCFIT_MACRO( npy_ubyte,      NPY_BYTE       )
+       else HJCFIT_MACRO( npy_short,      NPY_SHORT      )
+       else HJCFIT_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef HJCFIT_MACRO
+       throw HJCFIT::errors::PythonTypeError("Unexpect numpy array type");
        return t_initvec();
     }
     
     //! \brief Converts numpy to an rvector
     //! \param[in] _in a numpy array. 
     //! \return An eigen object which is a copy of the numpy input.
-    DCProgs::t_rvector map_to_rvector(PyObject *_in) {
+    HJCFIT::t_rvector map_to_rvector(PyObject *_in) {
        if(not PyArray_Check(_in)) {
           Object<> convert = steal_ref( 
-            PyArray_FromObject(_in, DCProgs::numpy::type<DCProgs::t_real>::value, 0, 0)
+            PyArray_FromObject(_in, HJCFIT::numpy::type<HJCFIT::t_real>::value, 0, 0)
           );
-          if(PyErr_Occurred()) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          if(PyErr_Occurred()) throw HJCFIT::errors::PythonErrorAlreadyThrown();
           return map_to_rmatrix(~convert);
        }
        
        // Check dimensionality
        npy_intp const N = PyArray_NDIM(reinterpret_cast<PyArrayObject*>(_in));
-       if(N == 0) throw DCProgs::errors::PythonValueError("Input array is empty or a scalar.");
+       if(N == 0) throw HJCFIT::errors::PythonValueError("Input array is empty or a scalar.");
        npy_intp * dims = PyArray_DIMS(reinterpret_cast<PyArrayObject*>(_in));
        if(N > 2) {
          for(npy_intp i(0); i < N - 2; i++, ++dims) 
             if(*dims > 1)
-              throw DCProgs::errors::PythonValueError("Input array is not a (row) vector.");
+              throw HJCFIT::errors::PythonValueError("Input array is not a (row) vector.");
             else if(*dims == 0) 
-              throw DCProgs::errors::PythonValueError("Input array is empty.");
+              throw HJCFIT::errors::PythonValueError("Input array is empty.");
        } 
-       if(*dims == 0) throw DCProgs::errors::PythonValueError("Input array is empty.");
+       if(*dims == 0) throw HJCFIT::errors::PythonValueError("Input array is empty.");
        if(N >= 2) {
          npy_intp const dima = *dims;
          npy_intp const dimb = *(dims+1);
          if((dima == 1 and dimb != 1) or (dima != 1 and dimb == 1))
-           throw DCProgs::errors::PythonValueError("Input array is not a (column) vector.");
+           throw HJCFIT::errors::PythonValueError("Input array is not a (column) vector.");
        }
 
 
        int const type = PyArray_TYPE((PyArrayObject*)_in);
-#      ifdef DCPROGS_MACRO
-#        error DCPROGS_MACRO is already defined.
+#      ifdef HJCFIT_MACRO
+#        error HJCFIT_MACRO is already defined.
 #      endif
-#      define DCPROGS_MACRO(TYPE, NUM_TYPE)                                                        \
+#      define HJCFIT_MACRO(TYPE, NUM_TYPE)                                                        \
          if(type == NUM_TYPE)                                                                      \
            return details::wrap_to_eigen<TYPE>((PyArrayObject*)_in).cast<t_rvector::Scalar>(); 
         
-       DCPROGS_MACRO( npy_float,      NPY_FLOAT)      
-       else DCPROGS_MACRO( npy_double,     NPY_DOUBLE     )
-       else DCPROGS_MACRO( npy_longdouble, NPY_LONGDOUBLE )
-       else DCPROGS_MACRO( npy_int,        NPY_INT        )
-       else DCPROGS_MACRO( npy_uint,       NPY_UINT       )
-       else DCPROGS_MACRO( npy_long,       NPY_LONG       )
-       else DCPROGS_MACRO( npy_longlong,   NPY_LONGLONG   )
-       else DCPROGS_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
-       else DCPROGS_MACRO( npy_ubyte,      NPY_BYTE       )
-       else DCPROGS_MACRO( npy_short,      NPY_SHORT      )
-       else DCPROGS_MACRO( npy_ushort,     NPY_USHORT     )
-#      undef DCPROGS_MACRO
-       throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+       HJCFIT_MACRO( npy_float,      NPY_FLOAT)      
+       else HJCFIT_MACRO( npy_double,     NPY_DOUBLE     )
+       else HJCFIT_MACRO( npy_longdouble, NPY_LONGDOUBLE )
+       else HJCFIT_MACRO( npy_int,        NPY_INT        )
+       else HJCFIT_MACRO( npy_uint,       NPY_UINT       )
+       else HJCFIT_MACRO( npy_long,       NPY_LONG       )
+       else HJCFIT_MACRO( npy_longlong,   NPY_LONGLONG   )
+       else HJCFIT_MACRO( npy_ulonglong,  NPY_ULONGLONG  )
+       else HJCFIT_MACRO( npy_ubyte,      NPY_BYTE       )
+       else HJCFIT_MACRO( npy_short,      NPY_SHORT      )
+       else HJCFIT_MACRO( npy_ushort,     NPY_USHORT     )
+#      undef HJCFIT_MACRO
+       throw HJCFIT::errors::PythonTypeError("Unexpect numpy array type");
        return t_rvector();
     }
 
     //! Cast data to given type from array type.
     template<class T> T cast(void *_data, int _type) {
       switch(_type) {
-#       define DCPROGS_MACRO(TYPENAME)                                                             \
+#       define HJCFIT_MACRO(TYPENAME)                                                             \
           case type<TYPENAME>::value: return static_cast<T>(*(static_cast<TYPENAME*>(_data)));
-          DCPROGS_MACRO(npy_double);
-          DCPROGS_MACRO(npy_float);
-          DCPROGS_MACRO(npy_longlong);
-          DCPROGS_MACRO(npy_ulonglong);
-          DCPROGS_MACRO(npy_long);
-          DCPROGS_MACRO(npy_ulong);
-          DCPROGS_MACRO(npy_int);
-          DCPROGS_MACRO(npy_uint);
-          DCPROGS_MACRO(npy_short);
-          DCPROGS_MACRO(npy_ushort);
-          DCPROGS_MACRO(npy_byte);
-          DCPROGS_MACRO(npy_ubyte);
+          HJCFIT_MACRO(npy_double);
+          HJCFIT_MACRO(npy_float);
+          HJCFIT_MACRO(npy_longlong);
+          HJCFIT_MACRO(npy_ulonglong);
+          HJCFIT_MACRO(npy_long);
+          HJCFIT_MACRO(npy_ulong);
+          HJCFIT_MACRO(npy_int);
+          HJCFIT_MACRO(npy_uint);
+          HJCFIT_MACRO(npy_short);
+          HJCFIT_MACRO(npy_ushort);
+          HJCFIT_MACRO(npy_byte);
+          HJCFIT_MACRO(npy_ubyte);
 #         ifdef NUMPY_NPY_LONG_DOUBLE
-            DCPROGS_MACRO(npy_longdouble);
+            HJCFIT_MACRO(npy_longdouble);
 #         endif
 #         ifdef NUMPY_NPY_BOOL
-            DCPROGS_MACRO(npy_bool);
+            HJCFIT_MACRO(npy_bool);
 #         endif
-#      undef DCPROGS_MACRO
+#      undef HJCFIT_MACRO
       }
-      throw DCProgs::errors::PythonTypeError("Unexpect numpy array type");
+      throw HJCFIT::errors::PythonTypeError("Unexpect numpy array type");
       return T(0);
     }
 

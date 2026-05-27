@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -56,14 +56,14 @@
         :param qmatrix:
            A :class:`QMatrix` instance.
         :param float xtol: 
-           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 1e-12.
         :param float rtol:
-           Tolerance criteria when computing roots using :func:`~dcprogs.likelihood.brentq`.
+           Tolerance criteria when computing roots using :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 1e-12.
         :param float itermax:
            Maximum number of iterations when computing roots using
-           :func:`~dcprogs.likelihood.brentq`.
+           :func:`~HJCFIT.likelihood.brentq`.
            Defaults to 100.
         :param float lower_bound:
            Lower bound for *all* roots. Defaults to None, in which the case the lower bound is
@@ -123,27 +123,27 @@ class ApproxSurvivor {
   
   %extend {
     // Creates object from determinants and roots.
-    ApproxSurvivor(DCProgs::DeterminantEq const &_af, PyObject * _roots_af, 
-                   DCProgs::DeterminantEq const &_fa, PyObject * _roots_fa ) {
-      using namespace DCProgs;
+    ApproxSurvivor(HJCFIT::DeterminantEq const &_af, PyObject * _roots_af, 
+                   HJCFIT::DeterminantEq const &_fa, PyObject * _roots_fa ) {
+      using namespace HJCFIT;
       std::vector<Root> roots_af = convert_to_roots(_roots_af);
       std::vector<Root> roots_fa = convert_to_roots(_roots_fa);
       return new ApproxSurvivor(_af, roots_af, _fa, roots_fa);
     }
   }
-  ApproxSurvivor( QMatrix const & _matrix, DCProgs::t_real _tau, 
-                  DCProgs::t_real _xtol, DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
-                  DCProgs::t_real _lowerbound, DCProgs::t_real _upperbound );
+  ApproxSurvivor( QMatrix const & _matrix, HJCFIT::t_real _tau, 
+                  HJCFIT::t_real _xtol, HJCFIT::t_real _rtol, HJCFIT::t_uint _itermax,
+                  HJCFIT::t_real _lowerbound, HJCFIT::t_real _upperbound );
 
-  DCProgs::t_rmatrix af(DCProgs::t_real t);
-  DCProgs::t_rmatrix fa(DCProgs::t_real t);
+  HJCFIT::t_rmatrix af(HJCFIT::t_real t);
+  HJCFIT::t_rmatrix fa(HJCFIT::t_real t);
   // Add the ability to pass in numpy arrays.
   %extend {
     PyObject* af(PyObject *_s) {
-      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->af(s); }); 
+      return apply_numpy(_s, [$self](HJCFIT::t_real s) { return $self->af(s); }); 
     }
     PyObject* fa(PyObject *_s) {
-      return apply_numpy(_s, [$self](DCProgs::t_real s) { return $self->fa(s); }); 
+      return apply_numpy(_s, [$self](HJCFIT::t_real s) { return $self->fa(s); }); 
     }
   }
  
@@ -155,16 +155,16 @@ class ApproxSurvivor {
     template<class T> 
       PyObject* affa_components_get(Py_ssize_t const _N, T const &_getstuff) {
         Object<> result = steal_ref( PyList_New(_N) );
-        if(not result) throw DCProgs::errors::PythonErrorAlreadyThrown();
+        if(not result) throw HJCFIT::errors::PythonErrorAlreadyThrown();
         for(Py_ssize_t i(0); i < _N; ++i) {
-          DCProgs::Asymptotes::t_MatrixAndRoot const item = _getstuff(i);
+          HJCFIT::Asymptotes::t_MatrixAndRoot const item = _getstuff(i);
           Object<> py_item = steal_ref( PyTuple_New(2) );
-          if(not py_item) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          if(not py_item) throw HJCFIT::errors::PythonErrorAlreadyThrown();
           Object<> py_root = steal_ref(convert_real_to_python(std::get<1>(item)));
-          if(not py_root) throw DCProgs::errors::PythonErrorAlreadyThrown();
-          DCProgs::t_rmatrix const & matrix = std::get<0>(item);
-          Object<> py_matrix = steal_ref(DCProgs::numpy::wrap_to_numpy(matrix));
-          if(not py_matrix) throw DCProgs::errors::PythonErrorAlreadyThrown();
+          if(not py_root) throw HJCFIT::errors::PythonErrorAlreadyThrown();
+          HJCFIT::t_rmatrix const & matrix = std::get<0>(item);
+          Object<> py_matrix = steal_ref(HJCFIT::numpy::wrap_to_numpy(matrix));
+          if(not py_matrix) throw HJCFIT::errors::PythonErrorAlreadyThrown();
           PyArray_CLEARFLAGS((PyArrayObject*) ~py_matrix, NPY_ARRAY_WRITEABLE);
           PyTuple_SET_ITEM(~py_item, 0, py_matrix.release());
           PyTuple_SET_ITEM(~py_item, 1, py_root.release());
@@ -172,15 +172,15 @@ class ApproxSurvivor {
         }
         return result.release();
       }
-    PyObject* DCProgs_ApproxSurvivor_af_components_get(DCProgs::ApproxSurvivor *_in) {
-        using namespace DCProgs;
+    PyObject* HJCFIT_ApproxSurvivor_af_components_get(HJCFIT::ApproxSurvivor *_in) {
+        using namespace HJCFIT;
         return affa_components_get( (Py_ssize_t)_in->nb_af_components(),
                                     [&_in](Py_ssize_t i)
                                          -> Asymptotes::t_MatrixAndRoot const& {
                  return _in->get_af_components(static_cast<t_int>(i)); } );
     }
-    PyObject* DCProgs_ApproxSurvivor_fa_components_get(DCProgs::ApproxSurvivor *_in) {
-        using namespace DCProgs;
+    PyObject* HJCFIT_ApproxSurvivor_fa_components_get(HJCFIT::ApproxSurvivor *_in) {
+        using namespace HJCFIT;
         return affa_components_get( (Py_ssize_t)_in->nb_fa_components(),
                                     [&_in](Py_ssize_t i) 
                                          -> Asymptotes::t_MatrixAndRoot const& {

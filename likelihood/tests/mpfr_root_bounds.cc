@@ -5,12 +5,12 @@
 
 #include <iostream>
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include "../determinant_equation.h"
 #include "../root_finder.h"
 #include "../brentq.h"
 #include <gtest/gtest.h>
-using namespace DCProgs;
+using namespace HJCFIT;
 
 class MPFRROOTTest : public ::testing::Test {
   

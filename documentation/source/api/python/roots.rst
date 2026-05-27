@@ -3,7 +3,7 @@
 Searching for Roots
 -------------------
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autofunction:: find_roots
 
 Bracketing all Roots

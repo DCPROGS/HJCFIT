@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,16 +18,16 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_ROOT_FINDER_H
-#define DCPROGS_ROOT_FINDER_H
+#ifndef HJCFIT_ROOT_FINDER_H
+#define HJCFIT_ROOT_FINDER_H
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 
 #include <vector>
 
 #include "determinant_equation.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
 
   //! Defines an interval which one or more roots.
@@ -62,10 +62,10 @@ namespace DCProgs {
 
   //! \brief Figures out interval where roots can be found.
   //! \param[in] _det The determinant equation
-  //! \param[in] _mins A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower
-  //!            bound is determined using DCProgs::find_lower_bound_for_roots().
-  //! \param[in] _maxs  A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper
-  //!            bound is determined using DCProgs::find_upper_bound_for_roots().
+  //! \param[in] _mins A valid lower bound, or HJCFIT::quiet_nan. In the latter case, the lower
+  //!            bound is determined using HJCFIT::find_lower_bound_for_roots().
+  //! \param[in] _maxs  A valid upper bound, or HJCFIT::quiet_nan. In the latter case, the upper
+  //!            bound is determined using HJCFIT::find_upper_bound_for_roots().
   //! \param[in] _tolerance Minimum size of intervals. Below that, roots are expected to be
   //!            multiples.
   std::vector<RootInterval> MSWINDOBE
@@ -99,10 +99,10 @@ namespace DCProgs {
   //!          zero, then computes eigenvalues of H to determine possible multiplicity.
   //! \param[in] _det The determinant equation
   //! \param[in] _resolution resolution at which computes values in interval.
-  //! \param[in] _mins A valid lower bound, or DCProgs::quiet_nan. In the latter case, the lower
-  //!            bound is determined using DCProgs::find_lower_bound_for_roots().
-  //! \param[in] _maxs  A valid upper bound, or DCProgs::quiet_nan. In the latter case, the upper
-  //!            bound is determined using DCProgs::find_upper_bound_for_roots().
+  //! \param[in] _mins A valid lower bound, or HJCFIT::quiet_nan. In the latter case, the lower
+  //!            bound is determined using HJCFIT::find_lower_bound_for_roots().
+  //! \param[in] _maxs  A valid upper bound, or HJCFIT::quiet_nan. In the latter case, the upper
+  //!            bound is determined using HJCFIT::find_upper_bound_for_roots().
   //! \param[in] _tolerance Tolerance below which the value of the determinant is considered
   //!            "close to zero".
   std::vector<RootInterval> MSWINDOBE 
@@ -121,7 +121,7 @@ namespace DCProgs {
   //! 1. Optimize over this interval to find an accurate position for the root
   //!
   //| If _upperbound is larger than _lowerbound, then those bounds are used for the first
-  //| step. Otherwise, DCProgs will try and determine the lower bound by iteratively checking
+  //| step. Otherwise, HJCFIT will try and determine the lower bound by iteratively checking
   //| the lowest eigenvalue :math:`\\\\epsilon_i^s` of :math:`H(s_i)`, where :math:`s_i` is the
   //| guess at iteration :math:`i`. If the lower eigenvalue is lower than :math:`s_i`, than
   //| :math:`s_{i+1} = \\\\epsilon_i^s + \\\\alpha(\\epsilon_i^s - s_i)` is created. The upper

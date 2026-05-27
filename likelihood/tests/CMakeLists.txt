@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -21,15 +21,15 @@ if(tests)
   add_gtest(idealG idealG.cc likelihood)
   add_gtest(idealG_exponentials idealg_exponentials.cc likelihood)
   add_gtest(idealG_laplacian idealG_laplacian.cc likelihood)
-  add_gtest(occupancies occupancies.cc likelihood)
+  add_gtest(vectors vectors.cc likelihood)
   add_gtest(time_filter time_filter.cc likelihood)
   add_gtest(laplace_survivor laplace_survivor.cc likelihood)
   add_gtest(determinant_equation determinant_equation.cc likelihood)
   add_gtest(recursion recursion_formula.cc likelihood)
   add_gtest(exact_survivor exact_survivor.cc likelihood)
-  if(DCPROGS_USE_MPFR AND NOT DCPROGS_LONG_DOUBLE)
+  if(HJCFIT_USE_MPFR AND NOT HJCFIT_LONG_DOUBLE)
     add_gtest(mpfr_root_bounds mpfr_root_bounds.cc likelihood)
-  endif(DCPROGS_USE_MPFR AND NOT DCPROGS_LONG_DOUBLE)
+  endif(HJCFIT_USE_MPFR AND NOT HJCFIT_LONG_DOUBLE)
   add_gtest(root_finder_intervals
            "root_finder_intervals.cc;random_matrix.h;random_matrix.cc" 
            likelihood)

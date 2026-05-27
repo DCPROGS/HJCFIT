@@ -1,29 +1,28 @@
-*******************************
-Building and installing HJCFIT:
-*******************************
+******************************
+Building and installing HJCFIT
+******************************
 
 
-Compiling DCProgs
+Compiling HJCFIT
 =================
 
-A couple of design  decisions affect the compilation of DCProgs.
+A couple of design  decisions affect the compilation of HJCFIT.
 
-* `c++11 <http://en.wikipedia.org/wiki/C%2B%2B11>`_ is the new standard for 
-    the C++ programming languages. It is almost fully implemented by modern 
+* `c++11 <http://en.wikipedia.org/wiki/C%2B%2B11>`_ is the new standard for the C++ programming languages. It is almost fully implemented by modern 
     (2013) compilers. However, access to c++11 is now always default, and not 
     always straight-forward. However, c++11 introduces a number of features that 
     simplifies programming (e.g. `move semantics <http://www.cprogramming.com/c++11/rvalue-references-and-move-semantics-in-c++11.html>`_)
     greatly. This is a forward looking solution implying some temporary hassle.
-* [GTest](https://code.google.com/p/googletest/) is the c++ unit-test 
-    framework from google. It is required when running DCProgs' unit tests only.
+* `GTest <https://code.google.com/p/googletest/>`_ is the c++ unit-test 
+    framework from google. It is required when running HJCFIT' unit tests only.
     However, `GTest <https://code.google.com/p/googletest/>`_ must be compiled 
-    by the code it is testing. This means it should be shipped with DCProgs, 
+    by the code it is testing. This means it should be shipped with HJCFIT, 
     or it should be downloaded automatically by the compilation tools. This is
     the option we have chosen. When compiling tests,
     `CMake <http://www.cmake.org/>`_ will automatically download and compile
     `GTest`_
 * The math is done using `Eigen <http://eigen.tuxfamily.org/index.php?title=Main_Page>`_,
-    an efficient and widely used C++ numerical library. 
+  an efficient and widely used C++ numerical library. 
 
 Dependencies
 ------------
@@ -41,15 +40,15 @@ Dependencies
    or `mercurial <http://mercurial.selenic.com/>`_ and let the build process 
    download eigen.
    
-To compile the python bindings for HJCFIT a few additional dependencies are
+   
+To compile the Python bindings for HJCFIT a few additional dependencies are
 needed.
 
 #. A working Python installation. 
-
-Multiple different ways of installing python exist. In general we recommend 
-`Anaconda <https://www.continuum.io/downloads>`_ but alternatives should work
-as well.  In any case Python along with ``numpy`` and ``scipy`` should be 
-installed. HJCFIT supports both Python 2.7 and Python 3
+   Multiple different ways of installing python exist. In general we recommend 
+   `Anaconda <https://www.continuum.io/downloads>`_ but alternatives should work
+   as well.  In any case Python along with ``numpy`` and ``scipy`` should be 
+   installed. HJCFIT supports both Python 2.7 and Python 3
 
 #. `SWIG <http://www.swig.org/>`_ used to generate the wrappings between C++ and
    Python.
@@ -75,7 +74,7 @@ Then configure and build the code:
 
 .. code-block:: bash
   
-  cd /path/to/DCProgs
+  cd /path/to/HJCFIT
   mkdir build && cd build
   cmake ..
   make
@@ -94,7 +93,7 @@ For any compiler, do:
 
 .. code-block:: bash
 
-   cd /path/to/DCProgs
+   cd /path/to/HJCFIT
    mkdir build && cd build
 
 

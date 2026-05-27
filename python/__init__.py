@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -15,14 +15,14 @@
 #   GNU General Public License for more details.
 #########################
 
-""" DCProgs python library. """
+""" HJCFIT python library. """
 __docformat__ = "restructuredtext en"
 __all__ = ['likelihood', 'random', 'read_idealized_bursts', 'internal_dtype']
 import numpy
 from . import likelihood
-from .likelihood._likelihood import _dcprogs_dtype
+from .likelihood._likelihood import _HJCFIT_dtype
 
-internal_dtype = _dcprogs_dtype()
+internal_dtype = _HJCFIT_dtype()
 """ Type of the numpy array used internally.
 
     Using this type should make some conversion from python to c++ faster or

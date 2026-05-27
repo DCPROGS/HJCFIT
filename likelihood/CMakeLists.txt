@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -15,10 +15,10 @@
 #   GNU General Public License for more details.
 #########################
 
-set(LIKELIHOOD_SOURCE qmatrix.cc idealG.cc occupancies.cc time_filter.cc exact_survivor.cc
+set(LIKELIHOOD_SOURCE qmatrix.cc idealG.cc vectors.cc time_filter.cc exact_survivor.cc
                       root_finder.cc determinant_equation.cc asymptotes.cc approx_survivor.cc
                       missed_eventsG.cc laplace_survivor.cc brentq.cc likelihood.cc)
-set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h occupancies.h time_filter.h recursion_formula.h
+set(LIKELIHOOD_HEADERS qmatrix.h errors.h idealG.h vectors.h time_filter.h recursion_formula.h
                        exact_survivor.h root_finder.h determinant_equation.h asymptotes.h
                        approx_survivor.h missed_eventsG.h laplace_survivor.h likelihood.h brentq.h)
 
@@ -30,13 +30,13 @@ endif()
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
 add_dependencies(likelihood lookup_dependencies)
 
-if(DCPROGS_USE_MPFR)
+if(HJCFIT_USE_MPFR)
   target_link_libraries(likelihood mpfr)
-endif(DCPROGS_USE_MPFR)
+endif(HJCFIT_USE_MPFR)
 
 # Windows + Visual studio specifics.
 if(MSVC)
-  set_target_properties(likelihood PROPERTIES DEFINE_SYMBOL DCPROGS_LIKELIHOOD_DLLEXPORT)
+  set_target_properties(likelihood PROPERTIES DEFINE_SYMBOL HJCFIT_LIKELIHOOD_DLLEXPORT)
 endif(MSVC)
 
 # Put all libraries and output in same place.
@@ -51,7 +51,7 @@ else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
 install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
-install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/dcprogs/likelihood)
+install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/hjcfit/likelihood)
 
 
 # Test subdirectory.

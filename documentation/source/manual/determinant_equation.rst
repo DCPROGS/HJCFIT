@@ -10,18 +10,18 @@ The function :math:`H(s)` is an integral defined as:
      \int_0^\tau e^{-st}e^{\mathcal{Q}_{FF}t}\partial\,t\ \mathcal{Q}_{FA}
 
 It is possible the function :math:`H` as well as its determinant using the
-:py:class:`~dcprogs.likelihood.DeterminantEq` objects. This is the object used when solving for the
+:py:class:`~HJCFIT.likelihood.DeterminantEq` objects. This is the object used when solving for the
 approximate missed-events likelihood. The determinant equation is initialized in one of two ways,
-either from a matrix or :py:class:`~dcprogs.likelihood.QMatrix`.
+either from a matrix or :py:class:`~HJCFIT.likelihood.QMatrix`.
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/determinanteq.py
      :language: python
      :lines: 3-17
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/determinanteq.cc
      :language: c++
@@ -32,16 +32,16 @@ With an object in hand, it is possible to compute :math:`\mathop{det}W(s)` for a
 following we demonstrate that the two initialization methods are equivalent and that the determinant
 is zero at the roots of :math:`W(s)`, per definition. 
 
-:python: 
+:Python: 
 
-  The python bindings accept both scalars and arrays as input. 
+  The Python bindings accept both scalars and arrays as input. 
 
   .. literalinclude:: ../../code/determinanteq.py
      :language: python
      :lines: 19-23
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/determinanteq.cc
      :language: c++
@@ -51,7 +51,7 @@ is zero at the roots of :math:`W(s)`, per definition.
 There exists a convenience function to transform a determinant equation into its "transpose", e.g.
 one where A states become F states and F states become A states:
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/determinanteq.py
      :language: python
@@ -59,10 +59,10 @@ one where A states become F states and F states become A states:
 
   .. note::
      
-     Here we choose to create an input which has same internal type as the dcprogs package. This may
+     Here we choose to create an input which has same internal type as the HJCFIT package. This may
      result in faster code since no conversion are required.
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/determinanteq.cc
      :language: c++
@@ -72,13 +72,13 @@ one where A states become F states and F states become A states:
 Finally, it is possible to compute :math:`H(s)` directly, as well as :math:`\frac{\partial
 W(s)}{\partial s}`, as demonstrated below.
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/determinanteq.py
      :language: python
      :lines: 30-
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/determinanteq.cc
      :language: c++

@@ -37,7 +37,7 @@ addons:
 
 env:
   global:
-    - DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=OFF"
+    - DOLONGDOUBLE="-DHJCFIT_LONG_DOUBLE=OFF"
     - UPLOADDOCS=false
 matrix:
   include:
@@ -48,7 +48,7 @@ matrix:
       env: UPLOADDOCS=true
     - os: linux
       python: 3.5
-      env: DOLONGDOUBLE="-DDCPROGS_LONG_DOUBLE=ON"
+      env: DOLONGDOUBLE="-DHJCFIT_LONG_DOUBLE=ON"
     - os: osx
       osx_image: xcode7.3
       python: 2.7

@@ -36,13 +36,13 @@ where :math:`c_i` and :math:`r_i` are the column and row eigenvectors of a
 The approximate survivor function can be initialized from a :math:`\mathcal{Q}`-matrix and the resolution
 :math:`\tau`:
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/approx_survivor.py
      :language: python
      :lines: 1-13
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/approx_survivor.cc
      :language: c++
@@ -56,16 +56,16 @@ The approximate survivor function can be initialized from a :math:`\mathcal{Q}`-
 
 The open and shut time survivor likelihood can be computed using a single call:
 
-:python: 
+:Python: 
 
-  The python bindings accept both scalars and array inputs.
+  The Python bindings accept both scalars and array inputs.
 
   .. literalinclude:: ../../code/approx_survivor.py
      :language: python
      :lines: 15-19
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/approx_survivor.cc
      :language: c++
@@ -75,13 +75,13 @@ The open and shut time survivor likelihood can be computed using a single call:
 The coefficient and the exponents of the exponentials that make up the asymptotic expression are
 exposed as shown below. 
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/approx_survivor.py
      :language: python
      :lines: 23-
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/approx_survivor.cc
      :language: c++

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include <random>
 #include <memory>
 #include <iostream>
 #include <gtest/gtest.h>
 #include "../idealG.h"
-using namespace DCProgs;
+using namespace HJCFIT;
 
 // Max exponential time is 5*t (t=1)
 size_t const nexponents = 5;

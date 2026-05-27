@@ -3,7 +3,7 @@
 IdealG
 ------
 
-.. currentmodule:: dcprogs.likelihood 
+.. currentmodule:: HJCFIT.likelihood 
 
 .. autoclass:: IdealG
    :members: 

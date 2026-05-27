@@ -3,5 +3,5 @@
 DeterminantEq
 -------------
 
-.. doxygenclass:: DCProgs::DeterminantEq
+.. doxygenclass:: HJCFIT::DeterminantEq
    :members:

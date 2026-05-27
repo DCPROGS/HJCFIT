@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,10 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_IDEALG
-#define DCPROGS_LIKELIHOOD_IDEALG
+#ifndef HJCFIT_LIKELIHOOD_IDEALG
+#define HJCFIT_LIKELIHOOD_IDEALG
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <utility>
 
@@ -30,8 +30,8 @@
 #include "qmatrix.h"
 #include "errors.h"
 
-//! General namespace for all things DCProgs.
-namespace DCProgs {
+//! General namespace for all things HJCFIT.
+namespace HJCFIT {
 
   //! \brief Ideal transition matrix of open and shut intervals
   //! \details Given a transition matrix \f$\mathcal{Q}\f$ it is possible to figure out the evolution of any given

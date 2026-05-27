@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
@@ -26,7 +26,7 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 #include "../exact_survivor.h"
-using namespace DCProgs;
+using namespace HJCFIT;
 #ifdef HAS_CXX11_TYPE_TRAITS
   static_assert( std::is_move_constructible<ExactSurvivor>::value,
          	       "ExactSurvivor is not move constructible." );  
@@ -128,10 +128,10 @@ TEST_F(ExactSurvivorTest, negative_times) {
 
 // Makes sure that code throws if qmatrix is too large to fit the stack
 TEST_F(ExactSurvivorTest, exceeds_stack_throws) {
-  Q.resize(dcprogs_stack_matrix+1,dcprogs_stack_matrix+1);
-  QMatrix qmatrix(Q, dcprogs_stack_matrix/2);
+  Q.resize(HJCFIT_stack_matrix+1,HJCFIT_stack_matrix+1);
+  QMatrix qmatrix(Q, HJCFIT_stack_matrix/2);
   EXPECT_THROW(ExactSurvivor survivor(qmatrix, 1e-4), errors::Domain);
-  EXPECT_THROW(ExactSurvivor survivor(Q, dcprogs_stack_matrix/2, 1e-4), errors::Domain);
+  EXPECT_THROW(ExactSurvivor survivor(Q, HJCFIT_stack_matrix/2, 1e-4), errors::Domain);
 }
 
 // Compares recursive implementation to the expanded one in this file.

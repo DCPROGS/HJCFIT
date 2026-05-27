@@ -3,7 +3,7 @@
 QMatrix
 -------
 
-.. currentmodule:: dcprogs.likelihood 
+.. currentmodule:: HJCFIT.likelihood 
 
 .. autoclass:: QMatrix
    :members: 

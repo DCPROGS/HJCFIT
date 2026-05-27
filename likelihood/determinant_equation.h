@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,14 +18,14 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_DETERMINANT_EQUATION_H
-#define DCPROGS_LIKELIHOOD_DETERMINANT_EQUATION_H
+#ifndef HJCFIT_LIKELIHOOD_DETERMINANT_EQUATION_H
+#define HJCFIT_LIKELIHOOD_DETERMINANT_EQUATION_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 #include <ostream>
 #include "laplace_survivor.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   //! \brief A functor to compute the W matrix, so as to find its roots.
   //! \details The whole implementation is done w.r.t. to AF transitions. However, in practice,

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,13 +18,13 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
 #include "../idealG.h"
-#include "../occupancies.h"
-using namespace DCProgs;
+#include "../vectors.h"
+using namespace HJCFIT;
 
 // Sets up test with parameters from CH82, 1e-7 nM.
 class EquilibriumTest : public ::testing::Test {
@@ -45,12 +45,12 @@ class EquilibriumTest : public ::testing::Test {
 
 TEST_F(EquilibriumTest, initial_states){
   IdealG idealg(Q, 2);
-  t_initvec const phiA = occupancies(idealg);
+  t_initvec const phiA = vectors(idealg);
   EXPECT_EQ(phiA.size(), 2);
   EXPECT_NEAR(phiA(0), 10./135., 1e-10);
   EXPECT_NEAR(phiA(1), 1 - 10./135., 1e-10);
 
-  t_initvec const phiF = occupancies(idealg, false);
+  t_initvec const phiF = vectors(idealg, false);
   EXPECT_EQ(phiF.size(), 3);
   EXPECT_NEAR(phiF(0), 10./135., 1e-10);
   EXPECT_NEAR(phiF(1), 1 - 10./135., 1e-10);

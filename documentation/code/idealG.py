@@ -1,5 +1,5 @@
 from numpy import dot, identity, abs, all
-from dcprogs.likelihood import QMatrix, IdealG, expm
+from HJCFIT.likelihood import QMatrix, IdealG, expm
 
 qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0], 
                     [2./3., -1502./3.,     0,    500,    0], 

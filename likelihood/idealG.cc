@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,12 +18,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
 
 #include <iostream>
 #include "idealG.h"
 
-namespace DCProgs {
+namespace HJCFIT {
   void IdealG::set(t_rmatrix const &_Q, t_uint const &_nopen) {
   
     if(_Q.rows() != _Q.cols()) throw errors::Domain("Transition matrix is not square.");
@@ -67,6 +67,6 @@ namespace DCProgs {
     return _stream << "Ideal Likelihood:\n" 
                    << "=================\n\n" 
                    << "  * nopen: "  << _mat.get_nopen() << "\n"
-                   << "  * matrix: " << DCProgs::numpy_io(_mat.get_matrix()) << "\n";
+                   << "  * matrix: " << HJCFIT::numpy_io(_mat.get_matrix()) << "\n";
   }
 }

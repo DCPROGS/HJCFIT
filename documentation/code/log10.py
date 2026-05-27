@@ -1,5 +1,5 @@
 from numpy import all, abs, NaN
-from dcprogs.likelihood import Log10Likelihood
+from HJCFIT.likelihood import Log10Likelihood
 
 bursts = [  [0.1, 0.2, 0.1],                  # 1st burst 
             [0.2],                            # 2nd burst

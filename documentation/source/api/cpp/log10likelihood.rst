@@ -11,5 +11,5 @@ where :math:`L(Q)` is declared in :ref:`the likelihood equation <log10likelihood
 
 .. General Description End
 
-.. doxygenclass:: DCProgs::Log10Likelihood
+.. doxygenclass:: HJCFIT::Log10Likelihood
   :members:

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -43,9 +43,9 @@ class ExactSurvivor {
   public:
 
   // Constructor.
-  ExactSurvivor(DCProgs::QMatrix const &_matrix, DCProgs::t_real _tau);
+  ExactSurvivor(HJCFIT::QMatrix const &_matrix, HJCFIT::t_real _tau);
 
-  %typemap(check) DCProgs::t_real t {
+  %typemap(check) HJCFIT::t_real t {
     if($1 > 11e0 * arg1->get_tau()) {
       std::ostringstream sstr;
       sstr << "Input value for time (" << $1
@@ -57,37 +57,37 @@ class ExactSurvivor {
       return NULL;
     }
   }
-  DCProgs::t_rmatrix af(DCProgs::t_real t);
-  DCProgs::t_rmatrix fa(DCProgs::t_real t);
-  %clear DCProgs::t_real t;
+  HJCFIT::t_rmatrix af(HJCFIT::t_real t);
+  HJCFIT::t_rmatrix fa(HJCFIT::t_real t);
+  %clear HJCFIT::t_real t;
   %extend {
     PyObject* af(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->af(_t); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real _t) { return $self->af(_t); }); 
     }
     PyObject* fa(PyObject *t) {
-      return apply_numpy(t, [$self](DCProgs::t_real _t) { return $self->fa(_t); }); 
+      return apply_numpy(t, [$self](HJCFIT::t_real _t) { return $self->fa(_t); }); 
     }
   }
 
-  DCProgs::t_rmatrix recursion_af(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
-  DCProgs::t_rmatrix recursion_fa(DCProgs::t_uint i, DCProgs::t_uint m, DCProgs::t_uint l) const;
-  DCProgs::t_rmatrix D_af(DCProgs::t_uint _i) const;
-  DCProgs::t_rmatrix D_fa(DCProgs::t_uint _i) const;
+  HJCFIT::t_rmatrix recursion_af(HJCFIT::t_uint i, HJCFIT::t_uint m, HJCFIT::t_uint l) const;
+  HJCFIT::t_rmatrix recursion_fa(HJCFIT::t_uint i, HJCFIT::t_uint m, HJCFIT::t_uint l) const;
+  HJCFIT::t_rmatrix D_af(HJCFIT::t_uint _i) const;
+  HJCFIT::t_rmatrix D_fa(HJCFIT::t_uint _i) const;
 
   // Add extensions to compute properties
   %extend {
-    DCProgs::t_real const tau;
-    DCProgs::t_rvector const eigenvalues_af;
-    DCProgs::t_rvector const eigenvalues_fa;
+    HJCFIT::t_real const tau;
+    HJCFIT::t_rvector const eigenvalues_af;
+    HJCFIT::t_rvector const eigenvalues_fa;
   }
   %{
-    DCProgs::t_real DCProgs_ExactSurvivor_tau_get(DCProgs::ExactSurvivor *_in) {
+    HJCFIT::t_real HJCFIT_ExactSurvivor_tau_get(HJCFIT::ExactSurvivor *_in) {
       return _in->get_tau();
     }
-    DCProgs::t_rvector const DCProgs_ExactSurvivor_eigenvalues_af_get(DCProgs::ExactSurvivor *_in) {
+    HJCFIT::t_rvector const HJCFIT_ExactSurvivor_eigenvalues_af_get(HJCFIT::ExactSurvivor *_in) {
       return _in->eigenvalues_af();
     }
-    DCProgs::t_rvector const DCProgs_ExactSurvivor_eigenvalues_fa_get(DCProgs::ExactSurvivor *_in) {
+    HJCFIT::t_rvector const HJCFIT_ExactSurvivor_eigenvalues_fa_get(HJCFIT::ExactSurvivor *_in) {
       return _in->eigenvalues_fa();
     }
   %}

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -20,8 +20,8 @@
 %{
 
   namespace {
-    DCProgs::t_Burst convert_pyburst(PyObject *_burst) {
-      using namespace DCProgs;
+    HJCFIT::t_Burst convert_pyburst(PyObject *_burst) {
+      using namespace HJCFIT;
       if(not PySequence_Check(_burst))
         throw errors::PythonTypeError("Expected a sequence on input.");
       t_Burst result;
@@ -30,7 +30,7 @@
       while(Object<> item = steal_ref(PyIter_Next(~py_iterator))) {
           if(PyFloat_Check(~item)) 
             result.emplace_back(static_cast<t_real>(PyFloat_AS_DOUBLE(~item)));
-#         ifndef DCPROGS_PYTHON3
+#         ifndef HJCFIT_PYTHON3
             else if(PyInt_Check(~item))
               result.emplace_back(static_cast<t_real>(PyInt_AS_LONG(~item)));
 #         endif
@@ -46,8 +46,8 @@
       if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
       return result;
     }
-    DCProgs::t_Bursts convert_pybursts(PyObject *_bursts) {
-      using namespace DCProgs;
+    HJCFIT::t_Bursts convert_pybursts(PyObject *_bursts) {
+      using namespace HJCFIT;
       if(not PySequence_Check(_bursts))
         throw errors::PythonTypeError("Expected a sequence on input.");
       t_Bursts result;
@@ -80,7 +80,7 @@
          "   Maximum length of missed events. Should be positive.\n\n"
          ".. attribute:: tcritical\n\n"
          "   :math:`t_{\\mathrm{crit}}` for CHS vectors. If negative, ``None``, or ``NaN``, \n"
-         "   then the initial and final states are the equilibrium occupancies.\n\n"
+         "   then the initial and final states are the equilibrium vectors.\n\n"
          ".. attribute:: nmax\n\n"
          "  The exact missed-events likelihood will be computed for \n"
          "  :math:`t < n_{\mathrm{max}}\tau`.\n\n"
@@ -92,10 +92,10 @@
          "   Maximum number of iterations when computing roots via :py:func:`likelihood.brentq`.\n"
          ".. attribute:: lower_bound\n\n"
          "   Lower bound bracketing all roots. If None or NaN, then the lower bound will be \n"
-         "   computed during calls by :py:func:`~dcprogs.likelihood.find_lower_bound_for_root`\n\n"
+         "   computed during calls by :py:func:`~HJCFIT.likelihood.find_lower_bound_for_root`\n\n"
          ".. attribute:: upper_bound\n\n"
          "   Upper bound bracketing all roots. If None or NaN, then the upper bound will be \n"
-         "   computed during calls by :py:func:`~dcprogs.likelihood.find_upper_bound_for_root`\n\n")
+         "   computed during calls by :py:func:`~HJCFIT.likelihood.find_upper_bound_for_root`\n\n")
          Log10Likelihood;
 
 // The following makes it possible to use keyword arguments in the constructor.
@@ -114,7 +114,7 @@
            Maximum length of missed events. Should be positive.
         :param float tcritical:
            :math:`t_{\mathrm{crit}}` for CHS vectors. If None, then the initial and final states
-           are the equilibrium occupancies.
+           are the equilibrium vectors.
         :param integer nmax:
            The exact missed-events likelihood will be computed for 
            :math:`t < n_{\matrm{max}}\tau`.
@@ -173,82 +173,82 @@
 class Log10Likelihood {
   public:
     //! Number of open states.
-    DCProgs::t_uint nopen;
+    HJCFIT::t_uint nopen;
     //! Max length of missed events
-    DCProgs::t_real tau;
+    HJCFIT::t_real tau;
 
     // Tells SWIG how to convert tcritical, since it can be negative or NaN or None.
-    %typemap(in) DCProgs::t_real tcritical { 
-      using namespace DCProgs;
+    %typemap(in) HJCFIT::t_real tcritical { 
+      using namespace HJCFIT;
       if($input == Py_None) $1 = quiet_nan;
       else try {
         $1 = convert_to_real($input); 
         if($1 <= 0) $1 = quiet_nan;
-      } DCPROGS_CATCH(SWIG_fail);
+      } HJCFIT_CATCH(SWIG_fail);
     }
-    %typemap(out) DCProgs::t_real tcritical { 
-      if(DCPROGS_ISNAN($1) or $1 <= 0) {
+    %typemap(out) HJCFIT::t_real tcritical { 
+      if(HJCFIT_ISNAN($1) or $1 <= 0) {
         $result = Py_None;
         Py_INCREF(Py_None);
       } else try { $result = convert_real_to_python($1, $self); }
-      DCPROGS_CATCH(SWIG_fail);
+      HJCFIT_CATCH(SWIG_fail);
     }
     //! \brief tcrit. 
-    //! \detail If negative or null, will use equilibrium occupancies rather than CHS occupancies.
-    DCProgs::t_real tcritical;
+    //! \detail If negative or null, will use equilibrium vectors rather than CHS vectors.
+    HJCFIT::t_real tcritical;
     //! Number of intervals for which to compute exact result.
-    DCProgs::t_uint nmax;
+    HJCFIT::t_uint nmax;
     //! Tolerance for root finding.
-    DCProgs::t_real xtol;
+    HJCFIT::t_real xtol;
     //! Tolerance for root finding.
-    DCProgs::t_real rtol;
+    HJCFIT::t_real rtol;
     //! Maximum number of iterations for root finding.
-    DCProgs::t_uint itermax;
+    HJCFIT::t_uint itermax;
 
     // Tells SWIG how to convert upper and lower bounds, since it can be NaN or None.
-    %typemap(in) DCProgs::t_real lower_bound { 
-      using namespace DCProgs;
+    %typemap(in) HJCFIT::t_real lower_bound { 
+      using namespace HJCFIT;
       if($input == Py_None) $1 = quiet_nan;
       else try {
         $1 = convert_to_real($input); 
-      } DCPROGS_CATCH(SWIG_fail);
+      } HJCFIT_CATCH(SWIG_fail);
     }
-    %typemap(out) DCProgs::t_real lower_bound { 
-      if(DCPROGS_ISNAN($1)) {
+    %typemap(out) HJCFIT::t_real lower_bound { 
+      if(HJCFIT_ISNAN($1)) {
         $result = Py_None;
         Py_INCREF(Py_None);
       } else try { $result = convert_real_to_python($1, $self); }
-      DCPROGS_CATCH(SWIG_fail);
+      HJCFIT_CATCH(SWIG_fail);
     }
-    %clear DCProgs::t_real tcritical;
+    %clear HJCFIT::t_real tcritical;
     //! Lower bound bracketing all roots.
-    DCProgs::t_real lower_bound;
-    %clear DCProgs::t_real lower_bound;
-    %typemap(in) DCProgs::t_real upper_bound { 
-      using namespace DCProgs;
+    HJCFIT::t_real lower_bound;
+    %clear HJCFIT::t_real lower_bound;
+    %typemap(in) HJCFIT::t_real upper_bound { 
+      using namespace HJCFIT;
       if($input == Py_None) $1 = quiet_nan;
       else try {
         $1 = convert_to_real($input); 
-      } DCPROGS_CATCH(SWIG_fail);
+      } HJCFIT_CATCH(SWIG_fail);
     }
-    %typemap(out) DCProgs::t_real upper_bound { 
-      if(DCPROGS_ISNAN($1)) {
+    %typemap(out) HJCFIT::t_real upper_bound { 
+      if(HJCFIT_ISNAN($1)) {
         $result = Py_None;
         Py_INCREF(Py_None);
       } else try { $result = convert_real_to_python($1, $self); }
-      DCPROGS_CATCH(SWIG_fail);
+      HJCFIT_CATCH(SWIG_fail);
     }
     //! Upper bound bracketing all roots.
-    DCProgs::t_real upper_bound;
-    %clear DCProgs::t_real upper_bound;
+    HJCFIT::t_real upper_bound;
+    %clear HJCFIT::t_real upper_bound;
 
     // The $self argument below is quite important. It tells SWIG that the memory for the matrix is
     // owned by c++, and that the c++ object should stay alive as long as the matrix lives in python.
-    %typemap(out) DCProgs::t_Burst & { 
+    %typemap(out) HJCFIT::t_Burst & { 
       try {
-        Eigen::Map<DCProgs::t_rvector> map(result->data(), result->size());
-        $result = DCProgs::numpy::wrap_to_numpy(map, $self); 
-      } DCPROGS_CATCH(SWIG_fail);
+        Eigen::Map<HJCFIT::t_rvector> map(result->data(), result->size());
+        $result = HJCFIT::numpy::wrap_to_numpy(map, $self); 
+      } HJCFIT_CATCH(SWIG_fail);
     }
     // Constructor
     // This is overriden twice: 
@@ -256,27 +256,27 @@ class Log10Likelihood {
     //   - then in python, so we can use keyword arguments
     //     This is done above in the feature("shadow") bit
     %extend {
-      Log10Likelihood   ( PyObject *_bursts, DCProgs::t_uint _nopen,
-                          DCProgs::t_real _tau, DCProgs::t_real _tcritical,
-                          DCProgs::t_uint _nmax, DCProgs::t_real _xtol,
-                          DCProgs::t_real _rtol, DCProgs::t_uint _itermax,
-                          DCProgs::t_real _lower_bound, DCProgs::t_real _upper_bound )  {
-        using namespace DCProgs;
+      Log10Likelihood   ( PyObject *_bursts, HJCFIT::t_uint _nopen,
+                          HJCFIT::t_real _tau, HJCFIT::t_real _tcritical,
+                          HJCFIT::t_uint _nmax, HJCFIT::t_real _xtol,
+                          HJCFIT::t_real _rtol, HJCFIT::t_uint _itermax,
+                          HJCFIT::t_real _lower_bound, HJCFIT::t_real _upper_bound )  {
+        using namespace HJCFIT;
         return new Log10Likelihood( convert_pybursts(_bursts), _nopen, _tau, _tcritical,
                                     _nmax, _xtol, _rtol, _itermax, _lower_bound, _upper_bound );
       }
     }
 
     %extend {
-      DCProgs::t_Burst & __getitem__(int i) {
-        using namespace DCProgs;
+      HJCFIT::t_Burst & __getitem__(int i) {
+        using namespace HJCFIT;
         if(i < 0) i += $self->bursts.size();
         if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
         return $self->bursts[i];
       }
       void insert(int i, PyObject* _burst) {
-        using namespace DCProgs;
+        using namespace HJCFIT;
         if(i < 0) i += $self->bursts.size();
         if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
@@ -287,7 +287,7 @@ class Log10Likelihood {
         $self->bursts.insert($self->bursts.begin() + i, burst);
       }
       void __setitem__(int i, PyObject* _burst) {
-        using namespace DCProgs;
+        using namespace HJCFIT;
         if(i < 0) i += $self->bursts.size();
         if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
@@ -298,7 +298,7 @@ class Log10Likelihood {
         $self->bursts[i] = std::move(burst);
       }
       PyObject* __delitem__(int i) {
-        using namespace DCProgs;
+        using namespace HJCFIT;
         if(i < 0) i += $self->bursts.size();
         if(i < 0 or static_cast<t_Bursts::size_type>(i) >= $self->bursts.size())
           throw errors::Index("Index to burst is out of range.");
@@ -308,7 +308,7 @@ class Log10Likelihood {
       }
       int __len__() { return $self->bursts.size(); }
       void append(PyObject* _in) {
-        using namespace DCProgs;
+        using namespace HJCFIT;
         
         t_Burst burst = convert_pyburst(_in);
         if(burst.size() == 0) return;
@@ -328,15 +328,15 @@ class Log10Likelihood {
    
     %extend {
       //! Computes likelihood for each burst in separate value.
-      DCProgs::t_rvector vector(PyObject* _Q) const {
-        return $self->vector(DCProgs::numpy::map_to_rmatrix(_Q));
+      HJCFIT::t_rvector vector(PyObject* _Q) const {
+        return $self->vector(HJCFIT::numpy::map_to_rmatrix(_Q));
       }
-      DCProgs::t_real operator()(PyObject* _Q) const {
-        return $self->operator()(DCProgs::numpy::map_to_rmatrix(_Q));
+      HJCFIT::t_real operator()(PyObject* _Q) const {
+        return $self->operator()(HJCFIT::numpy::map_to_rmatrix(_Q));
       }
     }
     //! Computes likelihood for each burst in separate value.
-    DCProgs::t_rvector vector(QMatrix const &_Q) const;
+    HJCFIT::t_rvector vector(QMatrix const &_Q) const;
     //! Log-likelihood 
-    DCProgs::t_real operator()(QMatrix const &_Q) const;
+    HJCFIT::t_real operator()(QMatrix const &_Q) const;
 };

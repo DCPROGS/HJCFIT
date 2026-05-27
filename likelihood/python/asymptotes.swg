@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -31,9 +31,9 @@ class Asymptotes {
   public:
 
   %extend {
-    Asymptotes(DCProgs::DeterminantEq const &_det, PyObject *_array) {
+    Asymptotes(HJCFIT::DeterminantEq const &_det, PyObject *_array) {
        
-       using namespace DCProgs;
+       using namespace HJCFIT;
        Object<> iterator = steal_ref(PyObject_GetIter(_array));
        if(not iterator) throw errors::PythonErrorAlreadyThrown();
        std::vector<Root> roots;
@@ -60,7 +60,7 @@ class Asymptotes {
     };
   }
 
-  DCProgs::t_rmatrix operator()(DCProgs::t_real _s) const;
+  HJCFIT::t_rmatrix operator()(HJCFIT::t_real _s) const;
   %extend {
     PyObject* operator()(PyObject *t) { return apply_numpy(t, *$self); }
   }

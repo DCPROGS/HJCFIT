@@ -22,9 +22,9 @@ Feature: Check IdealG bindings
   Scenario Outline: Computation of equilibrium vectors
     Given a list of 100 random ideal likelihoods
       And a parameter tolerance=1e-7
-     When the <name> equilibrium occupancies are computed 
-     Then the <name> equilibrium occupancies are the only solution to the equilibrium equations
-      And the components of the <name> equilibrium occupancies sum to one
+     When the <name> equilibrium vectors are computed 
+     Then the <name> equilibrium vectors are the only solution to the equilibrium equations
+      And the components of the <name> equilibrium vectors sum to one
 
     Examples:
  

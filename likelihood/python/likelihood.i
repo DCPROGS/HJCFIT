@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -19,11 +19,11 @@
 ************************/
 
 // Starts the likelihood sub-package
-%module(package="dcprogs") likelihood
+%module(package="HJCFIT") likelihood
 // C++ definitions that are needed to compile the python bindings.
 %{
 #define SWIG_FILE_WITH_INIT
-#  include <DCProgsConfig.h>
+#  include <HJCFITConfig.h>
 #  include <iostream>
 #  include <sstream>
 #  include <memory>
@@ -47,7 +47,7 @@
 
 #  include "../qmatrix.h"
 #  include "../idealG.h"
-#  include "../occupancies.h"
+#  include "../vectors.h"
 #  include "../determinant_equation.h"
 #  include "../root_finder.h"
 #  include "../asymptotes.h"
@@ -59,55 +59,55 @@
 #  include "../brentq.h"
 
 
-#ifdef DCPROGS_CATCH
-# error DCPROGS_CATCH already defined.
+#ifdef HJCFIT_CATCH
+# error HJCFIT_CATCH already defined.
 #endif 
-#define DCPROGS_CATCH(ONERROR)                                                 \
-    catch (DCProgs::errors::ComplexEigenvalues &_e) {                          \
+#define HJCFIT_CATCH(ONERROR)                                                 \
+    catch (HJCFIT::errors::ComplexEigenvalues &_e) {                          \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::NaN &_e) {                                       \
+    } catch (HJCFIT::errors::NaN &_e) {                                       \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::MaxIterations &_e) {                             \
+    } catch (HJCFIT::errors::MaxIterations &_e) {                             \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Mass &_e) {                                      \
+    } catch (HJCFIT::errors::Mass &_e) {                                      \
       PyErr_SetString(PyExc_ArithmeticError,                                   \
           (std::string("Maximum number of iterations reached: ") + _e.what())  \
           .c_str() );                                                          \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Domain &_e) {                                    \
+    } catch (HJCFIT::errors::Domain &_e) {                                    \
       PyErr_SetString(PyExc_ArithmeticError, _e.what());                       \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Math &_e) {                                      \
+    } catch (HJCFIT::errors::Math &_e) {                                      \
       PyErr_SetString( PyExc_ArithmeticError,                                  \
-                       ( std::string("Math error in dcprogs: ")                \
+                       ( std::string("Math error in HJCFIT: ")                \
                          + _e.what()).c_str() );                               \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Index &_e) {                                     \
+    } catch (HJCFIT::errors::Index &_e) {                                     \
       PyErr_SetString(PyExc_IndexError, _e.what());                            \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::PythonTypeError &_e) {                           \
+    } catch (HJCFIT::errors::PythonTypeError &_e) {                           \
       PyErr_SetString(PyExc_TypeError, _e.what());                             \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::PythonValueError &_e) {                          \
+    } catch (HJCFIT::errors::PythonValueError &_e) {                          \
       PyErr_SetString(PyExc_ValueError, _e.what());                            \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::PythonErrorAlreadyThrown &) {                    \
+    } catch (HJCFIT::errors::PythonErrorAlreadyThrown &) {                    \
       ONERROR;                                                                 \
-    } catch (DCProgs::errors::Python &_e) {                                    \
+    } catch (HJCFIT::errors::Python &_e) {                                    \
       PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
       ONERROR;                                                                 \
-    } catch(DCProgs::errors::NotImplemented &_e) {                             \
+    } catch(HJCFIT::errors::NotImplemented &_e) {                             \
       PyErr_SetString(PyExc_NotImplementedError, _e.what());                   \
       ONERROR;                                                                 \
-    } catch(DCProgs::errors::Runtime &_e) {                                    \
+    } catch(HJCFIT::errors::Runtime &_e) {                                    \
       PyErr_SetString(PyExc_RuntimeError, _e.what());                          \
       ONERROR;                                                                 \
-    } catch(DCProgs::errors::Root &_e) {                                       \
+    } catch(HJCFIT::errors::Root &_e) {                                       \
       PyErr_SetString( PyExc_RuntimeError,                                     \
-                       (std::string("Encountered unknonw error in DCProgs\n")  \
+                       (std::string("Encountered unknonw error in HJCFIT\n")  \
                         + _e.what()).c_str() );                                \
       ONERROR;                                                                 \
     } catch(std::exception &_e) {                                              \
@@ -126,7 +126,7 @@
 
 %exception {
   try { $function }
-  DCPROGS_CATCH(return NULL;);
+  HJCFIT_CATCH(return NULL;);
 }
 
 // Adds some standard converters for eigen, 
@@ -135,8 +135,8 @@
 
 
 // These macros help us translate from C++ exceptions to python exceptions
-//! General namespace for all things DCProgs.
-namespace DCProgs {
+//! General namespace for all things HJCFIT.
+namespace HJCFIT {
 
   %include "qmatrix.swg"
   %include "idealg.swg"
@@ -152,4 +152,4 @@ namespace DCProgs {
 %include "brentq.swg"
 %include "time_filter.swg"
 %include "chained.swg"
-#undef DCPROGS_CATCH
+#undef HJCFIT_CATCH

@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -76,7 +76,7 @@ def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True
     return matrix
 
   def zero_eig(result): 
-    from dcprogs.likelihood import svd
+    from HJCFIT.likelihood import svd
     from numpy import sum, abs
     try: U, sing, V = svd(result)
     except: return False
@@ -98,7 +98,7 @@ def qmatrix(*args, **kwargs):
   
   def zero_eig(result):
     """ Qff and Qaa cannot be singular. """
-    from dcprogs.likelihood import svd
+    from HJCFIT.likelihood import svd
     from numpy import all, any, abs
     try: singular = svd(result.aa)[1]
     except: return False

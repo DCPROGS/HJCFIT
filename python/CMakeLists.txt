@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -17,6 +17,6 @@
 
 if(pythonBindings)
 
-  install(FILES  __init__.py DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
-  install(FILES  mpihelpers.py DESTINATION ${PYINSTALL_DIRECTORY}/dcprogs)
+  install(FILES  __init__.py DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT)
+  install(FILES  mpihelpers.py DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT)
 endif(pythonBindings)

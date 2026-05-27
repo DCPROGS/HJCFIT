@@ -1,5 +1,5 @@
 ########################
-#   DCProgs computes missed-events likelihood as described in
+#   HJCFIT computes missed-events likelihood as described in
 #   Hawkes, Jalali and Colquhoun (1990, 1992)
 #
 #   Copyright (C) 2013  University College London
@@ -29,7 +29,7 @@ def step(context, name):
 @when('The log10-likelihood of the classic matrix is computed')
 def setp(context):
   from test_setup import Matrix
-  from dcprogs.likelihood import Log10Likelihood
+  from HJCFIT.likelihood import Log10Likelihood
   matrix = Matrix("classic")
   context.result = Log10Likelihood(bursts=context.bursts, **context.parameters)(matrix)
 

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -19,10 +19,10 @@
 ************************/
 
 %rename("_find_lower_bound_for_roots") find_lower_bound_for_roots;
-DCProgs::t_real find_lower_bound_for_roots( DCProgs::DeterminantEq const &_det,
-                                            DCProgs::t_real _start,
-                                            DCProgs::t_real _alpha,
-                                            DCProgs::t_uint _itermax );
+HJCFIT::t_real find_lower_bound_for_roots( HJCFIT::DeterminantEq const &_det,
+                                            HJCFIT::t_real _start,
+                                            HJCFIT::t_real _alpha,
+                                            HJCFIT::t_uint _itermax );
 %pythoncode %{
 def find_lower_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
   """ Figures out lower bound for root.
@@ -45,10 +45,10 @@ def find_lower_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
 %}
 
 %rename("_find_upper_bound_for_roots") find_upper_bound_for_roots;
-DCProgs::t_real find_upper_bound_for_roots( DCProgs::DeterminantEq const &_det,
-                                            DCProgs::t_real _start,
-                                            DCProgs::t_real _alpha,
-                                            DCProgs::t_uint _itermax );
+HJCFIT::t_real find_upper_bound_for_roots( HJCFIT::DeterminantEq const &_det,
+                                            HJCFIT::t_real _start,
+                                            HJCFIT::t_real _alpha,
+                                            HJCFIT::t_uint _itermax );
 %pythoncode %{
 def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
   """ Figures out upper bound for root.
@@ -74,12 +74,12 @@ def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
 
 // Creates a typemap to convert std::vector<RootInterval> to a python list.
 // Each item is a "((a, b), multiplicity)".
-%typemap(out) std::vector<DCProgs::RootInterval> { 
+%typemap(out) std::vector<HJCFIT::RootInterval> { 
   Object<PyObject> py_result = steal_ref(PyList_New($1.size()));
   if(not py_result) return NULL;
   
   Py_ssize_t i(0);
-  for(DCProgs::RootInterval const &c_interval: $1) {
+  for(HJCFIT::RootInterval const &c_interval: $1) {
   
     Object<> left_limit = steal_ref(convert_real_to_python(c_interval.start));
     if(not left_limit) return NULL;
@@ -101,9 +101,9 @@ def find_upper_bound_for_roots(determinant, start=0e0, alpha=2e0, itermax=100):
 }
 
 %rename("_find_root_intervals") find_root_intervals;
-std::vector<DCProgs::RootInterval>
-   find_root_intervals( DCProgs::DeterminantEq const &det, DCProgs::t_real lower_bound, 
-                        DCProgs::t_real upper_bound, DCProgs::t_real tolerance );
+std::vector<HJCFIT::RootInterval>
+   find_root_intervals( HJCFIT::DeterminantEq const &det, HJCFIT::t_real lower_bound, 
+                        HJCFIT::t_real upper_bound, HJCFIT::t_real tolerance );
 %pythoncode %{
   def find_root_intervals(determinant, lower_bound=None, upper_bound=None, tolerance=1e-8):
     """ Returns intervals for searching roots.
@@ -134,10 +134,10 @@ std::vector<DCProgs::RootInterval>
 %}
 
 %rename("_find_root_intervals_brute_force") find_root_intervals_brute_force;
-std::vector<DCProgs::RootInterval> 
-  find_root_intervals_brute_force( DCProgs::DeterminantEq const &det, DCProgs::t_real resolution,
-                                   DCProgs::t_real lower_bound, DCProgs::t_real upper_bound, 
-                                   DCProgs::t_real tolerance );
+std::vector<HJCFIT::RootInterval> 
+  find_root_intervals_brute_force( HJCFIT::DeterminantEq const &det, HJCFIT::t_real resolution,
+                                   HJCFIT::t_real lower_bound, HJCFIT::t_real upper_bound, 
+                                   HJCFIT::t_real tolerance );
 %pythoncode %{
   def find_root_intervals_brute_force( determinant, resolution=1e-1, lower_bound=None, upper_bound=None,
                                        tolerance=1e-8 ):
@@ -173,21 +173,21 @@ std::vector<DCProgs::RootInterval>
 %}
 %{
   // Helper function to convert output of root finding objects to cpp
-  std::vector<DCProgs::Root> convert_to_roots(PyObject *_in) {
+  std::vector<HJCFIT::Root> convert_to_roots(PyObject *_in) {
     Object<> iterator = steal_ref(PyObject_GetIter(_in)); 
-    if(not iterator) throw DCProgs::errors::PythonErrorAlreadyThrown();
+    if(not iterator) throw HJCFIT::errors::PythonErrorAlreadyThrown();
 
-    std::vector<DCProgs::Root> result;
+    std::vector<HJCFIT::Root> result;
     while(Object<> item = steal_ref(PyIter_Next(~iterator))) {
 
       double root;
       int multiplicity;
 
       if(not PyArg_ParseTuple(~item, "di", &root, &multiplicity))
-        throw DCProgs::errors::PythonErrorAlreadyThrown();
-      result.emplace_back(DCProgs::t_real(root), DCProgs::t_int(multiplicity));
+        throw HJCFIT::errors::PythonErrorAlreadyThrown();
+      result.emplace_back(HJCFIT::t_real(root), HJCFIT::t_int(multiplicity));
     }
-    if(PyErr_Occurred() != NULL) throw DCProgs::errors::PythonErrorAlreadyThrown();
+    if(PyErr_Occurred() != NULL) throw HJCFIT::errors::PythonErrorAlreadyThrown();
     
     return result;
   }

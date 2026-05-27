@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,10 +18,10 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
-#define DCPROGS_LIKELIHOOD_EXACT_SURVIVOR_H
+#ifndef HJCFIT_LIKELIHOOD_EXACT_SURVIVOR_H
+#define HJCFIT_LIKELIHOOD_EXACT_SURVIVOR_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <tuple>
 #include <map>
@@ -31,7 +31,7 @@
 #include "qmatrix.h"
 #include "recursion_formula.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   class ExactSurvivor;
 

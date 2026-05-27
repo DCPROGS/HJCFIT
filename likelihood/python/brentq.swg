@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -24,23 +24,23 @@
     // Constructor acquires input object 
     CallBackForBrentQ(PyObject * const _c) : Object<PyObject>(acquire_ref(_c)) {}
     // Operator calls function object
-    DCProgs::t_real operator()(DCProgs::t_real _x) {
+    HJCFIT::t_real operator()(HJCFIT::t_real _x) {
       Object<> x = steal_ref(convert_real_to_python(_x));
-      if(not x) throw DCProgs::errors::PythonErrorAlreadyThrown();
+      if(not x) throw HJCFIT::errors::PythonErrorAlreadyThrown();
       Object<> py_result = steal_ref(PyObject_CallFunctionObjArgs(object_, ~x, NULL));
-      if(not py_result) throw DCProgs::errors::PythonErrorAlreadyThrown();
+      if(not py_result) throw HJCFIT::errors::PythonErrorAlreadyThrown();
       return convert_to_real(~py_result);
     }
   };
   // Wraps brentq so we can transform input and output
-  PyObject* brentq(PyObject *function, DCProgs::t_real a, DCProgs::t_real b,
-                   DCProgs::t_real xtol, DCProgs::t_real rtol, DCProgs::t_uint itermax) {
+  PyObject* brentq(PyObject *function, HJCFIT::t_real a, HJCFIT::t_real b,
+                   HJCFIT::t_real xtol, HJCFIT::t_real rtol, HJCFIT::t_uint itermax) {
 
-    using namespace DCProgs;
+    using namespace HJCFIT;
     CallBackForBrentQ callback(function);
 
     // call brentq
-    auto c_result = DCProgs::brentq(callback, a, b, xtol, rtol, itermax);
+    auto c_result = HJCFIT::brentq(callback, a, b, xtol, rtol, itermax);
 
     // convert result back to python
     Object<> py_x = steal_ref( convert_real_to_python(std::get<0>(c_result)) );
@@ -60,14 +60,14 @@
 %}
 
 %rename("_brentq") brentq;
-PyObject* brentq(PyObject *function, DCProgs::t_real a, DCProgs::t_real b, 
-                 DCProgs::t_real xtol, DCProgs::t_real rtol, DCProgs::t_uint itermax);
+PyObject* brentq(PyObject *function, HJCFIT::t_real a, HJCFIT::t_real b, 
+                 HJCFIT::t_real xtol, HJCFIT::t_real rtol, HJCFIT::t_uint itermax);
 %pythoncode %{
   def brentq(function, a, b, xtol=1e-12, rtol=4.440892098e-16, itermax=100):
     """ Computes zeros via brentq.
          
         This is the exact same algorithm as scipy.optimize.brentq. Only, the errors and c types
-        have been changed to accomodate DCProgs and protect the innocents.
+        have been changed to accomodate HJCFIT and protect the innocents.
 
         :param callable function:
            Function for which to solve :math:`f(x) = 0`.

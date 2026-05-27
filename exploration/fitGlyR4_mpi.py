@@ -1,5 +1,5 @@
 from dcpyps import mechanism
-from dcprogs.mpihelpers import MPILikelihoodSolver
+from HJCFIT.mpihelpers import MPILikelihoodSolver
 import argparse
 
 

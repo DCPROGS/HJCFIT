@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,7 +18,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <iostream>
 #include <vector>
@@ -26,7 +26,7 @@
 #include "errors.h"
 #include "time_filter.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   namespace {
     template<class T> std::tuple<std::vector<t_real>, t_rvector::Index>

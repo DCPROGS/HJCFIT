@@ -3,4 +3,4 @@
 QMatrix
 -------
 
-.. doxygenstruct:: DCProgs::QMatrix
+.. doxygenstruct:: HJCFIT::QMatrix

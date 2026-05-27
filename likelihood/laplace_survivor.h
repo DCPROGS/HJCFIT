@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,17 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_LAPLACE_SURVIVOR_H
-#define DCPROGS_LIKELIHOOD_LAPLACE_SURVIVOR_H
+#ifndef HJCFIT_LIKELIHOOD_LAPLACE_SURVIVOR_H
+#define HJCFIT_LIKELIHOOD_LAPLACE_SURVIVOR_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 #include <ostream>
 #include "qmatrix.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
 
-  //! \brief Survivor functions $^{A}R(s)$ in Laplace space. 
+  //! \brief Survivor functions \f$^{A}R(s)\f$ in Laplace space. 
   //| \details Also contains many of the math kernels needed for the determinant equation.
   //! It is practical to have it defined on its own.
   class MSWINDOBE LaplaceSurvivor {

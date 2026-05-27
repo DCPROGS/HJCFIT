@@ -47,14 +47,14 @@ Finally, the matrices :math:`D_i` are defined as:
 The survivor function can be initialized from a :math:`\mathcal{Q}`-matrix and the resolution
 :math:`\tau`:
 
-:python: 
+:Python: 
 
   .. literalinclude:: ../../code/exact_survivor.py
      :language: python
      :lines: 1-13
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++
@@ -62,16 +62,16 @@ The survivor function can be initialized from a :math:`\mathcal{Q}`-matrix and t
 
 The open and shut time survivor likelihood can be computed using a single call:
 
-:python: 
+:Python: 
 
-  The python bindings accept both scalars and array inputs.
+  The Python bindings accept both scalars and array inputs.
 
   .. literalinclude:: ../../code/exact_survivor.py
      :language: python
      :lines: 15-19
 
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++
@@ -81,13 +81,13 @@ The open and shut time survivor likelihood can be computed using a single call:
 The details of the recursions, i.e. the :math:`C_{iml}` matrices, can be accessed directly as shown
 below.
 
-:python:
+:Python:
 
   .. literalinclude:: ../../code/exact_survivor.py
      :language: python
      :lines: 23-
 
-:c++11:
+:C++11:
 
   .. literalinclude:: ../../code/exact_survivor.cc
      :language: c++

@@ -1,6 +1,6 @@
 from numpy import all
-from dcprogs.likelihood import eig
-from dcprogs.likelihood import find_upper_bound_for_roots, find_lower_bound_for_roots,        \
+from HJCFIT.likelihood import eig
+from HJCFIT.likelihood import find_upper_bound_for_roots, find_lower_bound_for_roots,        \
                                find_root_intervals, brentq, find_roots, QMatrix, DeterminantEq
 
 qmatrix = QMatrix([ [-3050,        50,  3000,      0,    0], 

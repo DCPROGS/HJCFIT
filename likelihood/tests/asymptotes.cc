@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,8 +18,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#include "DCProgsConfig.h"
-#include "DCProgsConfig.h"
+#include "HJCFITConfig.h"
+#include "HJCFITConfig.h"
 #include <iostream>
 #include <type_traits>
 #include <gtest/gtest.h>
@@ -27,7 +27,7 @@
 #include <unsupported/Eigen/MatrixFunctions>
 
 #include "../asymptotes.h"
-using namespace DCProgs;
+using namespace HJCFIT;
 #ifdef HAS_CXX11_TYPE_TRAITS
   // Checks some assumption about Asymptotes matrix types.
   static_assert( std::is_move_constructible<Asymptotes>::value,
@@ -75,8 +75,8 @@ TEST_P(TestAsymptotes, correct_size) {
 TEST_F(TestAsymptotes, throws) {
   std::vector<Root> roots;
   roots.emplace_back(-17090.192769236815, 1);
-  t_rmatrix Q = t_rmatrix::Zero(dcprogs_stack_matrix+2, dcprogs_stack_matrix+2);
-  QMatrix qmatrix = QMatrix(Q, dcprogs_stack_matrix/2);
+  t_rmatrix Q = t_rmatrix::Zero(HJCFIT_stack_matrix+2, HJCFIT_stack_matrix+2);
+  QMatrix qmatrix = QMatrix(Q, HJCFIT_stack_matrix/2);
   DeterminantEq equation(qmatrix, 1e-4);
   EXPECT_THROW(Asymptotes asymptotes(equation, roots), errors::Domain);
 }

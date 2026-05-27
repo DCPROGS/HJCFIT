@@ -3,7 +3,7 @@
 ExactSurvivor
 -------------
 
-.. currentmodule:: dcprogs.likelihood
+.. currentmodule:: HJCFIT.likelihood
 .. autoclass:: ExactSurvivor
    :members:
    :special-members: __call__

@@ -1,5 +1,5 @@
 /***********************
-    DCProgs computes missed-events likelihood as described in
+    HJCFIT computes missed-events likelihood as described in
     Hawkes, Jalali and Colquhoun (1990, 1992)
 
     Copyright (C) 2013  University College London
@@ -18,17 +18,17 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
-#ifndef DCPROGS_LIKELIHOOD_MISSED_EVENT_H
-#define DCPROGS_LIKELIHOOD_MISSED_EVENT_H
+#ifndef HJCFIT_LIKELIHOOD_MISSED_EVENT_H
+#define HJCFIT_LIKELIHOOD_MISSED_EVENT_H
 
-#include <DCProgsConfig.h>
+#include <HJCFITConfig.h>
 
 #include <unsupported/Eigen/MatrixFunctions>
 
 #include "exact_survivor.h"
 #include "approx_survivor.h"
 
-namespace DCProgs {
+namespace HJCFIT {
 
   class MissedEventsG;
 
@@ -73,7 +73,7 @@ namespace DCProgs {
       //! \param[in] _tau resolution/max length missed events
       //! \param[in] _findroots A functor with which to find all roots.
       //!                       This function should take a DeterminantEq as its sole argument and
-      //!                       return a std::vector<DCProgs::RootInterval>
+      //!                       return a std::vector<HJCFIT::RootInterval>
       //! \param[in] _nmax Switches to asymptotic values after \f$t\geq n_{\mathrm{max}}\tau\f$
       MissedEventsG   ( QMatrix const &_qmatrix, t_real _tau, 
                         t_RootFinder const &_findroots, t_uint _nmax=3 ) 
