@@ -1,0 +1,192 @@
+# Build probe — diagnostic, not a gate.
+#
+# HJCFIT has had no working CI since Travis was retired in 2021, and the last
+# substantive change to the library predates that. The assessment in
+# HJCFIT-development/hjcfit-assessment.html predicts five specific build failures
+# (F1-F5) from reading the source against the deprecation record of CMake, GCC,
+# Python and NumPy. Nobody has confirmed them by compiling.
+#
+# This workflow does that. It is deliberately NOT a pass/fail gate: every step
+# continues on error so a single run reaches as many failures as possible instead
+# of stopping at the first. The summary at the end reports which predictions fired.
+#
+# Once the failures are fixed, this file should be replaced by a real CI workflow
+# with a build matrix and fail-fast semantics.
+
+name: Build probe
+
+on:
+  push:
+    branches: [master]
+    paths-ignore: ['**.md', 'documentation/**']
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    name: Probe build on Ubuntu 24.04
+    runs-on: ubuntu-24.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential swig libeigen3-dev libgmp-dev libmpfr-dev \
+            liblapack-dev gfortran ninja-build
+          python -m pip install --upgrade pip
+          python -m pip install numpy behave
+
+      # ------------------------------------------------------------------
+      # Establish exactly which toolchain versions we are testing against,
+      # so a failure can be attributed to a specific version boundary.
+      # ------------------------------------------------------------------
+      - name: Record toolchain versions
+        id: versions
+        run: |
+          {
+            echo "cmake=$(cmake --version | head -1 | awk '{print $3}')"
+            echo "gcc=$(gcc -dumpfullversion)"
+            echo "swig=$(swig -version | awk '/SWIG Version/{print $3}')"
+            echo "python=$(python -c 'import sys; print("%d.%d.%d" % sys.version_info[:3])')"
+            echo "numpy=$(python -c 'import numpy; print(numpy.__version__)')"
+            echo "eigen=$(awk '/EIGEN_WORLD_VERSION|EIGEN_MAJOR_VERSION|EIGEN_MINOR_VERSION/{print $3}' \
+                       /usr/include/eigen3/Eigen/src/Core/util/Macros.h | paste -sd. -)"
+          } | tee -a "$GITHUB_OUTPUT"
+
+      # ------------------------------------------------------------------
+      # F1  cmake_minimum_required(VERSION 3.0.0) + swig_add_module
+      #     Expected to fail on CMake >= 4.0.
+      # F4  distutils.sysconfig, removed in Python 3.12.
+      # F6  GreatCMakeCookOff is git-cloned unpinned at configure time.
+      # ------------------------------------------------------------------
+      - name: Configure
+        id: configure
+        continue-on-error: true
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -Dtests=ON \
+            -DpythonBindings=ON \
+            -DcompileDocs=OFF \
+            -Dexecutenotebooks=OFF \
+            2>&1 | tee configure.log
+          exit "${PIPESTATUS[0]}"
+
+      # ------------------------------------------------------------------
+      # F2  OpenMP default(none) with const locals — GCC >= 9.
+      # F3  NUMPY_VERSION_MINOR >= 7 gate inverts under NumPy 2.
+      # F5  Eigen 3.3+ incompatibility, open as issue #167 since 2016.
+      # ------------------------------------------------------------------
+      - name: Build
+        id: build
+        continue-on-error: true
+        if: steps.configure.outcome == 'success'
+        run: |
+          cmake --build build --parallel 2 2>&1 | tee build.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Test
+        id: test
+        continue-on-error: true
+        if: steps.build.outcome == 'success'
+        run: |
+          ctest --test-dir build --output-on-failure 2>&1 | tee ctest.log
+          exit "${PIPESTATUS[0]}"
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: probe-logs
+          path: |
+            *.log
+            build/CMakeFiles/CMakeConfigureLog.yaml
+            build/CMakeCache.txt
+          if-no-files-found: warn
+          retention-days: 30
+
+      # ------------------------------------------------------------------
+      # Report which predictions fired. Grepping the logs for the specific
+      # diagnostic each finding predicts is what turns "inferred" into
+      # "confirmed" — a step simply failing is not evidence of the cause.
+      # ------------------------------------------------------------------
+      - name: Summarise against predicted findings
+        if: always()
+        run: |
+          {
+            echo "## Build probe"
+            echo
+            echo "| Tool | Version |"
+            echo "|---|---|"
+            echo "| CMake | ${{ steps.versions.outputs.cmake }} |"
+            echo "| GCC | ${{ steps.versions.outputs.gcc }} |"
+            echo "| SWIG | ${{ steps.versions.outputs.swig }} |"
+            echo "| Python | ${{ steps.versions.outputs.python }} |"
+            echo "| NumPy | ${{ steps.versions.outputs.numpy }} |"
+            echo "| Eigen | ${{ steps.versions.outputs.eigen }} |"
+            echo
+            echo "| Stage | Outcome |"
+            echo "|---|---|"
+            echo "| Configure | ${{ steps.configure.outcome }} |"
+            echo "| Build | ${{ steps.build.outcome || 'skipped' }} |"
+            echo "| Test | ${{ steps.test.outcome || 'skipped' }} |"
+            echo
+            echo "### Predicted findings"
+            echo
+            echo "| ID | Prediction | Evidence in this run |"
+            echo "|---|---|---|"
+
+            # Match anywhere in the log. Only for patterns specific enough that
+            # a match cannot occur in a healthy build.
+            check () { # id, description, file, pattern
+              if [ ! -f "$3" ]; then
+                echo "| $1 | $2 | stage did not run |"
+              elif grep -qE "$4" "$3"; then
+                echo "| $1 | $2 | **CONFIRMED** |"
+              else
+                echo "| $1 | $2 | not seen |"
+              fi
+            }
+
+            # Match only on compiler error lines. Needed wherever the keyword
+            # (Eigen, PyArrayObject) also appears throughout a healthy build,
+            # where an unscoped grep would report a false confirmation.
+            check_err () { # id, description, file, keyword pattern
+              if [ ! -f "$3" ]; then
+                echo "| $1 | $2 | stage did not run |"
+              elif grep -E '(error|fatal error):' "$3" | grep -qiE "$4"; then
+                echo "| $1 | $2 | **CONFIRMED** |"
+              else
+                echo "| $1 | $2 | not seen |"
+              fi
+            }
+
+            check F1 "cmake_minimum_required < 3.5 / swig_add_module removed" \
+                  configure.log "Compatibility with CMake < 3\.5|Unknown CMake command .?swig_add_module"
+            check F4 "distutils removed in Python 3.12" \
+                  configure.log "No module named .distutils|ModuleNotFoundError"
+            check F6 "GreatCMakeCookOff cloned unpinned at configure time" \
+                  configure.log "attempt to clone it|GreatCMakeCookOff. downloaded"
+            check_err F2 "OpenMP default(none) with const locals, GCC >= 9" \
+                  build.log "not specified in enclosing|enclosing .parallel."
+            check_err F3 "NumPy 2 opaque PyArrayObject" \
+                  build.log "PyArrayObject|NPY_NO_DEPRECATED|invalid use of incomplete type"
+            check_err F5 "Eigen 3.3+ incompatibility (issue #167)" \
+                  build.log "eigen|Eigen"
+
+            echo
+            echo "_Diagnostic run: every stage continues on error, so a red X here is the"
+            echo "expected result until F1-F5 are fixed. See HJCFIT-development/DECISIONS.md._"
+          } >> "$GITHUB_STEP_SUMMARY"
