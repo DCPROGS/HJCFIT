@@ -1,3 +1,50 @@
+Vendored dependency: MPFR C++ (mpreal)
+======================================
+
+    File:              mpreal.h
+    Version:           3.7.2
+    Upstream:          https://github.com/advanpix/mpreal
+    Upstream commit:   b864ace57f53  (2025-11-22)
+    Imported:          2026-08-21
+    Local changes:     none — byte-for-byte upstream
+
+Update procedure
+----------------
+
+    git clone https://github.com/advanpix/mpreal /tmp/mpreal
+    cp /tmp/mpreal/mpreal.h mpfr/mpreal.h
+    # then update the four fields above
+
+Before importing, confirm the current file is unmodified, so a local fix is not
+silently discarded:
+
+    diff <(tr -d '\r' < mpfr/mpreal.h) <(git -C /tmp/mpreal show <recorded-sha>:mpreal.h)
+
+Why this record exists
+----------------------
+
+This header sat at 3.6.2 (upstream commit 0370b406, 24 July 2015) for a decade
+with nothing recording where it came from or when. It stopped compiling against
+MPFR 4.x, which is what current distributions ship, and the first CI run in ten
+years died on it:
+
+    mpfr/mpreal.h:582:27: error: no matching function for call to
+        'mpfr::mpreal::mpfr_srcptr(mpfr_srcptr)'
+
+Version 3.7.2 carries explicit MPFR_VERSION_NUM(4,0,0) guards. Since
+HJCFIT_USE_MPFR defaults to ON for UNIX, this header is in the default build
+path, not an optional extra — MPFR provides the arbitrary-precision fallback for
+root bracketing in likelihood/root_finder.cc when double precision fails.
+
+Only mpfr::mpreal and mpreal::set_default_prec are used directly; Eigen
+integration comes from Eigen's own unsupported/Eigen/MPRealSupport, included
+via HJCFITConfig.h.in.
+
+--------------------------------------------------------------------------
+
+Upstream description and licence
+================================
+
     MPFR C++ (MPREAL):     Multiple precision floating point arithmetic library for C++.
                            Thread-safe, cross-platform (MSVC, GCC, ICC), one-header C++ library.
                            Supports C++11 features if available, C++03 compatible otherwise.
