@@ -29,9 +29,9 @@ if(pythonBindings)
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg chained.swg time_filter.swg
                                         math.swg brentq.swg log10likelihood.swg )
-  swig_add_module(likelihood python likelihood.i)
+  swig_add_library(likelihood LANGUAGE python SOURCES likelihood.i)
   set_target_properties(_likelihood PROPERTIES LINKER_LANGUAGE CXX)
-  swig_link_libraries(likelihood ${PYTHON_LIBRARIES} likelihood)
+  target_link_libraries(_likelihood ${PYTHON_LIBRARIES} likelihood)
 
   
   install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
