@@ -38,9 +38,6 @@ namespace HJCFIT {
   //! system. 
   class MSWINDOBE IdealG : protected QMatrix {
 
-    //! Just trying to figure out a complex return type...
-    typedef decltype( (t_real(0) * std::declval<const QMatrix>().ff()).exp()
-                      * std::declval<const QMatrix>().fa() ) t_time_result;
     public:
       //! Constructor
       IdealG() : QMatrix() {}
@@ -72,10 +69,10 @@ namespace HJCFIT {
       t_uint get_nshut() const { return this->nshut(); }
 
       //! Shut to open transitions.
-      t_time_result fa(t_real t) const 
+      t_rmatrix fa(t_real t) const
         { return (t*QMatrix::ff()).exp()*QMatrix::fa(); }
       //! Open to shut transitions.
-      t_time_result af(t_real t) const 
+      t_rmatrix af(t_real t) const
         { return (t*QMatrix::aa()).exp()*QMatrix::af(); }
 
       //! Laplace transform of shut to open transitions.
