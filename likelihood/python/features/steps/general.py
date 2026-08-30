@@ -35,7 +35,7 @@ def step(context):
 
 @then('instantiation threw {type}')
 def step(context, type):
-  from collections import Iterable
+  from collections.abc import Iterable
   assert hasattr(context, 'initialization_exception')
   exception = getattr(context, 'initialization_exception')
   type = eval(type)

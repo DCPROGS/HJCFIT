@@ -33,7 +33,7 @@ def setp(context, model):
 @given('the output matrices below')
 def step(context):
   from re import compile
-  pattern = compile('\s*q(\d+)')
+  pattern = compile(r'\s*q(\d+)')
   if not hasattr(context, 'output'): context.output = {}
   exec(pattern.sub('\nq\\1', context.text), globals(), context.output)
 

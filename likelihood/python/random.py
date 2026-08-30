@@ -57,7 +57,7 @@ def rate_matrix(N=(5, 10), zeroprob=0.7, large=0.5, factor=1e4, nonsingular=True
       :param tolerance: 
         Criteria for non-singularity and real-valued eigenvalues.
   """
-  from collections import Sequence
+  from collections.abc import Sequence
   from numpy import abs, any
   from numpy.random import random, randint
   from numpy.linalg import det, eig
