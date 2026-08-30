@@ -1,48 +1,61 @@
 # Python bindings are a bit messy, so done here rather than main file.
+#
+# Previously this used GreatCMakeCookOff's CoherentPython and Numpy find modules
+# and read the install directory out of distutils. CMake's own FindPython3 does
+# all of it, is maintained, and does not need a network fetch at configure time.
+# distutils was removed from the standard library in Python 3.12, which made the
+# old path fail silently: execute_process does not check its result, so
+# PYTHON_PKG_DIR simply came back empty and the install paths collapsed without
+# any error (F4).
 
-# Install Python with GreatCMakeCookOff, as well as numpy and behave
 include(PythonPackage)
-include(PythonPackageLookup)
-find_package(CoherentPython)
-find_python_package(numpy REQUIRED)
-find_package(Numpy REQUIRED)
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
 
-if(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
-  execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} -c "import sys; print(\"%i.%i\" % sys.version_info[:2])"
-    OUTPUT_VARIABLE PYTHON_VERSION
-  )
-  if( PYTHON_VERSION )
-    string (STRIP ${PYTHON_VERSION} PYTHON_VERSION)
-    set(PYTHON_VERSION ${PYTHON_VERSION} CACHE STRING "Version of the Python interpreter.")
-    mark_as_advanced(PYTHON_VERSION)
-    MESSAGE(STATUS "[Python] Version: ${PYTHON_VERSION}")
-  else( PYTHON_VERSION )
-    MESSAGE(STATUS "Could not determine python version.")
-  endif( PYTHON_VERSION )
-endif(NOT PYTHON_VERSION AND PYTHONINTERP_FOUND)
+# The rest of the build, and the SWIG glue in particular, was written against
+# the older PYTHON_* spellings. Map them rather than churn every call site.
+set(PYTHON_EXECUTABLE   ${Python3_EXECUTABLE})
+set(PYTHON_LIBRARIES    ${Python3_LIBRARIES})
+set(PYTHON_INCLUDE_DIRS ${Python3_INCLUDE_DIRS})
+set(PYTHON_INCLUDE_PATH ${Python3_INCLUDE_DIRS})
+set(PYTHON_VERSION      "${Python3_VERSION_MAJOR}.${Python3_VERSION_MINOR}")
+set(NUMPY_INCLUDE_DIRS  ${Python3_NumPy_INCLUDE_DIRS})
+message(STATUS "[Python] ${Python3_VERSION} at ${Python3_EXECUTABLE}")
+message(STATUS "[NumPy] ${Python3_NumPy_VERSION}")
+
+# HJCFITConfig.h.in consumes these. NUMPY_VERSION_MINOR alone is not enough to
+# decide anything now that NumPy is on 2.x - see the gate in likelihood.i (F3).
+string(REPLACE "." ";" _npy_version_list "${Python3_NumPy_VERSION}")
+list(GET _npy_version_list 0 NUMPY_VERSION_MAJOR)
+list(GET _npy_version_list 1 NUMPY_VERSION_MINOR)
+unset(_npy_version_list)
+
+# NPY_ARRAY_* and PyArray_ENABLEFLAGS arrived in NumPy 1.7 (2013) and the bool
+# and long double type numbers are older still. The minimum NumPy that works
+# with this project is far beyond all of them, so probing is pointless; the
+# defines stay because the SWIG layer reads them.
+set(NUMPY_NPY_ARRAY TRUE)
+set(NUMPY_NPY_ENABLEFLAGS TRUE)
+set(NUMPY_NPY_BOOL TRUE)
+set(NUMPY_NPY_LONG_DOUBLE TRUE)
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
 
-execute_process(
-  COMMAND ${PYTHON_EXECUTABLE} -c
-    "from sys import version_info; print(version_info.major==3)"
-  OUTPUT_VARIABLE PYTHON_VERSION_MAJOR
-)
+set(HJCFIT_PYTHON3 TRUE)
 
+# Where a plain "pip install" would put a pure-python package.
 if(NOT DEFINED PYTHON_PKG_DIR)
   execute_process(
-    COMMAND ${PYTHON_EXECUTABLE} -c
-              "from distutils.sysconfig import get_python_lib; print(get_python_lib())"
-              OUTPUT_VARIABLE PYTHON_PKG_DIR
-  )
-  if(PYTHON_PKG_DIR)
-    string (STRIP ${PYTHON_PKG_DIR} PYTHON_PKG_DIR)
-    set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH "Main python package repository.")
-    mark_as_advanced(PYTHON_PKG_DIR)
-  endif(PYTHON_PKG_DIR)
-endif(NOT DEFINED PYTHON_PKG_DIR)
+    COMMAND ${PYTHON_EXECUTABLE} -c "import sysconfig; print(sysconfig.get_path('purelib'))"
+    OUTPUT_VARIABLE PYTHON_PKG_DIR
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    RESULT_VARIABLE _pkg_dir_result)
+  if(NOT _pkg_dir_result EQUAL 0)
+    message(FATAL_ERROR "Could not determine the python package directory.")
+  endif()
+  set(PYTHON_PKG_DIR ${PYTHON_PKG_DIR} CACHE PATH "Main python package repository.")
+  mark_as_advanced(PYTHON_PKG_DIR)
+endif()
 
 # There is an issue on Windows where pyconfig.h defines a macro hypot that screws up swig+c++11
 # Test for issue and add -include cmath otherwise
@@ -141,6 +154,3 @@ else()
   set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
 endif(WIN32)
 
-if(NOT PYTHON_VERSION VERSION_LESS "3.0.0")
-  set(HJCFIT_PYTHON3 TRUE)
-endif(NOT PYTHON_VERSION VERSION_LESS "3.0.0")

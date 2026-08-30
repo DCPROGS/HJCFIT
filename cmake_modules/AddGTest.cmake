@@ -17,10 +17,9 @@
 #
 # Local replacement for GreatCMakeCookOff's AddGTest.
 #
-# This file shadows the CookOff module of the same name: the project prepends
-# cmake_modules/ to CMAKE_MODULE_PATH before initialize_cookoff() appends the
-# CookOff directories, so include(AddGTest) resolves here. No upstream patch
-# needed.
+# Originally written to shadow GreatCMakeCookOff's module of the same name.
+# CookOff has since been removed entirely, so this is simply the project's
+# googletest integration.
 #
 # Why it exists
 # -------------
@@ -40,7 +39,7 @@
 # Why release-1.12.1
 # ------------------
 # It is the last googletest release supporting C++11, which is what HJCFIT
-# compiles as (see include(AddCPP11Flags) in the top-level CMakeLists). From
+# compiles as (see CMAKE_CXX_STANDARD in the top-level CMakeLists). From
 # googletest's own README: "The 1.12.x branch will be the last to support
 # C++11." 1.13+ requires C++14, 1.17+ requires C++17.
 #

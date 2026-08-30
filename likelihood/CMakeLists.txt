@@ -28,10 +28,12 @@ if(EIGEN3_INCLUDE_DIR)
 endif()
 
 add_library(likelihood SHARED ${LIKELIHOOD_SOURCE} ${LIKELIHOOD_HEADERS})
-add_dependencies(likelihood lookup_dependencies)
 
 if(HJCFIT_USE_MPFR)
-  target_link_libraries(likelihood mpfr)
+  # Link the libraries found in the top-level CMakeLists by full path. The bare
+  # name "mpfr" only resolved because Hunter or the system happened to put it on
+  # the default link path, which is not true of Homebrew's prefix.
+  target_link_libraries(likelihood ${MPFR_LIBRARY} ${GMP_LIBRARY})
 endif(HJCFIT_USE_MPFR)
 
 # Windows + Visual studio specifics.

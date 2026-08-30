@@ -19,29 +19,7 @@ cmake_minimum_required(VERSION 3.16)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
 
-# GreatCMakeCookOff is cloned unpinned at configure time (see F6 in the assessment) and
-# its HunterGate.cmake still declares cmake_minimum_required below 3.5, which CMake 4
-# refuses outright:
-#
-#   CMake Error at .../GreatCMakeCookOff/scripts/HunterGate.cmake:45
-#     Compatibility with CMake < 3.5 has been removed from CMake.
-#
-# We do not control that file. CMAKE_POLICY_VERSION_MINIMUM is the transition mechanism
-# CMake provides for exactly this case. Scoped to CMake 4 and later so it stays inert on
-# the 3.x that most distributions still ship, and removable once CookOff is vendored,
-# pinned or dropped.
-if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.0)
-  set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
-endif()
-
-# Downloads and installs GreatCMakeCookOff
-# It contains a number of cmake recipes
-include(LookUp-GreatCMakeCookOff)
 include(CMakeDependentOption)
-# Hunter helps us download stuff automatically
-include(AddHunter)
-set(HUNTER_ROOT ${CMAKE_BINARY_DIR}/hunter_root)
-initialize_hunter(HUNTER_ROOT ${HUNTER_ROOT} LOCAL)
 
 PROJECT(HJCFIT)
 
@@ -77,13 +55,7 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "" FORCE)
 endif()
 
-# Enable ExternalProject CMake module
-INCLUDE(ExternalProject)
-# Set default ExternalProject root directory
-set(EXTERNAL_ROOT ${CMAKE_BINARY_DIR}/external)
 set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
-
-include(PackageLookup)
 
 if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
@@ -100,22 +72,32 @@ if(pythonBindings)
   endif()
 endif(pythonBindings)
 
-# Install Eigen the CookOff way
-# Need at least eigen 3.2 to support mpfr
-lookup_package(Eigen3 REQUIRED 3.2.0)
+# Eigen. Config mode: every current distribution and Homebrew ships
+# Eigen3Config.cmake, which sets EIGEN3_INCLUDE_DIR and defines Eigen3::Eigen.
+# Point CMAKE_PREFIX_PATH or Eigen3_DIR at a private build if you have one.
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-# Adds flags to compiler to launch it into c++11 land
-include(AddCPP11Flags)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 
-# The following will print out all available features.
-include(CheckCXX11Features)
+# These were probed one by one when C++11 support was still uneven across
+# compilers. The project now requires C++11 outright, and every feature in the
+# list is mandatory in that standard, so probing for them can only ever return
+# true. They stay as defines because HJCFITConfig.h.in and the documentation
+# examples consume them.
+set(HAS_CXX11_TYPE_TRAITS TRUE)
+set(HAS_CXX11_TRIVIAL_TYPE_TRAITS TRUE)
+set(HAS_CXX11_CONSTEXPR TRUE)
+set(HAS_CXX11_RANDOM_DEVICE TRUE)
+set(HAS_CXX11_UNIQUE_PTR TRUE)
+set(HAS_CXX11_CONSTRUCTOR_DELEGATE TRUE)
+set(HAS_CXX11_NOEXCEPT TRUE)
+set(HAS_CXX11_INITIALIZATION TRUE)
 
-# Check features (before REQUIRED they are optional)
-cxx11_feature_check(constexpr unique_ptr random_device constructor_delegate
-                    trivial_type_traits noexcept
-                    REQUIRED auto lambda static_assert rvalue_references decltype
-                    enable_if type_traits shared_ptr initialization)
-include(CheckIsNaN)
+# std::isnan is <cmath> in C++11; the alternative spellings existed for
+# compilers that predate it.
+set(CXX_HAS_STD_ISNAN TRUE)
 if(openmp)
   FIND_PACKAGE(OpenMP)
 endif()
@@ -160,9 +142,18 @@ if(NOT HJCFIT_USE_MPFR)
 endif(NOT HJCFIT_USE_MPFR)
 
 if(HJCFIT_USE_MPFR)
-  find_or_add_hunter_package(GMP)
-  find_or_add_hunter_package(MPFR)
-  include_directories(${PROJECT_SOURCE_DIR}/mpfr)
+  find_path(GMP_INCLUDE_DIR gmp.h)
+  find_library(GMP_LIBRARY NAMES gmp)
+  find_path(MPFR_INCLUDE_DIR mpfr.h)
+  find_library(MPFR_LIBRARY NAMES mpfr)
+  if(NOT GMP_LIBRARY OR NOT MPFR_LIBRARY)
+    message(FATAL_ERROR
+      "HJCFIT_USE_MPFR is ON but GMP or MPFR was not found. Install them "
+      "(libgmp-dev and libmpfr-dev on Debian and Ubuntu, gmp and mpfr on "
+      "Homebrew) or configure with -DHJCFIT_USE_MPFR=OFF.")
+  endif()
+  mark_as_advanced(GMP_INCLUDE_DIR GMP_LIBRARY MPFR_INCLUDE_DIR MPFR_LIBRARY)
+  include_directories(${PROJECT_SOURCE_DIR}/mpfr ${GMP_INCLUDE_DIR} ${MPFR_INCLUDE_DIR})
 endif(HJCFIT_USE_MPFR)
 configure_file (
  "${PROJECT_SOURCE_DIR}/HJCFITConfig.h.in"
