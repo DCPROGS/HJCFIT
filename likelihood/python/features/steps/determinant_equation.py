@@ -86,7 +86,7 @@ def step(context, event, s, tau):
 def step(context, input):
   context.H = context.determinant.H(input)
 
-@then("The result is close to zero ({convergence:Float})")
+@then("the result is close to zero ({convergence:Float})")
 def step(context, convergence): 
   from numpy import abs, any, array
   if any(abs(array(context.result)) > convergence):
