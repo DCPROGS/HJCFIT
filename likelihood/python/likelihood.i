@@ -125,7 +125,7 @@
 %init %{ import_array();  %}
 
 %exception {
-  try { $function }
+  try { $action }
   HJCFIT_CATCH(return NULL;);
 }
 
