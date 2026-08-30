@@ -25,16 +25,23 @@ if(pythonBindings)
   else()
     set_source_files_properties(likelihood.i PROPERTIES SWIG_FLAGS "-includeall" )
   endif(PYTHON_VERSION VERSION_LESS "3.0.0")
-  set(SWIG_MODULE_likelihood_EXTRA_DEPS determinant_equation.swg qmatrix.swg root_finder.swg
+  set(SWIG_MODULE_likelihood_python_EXTRA_DEPS
+                                        determinant_equation.swg qmatrix.swg root_finder.swg
                                         asymptotes.swg exact_survivor.swg approx_survivor.swg
                                         missed_eventsG.swg idealg.swg chained.swg time_filter.swg
                                         math.swg brentq.swg log10likelihood.swg )
-  swig_add_library(likelihood LANGUAGE python SOURCES likelihood.i)
-  set_target_properties(_likelihood PROPERTIES LINKER_LANGUAGE CXX)
-  target_link_libraries(_likelihood ${PYTHON_LIBRARIES} likelihood)
+  # The C++ shared library target is already called "likelihood". swig_add_module used to
+  # prefix an underscore and so produced "_likelihood"; swig_add_library uses the name
+  # verbatim and would collide. Hence a distinct target name, with OUTPUT_NAME set so the
+  # module file is still _likelihood, which is what the generated likelihood.py imports.
+  swig_add_library(likelihood_python LANGUAGE python SOURCES likelihood.i)
+  set_target_properties(likelihood_python PROPERTIES
+                        OUTPUT_NAME _likelihood
+                        LINKER_LANGUAGE CXX)
+  target_link_libraries(likelihood_python ${PYTHON_LIBRARIES} likelihood)
 
   
-  install(TARGETS _likelihood DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
+  install(TARGETS likelihood_python DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
   install(FILES  random.py _methods.py optimization.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
           DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
