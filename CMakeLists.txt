@@ -124,7 +124,9 @@ endif ( CMAKE_COMPILER_IS_GNUCC )
 if(tests)
   enable_testing()
   include(${CMAKE_SCRIPTS}/CTestCustomPreWorkAround.cmake)
-  # Use the CookOff way of including GTest
+  # Resolves to cmake_modules/AddGTest.cmake, which shadows the CookOff module
+  # of the same name: CookOff fetched googletest from a moving default branch
+  # that no longer exists. Ours pins a commit. See that file for details.
   include(AddGTest)
 endif(tests)
 
