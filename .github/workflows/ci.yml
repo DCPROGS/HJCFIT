@@ -88,6 +88,11 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install swig eigen gmp mpfr ninja libomp
+          # CookOff's FindEigen3 does not search Homebrew's prefix, so it falls through to
+          # LookUpEigen3, whose download URL (bitbucket.org/eigen/eigen) died when Eigen
+          # moved to GitLab in 2019. FindEigen3.cmake:61 reads this variable from the
+          # environment, which is the supported way to point it at an existing install.
+          echo "EIGEN3_INCLUDE_DIR=$(brew --prefix eigen)/include/eigen3" >> "$GITHUB_ENV"
 
       - name: Install Python dependencies
         run: |
