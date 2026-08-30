@@ -48,7 +48,7 @@ jobs:
             build-essential swig libeigen3-dev libgmp-dev libmpfr-dev \
             liblapack-dev gfortran ninja-build
           python -m pip install --upgrade pip
-          python -m pip install numpy behave
+          python -m pip install numpy scipy behave
 
       # ------------------------------------------------------------------
       # Establish exactly which toolchain versions we are testing against,
