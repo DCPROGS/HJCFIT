@@ -104,7 +104,7 @@ def find_roots(determinant, intervals=None, tolerance=1e-12, **kwargs):
      if len(H) > 1:
        # Use Eigen's eigenvalue pb so that we can do long doubles.
        eigenvalues = eig(determinant.H(root))[0]
-       multiplicity = count_nonzero(abs(eigenvalues - root) < tolerance)
+       multiplicity = int(count_nonzero(abs(eigenvalues - root) < tolerance))
      else: multiplicity = 1
      if left * right < 0:
        if multiplicity == 0 or multiplicity % 2 != 1: multiplicity = 1

@@ -48,10 +48,20 @@ class Asymptotes {
 
          Object<> py_mult = steal_ref(PySequence_GetItem(~item, 1));
          if(not py_mult) throw errors::PythonErrorAlreadyThrown();
-         t_uint c_mult;
-         if(PyLong_Check(~py_mult)) c_mult = static_cast<t_uint>(PyLong_AsLong(~py_mult));
-         else if(PyInt_Check(~py_mult)) c_mult = static_cast<t_uint>(PyInt_AsLong(~py_mult));
-         else throw errors::PythonTypeError("Multiplicity should an integer.");
+         long c_mult_long;
+         if(PyLong_Check(~py_mult)) c_mult_long = PyLong_AsLong(~py_mult);
+         // numpy integer scalars are neither PyLong nor PyInt. numpy.count_nonzero,
+         // which _methods.find_roots uses to compute multiplicity, returns one.
+         // Mirrors the t_uint typemap in math.swg.
+         else if(PyArray_CheckScalar(~py_mult)) {
+           PyArray_CastScalarToCtype(~py_mult, static_cast<void*>(&c_mult_long),
+                                     PyArray_DescrFromType(numpy::type<long>::value));
+           if(PyErr_Occurred()) throw errors::PythonErrorAlreadyThrown();
+         }
+         else throw errors::PythonTypeError("Multiplicity should be an integer.");
+         if(c_mult_long < 0)
+           throw errors::PythonValueError("Multiplicity cannot be negative.");
+         t_uint const c_mult = static_cast<t_uint>(c_mult_long);
 
          roots.emplace_back(c_root, c_mult);
        }
