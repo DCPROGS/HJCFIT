@@ -22,6 +22,7 @@
 #define HJCFIT_LIKELIHOOD_EXACT_SURVIVOR_H
 
 #include <HJCFITConfig.h>
+#include <cassert>
 
 #include <tuple>
 #include <map>

@@ -22,6 +22,7 @@
 #define HJCFIT_LIKELIHOOD_RECURSION_FORMULA_H
 
 #include <HJCFITConfig.h>
+#include <cassert>
 
 #include "errors.h"
 

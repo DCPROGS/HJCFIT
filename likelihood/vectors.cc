@@ -19,6 +19,7 @@
 ************************/
 
 #include <HJCFITConfig.h>
+#include <cassert>
 
 #include <iostream>
 #include "vectors.h"
