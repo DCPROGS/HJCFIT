@@ -78,20 +78,18 @@ namespace HJCFIT {
 
     t_initvec const initial = eq_vector ? vectors(eG): CHS_vectors(eG, tcritical);
                                 
+    // Summed in burst order rather than with reduction(+:result). Floating-point
+    // addition is not associative and OpenMP does not specify the order a
+    // reduction combines partial sums in, so the total moved by 1 to 2 ulp with
+    // the thread count (tests/determinism.cc). Ordering the sum also makes this
+    // exactly the sum of vector(), which the interface implies and which was
+    // previously untrue by up to 4 ulp.
+    //
+    // The per-burst values are still computed in parallel; only their addition
+    // is ordered, and N additions are nothing beside N burst evaluations.
+    t_rvector const per_burst = vector(_matrix, eG, initial, final);
     t_real result(0);
-    const bool openmphighlevel = bursts.size() > 100;
-    if(openmphighlevel) {
-      #pragma omp parallel for default(none), reduction(+:result), shared(final, eG, initial)
-      for (t_int i=0; i<bursts.size(); i++) {
-        t_Burst const &burst = bursts[i];
-        result += chained_log10_likelihood(eG, burst, initial, final);
-      }
-    } else {
-      for (t_int i=0; i<bursts.size(); i++) {
-        t_Burst const &burst = bursts[i];
-        result += parallel_chained_log10_likelihood(eG, burst, initial, final, omp_num_threads);
-      }
-    }
+    for(t_int i = 0; i < per_burst.size(); ++i) result += per_burst(i);
     return result;
   }
   t_rvector Log10Likelihood::vector(QMatrix const &_matrix) const {
@@ -108,13 +106,28 @@ namespace HJCFIT {
         final = CHS_vectors(eG, tcritical, false).transpose();
 
     t_initvec const initial = eq_vector ? vectors(eG): CHS_vectors(eG, tcritical);
-                                
+
+    return vector(_matrix, eG, initial, final);
+  }
+
+  //! The one place a per-burst log-likelihood is computed. operator() and the
+  //! public vector() both come through here, so they cannot disagree about
+  //! which kernel ran or how the chain was split.
+  t_rvector Log10Likelihood::vector(QMatrix const &, MissedEventsG const &eG,
+                                    t_initvec const &initial,
+                                    t_rvector const &final) const {
     t_rvector result(bursts.size());
     const bool openmphighlevel = bursts.size() > 100;
-    #pragma omp parallel for default(none), shared(final, result, eG, initial), if(openmphighlevel)
-    for (t_int i=0; i<bursts.size(); i++) {
-      t_Burst const &burst = bursts[i];
-      result(i) = chained_log10_likelihood(eG, burst, initial, final);
+    if(openmphighlevel) {
+      // Many bursts: parallelise across them, each computed serially.
+      #pragma omp parallel for default(none), shared(final, result, eG, initial)
+      for (t_int i=0; i<bursts.size(); i++)
+        result(i) = chained_log10_likelihood(eG, bursts[i], initial, final);
+    } else {
+      // Few bursts: parallelise within each one instead.
+      for (t_int i=0; i<bursts.size(); i++)
+        result(i) = parallel_chained_log10_likelihood(eG, bursts[i], initial, final,
+                                                      omp_num_threads);
     }
     return result;
   }

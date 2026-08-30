@@ -33,6 +33,12 @@
 
 namespace HJCFIT {
 
+  //! Forward declaration: likelihood.h is included by missed_eventsG.h's
+  //! dependents, so including that header here would be circular. Only a
+  //! reference is needed for the private per-burst overload below.
+  class MissedEventsG;
+
+
   //! Computes likelihood of a time series.
   //! \param[in] _begin First interval in the time series. This must be an "open" interval.
   //! \param[in] _end One past last interval.
@@ -228,6 +234,15 @@ namespace HJCFIT {
       t_real operator()(t_rmatrix const &_Q) const { return operator()(QMatrix(_Q, nopen)); }
       //! Log-likelihood 
       t_real operator()(QMatrix const &_Q) const;
+
+    private:
+      //! rief Per-burst log-likelihoods from an already-built MissedEventsG.
+      //! \details The single place a burst is evaluated. operator() and the
+      //!          public vector() both route through this, so they cannot
+      //!          disagree about which kernel ran, and operator() is then the
+      //!          sum of these in burst order. See tests/determinism.cc.
+      t_rvector vector(QMatrix const &_Q, MissedEventsG const &_eG,
+                       t_initvec const &_initial, t_rvector const &_final) const;
   };
   //! Dumps likelihood to stream.
   MSWINDOBE std::ostream& operator<<(std::ostream& _stream, Log10Likelihood const & _self);
