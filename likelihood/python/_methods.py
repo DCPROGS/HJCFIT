@@ -70,18 +70,20 @@ def find_roots(determinant, intervals=None, tolerance=1e-12, **kwargs):
    """
    from scipy.optimize import fminbound
    from numpy import abs, count_nonzero
-   from inspect import getargspec
+   from inspect import getfullargspec
    from .likelihood import find_root_intervals, eig, brentq
 
    if intervals is None:
      # Create dictionary of keyword arguments
-     names, varargs, keywords, defaults = getargspec(find_root_intervals)
+     spec = getfullargspec(find_root_intervals)
+     names, defaults = spec.args, spec.defaults
      intervals_kwargs = {'tolerance': tolerance} 
      for name in names[-len(defaults):]: 
        if name in kwargs: intervals_kwargs[name] = kwargs[name]
      intervals = [u[0] for u in find_root_intervals(determinant, **intervals_kwargs)]
 
-   names, varargs, keywords, defaults = getargspec(brentq)
+   spec = getfullargspec(brentq)
+   names, defaults = spec.args, spec.defaults
    brentq_kwargs = {} 
    for name in names[-len(defaults):]: 
      if name in kwargs: brentq_kwargs[name] = kwargs[name]
