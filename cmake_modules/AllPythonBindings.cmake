@@ -35,8 +35,15 @@ unset(_npy_version_list)
 # defines stay because the SWIG layer reads them.
 set(NUMPY_NPY_ARRAY TRUE)
 set(NUMPY_NPY_ENABLEFLAGS TRUE)
-set(NUMPY_NPY_BOOL TRUE)
 set(NUMPY_NPY_LONG_DOUBLE TRUE)
+
+# NUMPY_NPY_BOOL is deliberately left undefined. Despite the name it does not
+# ask whether NPY_BOOL exists, but whether npy_bool is a type distinct from
+# unsigned char. numpy typedefs it to unsigned char, so defining both
+# numpy::type<npy_bool> and numpy::type<npy_ubyte> is a redefinition and gives
+# duplicate case labels in numpy_eigen.h. CookOff probed this and reported
+# "Bool is a separate type = FALSE"; numpy_eigen.h:69 has an #else branch for
+# exactly this case.
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})

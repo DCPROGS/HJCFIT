@@ -73,9 +73,27 @@ if(pythonBindings)
 endif(pythonBindings)
 
 # Eigen. Config mode: every current distribution and Homebrew ships
-# Eigen3Config.cmake, which sets EIGEN3_INCLUDE_DIR and defines Eigen3::Eigen.
-# Point CMAKE_PREFIX_PATH or Eigen3_DIR at a private build if you have one.
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
+# Eigen3Config.cmake, which defines Eigen3::Eigen. Point CMAKE_PREFIX_PATH or
+# Eigen3_DIR at a private build if you have one.
+#
+# Eigen3Config declares SameMajorVersion compatibility, so asking for 3.3
+# *rejects* Eigen 4 and 5 rather than accepting them as newer. Homebrew now
+# ships Eigen 5. Prefer a version this project has actually been built against,
+# then accept a newer one with a warning rather than refusing to configure.
+find_package(Eigen3 3.3 QUIET NO_MODULE)
+if(NOT Eigen3_FOUND)
+  find_package(Eigen3 REQUIRED NO_MODULE)
+  message(WARNING
+    "Found Eigen ${Eigen3_VERSION}. HJCFIT is tested against Eigen 3.3 and 3.4; "
+    "other major versions are unverified.")
+endif()
+message(STATUS "[Eigen3] ${Eigen3_VERSION}")
+
+# Eigen 3.x's config sets EIGEN3_INCLUDE_DIR, which likelihood/CMakeLists.txt
+# uses. Newer configs may only define the target, so derive it if absent.
+if(NOT EIGEN3_INCLUDE_DIR AND TARGET Eigen3::Eigen)
+  get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
