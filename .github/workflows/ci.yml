@@ -1,0 +1,142 @@
+# Continuous integration for HJCFIT.
+#
+# Replaces .github/workflows/probe-build.yml, which was a diagnostic that let
+# every stage continue on error so one run could surface as many failures as
+# possible. That job is done: the build and the full suite pass. This workflow
+# is a gate — a failure here means something is broken and needs fixing.
+#
+# fail-fast is false, which is not the same as continue-on-error. A failing axis
+# still fails the workflow; it just does not cancel the others, so one run tells
+# you whether a break is specific to a platform or general.
+
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+# Superseded runs on the same branch are pointless once a newer commit exists.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Reference configuration: the one proven green in run 33325106685.
+          - name: linux-py312
+            os: ubuntu-24.04
+            python: '3.12'
+          # Python floor and ceiling. 3.10 is the oldest that matters, since
+          # collections.abc (F22) and inspect.getargspec (F24) rule out 3.9 and
+          # below being interesting; 3.13 is the current release.
+          - name: linux-py310
+            os: ubuntu-24.04
+            python: '3.10'
+          - name: linux-py313
+            os: ubuntu-24.04
+            python: '3.13'
+          # Older distribution: earlier GCC and CMake. Confirms the F2 fix is not
+          # narrowly tied to GCC 13, and that we have not silently started
+          # depending on a recent CMake.
+          - name: linux-old
+            os: ubuntu-22.04
+            python: '3.11'
+          # t_real becomes long double. A supported build option that changes the
+          # numeric type throughout, and was a Travis axis.
+          - name: long-double
+            os: ubuntu-24.04
+            python: '3.12'
+            cmake_extra: -DHJCFIT_LONG_DOUBLE=ON
+          # macOS was supported historically. Apple Clang needs libomp for
+          # OpenMP; without it CMake reports "compiled without OpenMP support"
+          # and continues, which is a configuration worth exercising.
+          - name: macos
+            os: macos-14
+            python: '3.12'
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install dependencies (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential swig libeigen3-dev libgmp-dev libmpfr-dev \
+            liblapack-dev gfortran ninja-build
+
+      - name: Install dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install swig eigen gmp mpfr ninja libomp
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy scipy behave
+
+      - name: Record toolchain versions
+        run: |
+          {
+            echo "### ${{ matrix.name }}"
+            echo
+            echo "| Tool | Version |"
+            echo "|---|---|"
+            echo "| OS | ${{ matrix.os }} |"
+            echo "| CMake | $(cmake --version | head -1 | awk '{print $3}') |"
+            echo "| SWIG | $(swig -version | awk '/SWIG Version/{print $3}') |"
+            echo "| Python | $(python -c 'import sys; print("%d.%d.%d" % sys.version_info[:3])') |"
+            echo "| NumPy | $(python -c 'import numpy; print(numpy.__version__)') |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -Dtests=ON \
+            -DpythonBindings=ON \
+            -DcompileDocs=OFF \
+            -Dexecutenotebooks=OFF \
+            ${{ matrix.cmake_extra }}
+
+      - name: Build
+        run: cmake --build build --parallel
+
+      # --timeout turns a hung test into a named "***Timeout" result rather than
+      # a job that stalls until the runner limit. Every test finishes well under
+      # 2s; 120 is generous.
+      - name: Test
+        run: ctest --test-dir build --output-on-failure --timeout 120
+
+      # Only on failure: a green run's logs are noise, and artifacts cost storage.
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: logs-${{ matrix.name }}
+          path: |
+            build/CMakeFiles/CMakeConfigureLog.yaml
+            build/CMakeCache.txt
+            build/Testing/**/*.log
+            build/_deps/**/*.log
+          if-no-files-found: ignore
+          retention-days: 14
