@@ -32,10 +32,10 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: '3.12'
 
@@ -61,8 +61,8 @@ jobs:
             echo "swig=$(swig -version | awk '/SWIG Version/{print $3}')"
             echo "python=$(python -c 'import sys; print("%d.%d.%d" % sys.version_info[:3])')"
             echo "numpy=$(python -c 'import numpy; print(numpy.__version__)')"
-            echo "eigen=$(awk '/EIGEN_WORLD_VERSION|EIGEN_MAJOR_VERSION|EIGEN_MINOR_VERSION/{print $3}' \
-                       /usr/include/eigen3/Eigen/src/Core/util/Macros.h | paste -sd. -)"
+            echo "eigen=$(awk '/^#define EIGEN_WORLD_VERSION/{w=$3} /^#define EIGEN_MAJOR_VERSION/{m=$3} /^#define EIGEN_MINOR_VERSION/{n=$3} END{print w"."m"."n}' \
+                       /usr/include/eigen3/Eigen/src/Core/util/Macros.h)"
           } | tee -a "$GITHUB_OUTPUT"
 
       # ------------------------------------------------------------------
@@ -107,13 +107,15 @@ jobs:
 
       - name: Upload logs
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: probe-logs
           path: |
             *.log
             build/CMakeFiles/CMakeConfigureLog.yaml
             build/CMakeCache.txt
+            build/_deps/**/*.log
+            build/external/src/*-stamp/*.log
           if-no-files-found: warn
           retention-days: 30
 
@@ -179,6 +181,8 @@ jobs:
                   configure.log "No module named .distutils|ModuleNotFoundError"
             check F6 "GreatCMakeCookOff cloned unpinned at configure time" \
                   configure.log "attempt to clone it|GreatCMakeCookOff. downloaded"
+            check F18 "GTest fetched from a branch that no longer exists" \
+                  build.log "Remote branch master not found|Lookup-GTest-download"
             check_err F2 "OpenMP default(none) with const locals, GCC >= 9" \
                   build.log "not specified in enclosing|enclosing .parallel."
             check_err F3 "NumPy 2 opaque PyArrayObject" \
