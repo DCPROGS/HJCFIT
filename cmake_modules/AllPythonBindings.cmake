@@ -29,21 +29,48 @@ list(GET _npy_version_list 0 NUMPY_VERSION_MAJOR)
 list(GET _npy_version_list 1 NUMPY_VERSION_MINOR)
 unset(_npy_version_list)
 
-# NPY_ARRAY_* and PyArray_ENABLEFLAGS arrived in NumPy 1.7 (2013) and the bool
-# and long double type numbers are older still. The minimum NumPy that works
-# with this project is far beyond all of them, so probing is pointless; the
-# defines stay because the SWIG layer reads them.
+# NPY_ARRAY_* and PyArray_ENABLEFLAGS arrived in NumPy 1.7 (2013). The minimum
+# NumPy that works with this project is far beyond that, so these are constants.
 set(NUMPY_NPY_ARRAY TRUE)
 set(NUMPY_NPY_ENABLEFLAGS TRUE)
-set(NUMPY_NPY_LONG_DOUBLE TRUE)
 
-# NUMPY_NPY_BOOL is deliberately left undefined. Despite the name it does not
-# ask whether NPY_BOOL exists, but whether npy_bool is a type distinct from
-# unsigned char. numpy typedefs it to unsigned char, so defining both
-# numpy::type<npy_bool> and numpy::type<npy_ubyte> is a redefinition and gives
-# duplicate case labels in numpy_eigen.h. CookOff probed this and reported
-# "Bool is a separate type = FALSE"; numpy_eigen.h:69 has an #else branch for
-# exactly this case.
+# These two are not "does the macro exist" questions, despite the names. They
+# ask whether npy_longdouble and npy_bool are types *distinct from* npy_double
+# and npy_ubyte. numpy_eigen.h builds a compile-time type -> NPY_* table, so if
+# a pair collapses to the same C++ type the specialisations collide:
+#
+#   numpy_eigen.h:59: error: redefinition of 'type<double>'
+#   numpy_eigen.h:375: error: duplicate case value
+#
+# Both answers are platform-dependent and neither can be assumed. numpy
+# typedefs npy_longdouble to double where long double carries no extra
+# precision, which is the case on Apple Silicon; and npy_bool is unsigned char
+# on every platform seen so far, which is why numpy_eigen.h:69 has an #else
+# branch. Probe rather than guess.
+include(CheckCXXSourceCompiles)
+set(CMAKE_REQUIRED_INCLUDES ${Python3_INCLUDE_DIRS} ${Python3_NumPy_INCLUDE_DIRS})
+
+check_cxx_source_compiles("
+#include <Python.h>
+#include <numpy/arrayobject.h>
+#include <type_traits>
+int main() {
+  static_assert(!std::is_same<npy_double, npy_longdouble>::value, \"same type\");
+  return 0;
+}" NUMPY_NPY_LONG_DOUBLE)
+
+check_cxx_source_compiles("
+#include <Python.h>
+#include <numpy/arrayobject.h>
+#include <type_traits>
+int main() {
+  static_assert(!std::is_same<npy_ubyte, npy_bool>::value, \"same type\");
+  return 0;
+}" NUMPY_NPY_BOOL)
+
+unset(CMAKE_REQUIRED_INCLUDES)
+message(STATUS "[NumPy] long double distinct from double = ${NUMPY_NPY_LONG_DOUBLE}")
+message(STATUS "[NumPy] bool distinct from unsigned char = ${NUMPY_NPY_BOOL}")
 
 find_package(SWIG REQUIRED)
 include(${SWIG_USE_FILE})
