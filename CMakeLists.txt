@@ -28,7 +28,22 @@ option(pythonBindings "Enable python bindings."                 on)
 option(compileDocs    "Compile C++ documentation examples."      on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
-CMAKE_DEPENDENT_OPTION(HJCFIT_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
+# MPFR gives an arbitrary-precision fallback for root bracketing when double
+# precision fails (likelihood/root_finder.cc). Default ON for Linux only.
+#
+# Not Apple: HJCFITConfig.h.in declares std::complex<mpfr::mpreal>, and the
+# standard only specifies std::complex for float, double and long double.
+# Instantiating it with anything else is undefined behaviour. libstdc++ has
+# always tolerated it; libc++ enforces the rule, so on macOS the build fails
+# inside <complex> and <cmath> with "floating point classification requires
+# argument of floating point type (passed in 'mpfr::mpreal')".
+#
+# Turning it on there needs a complex type that does not rely on that
+# guarantee, which is real work rather than a flag. Until then macOS builds
+# without the MPFR fallback, which is a supported configuration -- this has
+# always been an option, and Windows has never had it.
+CMAKE_DEPENDENT_OPTION(HJCFIT_USE_MPFR "Enable fallback to MPFR multiple precision"
+                       ON "UNIX;NOT APPLE" OFF)
 
 set(JUPYTER_KERNEL "" CACHE STRING "Jupyter kernel to run notebooks with defaults to python2 or python3 depending on python version")
 # Provides backwards compatibility and prevents MACOS_RPATH warning
