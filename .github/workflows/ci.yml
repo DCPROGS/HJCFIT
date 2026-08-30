@@ -116,6 +116,7 @@ jobs:
             -DpythonBindings=ON \
             -DcompileDocs=OFF \
             -Dexecutenotebooks=OFF \
+            -DHUNTER_ENABLED=OFF \
             ${{ matrix.cmake_extra }}
 
       - name: Build
