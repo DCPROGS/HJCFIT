@@ -47,7 +47,8 @@ class Exponentiation
 
 TEST_P(Exponentiation, af){
   idealg.set(GetParam());
-  t_rmatrix exponential = GetParam().aa().exp();
+  t_rmatrix const aa = GetParam().aa();
+  t_rmatrix exponential = aa.exp();
   t_rmatrix current = GetParam().af();
   for(size_t i(0); i < nexponents; ++i, current = exponential * current) {
     Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
@@ -57,7 +58,8 @@ TEST_P(Exponentiation, af){
 }
 TEST_P(Exponentiation, fa){
   idealg.set(GetParam());
-  t_rmatrix exponential = GetParam().ff().exp();
+  t_rmatrix const ff = GetParam().ff();
+  t_rmatrix exponential = ff.exp();
   t_rmatrix current = GetParam().fa();
   for(size_t i(0); i < nexponents; ++i, current = exponential * current) {
     Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>

@@ -91,7 +91,8 @@ TEST_F(IdealGTest, blocks){
 
   // This test pretty much ensures that we are dealing with an exponential
   // At least over 10 integers. 
-  { t_rmatrix exponential = qmatrix.aa().exp();
+  { t_rmatrix const aa = qmatrix.aa();
+    t_rmatrix exponential = aa.exp();
     t_rmatrix current = qmatrix.af();
     for(size_t i(0); i < 21; ++i, current = exponential * current) {
       Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
@@ -99,7 +100,8 @@ TEST_F(IdealGTest, blocks){
       EXPECT_TRUE((diff < 1e-8).all()); 
     }
   }
-  { t_rmatrix exponential = qmatrix.ff().exp();
+  { t_rmatrix const ff = qmatrix.ff();
+    t_rmatrix exponential = ff.exp();
     t_rmatrix current = qmatrix.fa();
     for(size_t i(0); i < 21; ++i, current = exponential * current) {
       Eigen::Array<t_real, Eigen::Dynamic, Eigen::Dynamic>
