@@ -19,6 +19,21 @@ cmake_minimum_required(VERSION 3.16)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules)
 
+# GreatCMakeCookOff is cloned unpinned at configure time (see F6 in the assessment) and
+# its HunterGate.cmake still declares cmake_minimum_required below 3.5, which CMake 4
+# refuses outright:
+#
+#   CMake Error at .../GreatCMakeCookOff/scripts/HunterGate.cmake:45
+#     Compatibility with CMake < 3.5 has been removed from CMake.
+#
+# We do not control that file. CMAKE_POLICY_VERSION_MINIMUM is the transition mechanism
+# CMake provides for exactly this case. Scoped to CMake 4 and later so it stays inert on
+# the 3.x that most distributions still ship, and removable once CookOff is vendored,
+# pinned or dropped.
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 4.0)
+  set(CMAKE_POLICY_VERSION_MINIMUM 3.5)
+endif()
+
 # Downloads and installs GreatCMakeCookOff
 # It contains a number of cmake recipes
 include(LookUp-GreatCMakeCookOff)
