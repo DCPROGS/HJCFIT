@@ -111,9 +111,7 @@ class DeterminantEq {
   HJCFIT::t_real get_tau() const;
   void set_tau(HJCFIT::t_real);
   %pythoncode %{
-    __swig_getmethods__["tau"] = _get_tau
-    __swig_setmethods__["tau"] = _set_tau
-    if _newclass: tau = property(_get_tau, _set_tau, doc="Max length of mixed events.")
+    tau = property(_get_tau, _set_tau, doc="Max length of missed events.")
   %}
 
   // Defines determinant function for a scalar
