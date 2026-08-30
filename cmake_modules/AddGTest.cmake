@@ -36,17 +36,11 @@
 # hazard of resolving dependencies against a moving default branch. The fix is
 # to pin.
 #
-# Why release-1.12.1
-# ------------------
-# It is the last googletest release supporting C++11, which is what HJCFIT
-# compiles as (see CMAKE_CXX_STANDARD in the top-level CMakeLists). From
-# googletest's own README: "The 1.12.x branch will be the last to support
-# C++11." 1.13+ requires C++14, 1.17+ requires C++17.
-#
-# Raising HJCFIT to a newer C++ standard is a reasonable thing to want, but it
-# is a separate decision with its own consequences; making it here would have
-# confounded this change with a language-standard bump. Bump the standard
-# first, then move this pin.
+# Why v1.18.0
+# -----------
+# This was pinned to release-1.12.1, the last googletest supporting C++11, for
+# as long as HJCFIT compiled as C++11. The project now targets C++17, so the
+# constraint is gone and the pin moves to a current release.
 #
 # Pinned to a commit SHA rather than the tag, because tags can be moved and a
 # SHA cannot.
@@ -61,8 +55,8 @@ endif()
 
 set(HJCFIT_GOOGLETEST_REPOSITORY "https://github.com/google/googletest.git"
     CACHE STRING "googletest repository to fetch")
-set(HJCFIT_GOOGLETEST_GIT_TAG "58d77fa8070e8cec2dc1ed015d66b454c8d78850"
-    CACHE STRING "googletest commit to build against (release-1.12.1)")
+set(HJCFIT_GOOGLETEST_GIT_TAG "063de7e9578f82b369302001269680b4b1553359"
+    CACHE STRING "googletest commit to build against (v1.18.0)")
 mark_as_advanced(HJCFIT_GOOGLETEST_REPOSITORY HJCFIT_GOOGLETEST_GIT_TAG)
 
 # googletest build knobs. Must be set before FetchContent_MakeAvailable, since

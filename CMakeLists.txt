@@ -25,7 +25,7 @@ PROJECT(HJCFIT)
 
 option(tests          "Enable testing."                         on)
 option(pythonBindings "Enable python bindings."                 on)
-option(compileDocs    "Compile c++11 documentation examples."   on)
+option(compileDocs    "Compile C++ documentation examples."      on)
 option(openmp         "Enable OpenMP parallelization."          on)
 option(executenotebooks "Execute example Jupyter notebooks."    on)
 CMAKE_DEPENDENT_OPTION(HJCFIT_USE_MPFR "Enable fallback to MPFR Multi precision" ON "UNIX" OFF)
@@ -95,7 +95,7 @@ if(NOT EIGEN3_INCLUDE_DIR AND TARGET Eigen3::Eigen)
   get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
 endif()
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
