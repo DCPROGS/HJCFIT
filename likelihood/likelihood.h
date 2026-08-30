@@ -109,7 +109,7 @@ namespace HJCFIT {
       std::vector<t_stack_rmatrix> current_vec(threads, identity);
       std::vector<t_int> exponents(threads, 0);
       bool openmplowlevel = (intervals>100);
-      #pragma omp parallel default(none), shared(_g, current_vec, exponents), if(openmplowlevel)
+      #pragma omp parallel default(none), shared(_g, current_vec, exponents, identity, intervals, burst), if(openmplowlevel)
       {
         t_int thread;
         #if defined(_OPENMP)

@@ -81,7 +81,7 @@ namespace HJCFIT {
     t_real result(0);
     const bool openmphighlevel = bursts.size() > 100;
     if(openmphighlevel) {
-      #pragma omp parallel for default(none), reduction(+:result), shared(final)
+      #pragma omp parallel for default(none), reduction(+:result), shared(final, eG, initial)
       for (t_int i=0; i<bursts.size(); i++) {
         t_Burst const &burst = bursts[i];
         result += chained_log10_likelihood(eG, burst, initial, final);
@@ -111,7 +111,7 @@ namespace HJCFIT {
                                 
     t_rvector result(bursts.size());
     const bool openmphighlevel = bursts.size() > 100;
-    #pragma omp parallel for default(none), shared(final,result), if(openmphighlevel)
+    #pragma omp parallel for default(none), shared(final, result, eG, initial), if(openmphighlevel)
     for (t_int i=0; i<bursts.size(); i++) {
       t_Burst const &burst = bursts[i];
       result(i) = chained_log10_likelihood(eG, burst, initial, final);
