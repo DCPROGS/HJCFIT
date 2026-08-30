@@ -32,11 +32,13 @@ if(pythonBindings)
                                         math.swg brentq.swg log10likelihood.swg )
   # The C++ shared library target is already called "likelihood". swig_add_module used to
   # prefix an underscore and so produced "_likelihood"; swig_add_library uses the name
-  # verbatim and would collide. Hence a distinct target name, with OUTPUT_NAME set so the
-  # module file is still _likelihood, which is what the generated likelihood.py imports.
+  # verbatim and would collide. Hence a distinct target name. OUTPUT_NAME carries the SWIG
+  # module name and must NOT include the leading underscore: UseSWIG passes it to swig as
+  # -module, and swig's python backend adds the underscore itself when emitting the
+  # "import _likelihood" in the generated likelihood.py.
   swig_add_library(likelihood_python LANGUAGE python SOURCES likelihood.i)
   set_target_properties(likelihood_python PROPERTIES
-                        OUTPUT_NAME _likelihood
+                        OUTPUT_NAME likelihood
                         LINKER_LANGUAGE CXX)
   target_link_libraries(likelihood_python ${PYTHON_LIBRARIES} likelihood)
 
