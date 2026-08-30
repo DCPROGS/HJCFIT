@@ -127,9 +127,9 @@ std::vector<HJCFIT::RootInterval>
              `multiplicity` the multiplicity of the root. All roots with `multiplicity`:math:`> 1`
              will have a size of `tolerance` or smaller.
     """
-    from numpy import NaN
-    if lower_bound is None: lower_bound = NaN
-    if upper_bound is None: upper_bound = NaN
+    from numpy import nan
+    if lower_bound is None: lower_bound = nan
+    if upper_bound is None: upper_bound = nan
     return _likelihood._find_root_intervals(determinant, lower_bound, upper_bound, tolerance)
 %}
 
@@ -165,9 +165,9 @@ std::vector<HJCFIT::RootInterval>
            the multiplicity of the root. All roots with `multiplicity > 1` will have a size of
            `tolerance` or smaller.
     """
-    from numpy import NaN
-    if lower_bound is None: lower_bound = NaN
-    if upper_bound is None: upper_bound = NaN
+    from numpy import nan
+    if lower_bound is None: lower_bound = nan
+    if upper_bound is None: upper_bound = nan
     return _likelihood._find_root_intervals_brute_force(
              determinant, resolution, lower_bound, upper_bound, tolerance)
 %}

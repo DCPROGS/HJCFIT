@@ -131,9 +131,9 @@
            Upper bound for *all* roots. Defaults to None, in which the case the upper bound is
            computed from :py:func:`find_upper_bound_for_roots`.
     """
-    from numpy import NaN
-    if lower_bound is None: lower_bound = NaN
-    if upper_bound is None: upper_bound = NaN
+    from numpy import nan
+    if lower_bound is None: lower_bound = nan
+    if upper_bound is None: upper_bound = nan
     if tcritical is None: tcritical = -1e0
     
     this = $action( bursts, nopen, tau, tcritical, nmax, xtol, rtol, itermax, lower_bound,

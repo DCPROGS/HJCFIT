@@ -72,7 +72,7 @@
            Upper bound for *all* roots. Defaults to None, in which the case the upper bound is
            computed from :py:func:`find_upper_bound_for_roots`.
     """
-    from numpy import NaN, array
+    from numpy import nan, array
     from .. import internal_dtype
     from . import QMatrix
     # Try first initalization mode
@@ -109,8 +109,8 @@
     itermax     = int(args[index+3] if len(args) > index+3 else kwargs.get('itermax', 100))
     lower_bound = args[index+4] if len(args) > index+4 else kwargs.get('lower_bound', None)
     upper_bound = args[index+5] if len(args) > index+5 else kwargs.get('upper_bound', None)
-    if lower_bound is None: lower_bound = NaN
-    if upper_bound is None: upper_bound = NaN
+    if lower_bound is None: lower_bound = nan
+    if upper_bound is None: upper_bound = nan
     
     this = $action(matrix, tau, xtol, rtol, itermax, lower_bound, upper_bound)
     try: self.this.append(this)
