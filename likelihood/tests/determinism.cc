@@ -33,6 +33,8 @@
 
 #include <HJCFITConfig.h>
 #include <iostream>
+#include <iomanip>
+#include <cmath>
 #include <vector>
 #include <gtest/gtest.h>
 #if defined(_OPENMP)
@@ -82,6 +84,16 @@ namespace {
     return likelihood(qmatrix);
   }
 
+  //! Distance in representable doubles between two values, so a report says how
+  //! far apart the results were rather than only that they differed.
+  long ulp_distance(t_real a, t_real b) {
+    if(a == b) return 0;
+    long n = 0;
+    t_real lo = a < b ? a : b, hi = a < b ? b : a;
+    while(lo < hi and n < 1000000) { lo = std::nextafter(lo, hi); ++n; }
+    return n;
+  }
+
   std::vector<int> thread_counts() {
 #   if defined(_OPENMP)
       std::vector<int> const wanted{1, 2, 4, 8};
@@ -104,9 +116,10 @@ TEST(Determinism, across_threads_many_bursts) {
   t_real const reference = evaluate(bursts, qmatrix, counts.front());
   for(int n : counts) {
     t_real const value = evaluate(bursts, qmatrix, n);
-    EXPECT_DOUBLE_EQ(value, reference)
+    EXPECT_EQ(value, reference)
       << "log-likelihood changed with " << n << " threads (reference used "
-      << counts.front() << ")";
+      << counts.front() << "): " << std::setprecision(20) << value << " vs "
+      << reference << ", " << ulp_distance(value, reference) << " ulp";
   }
 }
 
@@ -120,9 +133,10 @@ TEST(Determinism, across_threads_long_bursts) {
   t_real const reference = evaluate(bursts, qmatrix, counts.front());
   for(int n : counts) {
     t_real const value = evaluate(bursts, qmatrix, n);
-    EXPECT_DOUBLE_EQ(value, reference)
+    EXPECT_EQ(value, reference)
       << "log-likelihood changed with " << n << " threads (reference used "
-      << counts.front() << ")";
+      << counts.front() << "): " << std::setprecision(20) << value << " vs "
+      << reference << ", " << ulp_distance(value, reference) << " ulp";
   }
 }
 
@@ -143,14 +157,23 @@ TEST(Determinism, sum_of_vector_equals_scalar) {
       t_real sum(0);
       for(t_int i = 0; i < per_burst.size(); ++i) sum += per_burst(i);
 
-      EXPECT_DOUBLE_EQ(sum, likelihood(qmatrix))
+      t_real const scalar = likelihood(qmatrix);
+      EXPECT_EQ(sum, scalar)
         << "sum(vector(Q)) != operator()(Q) for " << nbursts << " bursts of "
-        << nintervals << " intervals";
+        << nintervals << " intervals: " << std::setprecision(20) << sum
+        << " vs " << scalar << ", " << ulp_distance(sum, scalar) << " ulp";
     }
   }
 }
 
 int main(int argc, char **argv) {
+#if defined(_OPENMP)
+  std::cout << "[determinism] OpenMP enabled, omp_get_max_threads() = "
+            << omp_get_max_threads() << std::endl;
+#else
+  std::cout << "[determinism] built without OpenMP: this test cannot "
+               "demonstrate thread dependence" << std::endl;
+#endif
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
