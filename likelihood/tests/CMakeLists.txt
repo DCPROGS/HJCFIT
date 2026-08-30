@@ -41,5 +41,8 @@ if(tests)
            "brentq.cc;random_matrix.h;random_matrix.cc"
            likelihood)
   add_gtest(likelihood likelihood.cc likelihood)
+  # Asserts the log-likelihood does not depend on the thread count, and that
+  # operator() equals the sum of vector(). Sized to enter both parallel paths.
+  add_gtest(determinism determinism.cc likelihood)
 
 endif(tests)
