@@ -29,7 +29,6 @@ def step(context, n, tau, nmax):
     i -= 1
     if i == 0: raise AssertionError('Could not instanciate enough likelihoods.')
     qmatrix = random_qmatrix()
-    G = MissedEventsG(qmatrix, tau, nmax)
     try: G = MissedEventsG(qmatrix, tau, nmax)
     except: continue
     else:
