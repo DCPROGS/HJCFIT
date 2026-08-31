@@ -68,7 +68,7 @@ namespace HJCFIT {
   //! \param[in] _initial initial vectors.
   //! \param[in] _final final vectors.
   template<class T_G>
-    t_real chained_log10_likelihood( T_G const & _g, const t_Burst burst,
+    t_real chained_log10_likelihood( T_G const & _g, t_Burst const &burst,
                                      t_initvec const &_initial, t_rvector const &_final ) {
       auto _begin = burst.begin();
       auto _end = burst.end();
@@ -100,49 +100,62 @@ namespace HJCFIT {
   //! \param[in] _final final vectors.
   //! \param[in] threads number of threads to use.
   template<class T_G>
-    t_real parallel_chained_log10_likelihood( T_G const & _g, const t_Burst burst,
+    t_real parallel_chained_log10_likelihood( T_G const & _g, t_Burst const &burst,
                                      t_initvec const &_initial, t_rvector const &_final,
                                      t_int const threads) {
-      auto _begin = burst.begin();
-      auto _end = burst.end();
-      t_int const intervals = _end - _begin;
+      t_int const intervals = static_cast<t_int>(burst.size());
       if( (intervals) % 2 != 1 )
         throw errors::Domain("Expected a burst with odd number of intervals");
-      t_initvec current = _initial * _g.af(static_cast<t_real>(*_begin));
+      t_initvec current = _initial * _g.af(static_cast<t_real>(burst[0]));
       t_int exponent(0);
       const t_int cols = current.cols();
       const t_stack_rmatrix identity = t_stack_rmatrix::Identity(cols, cols);
-      std::vector<t_stack_rmatrix> current_vec(threads, identity);
-      std::vector<t_int> exponents(threads, 0);
-      bool openmplowlevel = (intervals>100);
-      #pragma omp parallel default(none), shared(_g, current_vec, exponents, identity, intervals, burst), if(openmplowlevel)
-      {
-        t_int thread;
-        #if defined(_OPENMP)
-          thread = omp_get_thread_num();
-        #else
-          thread = 0;
-        #endif
-        exponents[thread] = 0;
-        current_vec[thread] = identity;
-        #pragma omp for schedule(static)
-        for(t_int j=1; j<intervals-1; j=j+2) {
-          current_vec[thread] *= _g.fa(static_cast<t_real>(burst[j]));
-          current_vec[thread] *= _g.af(static_cast<t_real>(burst[j+1]));
-          t_real const max_coeff = current_vec[thread].array().abs().maxCoeff();
+
+      // Pairs of (shut, open) intervals following the leading open one.
+      t_int const npairs = (intervals - 1) / 2;
+      bool const parallel = (intervals > 100) and (threads > 1);
+
+      // One slot per chunk, not per thread.
+      //
+      // Indexing these by omp_get_thread_num() made the buffer length depend on
+      // a thread count captured in the constructor, so a team larger than that
+      // wrote past the end (F8); and it made the order the partial products are
+      // recombined in depend on how the schedule happened to hand out
+      // iterations, which matters because matrix multiplication does not
+      // commute (F10). Chunk indices are decided here and mean the same thing
+      // whatever the runtime does with them.
+      t_int const nchunks = (parallel and npairs > threads) ? threads : 1;
+      std::vector<t_stack_rmatrix> chunk(nchunks, identity);
+      std::vector<t_int> chunk_exponent(nchunks, 0);
+
+      #pragma omp parallel for schedule(static) default(none),               shared(_g, chunk, chunk_exponent, identity, burst, npairs, nchunks),               if(parallel)
+      for(t_int c = 0; c < nchunks; ++c) {
+        t_stack_rmatrix accumulator = identity;
+        t_int chunk_exp = 0;
+        t_int const first = (npairs * c) / nchunks;
+        t_int const last  = (npairs * (c + 1)) / nchunks;
+        for(t_int pair = first; pair < last; ++pair) {
+          t_int const j = 1 + 2 * pair;
+          accumulator *= _g.fa(static_cast<t_real>(burst[j]));
+          accumulator *= _g.af(static_cast<t_real>(burst[j+1]));
+          t_real const max_coeff = accumulator.array().abs().maxCoeff();
           if(max_coeff > 1e20) {
-            current_vec[thread]  *= 1e-20;
-            exponents[thread] += 20;
+            accumulator *= 1e-20;
+            chunk_exp += 20;
           } else if(max_coeff < 1e-20) {
-            current_vec[thread]  *= 1e+20;
-            exponents[thread] -= 20;
+            accumulator *= 1e+20;
+            chunk_exp -= 20;
           }
         }
+        chunk[c] = accumulator;
+        chunk_exponent[c] = chunk_exp;
       }
-      for (t_int tmpexp : exponents)
-        exponent += tmpexp;
-      for (auto tmpcurrent : current_vec)
-        current = current * tmpcurrent;
+
+      // Recombined in chunk order, which is the order the intervals appear in.
+      for(t_int c = 0; c < nchunks; ++c) {
+        exponent += chunk_exponent[c];
+        current = current * chunk[c];
+      }
       return std::log10(current * _final) + exponent;
     }
 
