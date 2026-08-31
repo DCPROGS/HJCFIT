@@ -83,6 +83,12 @@ jobs:
           - name: windows
             os: windows-2022
             python: '3.12'
+            # Visual Studio rather than Ninja. With Ninja and no VS environment
+            # activated, CMake picked C:/mingw64 and built a MinGW extension
+            # that then could not find libgcc/libstdc++/libwinpthread at import
+            # time. CPython on Windows is built with MSVC, so matching it avoids
+            # mixing runtimes as well.
+            generator: 'Visual Studio 17 2022'
 
     steps:
       - uses: actions/checkout@v7
@@ -136,7 +142,7 @@ jobs:
 
       - name: Configure
         run: |
-          cmake -S . -B build -G Ninja \
+          cmake -S . -B build -G "${{ matrix.generator || 'Ninja' }}" \
             -DCMAKE_BUILD_TYPE=Release \
             -Dtests=ON \
             -DpythonBindings=ON \
@@ -146,13 +152,13 @@ jobs:
             ${{ matrix.cmake_extra }}
 
       - name: Build
-        run: cmake --build build --parallel
+        run: cmake --build build --parallel --config Release
 
       # --timeout turns a hung test into a named "***Timeout" result rather than
       # a job that stalls until the runner limit. Every test finishes well under
       # 2s; 120 is generous.
       - name: Test
-        run: ctest --test-dir build --output-on-failure --timeout 120
+        run: ctest --test-dir build -C Release --output-on-failure --timeout 120
 
       # Only on failure: a green run's logs are noise, and artifacts cost storage.
       - name: Upload logs
