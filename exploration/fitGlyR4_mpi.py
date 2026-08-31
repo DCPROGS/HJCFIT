@@ -1,4 +1,4 @@
-from dcpyps import mechanism
+from scalcs import mechanism
 from HJCFIT.mpihelpers import MPILikelihoodSolver
 import argparse
 
