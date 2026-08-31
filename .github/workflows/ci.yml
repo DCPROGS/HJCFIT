@@ -32,6 +32,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
 
+    # Git Bash is present on the Windows runners, so one set of build steps
+    # serves all three platforms rather than a pwsh fork of each.
+    defaults:
+      run:
+        shell: bash
+
     strategy:
       fail-fast: false
       matrix:
@@ -69,6 +75,14 @@ jobs:
           - name: macos
             os: macos-14
             python: '3.12'
+          # Windows has never been covered. The last build instructions for it
+          # date from 2016 and name the old dcprogs paths, so treat any failure
+          # here as unexplored rather than regressed. MPFR needs no attention:
+          # CMAKE_DEPENDENT_OPTION already forces HJCFIT_USE_MPFR off when the
+          # platform is not UNIX.
+          - name: windows
+            os: windows-2022
+            python: '3.12'
 
     steps:
       - uses: actions/checkout@v7
@@ -90,6 +104,16 @@ jobs:
         if: runner.os == 'macOS'
         run: |
           brew install swig eigen gmp mpfr ninja libomp
+
+      - name: Install dependencies (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          choco install --no-progress -y swig
+          vcpkg install eigen3:x64-windows
+          # find_package(Eigen3 CONFIG) reads CMAKE_PREFIX_PATH from the
+          # environment, so pointing it at vcpkg's tree avoids threading a
+          # toolchain file through the shared configure step.
+          echo "CMAKE_PREFIX_PATH=$VCPKG_INSTALLATION_ROOT/installed/x64-windows" >> "$GITHUB_ENV"
 
       - name: Install Python dependencies
         run: |
