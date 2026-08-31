@@ -9,8 +9,7 @@
 # One build system throughout rather than a second description of the same thing
 # that can drift.
 #
-# Deliberately narrow to start: one Python version, so the first iterations are
-# minutes rather than half an hour. Widen once it is green.
+# Built for CPython 3.10 through 3.13 on Linux, macOS arm64 and Windows x64.
 
 name: Wheels
 
@@ -49,9 +48,10 @@ jobs:
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.21.3
         env:
-          # Start with one interpreter. 3.10 is the floor, since collections.abc
-          # (F22) and inspect.getargspec (F24) rule out anything older.
-          CIBW_BUILD: cp312-*
+          # 3.10 is the floor: collections.abc (F22) and inspect.getargspec (F24)
+          # make anything older a different piece of work, and numpy 2.1 requires
+          # 3.10 anyway.
+          CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
           CIBW_SKIP: "*-musllinux_* *_i686 *-win32"
           CIBW_ARCHS_MACOS: arm64
 
