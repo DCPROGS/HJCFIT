@@ -289,6 +289,13 @@ epub_copyright = u'2013-2016, University College London'
 # Allow duplicate toc entries.
 #epub_tocdup = True
 
+# sphinxcontrib-bibtex 2.0 moved the bibliography file list out of the
+# `.. bibliography::` directive and into this setting; without it the extension
+# refuses to load at all.
+bibtex_bibfiles = [os.path.join('@SPHINX_SOURCE_DIR@', 'bibliography.bib')]
+# Absolute, because conf.py is configured into the build tree while the
+# sources stay put, and the setting resolves relative to conf.py.
+
 breathe_projects = {
     "@PROJECT_NAME@": os.path.join('@PROJECT_BINARY_DIR@',
                                    "documentation", "xml"),
