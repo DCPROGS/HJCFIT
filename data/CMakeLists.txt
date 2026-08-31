@@ -17,7 +17,7 @@
 
 if(pythonBindings)
 
-  install(FILES CH82.scn CCO.scn CO.scn DESTINATION ${PYINSTALL_DIRECTORY}/hjcfit/data)
+  install(FILES CH82.scn CCO.scn CO.scn DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/data)
 
 endif(pythonBindings)
 

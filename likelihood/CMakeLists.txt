@@ -53,7 +53,7 @@ else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
 install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
-install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/hjcfit/likelihood)
+install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/HJCFIT/likelihood)
 
 
 # Test subdirectory.
