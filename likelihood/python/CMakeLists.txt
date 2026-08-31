@@ -50,6 +50,7 @@ if(pythonBindings)
   set_target_properties(likelihood_python PROPERTIES
                         OUTPUT_NAME likelihood
                         PREFIX "_"
+                        IMPORT_PREFIX "_"
                         LINKER_LANGUAGE CXX)
   target_link_libraries(likelihood_python ${PYTHON_LIBRARIES} likelihood)
 
