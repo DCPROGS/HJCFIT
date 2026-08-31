@@ -195,9 +195,14 @@ endif(tests)
 
 
 # Follow conda convention for Python installation in Windows
-if(WIN32)
+if(DEFINED SKBUILD_PLATLIB_DIR)
+  # Building a wheel. Everything the wheel carries is installed relative to the
+  # platlib directory scikit-build-core provides; a wheel cannot place files
+  # outside its own package tree.
+  set(PYINSTALL_DIRECTORY "${SKBUILD_PLATLIB_DIR}")
+elseif(WIN32)
   set(PYINSTALL_DIRECTORY lib/site-packages)
 else()
   set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
-endif(WIN32)
+endif()
 

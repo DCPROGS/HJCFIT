@@ -59,7 +59,16 @@ endif(CCACHE_FOUND)
 
 # Check if our link directory is already an implicit link directory
 # Only add it to RPath if not.
-if(NOT WIN32)
+if(DEFINED SKBUILD_PLATLIB_DIR)
+  # Wheel build: the extension and the library it needs sit in the same
+  # directory inside the package, so look next to the loading binary rather
+  # than at an absolute prefix that will not exist on the installing machine.
+  if(APPLE)
+    set(CMAKE_INSTALL_RPATH "@loader_path")
+  else()
+    set(CMAKE_INSTALL_RPATH "$ORIGIN")
+  endif()
+elseif(NOT WIN32)
   LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
   if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
