@@ -9,7 +9,12 @@
 # any error (F4).
 
 include(PythonPackage)
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+# Development.Module, not Development. The latter implies Development.Embed,
+# which needs libpython, and manylinux images deliberately do not ship it —
+# extension modules must not link the interpreter. Development.Module asks for
+# the headers alone, which is what building an extension actually requires, and
+# is what provides the Python3::Module target used below.
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module NumPy)
 
 # The rest of the build, and the SWIG glue in particular, was written against
 # the older PYTHON_* spellings. Map them rather than churn every call site.
