@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
+#ifndef HJCFIT_PYTHON_NUMPY_EIGEN_H
+#define HJCFIT_PYTHON_NUMPY_EIGEN_H
+
 #ifndef HJCFIT_NUMPY_EIGEN
 #define HJCFIT_NUMPY_EIGEN
 #include <type_traits>
@@ -387,3 +390,4 @@ namespace HJCFIT {
 }
 #endif
 
+#endif // HJCFIT_PYTHON_NUMPY_EIGEN_H
