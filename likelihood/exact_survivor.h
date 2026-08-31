@@ -96,13 +96,8 @@ namespace HJCFIT {
       class MSWINDOBE RecursionInterface;
       //! \endcond 
 
-#     ifndef HAS_CXX11_UNIQUE_PTR
-        //! Type of the pointers holding recursion interfaces.
-        typedef std::auto_ptr<RecursionInterface> t_RecursionPtr;
-#     else
         //! Type of the pointers holding recursion interfaces.
         typedef std::unique_ptr<RecursionInterface> t_RecursionPtr;
-#     endif
       //! Pointer to AF recursion interface
       t_RecursionPtr recursion_af_;
       //! Pointer to FA recursion interface

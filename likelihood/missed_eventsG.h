@@ -156,13 +156,8 @@ namespace HJCFIT {
       QMatrix const & get_qmatrix() const { return laplace_a_->get_qmatrix(); }
 
     protected:
-#     ifndef HAS_CXX11_UNIQUE_PTR
-        //! Type of the pointers holding laplace object.
-        typedef std::auto_ptr<LaplaceSurvivor> t_LaplacePtr;
-#     else
         //! Type of the pointers holding laplace object.
         typedef std::unique_ptr<LaplaceSurvivor> t_LaplacePtr;
-#     endif
       //! Laplace Survivor function \f$^{A}R(s)\f$.
       t_LaplacePtr laplace_a_;
       //! Laplace Survivor function \f$^{F}R(s)\f$.

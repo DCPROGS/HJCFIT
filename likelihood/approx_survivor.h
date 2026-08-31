@@ -94,13 +94,8 @@ namespace HJCFIT {
         return (*asymptotes_fa_)[i]; 
       }
     protected:
-#     ifndef HAS_CXX11_UNIQUE_PTR
-        //! Type of the pointers holding recursion interfaces.
-        typedef std::auto_ptr<Asymptotes> t_AsymptotesPtr;
-#     else
         //! Type of the pointers holding recursion interfaces.
         typedef std::unique_ptr<Asymptotes> t_AsymptotesPtr;
-#     endif
       //! Pointer to AF recursion interface
       t_AsymptotesPtr asymptotes_af_;
       //! Pointer to FA recursion interface
