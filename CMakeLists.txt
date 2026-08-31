@@ -75,14 +75,14 @@ set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
 if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
   # Unless explicitly initialized from command line or installation occurs in a
-  # virtual environment, set install prefix to CookOff-set path to python
+  # virtual environment, set install prefix to path to the python
   # interpreter.
   if (EXISTS $ENV{VIRTUAL_ENV})
     set(CMAKE_INSTALL_PREFIX "$ENV{VIRTUAL_ENV}" CACHE string "" FORCE)
   elseif (EXISTS $ENV{CONDA_ENV_PATH})
     set(CMAKE_INSTALL_PREFIX "$ENV{CONDA_ENV_PATH}" CACHE string "" FORCE)
   elseif (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
+    FILE(TO_CMAKE_PATH "${PYTHON_INTERP_PREFIX}" PYTHON_INTERP_PREFIX)
     set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
   endif()
 endif(pythonBindings)
