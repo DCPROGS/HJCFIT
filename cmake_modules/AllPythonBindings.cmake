@@ -22,6 +22,19 @@ set(NUMPY_INCLUDE_DIRS  ${Python3_NumPy_INCLUDE_DIRS})
 message(STATUS "[Python] ${Python3_VERSION} at ${Python3_EXECUTABLE}")
 message(STATUS "[NumPy] ${Python3_NumPy_VERSION}")
 
+# sys.prefix, which the Windows branch of the install-prefix logic in the top-
+# level CMakeLists uses. CookOff's CoherentPython supplied this as
+# PYTHON_INTERP_PREFIX; nothing replaced it when CookOff was removed, and the
+# reference is inside a WIN32 guard so no Linux or macOS build could reach it.
+execute_process(
+  COMMAND ${PYTHON_EXECUTABLE} -c "import sys; print(sys.prefix)"
+  OUTPUT_VARIABLE PYTHON_INTERP_PREFIX
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  RESULT_VARIABLE _prefix_result)
+if(NOT _prefix_result EQUAL 0)
+  message(FATAL_ERROR "Could not determine the python interpreter prefix.")
+endif()
+
 # HJCFITConfig.h.in consumes these. NUMPY_VERSION_MINOR alone is not enough to
 # decide anything now that NumPy is on 2.x - see the gate in likelihood.i (F3).
 string(REPLACE "." ";" _npy_version_list "${Python3_NumPy_VERSION}")

@@ -37,8 +37,20 @@ if(pythonBindings)
   # -module, and swig's python backend adds the underscore itself when emitting the
   # "import _likelihood" in the generated likelihood.py.
   swig_add_library(likelihood_python LANGUAGE python SOURCES likelihood.i)
+  # PREFIX is set explicitly rather than left to UseSWIG. The legacy
+  # LIBRARY_OUTPUT_PATH in likelihood/CMakeLists.txt puts every target in one
+  # directory, and under the Visual Studio generator the module came out as
+  # likelihood rather than _likelihood, colliding with the C++ library it links
+  # against:
+  #
+  #   LNK1149: output filename matches input filename
+  #
+  # OUTPUT_NAME stays the swig module name, which UseSWIG passes to swig as
+  # -module; the leading underscore belongs to the file, not the module.
   set_target_properties(likelihood_python PROPERTIES
                         OUTPUT_NAME likelihood
+                        PREFIX "_"
+                        IMPORT_PREFIX "_"
                         LINKER_LANGUAGE CXX)
   target_link_libraries(likelihood_python ${PYTHON_LIBRARIES} likelihood)
 

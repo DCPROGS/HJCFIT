@@ -52,7 +52,26 @@ if(WIN32)
 else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
-install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
+if(WIN32 AND pythonBindings)
+  # A .pyd resolves its dependent DLLs from its own directory and from whatever
+  # os.add_dll_directory() was given -- since Python 3.8 it does not search
+  # PATH. The conda layout put likelihood.dll in Library/bin and the extension
+  # in site-packages, so importing HJCFIT.likelihood failed with
+  #
+  #   ImportError: DLL load failed while importing _likelihood
+  #
+  # even though both files installed correctly. The test harness compensated by
+  # adding Library/bin to PATH, which stopped working at Python 3.8 and is why
+  # nothing caught it.
+  #
+  # Putting the DLL beside the extension is also what a wheel requires, since a
+  # wheel cannot install anything outside its own package directory.
+  install(TARGETS likelihood
+          RUNTIME DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood
+          ARCHIVE DESTINATION lib)
+else()
+  install(TARGETS likelihood DESTINATION ${LIB_DIRECTORY})
+endif()
 install(FILES ${LIKELIHOOD_HEADERS} DESTINATION include/HJCFIT/likelihood)
 
 

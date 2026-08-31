@@ -75,14 +75,14 @@ set(CMAKE_SCRIPTS ${PROJECT_SOURCE_DIR}/cmake_modules)
 if(pythonBindings)
   include(${CMAKE_SCRIPTS}/AllPythonBindings.cmake)
   # Unless explicitly initialized from command line or installation occurs in a
-  # virtual environment, set install prefix to CookOff-set path to python
+  # virtual environment, set install prefix to path to the python
   # interpreter.
   if (EXISTS $ENV{VIRTUAL_ENV})
     set(CMAKE_INSTALL_PREFIX "$ENV{VIRTUAL_ENV}" CACHE string "" FORCE)
   elseif (EXISTS $ENV{CONDA_ENV_PATH})
     set(CMAKE_INSTALL_PREFIX "$ENV{CONDA_ENV_PATH}" CACHE string "" FORCE)
   elseif (WIN32 AND CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    FILE(TO_CMAKE_PATH ${PYTHON_INTERP_PREFIX} PYTHON_INTERP_PREFIX)
+    FILE(TO_CMAKE_PATH "${PYTHON_INTERP_PREFIX}" PYTHON_INTERP_PREFIX)
     set(CMAKE_INSTALL_PREFIX "${PYTHON_INTERP_PREFIX}" CACHE string "" FORCE)
   endif()
 endif(pythonBindings)
@@ -108,6 +108,25 @@ message(STATUS "[Eigen3] ${Eigen3_VERSION}")
 # uses. Newer configs may only define the target, so derive it if absent.
 if(NOT EIGEN3_INCLUDE_DIR AND TARGET Eigen3::Eigen)
   get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
+endif()
+
+if(MSVC)
+  # Two things CookOff's AddCPP11Flags did besides set C++ flags, and which
+  # went missing when that include was replaced by CMAKE_CXX_STANDARD.
+  #
+  # MSWINDOBE gates the dllimport/dllexport machinery in HJCFITConfig.h.in.
+  # Without it the 36 MSWINDOBE annotations in the headers expand to nothing,
+  # the DLL exports no symbols, MSVC emits no import library, and linking the
+  # SWIG module fails with
+  #
+  #   LNK1181: cannot open input file 'likelihood.lib'
+  #
+  # /wd4251 silences the warning MSVC issues for every STL member of an exported
+  # class. It is noise here because the library and its consumers are built
+  # together; it would matter if we shipped headers for a differently-configured
+  # compiler.
+  set(MSWINDOBE TRUE)
+  add_compile_options(/EHsc /wd4251)
 endif()
 
 set(CMAKE_CXX_STANDARD 17)
