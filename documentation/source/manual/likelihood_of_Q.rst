@@ -48,7 +48,7 @@ Once the objects are initialized, the input attributes can be accessed (and modi
    :py:func:`~HJCFIT.likelihood.Log10Likelihood` uses equilibrium vectors depending on the
    value of its attribute :py:attr:`~HJCFIT.likelihood.Log10Likelihood.tcritical`:
 
-   - if it is ``None``, ``numpy.NaN``, or negative, then the equilibrium vectors are used;
+   - if it is ``None``, ``numpy.nan``, or negative, then the equilibrium vectors are used;
    - if it is a strictly positive real number, then the CHS vectors are computed.
 
    Similarly, in C++, ``tcritical`` can be set to :c:data:`HJCFIT::quiet_nan` to trigger
@@ -100,7 +100,7 @@ using normal sequence operations. Only a small subset of sequence operations whe
 
 Finally, some of the attributes, namely, :py:attr:`Log10Likelihood.tcritical`,
 :py:attr:`Log10Likelihood.upper_bound`, :py:attr:`Log10Likelihood.lower_bound`, act both as
-parameters and as switch when given special values. These special values are `None` and `numpy.NaN`
+parameters and as switch when given special values. These special values are `None` and `numpy.nan`
 in Python and :c:data:`HJCFIT::quiet_nan` in C++. In Python, the special values will always be transformed
 to `None`. 
 

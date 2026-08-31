@@ -54,5 +54,5 @@ beats purity, and it makes practical sense to keep likelihood and equilibrium ve
    :py:func:`~HJCFIT.likelihood.Log10Likelihood` uses equilibrium vectors depending on the
    value of its attribute :py:attr:`~HJCFIT.likelihood.Log10Likelihood.tcritical`:
 
-   - if it is ``None``, ``numpy.NaN``, or negative, then the equilibrium vectors are used;
+   - if it is ``None``, ``numpy.nan``, or negative, then the equilibrium vectors are used;
    - if it is a strictly positive real number, then the CHS vectors are computed.

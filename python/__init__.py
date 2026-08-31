@@ -33,39 +33,66 @@ internal_dtype = _HJCFIT_dtype()
 
 
 def read_idealized_bursts(filename, tau, tcrit):
-  """ Reads bursts data from *.scn file.
+  """ Reads bursts data from an *.scn file.
 
-      This functions is a wrapper around dc-pyps.
+      Idealised single-channel records are read and dead-time corrected with
+      :mod:`dcio`, then segmented into bursts at shut intervals of at least
+      *tcrit* with :func:`scalcs.scsim.extract_burst_intervals`. Neither
+      package is a dependency of HJCFIT -- they are imported here and only
+      here, so the rest of the library works without them.
+
+      This used to be a wrapper around dc-pyps, which is deprecated and has
+      not been installable for years. dcio supplies what dcpyps.dataset and
+      dcpyps.dcio did; scalcs supplies what dcpyps.mechanism did.
 
       :param string filename:
-        Path to an *.scn file. It can also the name of a standard model.
+        Path to an *.scn file. It can also be the name of one of the sample
+        records shipped with HJCFIT ("CH82", "CO", "CCO"), with or without
+        the .scn extension.
       :param float tau:
         Resolution/Maximum length of the missed events, in seconds.
       :param float tcrit:
-        Critical time, in seconds
+        Critical time, in seconds. Only its magnitude is used here. The sign
+        is a flag to :py:class:`~HJCFIT.likelihood.Log10Likelihood`, where a
+        negative value selects equilibrium vectors (Colquhoun & Hawkes 1982)
+        instead of CHS vectors (Colquhoun, Hawkes & Srodzinski 1996); pass
+        the same value to both.
 
       :returns:
-        A list of lists of intervals in milliseconds. Inner lists represent
-        bursts.
+        A list of arrays of intervals **in seconds**. Each array is one burst,
+        alternating open and shut and beginning and ending with an opening, so
+        every array has odd length. This is what
+        :py:class:`~HJCFIT.likelihood.Log10Likelihood` expects, and it takes
+        *tau* and *tcrit* in the same units.
   """
-  from glob import iglob
-  from os.path import exists, dirname, join, abspath, basename, splitext
-  from numpy import array, all, abs
-  from dcpyps.dataset import SCRecord
+  from os.path import exists, dirname, join, abspath, splitext
+  from numpy import array
+
+  try:
+    from dcio.analysis import from_scn
+    from dcio.formats import scn
+    from scalcs.scsim import extract_burst_intervals
+  except ImportError as e:
+    raise ImportError(
+        "read_idealized_bursts needs dcio and scalcs, which are not "
+        "dependencies of HJCFIT and are not on PyPI. Install them from "
+        "https://github.com/remislp/dcio and "
+        "https://github.com/remislp/SCALCS. (Original error: {0})".format(e))
 
   if not exists(filename):
-    # Check that we are not trying to read a sample data
-    # First, finds all data files in directory.
-    module_data_dir = join(dirname(abspath(__file__)), 'data')
-    data_files = [basename(u) for u in iglob(join(module_data_dir, '*.scn'))]
-    data_files = [splitext(u)[0] for u in data_files]
-    # Now check if name of model compares to something in data directory.
-    if filename not in data_files:
-      raise IOError('Could not find file or model {0}.'.format(filename))
-    # Creates full filename  and move on to reading it
-    filename = join(module_data_dir, '{0}.scn'.format(filename))
+    # Not a path: check whether it names one of the sample records, with or
+    # without the extension.
+    stem = splitext(filename)[0]
+    sample = join(dirname(abspath(__file__)), 'data', '{0}.scn'.format(stem))
+    if not exists(sample):
+      raise IOError('Could not find file or sample record {0}.'.format(filename))
+    filename = sample
 
+  record = from_scn(scn.read(filename), tres=tau)
+  # The sign of tcrit is a flag to Log10Likelihood -- negative selects
+  # equilibrium vectors over CHS vectors -- while its magnitude is the
+  # critical time. Segmentation uses the magnitude.
+  bursts = extract_burst_intervals(record.resolved_intervals,
+                                   record.resolved_amplitudes, abs(tcrit))
 
-  time_series = SCRecord([filename], tres=tau, tcrit=tcrit)
-
-  return [array(u, dtype=internal_dtype) for u in time_series.bursts.intervals()]
+  return [array(u, dtype=internal_dtype) for u in bursts]

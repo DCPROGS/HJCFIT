@@ -1,8 +1,21 @@
+"""MPI driver for fitting one mechanism to several concentrations at once.
+
+Each MPI rank owns one concentration and evaluates its own term of the
+log-likelihood; rank 0 runs the Simplex and reduces the terms at every step.
+
+Data handling used to come from dc-pyps, which is deprecated and has not been
+installable for years. `dcio` now reads and dead-time corrects the records,
+and `scalcs` supplies burst segmentation and the Mechanism class. Neither is a
+dependency of HJCFIT, and neither is mpi4py: importing this module requires
+all three.
+"""
+
 from mpi4py import MPI
 import sys
-from dcpyps import dataset
-from dcpyps import dcio
-from dcpyps import mechanism
+from dcio.analysis import from_scn
+from dcio.formats import scn
+from scalcs import scalcsio
+from scalcs.scsim import extract_burst_intervals
 from HJCFIT.likelihood import Log10Likelihood
 import math
 import numpy as np
@@ -28,12 +41,27 @@ class MPILikelihoodSolver:
         self.tres = tres
         self.conc = conc
         for i in range(len(scnfiles)):
-            rec = dataset.SCRecord(scnfiles[i], conc[i], tres[i], tcrit[i])
-            rec.record_type = 'recorded'
-            self.recs.append(rec)
-            self.bursts.append(rec.bursts.intervals())
-            if self.rank == 0 and verbose:
-                rec.printout()
+            # One concentration may be recorded over several patches. Bursts
+            # are extracted per file and then pooled, rather than pooling the
+            # raw records: concatenating two patches would invent an interval
+            # boundary at the join.
+            files = scnfiles[i]
+            if isinstance(files, str):
+                files = [files]
+            recs, bursts = [], []
+            for filename in files:
+                rec = from_scn(scn.read(filename), tres=tres[i])
+                recs.append(rec)
+                # abs(): the sign of tcrit is a flag to Log10Likelihood
+                # (negative selects equilibrium over CHS vectors), the
+                # magnitude is the critical time used to cut bursts.
+                bursts.extend(extract_burst_intervals(rec.resolved_intervals,
+                                                      rec.resolved_amplitudes,
+                                                      abs(tcrit[i])))
+                if self.rank == 0 and verbose:
+                    print(rec)
+            self.recs.append(recs)
+            self.bursts.append(bursts)
             if self.size != len(conc):
                 outputstring = ("Number of MPI processes much match number of"
                                 "concentrations. Got {} MPI processes "
@@ -42,8 +70,8 @@ class MPILikelihoodSolver:
                 raise RuntimeError(outputstring)
 
     def load_mec(self, mecfn, rates):
-        version, meclist, max_mecnum = dcio.mec_get_list(mecfn)
-        self.mec = dcio.mec_load(mecfn, meclist[2][0])
+        version, meclist, max_mecnum = scalcsio.mec_get_list(mecfn)
+        self.mec = scalcsio.mec_load(mecfn, meclist[2][0])
         self.mec.set_rateconstants(rates)
 
     def mec_printout(self, target=sys.stdout):
@@ -113,7 +141,7 @@ class MPILikelihoodSolver:
             lik = self.complete_likelihood(theta)
             print("\nStarting likelihood (HJCFIT)= "
                   "{0:.6f}".format(-lik))
-            start = time.clock()
+            start = time.process_time()
             wallclock_start = time.time()
             self.result = None
             if options is None:
@@ -131,7 +159,7 @@ class MPILikelihoodSolver:
             while self.mpi_status:
                 self.mpi_slave_likelihood()
         if self.rank == 0:
-            end = time.clock()
+            end = time.process_time()
             wallclock_end = time.time()
             print("\nHJCFIT Fitting finished: %4d/%02d/%02d %02d:%02d:%02d\n"
                   %time.localtime()[0:6])
