@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
+#ifndef HJCFIT_PYTHON_HELPERS_H
+#define HJCFIT_PYTHON_HELPERS_H
+
 namespace {
 
     //! \brief Helps out applying functor to a function.
@@ -190,3 +193,5 @@ namespace {
     }        
 
 }
+
+#endif // HJCFIT_PYTHON_HELPERS_H

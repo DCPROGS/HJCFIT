@@ -18,6 +18,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ************************/
 
+#ifndef HJCFIT_PYTHON_OBJECT_H
+#define HJCFIT_PYTHON_OBJECT_H
+
 namespace {
 
     template<class T> class Object;
@@ -95,3 +98,5 @@ namespace {
       return steal_ref<T>(_in); 
     }
 }
+
+#endif // HJCFIT_PYTHON_OBJECT_H

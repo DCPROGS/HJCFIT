@@ -1,0 +1,88 @@
+# Binary wheels.
+#
+# There has never been a way to install HJCFIT except to build it: no
+# pyproject.toml, no wheels, no release in thirteen years. For an
+# electrophysiology audience that is the wall, and it is the most likely reason a
+# well-regarded method has single-figure stars.
+#
+# cibuildwheel drives scikit-build-core, which drives the existing CMake build.
+# One build system throughout rather than a second description of the same thing
+# that can drift.
+#
+# Built for CPython 3.10 through 3.13 on Linux, macOS arm64 and Windows x64.
+
+name: Wheels
+
+on:
+  push:
+    branches: [master]
+    tags: ['v*']
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  wheels:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: wheels-linux,   os: ubuntu-24.04 }
+          - { name: wheels-macos,   os: macos-14 }
+          - { name: wheels-windows, os: windows-2022 }
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.21.3
+        env:
+          # 3.10 is the floor: collections.abc (F22) and inspect.getargspec (F24)
+          # make anything older a different piece of work, and numpy 2.1 requires
+          # 3.10 anyway.
+          CIBW_BUILD: cp310-* cp311-* cp312-* cp313-*
+          CIBW_SKIP: "*-musllinux_* *_i686 *-win32"
+          CIBW_ARCHS_MACOS: arm64
+
+          # manylinux2014 carries GCC 10.2, and building numpy from source in
+          # that image fails with "NumPy requires GCC >= 10.3". 2_28 is
+          # AlmaLinux 8 with GCC 12.
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+
+          # SWIG and Eigen are needed to build; neither is in a manylinux image.
+          # Eigen comes from source rather than a package, because the version
+          # available differs per distribution and Eigen is header-only, so
+          # installing it is a copy.
+          CIBW_BEFORE_ALL_LINUX: >
+            (yum install -y swig || dnf install -y swig) &&
+            curl -sSL https://gitlab.com/libeigen/eigen/-/archive/3.4.0/eigen-3.4.0.tar.gz -o eigen.tar.gz &&
+            tar xf eigen.tar.gz &&
+            cmake -S eigen-3.4.0 -B eigen-build -DCMAKE_INSTALL_PREFIX=/usr/local &&
+            cmake --install eigen-build
+          CIBW_BEFORE_ALL_MACOS: brew install swig eigen
+          CIBW_BEFORE_ALL_WINDOWS: choco install --no-progress -y swig && vcpkg install eigen3:x64-windows
+
+          # find_package(Eigen3 CONFIG) reads this from the environment.
+          CIBW_ENVIRONMENT_WINDOWS: CMAKE_PREFIX_PATH='C:/vcpkg/installed/x64-windows'
+
+          # Importing the package is the only test that matters here: it proves
+          # the extension loads and finds the shared library beside it, which is
+          # what every previous packaging attempt on Windows got wrong.
+          CIBW_TEST_COMMAND: python -c "import HJCFIT.likelihood as L; print(L.QMatrix)"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: ${{ matrix.name }}
+          path: wheelhouse/*.whl
+          retention-days: 14

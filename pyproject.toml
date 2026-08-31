@@ -1,0 +1,76 @@
+# Packaging for HJCFIT.
+#
+# scikit-build-core drives the existing CMake build rather than replacing it, so
+# there is one build system rather than two descriptions of the same thing that
+# can drift apart.
+#
+# MPFR is off for wheels. It is the arbitrary-precision fallback for root
+# bracketing, it has never been available on Windows, and it cannot be built on
+# macOS at all because HJCFITConfig.h.in instantiates std::complex<mpfr::mpreal>,
+# which the standard does not define (F26). Shipping it on Linux alone would mean
+# wheels that compute slightly different things on different platforms, which is
+# worse than not shipping it. Build from source with -DHJCFIT_USE_MPFR=ON if you
+# need it.
+
+[build-system]
+requires = ["scikit-build-core>=0.10", "numpy>=1.25"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "hjcfit"
+version = "0.9.0"
+description = "Maximum likelihood fitting of ion-channel mechanisms with exact missed-events correction"
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+
+authors = [
+    { name = "Mayeul d'Avezac" },
+    { name = "Jens Hedegaard Nielsen" },
+    { name = "Raquel Alegre" },
+    { name = "Remigijus Lape" },
+]
+
+keywords = [
+    "ion channels", "single channel", "patch clamp", "electrophysiology",
+    "maximum likelihood", "Q-matrix", "missed events", "HJC",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: C++",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+
+dependencies = [
+    "numpy>=1.25",
+    "scipy>=1.10",
+]
+
+[project.urls]
+Homepage = "https://github.com/DCPROGS/HJCFIT"
+Documentation = "http://dcprogs.github.io/HJCFIT"
+Repository = "https://github.com/DCPROGS/HJCFIT"
+Issues = "https://github.com/DCPROGS/HJCFIT/issues"
+
+[tool.scikit-build]
+cmake.version = ">=3.16"
+build-dir = "build/{wheel_tag}"
+
+# Tests need googletest fetched from the network and behave installed; neither
+# belongs in a wheel build. The documentation targets need doxygen, sphinx,
+# pandoc and latex.
+cmake.define.tests = "OFF"
+cmake.define.compileDocs = "OFF"
+cmake.define.executenotebooks = "OFF"
+cmake.define.HJCFIT_USE_MPFR = "OFF"
+
+# The CMake install rules place everything; there is no source package tree to
+# copy in on top of them.
+wheel.packages = []

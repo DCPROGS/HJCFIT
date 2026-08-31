@@ -52,7 +52,15 @@ if(WIN32)
 else()
   set(LIB_DIRECTORY lib)
 endif(WIN32)
-if(WIN32 AND pythonBindings)
+if(DEFINED SKBUILD_PLATLIB_DIR)
+  # In a wheel the library ships inside the package on every platform, since a
+  # wheel cannot install to lib/. The RPATH set at the top level makes the
+  # extension look beside itself for it.
+  install(TARGETS likelihood
+          RUNTIME DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood
+          LIBRARY DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood
+          ARCHIVE DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
+elseif(WIN32 AND pythonBindings)
   # A .pyd resolves its dependent DLLs from its own directory and from whatever
   # os.add_dll_directory() was given -- since Python 3.8 it does not search
   # PATH. The conda layout put likelihood.dll in Library/bin and the extension

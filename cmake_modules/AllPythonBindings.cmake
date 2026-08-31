@@ -9,7 +9,12 @@
 # any error (F4).
 
 include(PythonPackage)
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development NumPy)
+# Development.Module, not Development. The latter implies Development.Embed,
+# which needs libpython, and manylinux images deliberately do not ship it —
+# extension modules must not link the interpreter. Development.Module asks for
+# the headers alone, which is what building an extension actually requires, and
+# is what provides the Python3::Module target used below.
+find_package(Python3 REQUIRED COMPONENTS Interpreter Development.Module NumPy)
 
 # The rest of the build, and the SWIG glue in particular, was written against
 # the older PYTHON_* spellings. Map them rather than churn every call site.
@@ -195,9 +200,14 @@ endif(tests)
 
 
 # Follow conda convention for Python installation in Windows
-if(WIN32)
+if(DEFINED SKBUILD_PLATLIB_DIR)
+  # Building a wheel. Everything the wheel carries is installed relative to the
+  # platlib directory scikit-build-core provides; a wheel cannot place files
+  # outside its own package tree.
+  set(PYINSTALL_DIRECTORY "${SKBUILD_PLATLIB_DIR}")
+elseif(WIN32)
   set(PYINSTALL_DIRECTORY lib/site-packages)
 else()
   set(PYINSTALL_DIRECTORY lib/python${PYTHON_VERSION}/site-packages)
-endif(WIN32)
+endif()
 
