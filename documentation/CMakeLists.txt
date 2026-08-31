@@ -61,6 +61,16 @@ if(SPHINX_FOUND)
     set(ADD_TO_PATH ${TEST_INSTALL_ABSPATH}/lib)
   endif(WIN32)
 
+  # The working directory exists so autodoc can import the package from the
+  # test install. But TEST_INSTALL_ABSPATH is only defined inside if(tests) in
+  # AllPythonBindings.cmake, so configuring with -Dtests=OFF left it empty and
+  # the sphinx command tried to cd to /lib/python<x.y>/site-packages. Nothing
+  # about building documentation requires the test harness: fall back to the
+  # build tree and let an installed package or PYTHONPATH satisfy autodoc.
+  if(NOT TEST_INSTALL_ABSPATH OR NOT EXISTS "${WORKINGDIR}")
+    set(WORKINGDIR ${CMAKE_BINARY_DIR})
+  endif()
+
   set(SOURCE_DOC_FILES source/bibliography.bib source/api/cpp/exceptions.rst
                        source/api/cpp/idealG.rst source/api/cpp/log10likelihood.rst
                        source/api/cpp/missed_eventsG.rst source/api/cpp/occupancies.rst
