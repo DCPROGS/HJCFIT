@@ -110,6 +110,25 @@ if(NOT EIGEN3_INCLUDE_DIR AND TARGET Eigen3::Eigen)
   get_target_property(EIGEN3_INCLUDE_DIR Eigen3::Eigen INTERFACE_INCLUDE_DIRECTORIES)
 endif()
 
+if(MSVC)
+  # Two things CookOff's AddCPP11Flags did besides set C++ flags, and which
+  # went missing when that include was replaced by CMAKE_CXX_STANDARD.
+  #
+  # MSWINDOBE gates the dllimport/dllexport machinery in HJCFITConfig.h.in.
+  # Without it the 36 MSWINDOBE annotations in the headers expand to nothing,
+  # the DLL exports no symbols, MSVC emits no import library, and linking the
+  # SWIG module fails with
+  #
+  #   LNK1181: cannot open input file 'likelihood.lib'
+  #
+  # /wd4251 silences the warning MSVC issues for every STL member of an exported
+  # class. It is noise here because the library and its consumers are built
+  # together; it would matter if we shipped headers for a differently-configured
+  # compiler.
+  set(MSWINDOBE TRUE)
+  add_compile_options(/EHsc /wd4251)
+endif()
+
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
