@@ -1,0 +1,123 @@
+# The published documentation at dcprogs.github.io/HJCFIT is served from the
+# gh-pages branch and says "DCProgs 0.9 documentation, Copyright 2013". Nothing
+# has rebuilt it in roughly a decade, so it documents an API that no longer
+# matches the code -- including read_idealized_bursts, whose implementation
+# changed entirely when dcpyps was removed.
+#
+# This builds the docs on every pull request, so they cannot rot again without
+# someone seeing it, and deploys them from master.
+#
+# The build is the project's own CMake `documentation` target: doxygen for the
+# C++ API, breathe to pull that into sphinx, nbconvert for the notebooks. One
+# build system, as with the wheels.
+
+name: Docs
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: System dependencies
+        run: |
+          # texlive-binaries is only for bibtex, which doxygen shells out to
+          # for the \cite commands in the C++ comments. Formulas go through
+          # MathJax, so no LaTeX distribution is needed.
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends \
+            build-essential swig libeigen3-dev ninja-build \
+            doxygen graphviz pandoc texlive-binaries
+
+      - name: Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy scipy \
+            sphinx breathe sphinxcontrib-bibtex nbconvert ipykernel
+
+      - name: Configure
+        run: |
+          cmake -S . -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -Dtests=OFF \
+            -DpythonBindings=ON \
+            -DcompileDocs=OFF \
+            -Dexecutenotebooks=OFF \
+            -DHJCFIT_USE_MPFR=OFF
+
+      - name: Build the library
+        run: cmake --build build -j
+
+      # autodoc imports HJCFIT to document the Python API; without it every
+      # autoclass silently degrades to a warning and an empty page.
+      - name: Install so autodoc can import
+        run: python -m pip install .
+
+      - name: Build the documentation
+        run: cmake --build build --target documentation
+
+      - name: Summarise
+        if: always()
+        run: |
+          out=build/documentation/sphinx
+          {
+            echo "### Documentation"
+            echo
+            if [ -f "$out/index.html" ]; then
+              echo "| | |"
+              echo "|---|---|"
+              echo "| HTML pages | $(find "$out" -name '*.html' | wc -l) |"
+              echo "| Size | $(du -sh "$out" | cut -f1) |"
+              echo "| Sphinx | $(python -c 'import sphinx; print(sphinx.__version__)') |"
+              echo "| Doxygen | $(doxygen --version) |"
+            else
+              echo "No output at \`$out\`."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check the build produced something
+        run: |
+          test -f build/documentation/sphinx/index.html
+          test -d build/documentation/sphinx/api
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: build/documentation/sphinx
+
+  # Only from master. Pull requests build the docs but never publish them.
+  deploy:
+    if: github.ref == 'refs/heads/master' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-24.04
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
