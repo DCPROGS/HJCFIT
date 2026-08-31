@@ -52,7 +52,18 @@ if(pythonBindings)
                         PREFIX "_"
                         IMPORT_PREFIX "_"
                         LINKER_LANGUAGE CXX)
-  target_link_libraries(likelihood_python ${PYTHON_LIBRARIES} likelihood)
+  # Python3::Module, not ${PYTHON_LIBRARIES}. On Unix an extension module must
+  # NOT link libpython: its symbols are resolved from the interpreter that
+  # loads it. Linking it made delocate treat the framework as an external
+  # dependency and copy it into the wheel, so importing loaded a second Python
+  # runtime into a process that already had one, and segfaulted:
+  #
+  #   Copying library .../Python.framework/Versions/3.12/Python to HJCFIT/.dylibs/Python
+  #   import HJCFIT.likelihood -> failed with code -11
+  #
+  # Python3::Module links the import library on Windows, where that is required,
+  # and nothing on Unix, which is what each platform actually wants.
+  target_link_libraries(likelihood_python Python3::Module likelihood)
 
   
   install(TARGETS likelihood_python DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)

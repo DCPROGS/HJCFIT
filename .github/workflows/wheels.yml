@@ -55,6 +55,11 @@ jobs:
           CIBW_SKIP: "*-musllinux_* *_i686 *-win32"
           CIBW_ARCHS_MACOS: arm64
 
+          # manylinux2014 carries GCC 10.2, and building numpy from source in
+          # that image fails with "NumPy requires GCC >= 10.3". 2_28 is
+          # AlmaLinux 8 with GCC 12.
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
+
           # SWIG and Eigen are needed to build; neither is in a manylinux image.
           # Eigen comes from source rather than a package, because the version
           # available differs per distribution and Eigen is header-only, so
