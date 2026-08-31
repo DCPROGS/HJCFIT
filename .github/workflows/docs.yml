@@ -41,10 +41,13 @@ jobs:
 
       - name: System dependencies
         run: |
+          # texlive-binaries is only for bibtex, which doxygen shells out to
+          # for the \cite commands in the C++ comments. Formulas go through
+          # MathJax, so no LaTeX distribution is needed.
           sudo apt-get update -qq
           sudo apt-get install -y --no-install-recommends \
             build-essential swig libeigen3-dev ninja-build \
-            doxygen graphviz pandoc
+            doxygen graphviz pandoc texlive-binaries
 
       - name: Python dependencies
         run: |
