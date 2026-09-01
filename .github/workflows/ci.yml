@@ -204,11 +204,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install .
 
-      # dcio is on PyPI; scalcs is not yet, so it still comes from git.
       - name: Install the optional record layer
         run: |
-          pip install dcio
-          pip install git+https://github.com/DCPROGS/SCALCS@master
+          pip install dcio scalcs
           pip install pytest matplotlib
           pip list
 
