@@ -173,3 +173,51 @@ jobs:
             build/_deps/**/*.log
           if-no-files-found: ignore
           retention-days: 14
+
+  # read_idealized_bursts and log_bin_edges import dcio and scalcs at call time,
+  # so the likelihood library needs nothing but numpy. The cost of that design is
+  # that the matrix above, which installs neither, cannot exercise either entry
+  # point -- both shipped with no coverage at all, and a green run said nothing
+  # about them. This job installs both from git and runs the tests that do.
+  #
+  # It builds through scikit-build-core rather than the CMake matrix: pip install
+  # gives an installed package, which is also what a user has.
+  dcio-integration:
+    name: dcio-integration
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends             build-essential swig libeigen3-dev libgmp-dev libmpfr-dev             liblapack-dev gfortran ninja-build
+
+      - name: Build and install HJCFIT
+        run: |
+          python -m pip install --upgrade pip
+          pip install .
+
+      # Neither is on PyPI. When they are, these become ordinary pins.
+      - name: Install the optional record layer
+        run: |
+          pip install git+https://github.com/DCPROGS/dcio@master
+          pip install git+https://github.com/DCPROGS/SCALCS@master
+          pip install pytest matplotlib
+          pip list
+
+      # Run from outside the source tree, so the installed package is what is
+      # imported rather than the checkout.
+      - name: Tests
+        env:
+          MPLBACKEND: Agg
+        run: |
+          cp tests/test_dcio_integration.py /tmp/
+          cd /tmp
+          pytest test_dcio_integration.py -v

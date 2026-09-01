@@ -75,9 +75,10 @@ def read_idealized_bursts(filename, tau, tcrit):
   except ImportError as e:
     raise ImportError(
         "read_idealized_bursts needs dcio and scalcs, which are not "
-        "dependencies of HJCFIT and are not on PyPI. Install them from "
-        "https://github.com/remislp/dcio and "
-        "https://github.com/remislp/SCALCS. (Original error: {0})".format(e))
+        "dependencies of HJCFIT and are not on PyPI. Install them with: "
+        "pip install git+https://github.com/DCPROGS/dcio -- and -- "
+        "pip install git+https://github.com/DCPROGS/SCALCS. "
+        "(Original error: {0})".format(e))
 
   if not exists(filename):
     # Not a path: check whether it names one of the sample records, with or
