@@ -283,6 +283,12 @@ def plot_time_intervals(series, start=0, ax = None):
 def log_bin_edges(intervals, tres, nbdec=None):
   """ Geometric bin edges for a dwell-time histogram.
 
+      Delegates to :func:`dcio.analysis.histogram.log_bin_edges`, which is the
+      one definition of this arithmetic in the DCPROGS stack. dcio is not a
+      dependency of HJCFIT -- it is imported here and in
+      :func:`HJCFIT.read_idealized_bursts`, and nowhere else, so the rest of
+      the library works without it.
+
       Dwell times span decades, so bins are uniform in log time rather than in
       time: each is a fixed ratio wider than the last, and the first starts at
       the resolution. The number of bins per decade follows the DCprogs
@@ -296,18 +302,16 @@ def log_bin_edges(intervals, tres, nbdec=None):
         intervals, 8 to 1000, 10 to 3000, 12 above.
 
       :returns: (edges, nbdec)
+
+      :raises ImportError: if dcio is not installed.
   """
-  from numpy import asarray, log, log10, ceil, arange
-
-  intervals = asarray(intervals, dtype=float)
-  if nbdec is None:
-    n = len(intervals)
-    nbdec = 5 if n <= 300 else 8 if n <= 1000 else 10 if n <= 3000 else 12
-
-  ratio = 10.0 ** (1.0 / nbdec)
-  tmax = 10.0 ** ceil(log10(intervals.max()))
-  nbin = int(log(tmax / tres) / log(ratio)) + 1
-  return tres * ratio ** arange(nbin + 1), nbdec
+  try:
+    from dcio.analysis.histogram import log_bin_edges as _log_bin_edges
+  except ImportError:
+    raise ImportError(
+        "dwell-time histograms need dcio for their binning: "
+        "pip install git+https://github.com/DCPROGS/dcio")
+  return _log_bin_edges(intervals, tres, nbdec)
 
 
 def ideal_pdf_scale_factor(tres, aa, initial_vectors):
