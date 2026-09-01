@@ -170,19 +170,24 @@ def plot_roots(determinant, intervals=None, figure=None, main=None, lines=None, 
    return figure
 
 def _create_pdf(phi, g, shut):
-  """ Creates pdf from knowledge of phi, g and whether open or shut."""
+  """ Creates pdf from knowledge of phi, g and whether open or shut.
+
+      `result.flat[i] = v` rather than `result.itemset(i, v)`: the method was
+      removed in numpy 2.0. `i` indexes `t.flat`, so the flat assignment is the
+      exact equivalent and stays correct for a multi-dimensional `t`.
+  """
   from numpy import dot, sum, zeros_like
   if shut: 
     def missed_events_pdf(t):
       result = zeros_like(t)
       for i, u in enumerate(t.flat):
-        result.itemset(i, sum(dot(phi, g.fa(float(u)))))
+        result.flat[i] = sum(dot(phi, g.fa(float(u))))
       return result
   else:
     def missed_events_pdf(t):
       result = zeros_like(t)
       for i, u in enumerate(t.flat):
-        result.itemset(i, sum(dot(phi, g.af(float(u)))))
+        result.flat[i] = sum(dot(phi, g.af(float(u))))
       return result
   return missed_events_pdf
 
