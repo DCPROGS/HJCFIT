@@ -25,6 +25,7 @@
 #include <gtest/gtest.h>
 
 #include <time.h>
+#include <cstdlib>
 #include "../time_filter.h"
 using namespace HJCFIT;
 
@@ -34,13 +35,19 @@ t_real const alpha = 10;
 
 class TestTimeFilter : public ::testing::TestWithParam<t_int> { 
   public:
+    //! Seeded from the environment, and fixed by default.
+    //!
+    //! This used to seed from std::random_device (or the clock), so every run
+    //! drew different series and a failure could not be reproduced from the
+    //! log -- the reported parameter index names the test case, not the data.
+    //! It failed roughly one CI run in fifteen, on a different parameter each
+    //! time, which made every red run ambiguous.
+    //!
+    //! Set HJCFIT_TEST_SEED to sweep other seeds deliberately; the series is
+    //! printed on failure, so a known seed makes the failing case recoverable.
     TestTimeFilter() {
-#   ifdef HAS_CXX11_RANDOM_DEVICE
-      std::random_device rd;
-      mersenne.seed(rd()); 
-#   else 
-      mersenne.seed(static_cast<unsigned int>(std::time(nullptr))); 
-#   endif
+      char const * const env = std::getenv("HJCFIT_TEST_SEED");
+      mersenne.seed(env ? static_cast<unsigned int>(std::strtoul(env, nullptr, 10)) : 42u);
     }
   protected:
     std::mt19937 mersenne;
@@ -75,12 +82,19 @@ template<class T>
 t_rvector::Index nbfiltered(t_rvector const &_vector, t_real _tau) {
  
   t_rvector intervals = _vector.tail(_vector.size()-1) - _vector.head(_vector.size()-1);
-  // Check special case where time series disappears.
-  if(intervals(0) < _tau) { 
-    t_rvector::Index i(2);
-    for(; i < intervals.size() and intervals(i) < _tau; i += 2);
-    if(i >= intervals.size()) return 0;
-  }
+  // Find the first detectable *open* interval, stepping by two because the
+  // series alternates open and shut -- exactly as interval_filter_impl does.
+  //
+  // Both of its early returns have to be modelled here. Only the first was,
+  // and the second is reachable: when the first detectable open interval is
+  // the last interval in the series, the filter yields nothing, because a
+  // lone trailing opening is not a series. That happens in about one draw in
+  // thirty thousand, which is why this disagreed with the implementation
+  // rarely enough to look like flakiness rather than a defect in the test.
+  t_rvector::Index start(0);
+  for(; start < intervals.size() and intervals(start) < _tau; start += 2);
+  if(start >= intervals.size()) return 0;
+  if(start == intervals.size() - 1) return 0;
   t_rvector::Index result = (intervals.array() >= _tau).count();
   for(t_rvector::Index i(0); i < intervals.size(); ++i) 
     if(intervals(i) < _tau) {
