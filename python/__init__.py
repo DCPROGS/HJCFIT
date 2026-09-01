@@ -92,7 +92,12 @@ def read_idealized_bursts(filename, tau, tcrit):
   # The sign of tcrit is a flag to Log10Likelihood -- negative selects
   # equilibrium vectors over CHS vectors -- while its magnitude is the
   # critical time. Segmentation uses the magnitude.
+  # Flags matter: time-course fitting leaves an interval it could not measure
+  # with no defined length, flagged unusable. It ends the burst before it, and
+  # its nominal duration must never be compared with tcrit -- in one of the
+  # Burzomato records that duration is 46 us where tcrit is a second.
   bursts = extract_burst_intervals(record.resolved_intervals,
-                                   record.resolved_amplitudes, abs(tcrit))
+                                   record.resolved_amplitudes, abs(tcrit),
+                                   flags=record.resolved_flags)
 
   return [array(u, dtype=internal_dtype) for u in bursts]

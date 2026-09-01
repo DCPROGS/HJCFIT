@@ -129,9 +129,12 @@ class SCRecord:
             record = from_scn(scn.read(filename), tres=tres)
             self.records.append(record)
             if tcrit is not None:
+                # flags: an unusable interval has no defined length, ends
+                # the burst before it, and is never compared with tcrit
                 bursts.extend(extract_burst_intervals(record.resolved_intervals,
                                                       record.resolved_amplitudes,
-                                                      abs(tcrit)))
+                                                      abs(tcrit),
+                                                      flags=record.resolved_flags))
         self.bursts = _Bursts(bursts)
 
     @property
