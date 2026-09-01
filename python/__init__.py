@@ -74,11 +74,10 @@ def read_idealized_bursts(filename, tau, tcrit):
     from scalcs.scsim import extract_burst_intervals
   except ImportError as e:
     raise ImportError(
-        "read_idealized_bursts needs dcio and scalcs, which are not "
-        "dependencies of HJCFIT and are not on PyPI. Install them with: "
-        "pip install git+https://github.com/DCPROGS/dcio -- and -- "
-        "pip install git+https://github.com/DCPROGS/SCALCS. "
-        "(Original error: {0})".format(e))
+        "read_idealized_bursts needs dcio and scalcs, neither of which is a "
+        "dependency of HJCFIT. Install them with: pip install dcio -- and -- "
+        "pip install git+https://github.com/DCPROGS/SCALCS (scalcs is not on "
+        "PyPI yet). (Original error: {0})".format(e))
 
   if not exists(filename):
     # Not a path: check whether it names one of the sample records, with or

@@ -310,7 +310,7 @@ def log_bin_edges(intervals, tres, nbdec=None):
   except ImportError:
     raise ImportError(
         "dwell-time histograms need dcio for their binning: "
-        "pip install git+https://github.com/DCPROGS/dcio")
+        "pip install dcio")
   return _log_bin_edges(intervals, tres, nbdec)
 
 
