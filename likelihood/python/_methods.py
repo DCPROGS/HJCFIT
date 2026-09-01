@@ -19,7 +19,8 @@
 __docformat__ = "restructuredtext en"
 __all__ = ['network', 'find_roots', 'plot_roots',
            'missed_events_pdf', 'ideal_pdf', 'intervals_to_series', 'series_to_intervals',
-           'plot_time_series', 'plot_time_intervals' ]
+           'plot_time_series', 'plot_time_intervals',
+           'log_bin_edges', 'ideal_pdf_scale_factor', 'dwell_time_histogram' ]
  
 def network(qmatrix): 
   """ Creates networkx graph object from a :class:`QMatrix` object.
@@ -278,3 +279,129 @@ def plot_time_series(series, ax=None, **kwargs):
 def plot_time_intervals(series, start=0, ax = None):
   """ Plots time intervals """
   return plot_time_series(series_to_intervals(series, start), ax=ax)
+
+def log_bin_edges(intervals, tres, nbdec=None):
+  """ Geometric bin edges for a dwell-time histogram.
+
+      Dwell times span decades, so bins are uniform in log time rather than in
+      time: each is a fixed ratio wider than the last, and the first starts at
+      the resolution. The number of bins per decade follows the DCprogs
+      convention, which widens the bins for smaller samples so that the counts
+      stay usable.
+
+      :param intervals: Observed dwell times, in seconds.
+      :param float tres: Resolution. The histogram starts here.
+      :param int nbdec:
+        Bins per decade. If None, chosen from the sample size: 5 below 300
+        intervals, 8 to 1000, 10 to 3000, 12 above.
+
+      :returns: (edges, nbdec)
+  """
+  from numpy import asarray, log, log10, ceil, arange
+
+  intervals = asarray(intervals, dtype=float)
+  if nbdec is None:
+    n = len(intervals)
+    nbdec = 5 if n <= 300 else 8 if n <= 1000 else 10 if n <= 3000 else 12
+
+  ratio = 10.0 ** (1.0 / nbdec)
+  tmax = 10.0 ** ceil(log10(intervals.max()))
+  nbin = int(log(tmax / tres) / log(ratio)) + 1
+  return tres * ratio ** arange(nbin + 1), nbdec
+
+
+def ideal_pdf_scale_factor(tres, aa, initial_vectors):
+  r""" Renormalises an ideal dwell-time pdf onto the resolved intervals.
+
+      An ideal pdf describes every sojourn; a record contains only those
+      longer than the resolution. Comparing one with the other means dividing
+      by the fraction that survives,
+
+      .. math:: P(t \ge t_{res}) = \phi_A e^{Q_{AA} t_{res}} u_A
+
+      so that the pdf integrates to one over the intervals actually observed.
+      An apparent (missed-events) pdf needs no such factor: it is already a
+      density over the resolved intervals.
+
+      :param float tres: Resolution, in seconds.
+      :param aa: The :math:`Q_{AA}` block, open-open or shut-shut to match.
+      :param initial_vectors: The equilibrium occupancies :math:`\phi_A`.
+
+      :returns: :math:`1 / P(t \ge t_{res})`
+  """
+  from numpy import asarray, dot, ones
+  from scipy.linalg import expm
+
+  aa = asarray(aa, dtype=float)
+  phi = asarray(initial_vectors, dtype=float).reshape(-1)
+  survival = float(dot(phi, dot(expm(aa * tres), ones(aa.shape[0]))))
+  return 1.0 / survival
+
+
+def dwell_time_histogram(intervals, tres, ax=None, pdf=None, ideal=None,
+                         ideal_scale=1.0, tcrit=None, nbdec=None,
+                         xlabel='Dwell time (s)'):
+  r""" Dwell-time histogram on log time and square-root frequency.
+
+      The display convention of Sigworth and Sine: bins uniform in log time so
+      that components spanning decades are all visible, and a square-root
+      ordinate so that the scatter is roughly constant down the tail, which
+      makes a fitted curve easy to judge by eye.
+
+      **Scaling.** With bins of fixed ratio :math:`dx = 10^{1/nbdec}`, the
+      count expected in the bin starting at *t* from a density *f* conditional
+      on :math:`t \ge t_{res}` is
+
+      .. math:: N \int_t^{t\,dx} f(u)\,du \;pprox\; N f(t)\, t \ln dx
+                = N f(t)\, t rac{\ln 10}{nbdec}
+
+      because the bin is narrow in log space. That is what is drawn, under the
+      same square root as the counts. An ideal pdf is not conditional on the
+      resolution, so it carries *ideal_scale* as well -- see
+      :py:func:`ideal_pdf_scale_factor`.
+
+      :param intervals: Observed dwell times, in seconds.
+      :param float tres: Resolution, in seconds.
+      :param ax: Axes to draw on. A new figure is created if None.
+      :param pdf:
+        Apparent (missed-events) density, a callable of t. Drawn solid.
+      :param ideal: Ideal density, a callable of t. Drawn dashed.
+      :param float ideal_scale: Factor for *ideal*, from
+        :py:func:`ideal_pdf_scale_factor`.
+      :param tcrit: Critical time, or several, marked with a vertical line.
+      :param int nbdec: Bins per decade; see :py:func:`log_bin_edges`.
+
+      :returns: The axes drawn on.
+  """
+  from numpy import asarray, histogram, sqrt, log, log10, logspace, atleast_1d
+
+  intervals = asarray(intervals, dtype=float)
+  edges, nbdec = log_bin_edges(intervals, tres, nbdec)
+  counts, edges = histogram(intervals, bins=edges)
+
+  if ax is None:
+    from matplotlib import pyplot as plt
+    ax = plt.subplots(1, 1)[1]
+
+  # Draw the bins as an outline rather than bars: with a fitted curve on top,
+  # filled bars hide it.
+  x = [v for pair in zip(edges[:-1], edges[1:]) for v in pair]
+  y = [v for pair in zip(counts, counts) for v in pair]
+  ax.semilogx(x, sqrt(y), '-k')
+
+  scale = len(intervals) * log(10.0) / nbdec
+  if pdf is not None or ideal is not None:
+    t = logspace(log10(tres), log10(edges[-1]), 512)
+    if pdf is not None:
+      ax.plot(t, sqrt(scale * t * asarray(pdf(t), dtype=float)), '-b')
+    if ideal is not None:
+      ax.plot(t, sqrt(scale * ideal_scale * t * asarray(ideal(t), dtype=float)),
+              '--r')
+
+  if tcrit is not None:
+    for value in atleast_1d(tcrit):
+      if value > 0: ax.axvline(x=value, color='g')
+
+  ax.set_xlabel(xlabel)
+  ax.set_ylabel('sqrt(frequency)')
+  return ax
