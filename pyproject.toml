@@ -18,7 +18,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "hjcfit"
-version = "0.9.0"
+version = "1.0.0"
 description = "Maximum likelihood fitting of ion-channel mechanisms with exact missed-events correction"
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -74,3 +74,7 @@ cmake.define.HJCFIT_USE_MPFR = "OFF"
 # The CMake install rules place everything; there is no source package tree to
 # copy in on top of them.
 wheel.packages = []
+
+# Jupyter's editor state, checked in years ago, duplicates the notebooks it
+# shadows -- two copies of a 371 KB file in every source distribution.
+sdist.exclude = [".ipynb_checkpoints"]
