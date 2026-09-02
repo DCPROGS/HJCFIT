@@ -147,6 +147,25 @@ jobs:
       id-token: write
 
     steps:
+      - uses: actions/checkout@v7
+
+      # A tag that disagrees with the version it claims to publish names the
+      # release one thing on GitHub and another on PyPI, and the number cannot
+      # be taken back afterwards. SCALCS reached its first release with a tag
+      # already used at an older commit; this is the check that would have
+      # said so.
+      - name: Tag matches the version
+        run: |
+          python - <<'PY'
+          import os, pathlib, re
+          proj = re.search(r'^version = "([^"]+)"',
+                           pathlib.Path('pyproject.toml').read_text(), re.M).group(1)
+          tag = os.environ['GITHUB_REF'].removeprefix('refs/tags/v')
+          if proj != tag:
+              raise SystemExit(f'tag v{tag} does not match version {proj}')
+          print('tag and version agree:', proj)
+          PY
+
       - uses: actions/download-artifact@v7
         with:
           pattern: wheels-*

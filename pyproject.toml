@@ -18,7 +18,7 @@ build-backend = "scikit_build_core.build"
 
 [project]
 name = "hjcfit"
-version = "0.9.0"
+version = "1.0.0"
 description = "Maximum likelihood fitting of ion-channel mechanisms with exact missed-events correction"
 readme = "README.md"
 license = { file = "LICENSE" }
