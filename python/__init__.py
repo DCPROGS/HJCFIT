@@ -35,15 +35,16 @@ internal_dtype = _HJCFIT_dtype()
 def read_idealized_bursts(filename, tau, tcrit):
   """ Reads bursts data from an *.scn file.
 
-      Idealised single-channel records are read and dead-time corrected with
-      :mod:`dcio`, then segmented into bursts at shut intervals of at least
-      *tcrit* with :func:`scalcs.scsim.extract_burst_intervals`. Neither
-      package is a dependency of HJCFIT -- they are imported here and only
-      here, so the rest of the library works without them.
+      Idealised single-channel records are read, dead-time corrected and
+      segmented into bursts by :mod:`dcio`, which is not a dependency of
+      HJCFIT -- it is imported here and in
+      :func:`~HJCFIT.likelihood._methods.log_bin_edges`, and nowhere else, so
+      the rest of the library works with numpy alone.
 
       This used to be a wrapper around dc-pyps, which is deprecated and has
-      not been installable for years. dcio supplies what dcpyps.dataset and
-      dcpyps.dcio did; scalcs supplies what dcpyps.mechanism did.
+      not been installable for years, and then briefly needed scalcs as well
+      for the burst segmentation. That moved into dcio, so one optional
+      package now covers what dcpyps.dataset and dcpyps.dcio did.
 
       :param string filename:
         Path to an *.scn file. It can also be the name of one of the sample
@@ -69,13 +70,12 @@ def read_idealized_bursts(filename, tau, tcrit):
   from numpy import array
 
   try:
-    from dcio.analysis import from_scn
+    from dcio.analysis import bursts_from_record, from_scn
     from dcio.formats import scn
-    from scalcs.scsim import extract_burst_intervals
   except ImportError as e:
     raise ImportError(
-        "read_idealized_bursts needs dcio and scalcs, neither of which is a "
-        "dependency of HJCFIT. Install them with: pip install dcio scalcs. "
+        "read_idealized_bursts needs dcio, which is not a dependency of "
+        "HJCFIT. Install it with: pip install dcio. "
         "(Original error: {0})".format(e))
 
   if not exists(filename):
@@ -88,15 +88,23 @@ def read_idealized_bursts(filename, tau, tcrit):
     filename = sample
 
   record = from_scn(scn.read(filename), tres=tau)
-  # The sign of tcrit is a flag to Log10Likelihood -- negative selects
-  # equilibrium vectors over CHS vectors -- while its magnitude is the
-  # critical time. Segmentation uses the magnitude.
-  # Flags matter: time-course fitting leaves an interval it could not measure
-  # with no defined length, flagged unusable. It ends the burst before it, and
-  # its nominal duration must never be compared with tcrit -- in one of the
-  # Burzomato records that duration is 46 us where tcrit is a second.
-  bursts = extract_burst_intervals(record.resolved_intervals,
-                                   record.resolved_amplitudes, abs(tcrit),
-                                   flags=record.resolved_flags)
+  # bursts_from_record supplies the flags and takes the magnitude of tcrit, so
+  # neither can be got wrong here. Flags matter because time-course fitting
+  # leaves an interval it could not measure with no defined length, flagged
+  # unusable: it ends the burst before it, and its nominal duration must never
+  # be compared with tcrit -- in one of the Burzomato records that duration is
+  # 46 us where tcrit is a second. The sign of tcrit matters because it is a
+  # flag to Log10Likelihood, selecting equilibrium vectors over CHS vectors,
+  # and the same number is passed to both.
+  #
+  # It segments the record's *periods* rather than its resolved intervals.
+  # impose_resolution emits a fresh open interval at every change of fitted
+  # amplitude, so a record idealised with sub-conductance levels does not
+  # alternate open/shut, and the likelihood is a product of matrices that
+  # alternate A->F and F->A. No record shipped here contains such a level, so
+  # this changes nothing for them -- verified identical, burst for burst, on
+  # CH82, CO, CCO and all four Burzomato records. It removes a way for the
+  # next record to be read wrongly and silently.
+  bursts = bursts_from_record(record, tcrit, intervals_only=True)
 
   return [array(u, dtype=internal_dtype) for u in bursts]
