@@ -71,7 +71,16 @@ jobs:
             tar xf eigen.tar.gz &&
             cmake -S eigen-3.4.0 -B eigen-build -DCMAKE_INSTALL_PREFIX=/usr/local &&
             cmake --install eigen-build
-          CIBW_BEFORE_ALL_MACOS: brew install swig eigen
+          # No swig from Homebrew: it serves whatever is current, and 4.5.0
+          # generates Python 2 C-API calls into the wrapper (#188). The pin is
+          # in pyproject.toml's build-system requires, which puts swig in the
+          # isolated build environment. Leaving Homebrew's out means nothing
+          # can shadow the pinned one.
+          #
+          # Linux and Windows keep theirs as a fallback: they pass today, and
+          # the build requirement applies to them too, so they gain the pin
+          # without losing what already works.
+          CIBW_BEFORE_ALL_MACOS: brew install eigen
           CIBW_BEFORE_ALL_WINDOWS: choco install --no-progress -y swig && vcpkg install eigen3:x64-windows
 
           # find_package(Eigen3 CONFIG) reads this from the environment.
