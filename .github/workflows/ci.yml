@@ -212,10 +212,15 @@ jobs:
 
       # Run from outside the source tree, so the installed package is what is
       # imported rather than the checkout.
+      #
+      # test_simplex.py rides along here rather than in the build matrix: it is
+      # pure Python and needs no dcio, but it does need HJCFIT *installed*, and
+      # this is the only job that installs it. The matrix runs ctest against
+      # the build tree instead.
       - name: Tests
         env:
           MPLBACKEND: Agg
         run: |
-          cp tests/test_dcio_integration.py /tmp/
+          cp tests/test_dcio_integration.py tests/test_simplex.py /tmp/
           cd /tmp
-          pytest test_dcio_integration.py -v
+          pytest test_dcio_integration.py test_simplex.py -v
