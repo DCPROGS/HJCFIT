@@ -13,7 +13,14 @@
 # need it.
 
 [build-system]
-requires = ["scikit-build-core>=0.10", "numpy>=1.25"]
+# swig is a build tool, not a library, and the PyPI package ships a real
+# binary so a version can be pinned -- Homebrew, yum and chocolatey each serve
+# whatever is current. SWIG 4.5.0 generates Python 2 C-API calls into the
+# generated wrapper and the build fails to compile (#188). Putting it here
+# rather than in a CI step is what the package documents, and is what puts it
+# in the isolated build environment where the console script can import its
+# own module.
+requires = ["scikit-build-core>=0.10", "numpy>=1.25", "swig<4.5"]
 build-backend = "scikit_build_core.build"
 
 [project]

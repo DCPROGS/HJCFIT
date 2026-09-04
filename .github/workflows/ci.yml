@@ -109,7 +109,15 @@ jobs:
       - name: Install dependencies (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install swig eigen gmp mpfr ninja libomp
+          brew install eigen gmp mpfr ninja libomp
+          # SWIG from PyPI rather than Homebrew, pinned. Homebrew serves
+          # whatever is current, and 4.5.0 generates Python 2 C-API calls into
+          # the wrapper, which clang rejects (#188). This job passes today only
+          # because the runner image still carries 4.4.1; it would break the
+          # moment that image updates, exactly as wheels-macos already has.
+          # setup-python puts this Python's bin first on PATH, so CMake finds
+          # the pinned swig, and Homebrew no longer supplies one to shadow it.
+          python -m pip install "swig==4.4.1"
 
       - name: Install dependencies (Windows)
         if: runner.os == 'Windows'
