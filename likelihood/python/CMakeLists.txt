@@ -67,7 +67,7 @@ if(pythonBindings)
 
   
   install(TARGETS likelihood_python DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
-  install(FILES  random.py _methods.py optimization.py
+  install(FILES  random.py _methods.py optimization.py simplex.py
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
           DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
 endif(pythonBindings)

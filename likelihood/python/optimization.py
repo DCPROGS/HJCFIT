@@ -17,7 +17,9 @@
 
 """ Subpackage for likelihood optimization. """
 __docformat__ = "restructuredtext en"
-__all__ = ['reduce_likelihood']
+__all__ = ['reduce_likelihood', 'simplex', 'SimplexResult', 'SIMPLEX_DEFAULTS']
+
+from .simplex import simplex, SimplexResult, SIMPLEX_DEFAULTS
 
 def reduce_likelihood(likelihood, graph_matrix):
   """ Maps likelihood to a set of variable components.
