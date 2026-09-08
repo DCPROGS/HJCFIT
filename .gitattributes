@@ -20,3 +20,10 @@
 *.PDF  diff=astextplain
 *.rtf  diff=astextplain
 *.RTF  diff=astextplain
+
+# The vendored Fortran in tests/dcfortran/vendor is copied byte for byte out of
+# DCPROGS/DCFORTRAN, and its SHA-256s are recorded in MANIFEST.txt and checked
+# by tests/test_fortran_likelihood.py. Line-ending normalisation would rewrite
+# the DOS CRLFs on checkout and every hash would fail, so these files are
+# stored and checked out exactly as they are. "Unmodified" has to mean bytes.
+tests/dcfortran/vendor/** -text

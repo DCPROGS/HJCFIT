@@ -232,3 +232,16 @@ jobs:
           cp tests/test_dcio_integration.py tests/test_simplex_hjc.py /tmp/
           cd /tmp
           pytest test_dcio_integration.py test_simplex_hjc.py -v
+
+      # The 2003 Fortran likelihood, vendored unmodified in tests/dcfortran and
+      # opt-in everywhere else. It rides along here for the same reason
+      # test_simplex_hjc.py does -- it needs HJCFIT *installed*, and this is the
+      # only job that installs it -- and this job already has gfortran.
+      #
+      # Run from the checkout rather than /tmp, because the suite needs
+      # tests/dcfortran next to it. The repository has no top-level HJCFIT
+      # directory, so the installed package is still what gets imported.
+      - name: The Fortran likelihood comparison
+        run: |
+          python tests/dcfortran/build.py
+          pytest tests/test_fortran_likelihood.py -v
