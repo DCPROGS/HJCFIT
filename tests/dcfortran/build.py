@@ -4,11 +4,19 @@ The Fortran in ``vendor/`` is the likelihood that produced every published
 HJCFIT result, Colquhoun, Hatton & Hawkes (2003) among them. It is vendored
 **unmodified**: ``vendor/`` is byte-for-byte what is in ``DCPROGS/DCFORTRAN``,
 and :func:`verify` will prove that against a checkout. The changes gfortran
-needs are applied to *copies* under ``build/src/``, and every one of them is
-in :data:`PATCHES` with its reason, so the difference from the original is a
-short list rather than a diff nobody reads.
+needs are applied to *copies* under ``build/<engine>/src/``, and every one of
+them is in :data:`PATCHES` with its reason, so the difference from the
+original is a short list rather than a diff nobody reads.
+
+Eight sources are the exception, and are not vendored: they carry NAG's or
+Numerical Recipes' copyright rather than DCPROGS' (:data:`THIRD_PARTY`).
+``--engine free``, the default, builds the equivalents in ``replacements/``;
+``--engine original`` takes the real ones out of a DCFORTRAN checkout. The two
+agree to 1.8e-14 per interval, which ``tests/test_fortran_engines.py``
+measures rather than assumes.
 
     python tests/dcfortran/build.py                    # patch, compile, link
+    python tests/dcfortran/build.py --engine original --dcfortran PATH
     python tests/dcfortran/build.py --clean
     python tests/dcfortran/build.py --verify PATH      # vendor/ vs DCFORTRAN
     python tests/dcfortran/build.py --vendor PATH      # re-copy from DCFORTRAN
@@ -35,11 +43,10 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 VENDOR = HERE / "vendor"
 BUILD = HERE / "build"
-#: The patched copies live *inside* ``build/``, which is ignored by git, so
-#: that ``vendor/`` cannot be edited in place by accident and "the vendored
-#: code is unmodified" stays true without anyone having to remember it.
-SRC = BUILD / "src"
 MANIFEST = VENDOR / "MANIFEST.txt"
+#: Hashes, and only hashes, of the sources that are deliberately not vendored.
+THIRD_PARTY_MANIFEST = HERE / "THIRD_PARTY.txt"
+REPL = HERE / "replacements"
 
 FLAGS = ["-ffixed-form", "-ffixed-line-length-none", "-fno-automatic",
          "-std=legacy", "-w", "-O2"]
@@ -117,8 +124,10 @@ SOURCES = [
     "CALC/MATMUL2.FOR",
     "CALC/MATSCL3.FOR",
     "CALC/MINVD.FOR",
-    # the eigenvalue chain F02AGF calls: NAG-compatible routines, local
-    # implementations rather than the commercial library
+    # the eigenvalue chain F02AGF calls. These four and F02AGF itself carry
+    # "MARK 2 RELEASE. NAG COPYRIGHT 1972" in their own headers -- they are
+    # NAG's sources with a few local edits, not local reimplementations, and
+    # they are in THIRD_PARTY below for that reason.
     "CALC/F01AKF.FOR",
     "CALC/F01APF.FOR",
     "CALC/F02AQF.FOR",
@@ -127,6 +136,43 @@ SOURCES = [
     "HJCFIT/BISECHJC.FOR",
     "HJCFIT/CHECKRW.FOR",
     "HJCFIT/EQOC_RED.FOR",
+]
+
+#: Sources in :data:`SOURCES` that are **not** DCPROGS' own work, and so are
+#: not vendored here: the file name and where it comes from. The ``free``
+#: engine builds :data:`REPLACEMENTS` in their place; the ``original`` engine
+#: takes these from a DCFORTRAN checkout given with ``--dcfortran``.
+#:
+#: NAG's Mark 2 chain and EISPACK are both Fortran translations of the same
+#: ALGOL procedures from Wilkinson & Reinsch's *Handbook for Automatic
+#: Computation* vol II (1971) -- NAG's own comment lines name them: DIRHES,
+#: DIRTRANS, HQR2, CDIV. So the replacement is the same algorithm from a
+#: public-domain source, not a different method.
+THIRD_PARTY = {
+    "F02AGF.FOR": "NAG Mark 2, 1972 -- eigenvalues and eigenvectors",
+    "F01AKF.FOR": "NAG Mark 2, 1972 -- DIRHES, i.e. elmhes",
+    "F01APF.FOR": "NAG Mark 2, 1972 -- DIRTRANS, i.e. eltran",
+    "F02AQF.FOR": "NAG Mark 2, 1972 -- HQR2, i.e. hqr2",
+    "A02ACF.FOR": "NAG Mark 2, 1972 -- CDIV, i.e. cdiv",
+    "LUDCMPD.FOR": "Numerical Recipes ludcmp, real*8; its own comment says so",
+    "LUBKSBD.FOR": "Numerical Recipes lubksb, real*8; its own comment says so",
+    # DETERM2 itself is DCPROGS'. The file also carries an appended copy of the
+    # Numerical Recipes LUDCMP, and the two cannot be separated without editing
+    # a vendored file, so the file goes and DETERM2 is written out again.
+    "determ2.for": "DCPROGS' DETERM2 plus an appended Numerical Recipes LUDCMP",
+}
+
+#: What the ``free`` engine compiles instead, relative to ``replacements/``.
+#: ``eispack/`` is verbatim netlib EISPACK, public domain; the other three are
+#: ours. See ``replacements/PROVENANCE.md``.
+REPLACEMENTS = [
+    "eispack/cdiv.f",
+    "eispack/elmhes.f",
+    "eispack/eltran.f",
+    "eispack/hqr2.f",
+    "f02agf.f",
+    "lu.f",
+    "determ2.f",
 ]
 
 #: Every textual change made to the vendored code, as ``(old, new, why)``.
@@ -167,6 +213,26 @@ REPLACED = {"QSET_HJC.FOR", "RANPERT.FOR"}
 
 EXE = "likdrv.exe" if platform.system() == "Windows" else "likdrv"
 
+#: The two engines build side by side, each in its own directory under
+#: ``build/``, so that both programs exist at once and can be run on the same
+#: records. That is the whole point: the question "does the replacement
+#: compute the same likelihood?" can only be answered by having both.
+ENGINES = ("free", "original")
+
+
+def engine_dir(engine):
+    """Objects, patched sources and the program, for one engine.
+
+    The patched copies live *inside* ``build/``, which is ignored by git, so
+    ``vendor/`` cannot be edited in place by accident and "the vendored code
+    is unmodified" stays true without anyone having to remember it.
+    """
+    return BUILD / engine
+
+
+def engine_exe(engine):
+    return engine_dir(engine) / EXE
+
 
 def compiler():
     """The Fortran compiler: ``$FC``, or ``gfortran`` on ``PATH``."""
@@ -203,19 +269,32 @@ def vendor(dcfortran):
     root = Path(dcfortran)
     root = root / "Fort90" if (root / "Fort90").is_dir() else root
     VENDOR.mkdir(parents=True, exist_ok=True)
-    rows = []
+    rows, third = [], []
     for rel in SOURCES:
         src = root / rel
         if not src.exists():
             raise SystemExit(f"missing source: {src}")
-        dst = VENDOR / Path(rel).name
+        name = Path(rel).name
+        if name in THIRD_PARTY:
+            # a hash, and nothing else, so that --engine original can check
+            # what it pulled out of a checkout
+            third.append((name, rel, sha256(src)))
+            continue
+        dst = VENDOR / name
         shutil.copyfile(src, dst)
-        rows.append((Path(rel).name, rel, sha256(dst)))
+        rows.append((name, rel, sha256(dst)))
+    THIRD_PARTY_MANIFEST.write_text(
+        "# NOT vendored: each of these carries a third party's copyright.\n"
+        "# Hashes only. build.py --engine original takes them from a\n"
+        "# DCFORTRAN checkout; --engine free builds replacements/ instead.\n"
+        "# name  path-within-Fort90  sha256\n"
+        + "".join(f"{n}  {r}  {h}\n" for n, r, h in sorted(third)))
     MANIFEST.write_text(
         "# Vendored from DCPROGS/DCFORTRAN, unmodified.\n"
         "# name  path-within-Fort90  sha256\n"
         + "".join(f"{n}  {r}  {h}\n" for n, r, h in sorted(rows)))
     print(f"vendored {len(rows)} files into {VENDOR}")
+    print(f"recorded {len(third)} third-party files as hashes only")
     return 0
 
 
@@ -266,17 +345,46 @@ def verify(dcfortran=None):
     return 1 if bad else 0
 
 
-def prepare():
-    """Copy ``vendor/`` into ``build/src/`` and patch the copies."""
-    SRC.mkdir(parents=True, exist_ok=True)
+def prepare(engine="free", dcfortran=None):
+    """Copy the sources into ``build/src/`` and patch the copies.
+
+    ``engine`` chooses what stands in for the eight sources that are not
+    DCPROGS' own (:data:`THIRD_PARTY`): ``"free"`` compiles
+    :data:`REPLACEMENTS`, ``"original"`` takes the originals out of the
+    DCFORTRAN checkout at ``dcfortran``. Only the second is the program as it
+    was; the first is what can be distributed. Whether they compute the same
+    likelihood is a question with a measured answer -- see
+    ``tests/test_fortran_engines.py``.
+    """
+    src_dir = engine_dir(engine) / 'src'
+    src_dir.mkdir(parents=True, exist_ok=True)
+    root = None
+    if engine == "original":
+        if not dcfortran:
+            raise SystemExit(
+                "--engine original needs --dcfortran PATH: the eight sources\n"
+                "it uses carry NAG's and Numerical Recipes' copyright and are\n"
+                "not vendored here. See tests/dcfortran/README.md.")
+        root = Path(dcfortran)
+        root = root / "Fort90" if (root / "Fort90").is_dir() else root
+
     copied = []
     for rel in SOURCES:
-        source = VENDOR / Path(rel).name
-        if not source.exists():
-            raise SystemExit(
-                f"missing vendored source: {source}\n"
-                f"run `python {Path(__file__).name} --vendor PATH_TO_DCFORTRAN`")
-        target = SRC / Path(rel).name
+        name = Path(rel).name
+        if name in THIRD_PARTY:
+            if engine != "original":
+                continue
+            source = root / rel
+            if not source.exists():
+                raise SystemExit(f"missing from the checkout: {source}")
+        else:
+            source = VENDOR / name
+            if not source.exists():
+                raise SystemExit(
+                    f"missing vendored source: {source}\n"
+                    f"run `python {Path(__file__).name} "
+                    f"--vendor PATH_TO_DCFORTRAN`")
+        target = src_dir / name
         shutil.copyfile(source, target)
         copied.append(target)
 
@@ -297,14 +405,19 @@ def prepare():
         print(f"  {counts[old]:3d} x {old!r} -> {new!r}")
         print(f"      {why}")
     print(f"  {stripped:3d} stray control bytes removed")
+    if engine == "original":
+        print(f"  {len(THIRD_PARTY):3d} third-party sources taken from {root}")
+    else:
+        print(f"  {len(REPLACEMENTS):3d} replacement sources for the "
+              f"{len(THIRD_PARTY)} that are not vendored")
     return copied
 
 
-def compile_all(files, fc, flags):
+def compile_all(files, fc, flags, outdir):
     """Compile each source; return ``(objects, failures)``."""
     objects, failures = [], []
     for f in files:
-        obj = BUILD / (f.stem + ".o")
+        obj = outdir / (f.stem + ".o")
         r = subprocess.run([str(fc), "-c", *flags, str(f), "-o", str(obj)],
                            capture_output=True, text=True, env=_env(fc))
         if r.returncode == 0:
@@ -314,8 +427,7 @@ def compile_all(files, fc, flags):
     return objects, failures
 
 
-def link(objects, fc):
-    exe = BUILD / EXE
+def link(objects, fc, exe):
     extra = []
     if platform.system() == "Windows":
         # The program is run from Python without the compiler's environment
@@ -326,7 +438,7 @@ def link(objects, fc):
     r = subprocess.run([str(fc), *[str(o) for o in objects], *extra,
                         "-o", str(exe)],
                        capture_output=True, text=True, env=_env(fc))
-    return exe, r
+    return r
 
 
 def main():
@@ -344,6 +456,12 @@ def main():
                    help="symbols and a backtrace, for locating a fault")
     p.add_argument("--show-errors", type=int, default=12,
                    help="lines of compiler output to show per failure")
+    p.add_argument("--engine", choices=ENGINES, default="free",
+                   help="'free' builds replacements/ for the eight sources "
+                        "that carry a third party's copyright; 'original' "
+                        "takes those from a DCFORTRAN checkout")
+    p.add_argument("--dcfortran", metavar="PATH",
+                   help="a DCFORTRAN checkout, for --engine original")
     a = p.parse_args()
 
     if a.clean:
@@ -362,9 +480,14 @@ def main():
     print(r.stdout.splitlines()[0] if r.stdout else str(fc))
     print()
 
-    BUILD.mkdir(parents=True, exist_ok=True)
+    outdir = engine_dir(a.engine)
+    outdir.mkdir(parents=True, exist_ok=True)
+    print(f"engine: {a.engine}")
     print("patching copies of the vendored sources")
-    files = [f for f in prepare() if f.name not in REPLACED]
+    files = [f for f in prepare(a.engine, a.dcfortran)
+             if f.name not in REPLACED]
+    if a.engine != "original":
+        files += [REPL / r for r in REPLACEMENTS]
     files += [HERE / "driver" / n for n in OWN]
 
     flags = list(FLAGS)
@@ -374,7 +497,7 @@ def main():
         flags += CHECK_FLAGS
     print(f"\ncompiling {len(files)} files"
           + (" (debug)" if a.debug or a.check else ""))
-    objects, failures = compile_all(files, fc, flags)
+    objects, failures = compile_all(files, fc, flags, outdir)
     print(f"  {len(objects)} of {len(files)} compiled")
     for name, err in failures:
         print(f"\n--- {name}")
@@ -386,7 +509,8 @@ def main():
     if failures:
         return 1
 
-    exe, r = link(objects, fc)
+    exe = engine_exe(a.engine)
+    r = link(objects, fc, exe)
     if r.returncode == 0:
         print(f"\nlinked {exe}")
         return 0

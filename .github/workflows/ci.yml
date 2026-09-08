@@ -245,3 +245,20 @@ jobs:
         run: |
           python tests/dcfortran/build.py
           pytest tests/test_fortran_likelihood.py -v
+
+      # Eight of the Fortran sources carry NAG's or Numerical Recipes'
+      # copyright, so they are not in this repository and the default build
+      # substitutes public-domain equivalents. That substitution has to be
+      # checked, or the comparison above is against a modified program: this
+      # builds the real thing from a DCFORTRAN checkout and runs the two
+      # against each other.
+      #
+      # Cloning is not redistributing. DCFORTRAN is public and DCPROGS' own
+      # decision to publish; the clone lives in a container that is thrown away
+      # at the end of the job, and nothing from it is committed here or
+      # published anywhere.
+      - name: The substituted kernels against the originals
+        run: |
+          git clone --depth 1 https://github.com/DCPROGS/DCFORTRAN.git /tmp/DCFORTRAN
+          python tests/dcfortran/build.py --engine original --dcfortran /tmp/DCFORTRAN
+          pytest tests/test_fortran_engines.py -v

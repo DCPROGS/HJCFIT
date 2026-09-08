@@ -24,16 +24,31 @@ from pathlib import Path
 import numpy as np
 
 HERE = Path(__file__).resolve().parent
-EXE = HERE / "build" / ("likdrv.exe" if platform.system() == "Windows"
-                        else "likdrv")
+_EXE = "likdrv.exe" if platform.system() == "Windows" else "likdrv"
 
 #: How to get it, quoted whenever it is missing so that a skip says what to do.
 BUILD_HINT = f"python {Path(__file__).parent.name}/build.py"
 
 
-def available():
-    """Has the Fortran been built?"""
-    return EXE.exists()
+def exe_for(engine="free"):
+    """The program built by one engine.
+
+    ``free`` is the default build: DCPROGS' own code, with public-domain
+    EISPACK and a plain LU in place of the eight sources that carry NAG's or
+    Numerical Recipes' copyright. ``original`` is the program exactly as it
+    was, and needs a DCFORTRAN checkout to build. See ``build.py``.
+    """
+    return HERE / "build" / engine / _EXE
+
+
+#: The default engine's program. Kept as a module attribute because most
+#: callers want only this one.
+EXE = exe_for("free")
+
+
+def available(engine="free"):
+    """Has this engine been built?"""
+    return exe_for(engine).exists()
 
 
 def write_input(path, Q, kA, kB, kC, intervals, amplitudes, conc, tres,
@@ -94,7 +109,7 @@ LN10 = 2.302585092994046
 
 def log10_likelihood(Q, kA, kB, kC, intervals, amplitudes, conc, tres,
                      tcrit=None, chs=False, keep=None, timeout=600,
-                     raw=False):
+                     raw=False, engine="free"):
     """Run the Fortran likelihood once and return it as **+log10 L**.
 
     Parameters
@@ -102,6 +117,8 @@ def log10_likelihood(Q, kA, kB, kC, intervals, amplitudes, conc, tres,
     raw : bool
         Return ``HJCLIK``'s own value instead -- minus the natural log
         likelihood -- for checking the conversion.
+    engine : str
+        ``"free"`` or ``"original"``; see :func:`exe_for`.
 
     Returns
     -------
@@ -112,8 +129,10 @@ def log10_likelihood(Q, kA, kB, kC, intervals, amplitudes, conc, tres,
         Everything the program printed, so that a diagnostic or a warning is
         not silently discarded.
     """
-    if not EXE.exists():
-        raise FileNotFoundError(f"{EXE} -- run `{BUILD_HINT}` first")
+    exe = exe_for(engine)
+    if not exe.exists():
+        raise FileNotFoundError(
+            f"{exe} -- run `{BUILD_HINT} --engine {engine}` first")
 
     if keep is not None:
         path = Path(keep)
@@ -125,8 +144,8 @@ def log10_likelihood(Q, kA, kB, kC, intervals, amplitudes, conc, tres,
 
     write_input(path, Q, kA, kB, kC, intervals, amplitudes, conc, tres,
                 tcrit, chs)
-    r = subprocess.run([str(EXE), str(path)], capture_output=True, text=True,
-                       cwd=str(EXE.parent), timeout=timeout)
+    r = subprocess.run([str(exe), str(path)], capture_output=True, text=True,
+                       cwd=str(exe.parent), timeout=timeout)
     if keep is None:
         path.unlink(missing_ok=True)
 

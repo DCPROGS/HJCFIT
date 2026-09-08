@@ -85,10 +85,14 @@ wheel.packages = []
 # Jupyter's editor state, checked in years ago, duplicates the notebooks it
 # shadows -- two copies of a 371 KB file in every source distribution.
 #
-# tests/dcfortran/vendor holds 60 Fortran sources copied out of DCPROGS/DCFORTRAN
+# tests/dcfortran/vendor holds 52 Fortran sources copied out of DCPROGS/DCFORTRAN
 # for the opt-in likelihood comparison (tests/dcfortran/README.md). DCFORTRAN
 # carries no licence file, so they stay in the repository, where common
 # ownership covers them, and out of anything published to PyPI. Anyone running
 # that suite from a checkout has them; anyone installing an sdist does not need
 # them, since the suite has to be compiled anyway.
+#
+# The eight sources that carry NAG's or Numerical Recipes' copyright are not in
+# the repository at all -- replacements/ stands in for them. See
+# tests/dcfortran/replacements/PROVENANCE.md.
 sdist.exclude = [".ipynb_checkpoints", "tests/dcfortran/vendor"]

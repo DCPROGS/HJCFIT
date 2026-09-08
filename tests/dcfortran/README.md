@@ -46,16 +46,57 @@ against the C++ is the Fortran's `real*4` interval storage, not the compiler.
 Everything the build writes goes under `build/`, which is ignored by git.
 `vendor/` is only ever read.
 
+## Two engines
+
+Eight of the sources are not DCPROGS' own work and carry a third party's
+copyright, so they are not vendored here. `replacements/` supplies equivalents.
+
+| engine | what it builds | needs |
+|---|---|---|
+| `free` (default) | `vendor/` + `replacements/` | nothing but a compiler |
+| `original` | `vendor/` + the eight from a checkout | a DCFORTRAN checkout |
+
+```bash
+python tests/dcfortran/build.py                                    # free
+python tests/dcfortran/build.py --engine original --dcfortran ../DCFORTRAN
+pytest tests/test_fortran_engines.py -v
+```
+
+Both build side by side, under `build/free/` and `build/original/`, because the
+only way to answer "does the replacement compute the same likelihood?" is to
+have both and run them.
+
+**It does.** Over the same records the likelihood comparison uses:
+
+| comparison | \|Δlog₁₀L\| per interval |
+|---|---|
+| free engine vs original | 1.8 × 10⁻¹⁴ |
+| either engine vs the C++ | 2.4 – 2.7 × 10⁻⁸ |
+
+The substitution is about a millionth of the difference it sits inside, and
+that difference is itself only the `real*4` storage of the intervals.
+`replacements/PROVENANCE.md` says what was replaced with what;
+`../test_fortran_engines.py` is the measurement.
+
+Substituting the numerical core of the program you are validating against is
+not a free move: if the replacement computed something slightly different,
+every agreement in `test_fortran_likelihood.py` would be an agreement with a
+modified program. That is what `test_fortran_engines.py` is for, and why it
+asserts the gap between the engines is at least a hundred times smaller than
+the gap it sits inside rather than reasoning that it ought to be.
+
 ## What is vendored, and that it is unmodified
 
-`vendor/` holds 60 files copied byte for byte out of
+`vendor/` holds 52 files copied byte for byte out of
 [DCPROGS/DCFORTRAN](https://github.com/DCPROGS/DCFORTRAN). `MANIFEST.txt`
 records, for each one, where in `Fort90/` it came from and its SHA-256.
+`THIRD_PARTY.txt` records the same for the eight that are *not* vendored —
+hashes only, so `--engine original` can check what it pulled out of a checkout.
 
 ```bash
 python tests/dcfortran/build.py --verify                     # against the manifest
 python tests/dcfortran/build.py --verify /path/to/DCFORTRAN  # against the original
-python tests/dcfortran/build.py --vendor  /path/to/DCFORTRAN  # re-copy
+python tests/dcfortran/build.py --vendor  /path/to/DCFORTRAN # re-copy
 ```
 
 The first of those runs as a test
@@ -72,9 +113,9 @@ alone is the whole point.
 
 ## The three changes, and why each is safe
 
-`build.py` copies `vendor/` into `build/src/` and patches the copies. Every
-change is in `PATCHES` and `STRIP_BYTES` there, with its reason, and the build
-prints them with counts on every run. They are:
+`build.py` copies `vendor/` into `build/<engine>/src/` and patches the copies.
+Every change is in `PATCHES` and `STRIP_BYTES` there, with its reason, and the
+build prints them with counts on every run. They are:
 
 **1. `call TIMER(` → `call DCTIMER(`** (12 occurrences)
 `TIMER` is both a COMMON block and a subroutine name in this code. Lahey
@@ -145,14 +186,23 @@ leaving it in a comment.
 
 ## Licence
 
-HJCFIT is GPLv3. **DCFORTRAN carries no licence file at all** — it is published
-by DCPROGS, the same organisation, and is the direct ancestor of this project,
-but that is not the same as a grant. Worth settling: a `LICENSE` in DCFORTRAN,
-or a note from its authors, would put this directory on the same footing as the
-rest of the repository. Until then, treat these 60 files as vendored on the
-strength of common ownership rather than on an explicit licence, and do not
-redistribute them separately.
+HJCFIT is GPLv3, and what is in `vendor/` is DCPROGS' own code, from the same
+organisation that owns this repository.
 
-Nothing here ships in a wheel: `pyproject.toml` sets `wheel.packages = []` and
-builds with `tests = OFF`, so `tests/` is in the source repository and the
-sdist only.
+**Eight sources are excluded because they are not.** Five are NAG's — the files
+say so themselves, `C    MARK 2 RELEASE. NAG COPYRIGHT 1972` — and two are
+`real*8` versions of Numerical Recipes routines, which DCPROGS' own comments
+state; the eighth shares a file with a third copy of the same NR routine. NAG
+is a commercial vendor and the Numerical Recipes licence forbids
+redistribution, so none of them can be shipped inside a GPLv3 repository.
+`replacements/PROVENANCE.md` has the detail. DCFORTRAN itself publishes them;
+that is DCPROGS' decision to make, and not one this repository can adopt on its
+behalf.
+
+**DCFORTRAN still carries no licence file at all**, which is worth settling for
+the other 52. A `LICENSE` there, or a note from its authors, would put this
+directory on the same footing as the rest of the repository. Until then, treat
+those files as vendored on the strength of common ownership rather than an
+explicit grant, and do not redistribute them separately. `pyproject.toml` keeps
+`tests/dcfortran/vendor` out of the sdist for that reason, so they are in the
+source repository and not in anything published to PyPI.

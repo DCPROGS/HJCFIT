@@ -17,6 +17,14 @@ in ``tests/dcfortran/build.py``. It is not built by default::
 
 and every test here skips if it has not been. See ``tests/dcfortran/README.md``.
 
+Eight of its sources carry NAG's or Numerical Recipes' copyright rather than
+DCPROGS' and so are not vendored; the default build substitutes public-domain
+EISPACK and a plain partial-pivoting LU for them. The two engines were measured
+against each other and differ by 1.8e-14 per interval, about a millionth of the
+difference measured here, so what follows is a comparison with the original
+program rather than with a modified one. ``tests/test_fortran_engines.py`` is
+where that is established, and it is not taken on trust.
+
 **What is compared.** Both sides are handed the same Q matrix -- not rate
 constants -- so neither side's parameterisation, topology handling nor
 constraint machinery enters; and the same apparent record. The Fortran's own

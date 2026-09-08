@@ -27,3 +27,8 @@
 # the DOS CRLFs on checkout and every hash would fail, so these files are
 # stored and checked out exactly as they are. "Unmodified" has to mean bytes.
 tests/dcfortran/vendor/** -text
+
+# replacements/eispack is verbatim netlib EISPACK and its SHA-256s are recorded
+# in replacements/PROVENANCE.md, for the same reason and with the same
+# consequence as vendor/ above.
+tests/dcfortran/replacements/eispack/** -text
