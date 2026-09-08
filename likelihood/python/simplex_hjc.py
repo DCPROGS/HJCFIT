@@ -44,8 +44,8 @@
     as SciPy's Nelder--Mead on all of 250 records, in a little over half the
     likelihood evaluations.
 
-    A bug in the local search, reproduced on purpose
-    ------------------------------------------------
+    A bug in the original's local search
+    ------------------------------------
 
     ``SIMPHJC.FOR`` lines 657--691 step each parameter up and then down by
     ``crtstp`` and keep any improvement. The "up" branch sets
@@ -56,13 +56,33 @@
     coordinates still hold the last extension or contraction the iteration
     happened to try. The local search is close to inert in practice.
 
-    ``local_search="fortran"`` reproduces this and is the default, because the
-    published numbers came from the code as it stands. ``"corrected"`` does the
-    coordinate search as evidently intended and ``"off"`` skips it; having all
-    three is what lets the difference be measured rather than assumed.
+    ``local_search`` chooses what to do about that:
+
+    ``"corrected"``
+        the coordinate search as evidently intended. **The default**, because
+        code that is used to fit real data should be correct rather than
+        faithful to a twenty-year-old slip.
+    ``"fortran"``
+        reproduces the bug exactly. Kept because the published results,
+        Colquhoun, Hatton & Hawkes (2003) among them, were produced by the code
+        as it stands; reproducing them, or asking whether the bug mattered,
+        needs it. Nothing else should use it.
+    ``"off"``
+        no local search at all, which is cheapest and, given how nearly inert
+        the original is, close to ``"fortran"`` in effect.
+
+    On the AChR fits of Colquhoun, Hatton & Hawkes (2003) the three give
+    *identical* answers. Over 12 records, ``"corrected"`` and ``"fortran"``
+    agree to the last digit of the log-likelihood and cost the same 800
+    evaluations on average; ``"off"`` also agrees and saves 18 evaluations a
+    fit. The local search is entered once, at convergence, and on this problem
+    never finds an improvement -- so correcting it costs nothing, and the
+    published results are not in question either.
+
+    That will not hold for every likelihood, which is why all three are here.
 """
 __docformat__ = "restructuredtext en"
-__all__ = ['simplex', 'SimplexResult', 'SIMPLEX_DEFAULTS']
+__all__ = ['simplex_hjc', 'SimplexHJCResult', 'SIMPLEX_HJC_DEFAULTS']
 
 from collections import namedtuple
 
@@ -71,7 +91,7 @@ import numpy as np
 #: HJCFIT's own defaults, read from ``Hjcfit1-09122003.for`` lines 2749--2830.
 #: ``stpfac`` is the value the program prompts for; in log mode it passes the
 #: logarithm of it to the simplex (line 2794, ``stpsav = dlog(stpfac)``).
-SIMPLEX_DEFAULTS = dict(
+SIMPLEX_HJC_DEFAULTS = dict(
     stpfac_log=5.0,      # line 2772, "if(logsav) stpfac=5.d0"
     stpfac_lin=0.2,      # line 2771
     confac=0.5,          # line 2770
@@ -92,11 +112,11 @@ _FIELDS = ['x', 'fun', 'nfev', 'nit', 'nrestarts', 'iconv', 'success',
            'message']
 
 
-class SimplexResult(namedtuple('SimplexResult', _FIELDS)):
-    """ The result of a :func:`simplex` run.
+class SimplexHJCResult(namedtuple('SimplexHJCResult', _FIELDS)):
+    """ The result of a :func:`simplex_hjc` run.
 
         The field names are SciPy's where SciPy has one, so that a script can
-        swap :func:`scipy.optimize.minimize` for :func:`simplex` and keep
+        swap :func:`scipy.optimize.minimize` for :func:`simplex_hjc` and keep
         reading ``res.x``, ``res.fun``, ``res.nfev``, ``res.nit``,
         ``res.success`` and ``res.message``.
 
@@ -113,14 +133,14 @@ class SimplexResult(namedtuple('SimplexResult', _FIELDS)):
     __slots__ = ()
 
     def __repr__(self):
-        return ("SimplexResult(fun={0.fun!r}, nfev={0.nfev}, nit={0.nit}, "
+        return ("SimplexHJCResult(fun={0.fun!r}, nfev={0.nfev}, nit={0.nit}, "
                 "nrestarts={0.nrestarts}, success={0.success}, "
                 "message={0.message!r})".format(self))
 
 
-def simplex(fun, x0, args=(), logfit=True, stpfac=None, confac=None,
+def simplex_hjc(fun, x0, args=(), logfit=True, stpfac=None, confac=None,
             resfac=None, nresmax=None, errfac=None, maxfev=None,
-            local_search="fortran", callback=None):
+            local_search="corrected", callback=None):
     """ Minimise ``fun`` the way the Fortran HJCFIT did.
 
         :param fun:
@@ -156,25 +176,28 @@ def simplex(fun, x0, args=(), logfit=True, stpfac=None, confac=None,
         :param maxfev:
            Evaluation budget. Exhausting it returns ``success=False``.
         :param local_search:
-           ``"fortran"``, ``"corrected"`` or ``"off"``; see the module
-           docstring, which explains why the default reproduces a bug.
+           ``"corrected"`` (the default), ``"fortran"`` or ``"off"``. The
+           original's local search contains a bug; ``"fortran"`` reproduces it,
+           for reproducing published results, and nothing else should use it.
+           See the module docstring.
         :param callback:
            Called as ``callback(x)`` with the best vertex after each iteration,
            as :func:`scipy.optimize.minimize` calls it.
 
-        :returns: a :class:`SimplexResult`
+        :returns: a :class:`SimplexHJCResult`
 
         .. code-block:: python
 
-            from HJCFIT.likelihood.optimization import simplex
+            from HJCFIT.likelihood.optimization import simplex_hjc
 
-            result = simplex(lambda x: -likelihood(np.exp(x)), np.log(theta))
+            result = simplex_hjc(lambda x: -likelihood(np.exp(x)),
+                                 np.log(theta))
             rates = np.exp(result.x)
     """
     if local_search not in ("fortran", "corrected", "off"):
         raise ValueError("local_search must be 'fortran', 'corrected' or 'off'")
 
-    d = SIMPLEX_DEFAULTS
+    d = SIMPLEX_HJC_DEFAULTS
     if stpfac is None:
         stpfac = d["stpfac_log"] if logfit else d["stpfac_lin"]
     confac = d["confac"] if confac is None else confac
@@ -286,7 +309,7 @@ def simplex(fun, x0, args=(), logfit=True, stpfac=None, confac=None,
 
         if spent:
             i = int(np.argmin(fval))
-            return SimplexResult(
+            return SimplexHJCResult(
                 x=simp[i].copy(), fun=float(fval[i]), nfev=count[0], nit=nit,
                 nrestarts=nrestarts, iconv=6, success=False,
                 message="no convergence after {0} evaluations".format(maxfev))
@@ -333,7 +356,7 @@ def simplex(fun, x0, args=(), logfit=True, stpfac=None, confac=None,
             step = resfac * crtstp                # line 741
             continue                              # goto 2001
 
-        return SimplexResult(
+        return SimplexHJCResult(
             x=np.asarray(cand_x[il], dtype=float).copy(), fun=float(cand_f[il]),
             nfev=count[0], nit=nit, nrestarts=nrestarts, iconv=il + 2,
             success=True,
