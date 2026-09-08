@@ -36,6 +36,13 @@ from Git Bash a POSIX-style `PATH` breaks gfortran's DLL lookup and it
 segfaults on hello-world. `build.py` arranges that itself; it is only a problem
 if you invoke gfortran by hand.
 
+Built and tested with gfortran **5.3.0** (Windows/MSYS2) and **13.3.0**
+(Ubuntu 24.04, in CI). Twenty-year-old fixed-form code needs
+`-fallow-argument-mismatch` on gfortran 10 and later, which `-std=legacy`
+implies, so no separate flag is required. The two compilers agree to the same
+tolerances on the same records, which is worth knowing: the residual difference
+against the C++ is the Fortran's `real*4` interval storage, not the compiler.
+
 Everything the build writes goes under `build/`, which is ignored by git.
 `vendor/` is only ever read.
 
