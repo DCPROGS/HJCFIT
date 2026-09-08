@@ -1,4 +1,8 @@
 build*
+# ...which also matches tests/dcfortran/build.py, the script that builds the
+# vendored Fortran. Its output directory next to it is meant to be ignored;
+# the script is not. It was committed missing once and CI caught it.
+!tests/dcfortran/build.py
 deploy/*.sh
 include/
 nbproject/
