@@ -1,0 +1,31 @@
+# The CH82 sample record that ships with HJCFIT, fitted with the CH82
+# mechanism of Colquhoun & Hawkes (1982). Runs as it stands:
+#
+#     hjcfit check CH82.toml
+#     hjcfit fit   CH82.toml -o result.json
+#
+# `hjcfit template` writes the same thing with every option in it, commented.
+
+title = "CH82 sample record at 100 nM"
+
+[[data]]
+record = "CH82"        # a sample record; otherwise a path to an .scn file
+conc = 1e-07           # M
+tres = 0.0001          # dead time to impose, s
+tcrit = 0.004          # critical shut time dividing the record into bursts, s
+vectors = "chs"        # CHS vectors, which are the right ones between bursts
+
+[mechanism]
+sample = "CH82"        # a factory in scalcs.samples.samples
+nfree = 8              # free parameters expected; asserted before the search
+
+# The initial guess. Rates left out keep the sample's own value, and
+# `hjcfit check` prints every name this mechanism has.
+[mechanism.rates]
+beta1 = 15.0
+beta2 = 15000.0
+
+[search]
+method = "simplex"     # HJCFIT's own simplex, over the logarithms
+log_params = true
+maxfev = 20000

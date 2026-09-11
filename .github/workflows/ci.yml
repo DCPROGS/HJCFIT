@@ -222,14 +222,22 @@ jobs:
       # Run from outside the source tree, so the installed package is what is
       # imported rather than the checkout.
       #
-      # test_simplex_hjc.py rides along here rather than in the build matrix: it is
-      # pure Python and needs no dcio, but it does need HJCFIT *installed*, and
-      # this is the only job that installs it. The matrix runs ctest against
-      # the build tree instead.
+      # The whole directory, not a list of files. This job is the only one that
+      # installs the package, so it is the only place the pure-Python tests can
+      # run at all -- the matrix runs ctest against the build tree -- and the
+      # list that used to be here had fallen behind: tests/test_fitting.py, the
+      # 36 tests written for the fitting layer, was never run by any job from
+      # the day it was added. A named list of test files is one more piece of
+      # declared metadata that nothing exercises.
+      #
+      # examples/ goes too, beside tests/ as it is in the repository, because
+      # the notebook template and the specification it drives are tested.
       - name: Tests
         env:
           MPLBACKEND: Agg
         run: |
-          cp tests/test_dcio_integration.py tests/test_simplex_hjc.py /tmp/
-          cd /tmp
-          pytest test_dcio_integration.py test_simplex_hjc.py -v
+          pip install nbclient nbformat ipykernel
+          mkdir -p /tmp/hjcfit-tests
+          cp -r tests examples /tmp/hjcfit-tests/
+          cd /tmp/hjcfit-tests
+          pytest tests -v
