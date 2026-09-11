@@ -54,10 +54,6 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
-# The SWIG module, not the package: inside HJCFIT.likelihood, '.likelihood' is
-# HJCFIT.likelihood.likelihood. The package __init__ does 'from .likelihood
-# import *' before it reaches this module, so there is no circularity.
-from .likelihood import Log10Likelihood
 
 
 #: Returned by the cost function when the likelihood cannot be computed. Large,
@@ -256,6 +252,15 @@ class HJCFitter:
                                 for r in free])
         self._upper = np.array([r.limits[0][1] if r.limits else np.inf
                                 for r in free])
+
+        # Imported here rather than at module scope. Taking it at module
+        # scope and exposing this module from the package __init__ made
+        # HJCFIT.likelihood import itself while partially initialised; every
+        # CI job failed on it, and a comment claiming there was no
+        # circularity was wrong. This module is imported on demand --
+        # `from HJCFIT.likelihood.fitting import HJCFitter` -- and reaches the
+        # likelihood only once a fitter is actually built.
+        from .likelihood import Log10Likelihood
 
         self.likelihoods = [
             Log10Likelihood(r.as_lists(), nopen=mec.kA, tau=r.tres,

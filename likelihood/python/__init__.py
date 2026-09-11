@@ -20,9 +20,3 @@ from .likelihood import *
 from ._methods import *
 from . import random
 from . import optimization
-
-# The fitting layer. It imports nothing beyond numpy, scipy and the likelihood
-# itself -- it is duck-typed on a mechanism rather than importing one -- so
-# exposing it here costs the bare install nothing. What it needs from
-# hjcfit[fitting] is a mechanism to be handed, not a module to import.
-from . import fitting

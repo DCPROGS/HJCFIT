@@ -15,6 +15,15 @@ constants and constraints live in SCALCS. Install it with the extra::
 
     pip install hjcfit[fitting]
 
+This module is imported on demand rather than exposed from
+HJCFIT.likelihood itself::
+
+    from HJCFIT.likelihood.fitting import HJCFitter, Record
+
+That is not a stylistic choice. Exposing it from the package __init__ made
+HJCFIT.likelihood import itself while partially initialised, and every CI
+job failed on it.
+
 **Nothing here imports scalcs.** The fitter is duck-typed on a mechanism:
 anything offering ``theta()``, ``theta_unsqueeze()``, ``Rates``, ``kA``,
 ``set_eff()`` and ``Q`` will do, which in practice means
