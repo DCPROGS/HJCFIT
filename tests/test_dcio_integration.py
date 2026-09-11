@@ -134,3 +134,68 @@ class TestDwellTimeHistogram:
         # each bar contributes its count twice
         ydata = ax.lines[0].get_ydata()
         assert round((ydata ** 2).sum() / 2) == len(x)
+
+
+class TestSimplexOnARealLikelihood:
+    """simplex_hjc against HJCFIT's own likelihood, not a test function.
+
+    Its 26 unit tests pin the Fortran semantics on quadratics and Rosenbrock.
+    None of them touches Log10Likelihood, so nothing would notice if the two
+    stopped working together -- which is the gap that let the documented entry
+    point sit broken for years.
+    """
+
+    @pytest.fixture()
+    def bursts(self):
+        return HJCFIT.read_idealized_bursts("CH82", tau=1e-4, tcrit=4e-3)
+
+    @staticmethod
+    def _q(rates):
+        """CH82 with five of its rates free, the rest at their usual values."""
+        b1, f1, b2, f2, alpha = rates
+        import numpy as np
+        Q = np.array([
+            [-(b1 + 3000.0), b1, 3000.0, 0.0, 0.0],
+            [f1, -(f1 + 500.0), 0.0, 500.0, 0.0],
+            [15.0, 0.0, -(15.0 + b2 + 2000.0), b2, 2000.0],
+            [0.0, 15000.0, f2, -(15000.0 + f2), 0.0],
+            [0.0, 0.0, alpha, 0.0, -alpha],
+        ])
+        return Q
+
+    def test_it_improves_a_real_likelihood(self, bursts):
+        """The point is not the maximum reached -- it is that the search moves
+        and returns something finite through the C++ likelihood."""
+        from HJCFIT.likelihood import Log10Likelihood
+        from HJCFIT.likelihood.optimization import (
+            reset_out_of_range, simplex_hjc)
+
+        lik = Log10Likelihood(bursts, nopen=2, tau=1e-4, tcritical=4e-3)
+        guess = np.array([50.0, 2.0 / 3.0, 50.0, 15000.0, 10.0])
+
+        def cost(x):
+            try:
+                value = -lik(self._q(np.exp(x)))
+            except Exception:
+                return 1e10
+            return value if np.isfinite(value) else 1e10
+
+        start = cost(np.log(guess))
+        assert np.isfinite(start)
+
+        res = simplex_hjc(reset_out_of_range(cost, lower=1e-12, upper=1e6),
+                          np.log(guess), maxfev=600)
+        assert res.fun <= start, "the search should not end worse than it began"
+        assert res.nfev > len(guess), "it should have evaluated a simplex"
+        from HJCFIT.likelihood.simplex_hjc import ICONV
+        assert res.iconv in ICONV, res.iconv
+        assert ICONV[res.iconv] in res.message, res.message
+
+    def test_it_reports_scipy_field_names(self, bursts):
+        """So a script can swap minimize for simplex_hjc and keep reading."""
+        from HJCFIT.likelihood.optimization import simplex_hjc
+
+        res = simplex_hjc(lambda x: float((np.asarray(x) ** 2).sum()),
+                          np.array([1.0, 2.0]))
+        for field in ("x", "fun", "nfev", "nit", "success", "message"):
+            assert hasattr(res, field), field

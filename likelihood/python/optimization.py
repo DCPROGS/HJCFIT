@@ -18,10 +18,76 @@
 """ Subpackage for likelihood optimization. """
 __docformat__ = "restructuredtext en"
 __all__ = ['reduce_likelihood', 'simplex_hjc', 'SimplexHJCResult',
-           'SIMPLEX_HJC_DEFAULTS']
+           'SIMPLEX_HJC_DEFAULTS', 'reset_out_of_range']
 
 from .simplex_hjc import (
     simplex_hjc, SimplexHJCResult, SIMPLEX_HJC_DEFAULTS)
+
+
+def reset_out_of_range(fun, lower=None, upper=None, logfit=True):
+  """ Wraps an objective so a parameter leaving its range is reset, not searched.
+
+      :func:`simplex_hjc` is a port of ``SIMPHJC.FOR`` and, faithfully, has no
+      notion of bounds: the subroutine never had any. The limits belonged to the
+      *program* around it. Colquhoun, Hatton & Hawkes (2003) p. 702 describes
+      both halves -- an upper limit "to prevent physically unrealistic values",
+      and a floor because "if a value of a rate constant should go negative
+      during the fitting process, it can be reset to a value near zero".
+
+      This is that resetting, and it matters. Searching the rate constants
+      themselves without it produced **four fits in 250 with negative rate
+      constants** on the AChR mechanism of that paper. In log space it cannot
+      happen, which is one reason the log search is the default there and here.
+
+      The reset is applied to the parameters handed to *fun*, not to the
+      simplex's own vertices, which is where the original put it: the search
+      may still step outside, and simply learns that it gains nothing by doing
+      so. Clamping the vertices instead would change the geometry of the
+      simplex rather than the function it sees.
+
+      :param fun:
+         The objective. Called with the reset parameters.
+      :param lower:
+         Lower limits, in *rate* space, broadcast against the parameters. None
+         leaves rates unbounded below -- which, searching rates directly, means
+         nothing stops a negative one.
+      :param upper:
+         Upper limits, in rate space. ``Hjcfit1-09122003.for`` prompts for one
+         and the paper's fits used 1e6 for every rate.
+      :param logfit:
+         True when the search is over the logarithms of the rate constants, as
+         :func:`simplex_hjc` is by default. The limits are always given as
+         rates; this says how to get from the search coordinates to them.
+
+      :returns:
+         A callable with the same signature as *fun*.
+
+      .. code-block:: python
+
+          from HJCFIT.likelihood.optimization import (
+              simplex_hjc, reset_out_of_range)
+
+          bounded = reset_out_of_range(cost, lower=1e-12, upper=1e6)
+          result = simplex_hjc(bounded, log(guess))
+
+      Note what this does *not* do. It does not report that a limit was
+      reached, and a fit that ends against one is not a fit -- it is a
+      statement that the likelihood wanted to go somewhere the model forbids.
+      Check the result against the limits you passed.
+  """
+  from numpy import asarray, clip, exp, log
+
+  if lower is None and upper is None:
+    return fun
+
+  def bounded(x, *args, **kwargs):
+    rates = exp(asarray(x, dtype=float)) if logfit else asarray(x, dtype=float)
+    reset = clip(rates, lower, upper)
+    return fun(log(reset) if logfit else reset, *args, **kwargs)
+
+  bounded.__name__ = getattr(fun, '__name__', 'objective') + '_reset'
+  bounded.__doc__ = 'Objective with out-of-range parameters reset.'
+  return bounded
 
 def reduce_likelihood(likelihood, graph_matrix):
   """ Maps likelihood to a set of variable components.
