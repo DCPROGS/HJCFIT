@@ -12,6 +12,7 @@ Python API Reference
    python/approx_survivor.rst
    python/determinanteq.rst
    python/roots.rst
+   python/optimization.rst
 
 
 Extras

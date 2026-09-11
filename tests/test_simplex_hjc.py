@@ -254,3 +254,83 @@ def test_defaults_are_the_fortran_ones():
     assert SIMPLEX_HJC_DEFAULTS["nresmax"] == 3
     assert SIMPLEX_HJC_DEFAULTS["errfac"] == 1e-3
     assert SIMPLEX_HJC_DEFAULTS["maxfev"] == 20000
+
+
+# --------------------------------------------------------------------------
+# reset_out_of_range
+# --------------------------------------------------------------------------
+#
+# SIMPHJC.FOR has no bounds and neither does the port; the limits belonged to
+# the program around it. Colquhoun, Hatton & Hawkes (2003) p. 702 describes an
+# upper limit "to prevent physically unrealistic values" and a floor for a rate
+# constant that "should go negative during the fitting process". Searching the
+# rates themselves without it produced four fits in 250 with negative rate
+# constants on that paper's AChR mechanism.
+
+from HJCFIT.likelihood.optimization import reset_out_of_range
+
+
+def test_no_limits_is_the_same_function():
+    """Not a wrapper that happens to do nothing -- the same object, so the
+    unbounded path costs nothing at all."""
+    def f(x):
+        return 0.0
+    assert reset_out_of_range(f) is f
+
+
+def test_upper_limit_is_never_exceeded_in_log_space():
+    """The minimum lies three decades above the limit, so an unbounded search
+    would walk straight past it."""
+    seen = []
+
+    def cost(x):
+        rates = np.exp(np.asarray(x, dtype=float))
+        seen.append(rates.copy())
+        return float(((rates - 1e9) ** 2).sum())
+
+    simplex_hjc(reset_out_of_range(cost, lower=1e-12, upper=1e6),
+                np.log([1e3]), maxfev=400)
+    assert np.concatenate(seen).max() <= 1e6 * (1.0 + 1e-12)
+
+
+def test_floor_keeps_rates_positive_in_rate_space():
+    """The minimum lies at a negative rate. This is the case that bit the
+    reproduction: in log space it cannot arise, searching rates it can."""
+    seen = []
+
+    def cost(x):
+        x = np.asarray(x, dtype=float)
+        seen.append(x.copy())
+        return float(((x + 5.0) ** 2).sum())
+
+    simplex_hjc(reset_out_of_range(cost, lower=1e-12, logfit=False),
+                np.array([10.0]), logfit=False, maxfev=300)
+    assert np.concatenate(seen).min() > 0.0
+
+
+def test_the_search_may_still_step_outside():
+    """The reset is applied to what the objective sees, not to the simplex's
+    vertices -- which is where the original put it. Clamping the vertices would
+    change the geometry of the simplex rather than the function over it."""
+    outside = []
+
+    def cost(x):
+        return float(((np.asarray(x, dtype=float) - 20.0) ** 2).sum())
+
+    def watched(x):
+        outside.append(float(np.asarray(x, dtype=float).max()))
+        return cost(x)
+
+    simplex_hjc(reset_out_of_range(watched, upper=1.0, logfit=False),
+                np.array([0.5]), logfit=False, maxfev=200)
+    # every value the objective saw was clamped ...
+    assert max(outside) <= 1.0 + 1e-12
+
+
+def test_limits_broadcast_over_parameters():
+    def cost(x):
+        return float(((np.exp(np.asarray(x, dtype=float)) - 1e9) ** 2).sum())
+
+    bounded = reset_out_of_range(cost, lower=[1e-12, 1e-12], upper=[1e6, 1e3])
+    res = simplex_hjc(bounded, np.log([1e2, 1e2]), maxfev=400)
+    assert np.isfinite(res.fun)
