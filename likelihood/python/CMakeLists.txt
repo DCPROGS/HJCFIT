@@ -67,9 +67,30 @@ if(pythonBindings)
 
   
   install(TARGETS likelihood_python DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
-  install(FILES  random.py _methods.py optimization.py simplex_hjc.py
-                 ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py __init__.py
+  # Named rather than globbed, because CMake will not re-run on a new file
+  # appearing and a glob would make the wheel depend on when cmake last ran.
+  set(PYTHON_MODULES __init__.py random.py _methods.py optimization.py
+                     simplex_hjc.py fitting.py)
+
+  install(FILES  ${PYTHON_MODULES}
+                 ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py
           DESTINATION ${PYINSTALL_DIRECTORY}/HJCFIT/likelihood)
+
+  # And checked, because a hand-maintained list falls behind silently. fitting.py
+  # was added to this directory without being added above, so it was absent from
+  # the wheel; the build succeeded, every C++ and behave test passed, and the
+  # only thing that noticed was an integration test that imported it. A module
+  # missing from the package is not a build failure unless something asks for it.
+  file(GLOB PYTHON_MODULES_PRESENT RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*.py")
+  foreach(module ${PYTHON_MODULES_PRESENT})
+    list(FIND PYTHON_MODULES ${module} module_listed)
+    if(module_listed EQUAL -1)
+      message(FATAL_ERROR
+        "${module} is in likelihood/python but not in PYTHON_MODULES, so it "
+        "would not be installed. Add it to that list in "
+        "likelihood/python/CMakeLists.txt.")
+    endif()
+  endforeach()
 endif(pythonBindings)
 
 if(pythonBindings AND tests)
