@@ -199,3 +199,76 @@ class TestSimplexOnARealLikelihood:
                           np.array([1.0, 2.0]))
         for field in ("x", "fun", "nfev", "nit", "success", "message"):
             assert hasattr(res, field), field
+
+
+class TestFittingLayerWithARealMechanism:
+    """HJCFitter against scalcs' CH82 and a shipped record.
+
+    test_fitting.py exercises the whole search against a mechanism faked in
+    that file, which is what proves the fitter needs no mechanism library.
+    This is the other half: that the duck-typing actually matches the library
+    it was written for.
+    """
+
+    @pytest.fixture()
+    def fitter(self):
+        from scalcs.samples import samples
+
+        from HJCFIT.likelihood.fitting import HJCFitter, Record
+
+        bursts = HJCFIT.read_idealized_bursts("CH82", tau=1e-4, tcrit=4e-3)
+        record = Record(conc=100e-9, tres=1e-4, tcrit=4e-3,
+                        groups=tuple(tuple(b) for b in bursts))
+        mec = samples.CH82()
+        mec.set_eff("c", 100e-9)
+        return HJCFitter(mec, [record])
+
+    def test_scalcs_satisfies_the_duck_type(self, fitter):
+        """Every attribute the fitter asks of a mechanism."""
+        mec = fitter.mec
+        for name in ("theta", "theta_unsqueeze", "Rates", "kA", "set_eff",
+                     "get_free_parameter_names", "Q"):
+            assert hasattr(mec, name), name
+        for name in ("is_free", "limits", "name", "rateconstants", "unit_rate"):
+            assert hasattr(mec.Rates[0], name), name
+
+    def test_likelihood_at_the_shipped_guess(self, fitter):
+        """A golden value. CH82 as scalcs ships it, against CH82.scn as HJCFIT
+        ships it, at tres = 100 us and tcrit = 4 ms."""
+        assert fitter.log10_likelihood() == pytest.approx(2286.9746, abs=1e-3)
+
+    def test_the_record_is_what_the_likelihood_requires(self, fitter):
+        record = fitter.records[0]
+        assert len(record.groups) == 572
+        assert record.n_intervals == 1100
+        assert all(len(g) % 2 == 1 for g in record.groups)
+
+    @pytest.mark.parametrize("search", ["simplex", "scipy"])
+    def test_a_fit_improves_the_likelihood(self, fitter, search):
+        start = fitter.log10_likelihood()
+        result = fitter.fit(search=search, maxfev=1500)
+        assert result.log10_likelihood > start
+        assert result.nfailures == 0, "CH82 should not defeat the likelihood"
+        assert set(result.rates) == set(r.name for r in fitter.mec.Rates)
+
+    def test_both_searches_find_the_same_maximum(self):
+        """Two independent optimisers over the same real likelihood. They
+        agree on the maximum while disagreeing on where it is, which is the
+        alpha-beta ridge the reproduction measured at r = 0.92 -- so the
+        likelihood is asserted and the parameters are not."""
+        from scalcs.samples import samples
+
+        from HJCFIT.likelihood.fitting import HJCFitter, Record
+
+        bursts = HJCFIT.read_idealized_bursts("CH82", tau=1e-4, tcrit=4e-3)
+        groups = tuple(tuple(b) for b in bursts)
+
+        reached = []
+        for search in ("simplex", "scipy"):
+            mec = samples.CH82()
+            mec.set_eff("c", 100e-9)
+            record = Record(conc=100e-9, groups=groups, tres=1e-4, tcrit=4e-3)
+            result = HJCFitter(mec, [record]).fit(search=search, maxfev=1500)
+            reached.append(result.log10_likelihood)
+
+        assert reached[0] == pytest.approx(reached[1], abs=1e-2), reached

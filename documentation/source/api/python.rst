@@ -13,6 +13,7 @@ Python API Reference
    python/determinanteq.rst
    python/roots.rst
    python/optimization.rst
+   python/fitting.rst
 
 
 Extras
