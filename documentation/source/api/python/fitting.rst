@@ -15,6 +15,10 @@ constants and constraints live in SCALCS. Install it with the extra::
 
     pip install hjcfit[fitting]
 
+If you would rather write a file than write Python, :ref:`python_fitspec_api`
+is this module driven from a specification -- by the ``hjcfit`` command, or by
+the notebook template in ``examples/``.
+
 This module is imported on demand rather than exposed from
 HJCFIT.likelihood itself::
 

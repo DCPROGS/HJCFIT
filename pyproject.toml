@@ -82,12 +82,22 @@ fitting = [
                         # 1.1.0 does not have: the looser pin let the extra
                         # resolve and the fit then fail on a missing attribute
     "matplotlib>=3.6",  # the displays; nothing in the likelihood draws
+    # A fit specification is TOML, which is in the standard library from 3.11.
+    # tomli is the same parser by the same author, for 3.10.
+    "tomli>=1.1; python_version < '3.11'",
 ]
 # EKDIST -- exponential mixtures and t_crit estimation -- is deliberately not
 # an extra. It is not on PyPI, so declaring it would make
 # `pip install hjcfit[...]` fail outright rather than install what it can;
 # EKDIST's own dcio dependency was unresolvable in exactly that way until dcio
 # was published. Install it from source when a display needs it.
+
+# `hjcfit fit spec.toml` -- the command over a fit specification. It needs the
+# [fitting] extra to do anything, and says so rather than failing on an import;
+# `pip install hjcfit` alone still installs the script, which is better than a
+# script whose presence depends on how the package was installed.
+[project.scripts]
+hjcfit = "HJCFIT.likelihood.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/DCPROGS/HJCFIT"

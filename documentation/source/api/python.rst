@@ -14,6 +14,7 @@ Python API Reference
    python/roots.rst
    python/optimization.rst
    python/fitting.rst
+   python/fitspec.rst
 
 
 Extras

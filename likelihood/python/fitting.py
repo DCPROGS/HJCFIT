@@ -147,9 +147,10 @@ class Record:
         vectors = ("CHS vectors" if self.tcrit is not None
                    else "equilibrium vectors")
         raw = "" if self.n_raw is None else "{0} -> ".format(self.n_raw)
-        return ("{0}: {1}{2} intervals at {3:g} us -> {4} groups, {5} "
-                "openings, {6}".format(conc, raw, self.n_intervals,
+        return ("{0}: {1}{2} intervals at {3:g} us -> {4} group{5}, {6} "
+                "openings, {7}".format(conc, raw, self.n_intervals,
                                        self.tres * 1e6, len(self.groups),
+                                       "" if len(self.groups) == 1 else "s",
                                        self.n_openings, vectors))
 
 
