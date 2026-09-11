@@ -77,7 +77,10 @@ dependencies = [
 fitting = [
     "dcio>=0.1.2",      # records: formats, dead time, periods, bursts
                         # 0.1.2 because 0.1.1 reports the wrong __version__
-    "scalcs>=1.1.0",    # mechanisms, rate constants, constraints, curves
+    "scalcs>=1.2.0",    # mechanisms, rate constants, constraints, curves
+                        # 1.2.0 because the fitter needs Rate.is_free, which
+                        # 1.1.0 does not have: the looser pin let the extra
+                        # resolve and the fit then fail on a missing attribute
     "matplotlib>=3.6",  # the displays; nothing in the likelihood draws
 ]
 # EKDIST -- exponential mixtures and t_crit estimation -- is deliberately not
