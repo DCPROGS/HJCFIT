@@ -60,6 +60,32 @@ dependencies = [
     "scipy>=1.10",
 ]
 
+# The likelihood needs numpy and scipy and nothing else, and a test asserts
+# that importing HJCFIT leaves dcio and scalcs out of sys.modules. Reading a
+# record, defining a mechanism and running a fit need more than that, so they
+# are an extra rather than a dependency: someone who wants Log10Likelihood on
+# a Q matrix they already have should not acquire a mechanism library and a
+# plotting stack to get it.
+#
+#   pip install hjcfit             the likelihood
+#   pip install hjcfit[fitting]    records, mechanisms, fits, displays
+#
+# scalcs is GPL-2.0-or-later, which HJCFIT (GPL-3.0-or-later) can combine
+# with. It could not have been combined with GPL-2.0-only, which is what the
+# metadata claimed until DCPROGS/SCALCS#24.
+[project.optional-dependencies]
+fitting = [
+    "dcio>=0.1.2",      # records: formats, dead time, periods, bursts
+                        # 0.1.2 because 0.1.1 reports the wrong __version__
+    "scalcs>=1.1.0",    # mechanisms, rate constants, constraints, curves
+    "matplotlib>=3.6",  # the displays; nothing in the likelihood draws
+]
+# EKDIST -- exponential mixtures and t_crit estimation -- is deliberately not
+# an extra. It is not on PyPI, so declaring it would make
+# `pip install hjcfit[...]` fail outright rather than install what it can;
+# EKDIST's own dcio dependency was unresolvable in exactly that way until dcio
+# was published. Install it from source when a display needs it.
+
 [project.urls]
 Homepage = "https://github.com/DCPROGS/HJCFIT"
 Documentation = "http://dcprogs.github.io/HJCFIT"
