@@ -22,6 +22,7 @@
         hjcfit template -o ch82.toml     a specification to edit
         hjcfit check ch82.toml           say what it would do; run nothing
         hjcfit fit ch82.toml -o out.json run it, and keep the result
+        hjcfit sample ch82.toml -o post  sample the posterior ([mcmc])
 
     Also reachable as ``python -m HJCFIT.likelihood.cli`` when the console
     script is not on the path, which is the usual state of affairs inside a
@@ -79,6 +80,20 @@ def _parser():
                      help='write the result, with its provenance, as JSON')
     fit.add_argument('-q', '--quiet', action='store_true',
                      help='print the result and nothing before it')
+
+    sample = sub.add_parser(
+        'sample', help='sample the posterior of the rates, as [mcmc] says')
+    _add_spec_argument(sample)
+    sample.add_argument('-o', '--output', metavar='PREFIX', default=None,
+                        help='write PREFIX.json (summary, provenance) and '
+                             'PREFIX_chain<i>.npz (the chains)')
+    sample.add_argument('--chains', type=int, default=None,
+                        help='number of chains, overriding [mcmc] chains')
+    sample.add_argument('--processes', type=int, default=None,
+                        help='worker processes (default: one per chain, up '
+                             'to the number of CPUs; 1 runs them in turn)')
+    sample.add_argument('-q', '--quiet', action='store_true',
+                        help='print the result and nothing before it')
 
     show = sub.add_parser(
         'show', help='read a specification and write it back, normalised')
@@ -162,7 +177,8 @@ def _check(args):
     # only thing here that proves the records, the mechanism and the dead time
     # are mutually possible. A guess at which the likelihood cannot be
     # computed is a guess no search can start from.
-    fitter = HJCFitter(mec, records, log_params=spec.search.log_params)
+    fitter = HJCFitter(mec, records, log_params=spec.search.log_params,
+                       solver=spec.likelihood.solver() or None)
     print('')
     print('log10L at the guess: {0:.4f}'.format(fitter.log10_likelihood()))
     print('nothing was fitted; run: hjcfit fit {0}'.format(args.spec))
@@ -191,6 +207,36 @@ def _fit(args):
     return 0 if outcome.result.success else 2
 
 
+def _sample(args):
+    from dataclasses import replace
+
+    from .runner import sample, write_samples
+
+    spec = _load(args.spec)
+    if args.chains is not None:
+        if args.chains < 1:
+            raise SpecError('--chains: must be at least 1, not {0}'
+                            .format(args.chains))
+        spec = replace(spec, mcmc=replace(spec.mcmc, chains=args.chains))
+    if not args.quiet:
+        print(spec)
+        if not spec.mcmc.as_dict():
+            print('  sampling: {0} (the defaults; no [mcmc] section)'.format(
+                spec.mcmc))
+        print('')
+    outcome = sample(spec, processes=args.processes, verbose=not args.quiet)
+    if not args.quiet:
+        print('')
+    print(outcome)
+    if args.output:
+        paths = write_samples(args.output, outcome)
+        print('')
+        print('wrote {0}'.format(", ".join(paths)))
+    # As for fit: numbers are printed either way, and the status says whether
+    # to trust them. Chains that plainly disagree have not converged.
+    return 0 if not outcome.max_rhat > 1.1 else 2
+
+
 def _show(args):
     sys.stdout.write(_load(args.spec).to_toml())
     return 0
@@ -202,7 +248,8 @@ def main(argv=None):
         :param argv: Arguments, without the program name. None takes
             ``sys.argv``.
         :returns: 0 on success, 1 on anything this module can explain, and 2
-            from ``fit`` when the search did not converge.
+            from ``fit`` when the search did not converge or from ``sample``
+            when the chains disagree (split-R-hat above 1.1).
     """
     parser = _parser()
     args = parser.parse_args(argv)
@@ -215,7 +262,7 @@ def main(argv=None):
         return 0
 
     handlers = {'template': _template, 'check': _check, 'fit': _fit,
-                'show': _show}
+                'sample': _sample, 'show': _show}
     try:
         return handlers[args.command](args)
     except SpecError as error:

@@ -47,7 +47,7 @@
 """
 __docformat__ = "restructuredtext en"
 __all__ = ['Record', 'FitResult', 'HJCFitter', 'FAILURE_COST',
-           'trim_to_openings']
+           'SOLVER_OPTIONS', 'trim_to_openings']
 
 import time
 from dataclasses import dataclass, field
@@ -60,6 +60,14 @@ import numpy as np
 #: finite and constant -- see :py:meth:`HJCFitter.cost` for why it is a penalty
 #: rather than the perturbation HJCFIT itself used.
 FAILURE_COST = 1.0e10
+
+#: The root-finding options :py:class:`Log10Likelihood` accepts beyond the
+#: record itself, and so what ``solver`` may hold. They are not cosmetic: on
+#: the three AChR records of Epstein et al. (2016), ``nmax=2`` with tolerances
+#: of 1e-12 -- that paper's settings -- gives a natural log-likelihood 0.38
+#: higher than the defaults (``nmax=3``, 1e-10) at the same rates.
+SOLVER_OPTIONS = ('nmax', 'xtol', 'rtol', 'itermax', 'lower_bound',
+                  'upper_bound')
 
 
 def trim_to_openings(intervals, amplitudes):
@@ -225,14 +233,24 @@ class HJCFitter:
           Keep the best vertex at each iteration. Cheap.
         :param bool store_evaluations:
           Keep every point evaluated. Not cheap across many fits.
+        :param dict solver:
+          Root-finding options for every record's likelihood, keyed by the
+          names in :py:data:`SOLVER_OPTIONS`. Options left out keep
+          :py:class:`Log10Likelihood`'s defaults. To reproduce a published
+          value, pass the settings it was computed with.
     """
 
     def __init__(self, mec, records, log_params=True,
-                 store_path=False, store_evaluations=False):
+                 store_path=False, store_evaluations=False, solver=None):
         self.mec = mec
         self.records = [r.check() for r in records]
         if not self.records:
             raise ValueError("no records to fit")
+        self.solver = dict(solver or {})
+        unknown = sorted(set(self.solver) - set(SOLVER_OPTIONS))
+        if unknown:
+            raise ValueError("unknown solver option(s) {0}; expected some of "
+                             "{1}".format(unknown, list(SOLVER_OPTIONS)))
         self.log_params = log_params
         self.store_path = store_path
         self.store_evaluations = store_evaluations
@@ -265,7 +283,7 @@ class HJCFitter:
 
         self.likelihoods = [
             Log10Likelihood(r.as_lists(), nopen=mec.kA, tau=r.tres,
-                            tcritical=r.tcrit)
+                            tcritical=r.tcrit, **self.solver)
             for r in self.records
         ]
         self.nevals = 0

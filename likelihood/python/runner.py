@@ -52,7 +52,8 @@
 __docformat__ = "restructuredtext en"
 __all__ = ['Outcome', 'build_mechanism', 'load_records', 'run',
            'against_limits', 'provenance', 'result_as_dict', 'write_result',
-           'RunnerError']
+           'RunnerError', 'SampleOutcome', 'sample', 'samples_as_dict',
+           'write_samples']
 
 import json
 import os
@@ -437,7 +438,8 @@ def run(spec, verbose=False, store_path=False, x0=None):
     search = spec.search
 
     fitter = HJCFitter(mec, records, log_params=search.log_params,
-                       store_path=store_path)
+                       store_path=store_path,
+                       solver=spec.likelihood.solver() or None)
     if verbose:
         # Not the records: Outcome.__str__ prints those, so that a run with
         # verbose off still says what was fitted.
@@ -540,3 +542,339 @@ def write_result(path, outcome):
         json.dump(result_as_dict(outcome), handle, indent=2, sort_keys=False)
         handle.write("\n")
     return path
+
+
+# --------------------------------------------------------------- sampling
+
+def _posterior(spec):
+    """ Records, mechanism and log posterior, built from the specification.
+
+        Every chain process builds its own. The likelihood objects wrap C++
+        state and cannot be pickled, and a specification can.
+    """
+    from .mcmc import LogPosterior, LogUniformPrior, UniformPrior
+
+    records = load_records(spec)
+    mec = build_mechanism(spec)
+    prior_class = (UniformPrior if spec.mcmc.prior == 'uniform'
+                   else LogUniformPrior)
+    post = LogPosterior(mec, records, prior=prior_class.from_mechanism(mec),
+                        solver=spec.likelihood.solver() or None)
+    return records, mec, post
+
+
+def _run_chain(spec, index, start, covariance):
+    """ One chain of ``spec.mcmc``: the unit of work of one process. """
+    from .mcmc import adaptive_sample, mwg_sample
+
+    _, _, post = _posterior(spec)
+    m = spec.mcmc
+    start = np.asarray(start, dtype=float)
+    kwargs = {}
+    if m.log_space is not None:
+        kwargs['log_space'] = m.log_space
+    log_space = (m.log_space if m.log_space is not None
+                 else m.sampler == 'mwg')
+    if covariance is not None:
+        covariance = np.asarray(covariance, dtype=float)
+        if log_space:
+            # The same Gaussian, to first order, on the logarithms.
+            covariance = covariance / np.outer(start, start)
+    if m.sampler == 'adaptive':
+        if covariance is not None:
+            # Proposals shaped like the posterior at the optimal scale from
+            # the first iteration, instead of the paper's small isotropic step
+            # while the covariance is learned.
+            kwargs.update(initial_covariance=covariance, initial_step=2.38)
+        return adaptive_sample(post, start, n=m.n, burnin=m.burnin,
+                               rng=m.seed + index, mixture=m.mixture,
+                               **kwargs)
+    if covariance is not None:
+        kwargs['initial_scale'] = 2.38 * np.sqrt(np.diag(covariance))
+    return mwg_sample(post, start, n=m.n, burnin=m.burnin,
+                      rng=m.seed + index, **kwargs)
+
+
+def _starts(post, start, covariance, chains, seed):
+    """ The first chain at *start*; the others at draws from the Gaussian
+        approximation that the prior allows, so that chains which agree have
+        had a chance not to. """
+    starts = [np.asarray(start, dtype=float)]
+    rng = np.random.default_rng(seed + 10007)
+    for _ in range(1, chains):
+        point = starts[0]
+        if covariance is not None:
+            for _ in range(100):
+                draw = rng.multivariate_normal(starts[0], covariance)
+                if np.isfinite(post(draw)):
+                    point = draw
+                    break
+        starts.append(point)
+    return starts
+
+
+def _chain_summary(names, chains):
+    """ Pooled posterior summary per free rate, over the kept samples. """
+    from .mcmc import effective_sample_size, potential_scale_reduction
+
+    rows = []
+    for i, name in enumerate(names):
+        series = [c.kept()[:, i] for c in chains]
+        pooled = np.concatenate(series)
+        ess = 0.0
+        for s in series:
+            try:
+                ess += effective_sample_size(s)
+            except ValueError:          # a constant series: nothing moved
+                pass
+        try:
+            rhat = potential_scale_reduction(series)
+        except ValueError:
+            rhat = float('nan')
+        q = np.percentile(pooled, [2.5, 50.0, 97.5])
+        rows.append({'name': name, 'mean': float(pooled.mean()),
+                     'sd': float(pooled.std(ddof=1)),
+                     'q2.5': float(q[0]), 'median': float(q[1]),
+                     'q97.5': float(q[2]), 'ess': float(ess),
+                     'rhat': float(rhat)})
+    return rows
+
+
+@dataclass
+class SampleOutcome:
+    """ Everything one sampling run produced.
+
+        :param spec: The specification.
+        :param records: The records as they were sampled against.
+        :param start: Where the first chain started, as rates.
+        :param start_from: ``'fit'`` or ``'pilot'``.
+        :param fit: The :py:class:`Outcome` of the fit, for ``start = "fit"``.
+        :param pilot: The pilot :py:class:`~HJCFIT.likelihood.mcmc.Chain`, for
+          ``start = "guess"``.
+        :param approximation: The
+          :py:class:`~HJCFIT.likelihood.mcmc.GaussianApproximation` at the
+          start, when the Hessian could be used.
+        :param chains: One :py:class:`~HJCFIT.likelihood.mcmc.Chain` each.
+        :param summary: Per free rate: mean, sd, quantiles, ESS summed over
+          chains and split-R-hat across them.
+        :param notes: Anything the run had to decide that the reader should
+          know, such as falling back from the Hessian.
+        :param seconds: Wall-clock time of the whole run.
+    """
+
+    spec: object
+    records: list
+    names: tuple
+    start: np.ndarray
+    start_from: str
+    chains: list
+    summary: list
+    fit: object = None
+    pilot: object = None
+    approximation: object = None
+    notes: list = field(default_factory=list)
+    seconds: float = 0.0
+    provenance: dict = field(default_factory=dict, repr=False)
+
+    @property
+    def max_rhat(self):
+        values = [row['rhat'] for row in self.summary
+                  if np.isfinite(row['rhat'])]
+        return max(values) if values else float('nan')
+
+    def __str__(self):
+        lines = [str(r) for r in self.records]
+        lines.append("")
+        lines.append("{0} chain{1} of {2} from the {3}; {4:.1f} min".format(
+            len(self.chains), "" if len(self.chains) == 1 else "s",
+            self.spec.mcmc.n, "maximum-likelihood fit"
+            if self.start_from == 'fit' else "pilot's best sample",
+            self.seconds / 60.0))
+        for note in self.notes:
+            lines.append("  note: " + note)
+        lines.append("")
+        lines.append("  {0:9s} {1:>12s} {2:>11s} {3:>12s} {4:>12s} {5:>7s} "
+                     "{6:>6s}".format("rate", "mean", "sd", "2.5%", "97.5%",
+                                      "ESS", "R-hat"))
+        for row in self.summary:
+            lines.append("  {0:9s} {1:12.4g} {2:11.3g} {3:12.4g} {4:12.4g} "
+                         "{5:7.0f} {6:6.3f}".format(
+                             row['name'], row['mean'], row['sd'], row['q2.5'],
+                             row['q97.5'], row['ess'], row['rhat']))
+        failures = sum(c.nfailures for c in self.chains)
+        acceptance = [float(np.mean(c.acceptance_rate()))
+                      for c in self.chains]
+        lines.append("")
+        lines.append("acceptance after burn-in: {0}; likelihood failures: {1}"
+                     .format(", ".join("{0:.2f}".format(a)
+                                       for a in acceptance), failures))
+        if self.max_rhat > 1.01:
+            lines.append("R-hat above 1.01: the chains have not agreed yet. "
+                         "Run them longer before using these numbers.")
+        return "\n".join(lines)
+
+
+def sample(spec, processes=None, verbose=False):
+    """ Sample the posterior a specification describes (``[mcmc]``).
+
+        :param spec: A :py:class:`~HJCFIT.likelihood.fitspec.FitSpec`.
+        :param processes: Worker processes for the chains. None uses one per
+          chain, up to the number of CPUs; 1 runs them one after another in
+          this process.
+        :param verbose: Print the stages as they happen.
+        :returns: A :py:class:`SampleOutcome`.
+
+        The C++ likelihood already spreads each evaluation over the cores
+        with OpenMP, but past two or three threads it gains little. Measured
+        on the AChR records of Epstein et al. (2016): 57 ms on one thread,
+        36 ms on two, 29 ms on four. So parallel chains are run as separate
+        processes, each limited to its share of the logical CPUs.
+
+        What that buys depends on the machine. On a 4-core, 8-thread laptop,
+        four CH82 chains ran 1.3-1.6 times faster in four processes than one
+        after another in one. Fewer threads per process (one each) was
+        slower there, because hyperthreading helps. More physical cores, or a
+        likelihood that costs more per evaluation than CH82's 1-2 ms, gain
+        more.
+
+        Worker processes are *spawned*. As with any spawned process on
+        Windows, a script that calls this with ``processes > 1`` must do so
+        under ``if __name__ == '__main__':``. The ``hjcfit`` command and
+        notebooks need nothing.
+    """
+    import time
+    from .mcmc import gaussian_approximation, mwg_sample
+
+    started = time.perf_counter()
+    m = spec.mcmc
+    records, mec, post = _posterior(spec)
+    names = tuple(mec.get_free_parameter_names())
+    notes = []
+    fit = pilot = approximation = None
+
+    if m.start == 'fit':
+        if verbose:
+            print("fitting, to start the chains at the maximum ...")
+        fit = run(spec)
+        start = np.asarray(fit.result.free_values, dtype=float)
+        start_from = 'fit'
+        if fit.limited:
+            notes.append("the fit ended with {0} on a limit, which is also "
+                         "the prior's edge".format(", ".join(
+                             name for name, *_ in fit.limited)))
+    else:
+        if verbose:
+            print("running the pilot from the guess ...")
+        pilot = mwg_sample(post, np.asarray(mec.theta(), dtype=float),
+                           n=m.pilot_n, burnin=m.pilot_n // 2,
+                           rng=m.seed - 1)
+        start, _ = pilot.mode()
+        start_from = 'pilot'
+    if not np.isfinite(post(start)):
+        raise RunnerError("the posterior is zero at the starting point")
+
+    covariance = None
+    if m.covariance == 'hessian':
+        try:
+            approximation = gaussian_approximation(post, start)
+            covariance = approximation.covariance
+            if approximation.relative_error > 1e-2:
+                notes.append("the Hessian at the start is poorly determined "
+                             "(relative error {0:.1g}); a direction the "
+                             "records barely constrain".format(
+                                 approximation.relative_error))
+        except ValueError as error:
+            notes.append("no Hessian at the start ({0}); the chains begin "
+                         "with the small isotropic step instead".format(
+                             str(error).split(';')[0].split('.')[0]))
+
+    starts = _starts(post, start, covariance, m.chains, m.seed)
+    workers = 1 if processes == 1 else min(m.chains, processes
+                                           or os.cpu_count() or 1)
+    if verbose:
+        print("{0} chain{1} of {2} iterations in {3} process{4} ...".format(
+            m.chains, "" if m.chains == 1 else "s", m.n, workers,
+            "" if workers == 1 else "es"))
+    if workers == 1:
+        chains = [_run_chain(spec, i, s, covariance)
+                  for i, s in enumerate(starts)]
+    else:
+        chains = _parallel_chains(spec, starts, covariance, workers)
+
+    return SampleOutcome(
+        spec=spec, records=records, names=names, start=start,
+        start_from=start_from, chains=chains,
+        summary=_chain_summary(names, chains), fit=fit, pilot=pilot,
+        approximation=approximation, notes=notes,
+        seconds=time.perf_counter() - started, provenance=provenance())
+
+
+def _parallel_chains(spec, starts, covariance, workers):
+    """ Run the chains in *workers* spawned processes, each limited to its
+        share of the OpenMP threads. The limit is set in the environment the
+        processes inherit, before any of them loads the likelihood library,
+        and restored afterwards. """
+    from concurrent.futures import ProcessPoolExecutor
+    import multiprocessing
+
+    threads = max(1, (os.cpu_count() or 1) // workers)
+    previous = os.environ.get('OMP_NUM_THREADS')
+    os.environ['OMP_NUM_THREADS'] = str(threads)
+    try:
+        context = multiprocessing.get_context('spawn')
+        with ProcessPoolExecutor(max_workers=workers,
+                                 mp_context=context) as pool:
+            futures = [pool.submit(_run_chain, spec, i, s, covariance)
+                       for i, s in enumerate(starts)]
+            return [f.result() for f in futures]
+    finally:
+        if previous is None:
+            os.environ.pop('OMP_NUM_THREADS', None)
+        else:
+            os.environ['OMP_NUM_THREADS'] = previous
+
+
+def samples_as_dict(outcome):
+    """ A sampling outcome as JSON-ready data: the specification, the start,
+        the summary and the provenance. The chains themselves go in ``.npz``
+        files beside it (:py:func:`write_samples`). """
+    approx = outcome.approximation
+    return {
+        'hjcfit_samples': 1,
+        'spec': outcome.spec.as_dict(),
+        'free_names': list(outcome.names),
+        'start': {'from': outcome.start_from,
+                  'rates': [float(v) for v in outcome.start]},
+        'fit': None if outcome.fit is None else result_as_dict(
+            outcome.fit)['fit'],
+        'hessian_sd': None if approx is None else [float(v)
+                                                   for v in approx.sd],
+        'summary': outcome.summary,
+        'chains': [{'n': c.n, 'burnin': c.burnin, 'seconds': c.seconds,
+                    'acceptance': np.atleast_1d(c.acceptance_rate()).tolist(),
+                    'nfailures': c.nfailures} for c in outcome.chains],
+        'notes': list(outcome.notes),
+        'seconds': outcome.seconds,
+        'provenance': outcome.provenance,
+    }
+
+
+def write_samples(prefix, outcome):
+    """ Write ``<prefix>.json`` (:py:func:`samples_as_dict`) and one
+        ``<prefix>_chain<i>.npz`` per chain
+        (:py:meth:`~HJCFIT.likelihood.mcmc.Chain.save`).
+
+        :returns: The paths written.
+    """
+    prefix = str(prefix)
+    if prefix.endswith('.json'):
+        prefix = prefix[:-5]
+    paths = [prefix + '.json']
+    with open(paths[0], 'w', encoding='utf-8', newline='\n') as handle:
+        json.dump(samples_as_dict(outcome), handle, indent=2)
+        handle.write("\n")
+    for i, chain in enumerate(outcome.chains):
+        path = '{0}_chain{1}.npz'.format(prefix, i)
+        chain.save(path)
+        paths.append(path)
+    return paths

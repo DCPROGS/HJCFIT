@@ -15,6 +15,7 @@ Python API Reference
    python/optimization.rst
    python/fitting.rst
    python/fitspec.rst
+   python/mcmc.rst
 
 
 Extras

@@ -70,7 +70,8 @@ if(pythonBindings)
   # Named rather than globbed, because CMake will not re-run on a new file
   # appearing and a glob would make the wheel depend on when cmake last ran.
   set(PYTHON_MODULES __init__.py random.py _methods.py optimization.py
-                     simplex_hjc.py fitting.py fitspec.py runner.py cli.py)
+                     simplex_hjc.py fitting.py fitspec.py runner.py cli.py
+                     mcmc.py)
 
   install(FILES  ${PYTHON_MODULES}
                  ${CMAKE_CURRENT_BINARY_DIR}/likelihood.py

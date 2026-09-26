@@ -272,3 +272,42 @@ class TestFittingLayerWithARealMechanism:
             reached.append(result.log10_likelihood)
 
         assert reached[0] == pytest.approx(reached[1], abs=1e-2), reached
+
+
+class TestPosteriorWithARealMechanism:
+    """LogPosterior against scalcs' CH82 and the shipped record.
+
+    test_mcmc.py proves the posterior needs no mechanism library. This checks
+    that the prior scalcs' own rate limits give is the one intended, and that
+    inside it the posterior is the fitter's likelihood plus a constant.
+    """
+
+    @pytest.fixture()
+    def posterior(self):
+        from scalcs.samples import samples
+
+        from HJCFIT.likelihood.fitting import Record
+        from HJCFIT.likelihood.mcmc import LogPosterior
+
+        bursts = HJCFIT.read_idealized_bursts("CH82", tau=1e-4, tcrit=4e-3)
+        record = Record(conc=100e-9, tres=1e-4, tcrit=4e-3,
+                        groups=tuple(tuple(b) for b in bursts))
+        return LogPosterior(samples.CH82(), [record])
+
+    def test_the_default_prior_is_the_mechanism_limits(self, posterior):
+        prior = posterior.prior
+        assert prior.names == posterior.names
+        free = [r for r in posterior.mec.Rates if r.is_free]
+        np.testing.assert_array_equal(prior.lower,
+                                      [r.limits[0][0] for r in free])
+        np.testing.assert_array_equal(prior.upper,
+                                      [r.limits[0][1] for r in free])
+
+    def test_inside_the_prior_it_is_the_golden_likelihood(self, posterior):
+        """The same golden value as the fitter's, at the shipped guess."""
+        theta = np.asarray(posterior.mec.theta(), dtype=float)
+        expected = (2286.9746 * np.log(10.0)
+                    - np.sum(np.log(posterior.prior.upper
+                                    - posterior.prior.lower)))
+        assert posterior(theta) == pytest.approx(expected, abs=1e-2)
+        assert posterior.nfailures == 0
