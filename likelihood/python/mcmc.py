@@ -66,7 +66,8 @@ __docformat__ = "restructuredtext en"
 __all__ = ['UniformPrior', 'LogUniformPrior', 'LogPosterior', 'Chain',
            'mwg_sample', 'adaptive_sample', 'autocorrelation',
            'significant_lags', 'effective_sample_size', 'hessian',
-           'GaussianApproximation', 'gaussian_approximation']
+           'GaussianApproximation', 'gaussian_approximation',
+           'potential_scale_reduction']
 
 import json
 import time
@@ -967,3 +968,29 @@ def gaussian_approximation(log_density, mode, rel_step=3e-3, steps=None):
         mode=mode, covariance=covariance, hessian=h, hessian_error=error,
         log_density=float(log_density(mode)),
         names=getattr(log_density, 'names', None))
+
+
+def potential_scale_reduction(chains):
+    """ Split-:math:`\\hat R` (Gelman et al. 2013) for one parameter.
+
+        Each chain is split in half, and the variance between the halves'
+        means is compared with the variance within them. Near 1 when every
+        chain samples the same distribution; values above about 1.01 mean
+        the chains have not yet agreed. Splitting makes a single chain
+        testable too, against a drift between its first and second halves.
+
+        :param chains: A sequence of 1-d series, one per chain, burn-in
+          already removed. They are truncated to the shortest.
+        :returns: :math:`\\hat R`.
+    """
+    series = [np.asarray(c, dtype=float) for c in chains]
+    n = min(len(s) for s in series) // 2
+    if n < 2:
+        raise ValueError("each chain needs at least four samples")
+    halves = np.array([h for s in series for h in (s[:n], s[n:2 * n])])
+    within = halves.var(axis=1, ddof=1).mean()
+    between = n * halves.mean(axis=1).var(ddof=1)
+    if within == 0.0:
+        return 1.0 if between == 0.0 else np.inf
+    pooled = (n - 1) / n * within + between / n
+    return float(np.sqrt(pooled / within))

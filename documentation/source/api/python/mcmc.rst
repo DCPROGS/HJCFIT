@@ -157,3 +157,39 @@ so flat that the likelihood's own numerical noise decides its curvature.
 ``relative_error`` is then large, and at small steps the point may not even
 appear to be a maximum. That is a statement about identifiability, not about
 the differentiation: fitting several concentrations at once removes it.
+
+From a specification
+""""""""""""""""""""
+
+Everything above is available from a fit specification (see
+:ref:`python_fitspec_api`), with no Python written. Add an ``[mcmc]`` section
+and, to reproduce a published value, a ``[likelihood]`` section with the
+root-finding settings it was computed with::
+
+    [likelihood]
+    nmax = 2
+    xtol = 1e-12
+    rtol = 1e-12
+
+    [mcmc]
+    n = 20000        # iterations per chain
+    burnin = 5000    # of which tuning, not kept
+    chains = 4       # in parallel processes
+
+and run it::
+
+    hjcfit sample my-fit.toml -o post
+
+By default this fits first and starts every chain at the maximum-likelihood
+estimate. The inverse Hessian there shapes the first proposals, at the optimal
+scale. ``start = "guess"`` runs the paper's own pilot sampler from the initial
+guess instead. Chains after the first start from draws of the Gaussian
+approximation, so that chains which agree have had a chance not to. The
+command prints, for each rate, the posterior mean, standard deviation, 95%
+interval, effective sample size and split-:math:`\hat R`, and writes
+``post.json`` (all of that, the specification and the provenance) and one
+``post_chain<i>.npz`` per chain (:py:meth:`Chain.load` reads them). It exits
+with status 2 when :math:`\hat R` exceeds 1.1: the chains plainly disagree, so
+run them longer.
+
+.. autofunction:: potential_scale_reduction

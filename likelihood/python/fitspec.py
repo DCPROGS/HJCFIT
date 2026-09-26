@@ -68,8 +68,8 @@
     one place, and says which names exist when one does not.
 """
 __docformat__ = "restructuredtext en"
-__all__ = ['DataSpec', 'MechanismSpec', 'SearchSpec', 'FitSpec',
-           'SpecError', 'TEMPLATE', 'load_toml_bytes']
+__all__ = ['DataSpec', 'MechanismSpec', 'SearchSpec', 'LikelihoodSpec',
+           'MCMCSpec', 'FitSpec', 'SpecError', 'TEMPLATE', 'load_toml_bytes']
 
 from dataclasses import dataclass, field
 
@@ -87,6 +87,12 @@ VECTORS = ('chs', 'equilibrium')
 
 #: Accepted values of :py:attr:`SearchSpec.method`.
 METHODS = ('simplex', 'scipy')
+
+#: The root-finding options of the likelihood. The same tuple as
+#: ``HJCFIT.likelihood.fitting.SOLVER_OPTIONS``, repeated because this module
+#: imports nothing but the standard library; a test asserts the two agree.
+SOLVER_KEYS = ('nmax', 'xtol', 'rtol', 'itermax', 'lower_bound',
+               'upper_bound')
 
 
 def _number(value, where):
@@ -475,6 +481,190 @@ class SearchSpec:
 
 
 @dataclass(frozen=True)
+class LikelihoodSpec:
+    """ Root-finding settings for every record's likelihood.
+
+        The names are those of
+        :py:data:`~HJCFIT.likelihood.fitting.SOLVER_OPTIONS`; anything left
+        out keeps :py:class:`~HJCFIT.likelihood.Log10Likelihood`'s default.
+        They are not cosmetic. On the three AChR records of Epstein et al.
+        (2016), ``nmax = 2`` with tolerances of 1e-12 -- that paper's settings
+        -- move the natural log-likelihood by 0.38 against the defaults at the
+        same rates, so a published value is reproduced only with the settings
+        it was computed with.
+
+        Applies to ``hjcfit fit`` and ``hjcfit sample`` alike.
+    """
+
+    nmax: int = None
+    xtol: float = None
+    rtol: float = None
+    itermax: int = None
+    lower_bound: float = None
+    upper_bound: float = None
+
+    KEYS = SOLVER_KEYS
+
+    @classmethod
+    def from_dict(cls, d, where='likelihood'):
+        _unexpected(d, cls.KEYS, where)
+        values = {}
+        for name in ('nmax', 'itermax'):
+            if d.get(name) is not None:
+                value = d[name]
+                if isinstance(value, bool) or not isinstance(value, int):
+                    raise SpecError("{0}.{1}: expected an integer, got {2!r}"
+                                    .format(where, name, value))
+                values[name] = value
+        for name in ('xtol', 'rtol', 'lower_bound', 'upper_bound'):
+            if d.get(name) is not None:
+                values[name] = _number(d[name], "{0}.{1}".format(where, name))
+        return cls(**values).validate(where)
+
+    def validate(self, where='likelihood'):
+        if self.nmax is not None and self.nmax < 1:
+            raise SpecError("{0}.nmax: must be at least 1, not {1}"
+                            .format(where, self.nmax))
+        if self.itermax is not None and self.itermax < 1:
+            raise SpecError("{0}.itermax: must be at least 1, not {1}"
+                            .format(where, self.itermax))
+        for name in ('xtol', 'rtol'):
+            value = getattr(self, name)
+            if value is not None and value <= 0.0:
+                raise SpecError("{0}.{1}: must be positive, not {2}"
+                                .format(where, name, value))
+        if (self.lower_bound is not None and self.upper_bound is not None
+                and not self.lower_bound < self.upper_bound):
+            raise SpecError("{0}: lower_bound must be below upper_bound"
+                            .format(where))
+        return self
+
+    def solver(self):
+        """ The settings given, as the ``solver`` argument of the fitter. """
+        return {name: getattr(self, name) for name in self.KEYS
+                if getattr(self, name) is not None}
+
+    def as_dict(self):
+        return self.solver()
+
+
+@dataclass(frozen=True)
+class MCMCSpec:
+    """ How to sample the posterior, for ``hjcfit sample``.
+
+        The method is that of Epstein, Calderhead, Girolami & Sivilotti (2016);
+        see :ref:`python_mcmc_api`.
+
+        :param start:
+          ``"fit"`` (the default) runs the ``[search]`` first and starts every
+          chain at the maximum-likelihood estimate, with the Hessian there as
+          the first proposal covariance. ``"guess"`` is the paper's own
+          scheme: a Metropolis-within-Gibbs pilot from the initial guess finds
+          the mode instead. With the paper's flat prior the two points
+          coincide; the fit is usually the cheaper way there.
+        :param sampler:
+          ``"adaptive"``, adaptive Metropolis, or ``"mwg"``,
+          Metropolis-within-Gibbs.
+        :param n: Iterations per chain, burn-in included.
+        :param burnin:
+          Iterations during which step sizes are tuned; not kept.
+        :param pilot_n:
+          ``start = "guess"`` only: iterations of the pilot, half of them
+          burn-in.
+        :param covariance:
+          ``"hessian"``: shape the adaptive sampler's first proposals with the
+          inverse Hessian at the start, at the optimal scale 2.38/sqrt(k).
+          Where the Hessian cannot be used -- a point that is not a maximum, a
+          direction no record determines -- the run says so and falls back to
+          ``"identity"``, a small isotropic step, which is the paper's.
+        :param mixture: ``"sum"`` (the paper's) or ``"choice"``; see
+          :py:func:`~HJCFIT.likelihood.mcmc.adaptive_sample`.
+        :param log_space:
+          Walk the logarithms of the rates. Unset, each sampler keeps its own
+          default: logarithms for ``"mwg"``, the rates themselves for
+          ``"adaptive"``.
+        :param prior:
+          ``"uniform"`` (the paper's) or ``"loguniform"``, in both cases
+          between each free rate's limits.
+        :param chains:
+          Independent chains, run in parallel processes. Chains after the
+          first start from draws of the Gaussian approximation at the start
+          point, when there is one, so that their agreement means something.
+        :param seed: Seeds chain *i* with ``seed + i``.
+    """
+
+    start: str = 'fit'
+    sampler: str = 'adaptive'
+    n: int = 20000
+    burnin: int = 5000
+    pilot_n: int = 3000
+    covariance: str = 'hessian'
+    mixture: str = 'sum'
+    log_space: bool = None
+    prior: str = 'uniform'
+    chains: int = 1
+    seed: int = 1
+
+    KEYS = ('start', 'sampler', 'n', 'burnin', 'pilot_n', 'covariance',
+            'mixture', 'log_space', 'prior', 'chains', 'seed')
+    CHOICES = {'start': ('fit', 'guess'), 'sampler': ('adaptive', 'mwg'),
+               'covariance': ('hessian', 'identity'),
+               'mixture': ('sum', 'choice'),
+               'prior': ('uniform', 'loguniform')}
+
+    @classmethod
+    def from_dict(cls, d, where='mcmc'):
+        _unexpected(d, cls.KEYS, where)
+        values = {}
+        for name in cls.CHOICES:
+            if name in d:
+                values[name] = str(d[name])
+        for name in ('n', 'burnin', 'pilot_n', 'chains', 'seed'):
+            if name in d:
+                value = d[name]
+                if isinstance(value, bool) or not isinstance(value, int):
+                    raise SpecError("{0}.{1}: expected an integer, got {2!r}"
+                                    .format(where, name, value))
+                values[name] = value
+        if 'log_space' in d:
+            if not isinstance(d['log_space'], bool):
+                raise SpecError("{0}.log_space: expected true or false, got "
+                                "{1!r}".format(where, d['log_space']))
+            values['log_space'] = d['log_space']
+        return cls(**values).validate(where)
+
+    def validate(self, where='mcmc'):
+        for name, allowed in self.CHOICES.items():
+            if getattr(self, name) not in allowed:
+                raise SpecError("{0}.{1}: must be one of {2}, not {3!r}".format(
+                    where, name, " or ".join(allowed), getattr(self, name)))
+        for name in ('n', 'pilot_n', 'chains'):
+            if getattr(self, name) < 1:
+                raise SpecError("{0}.{1}: must be at least 1, not {2}".format(
+                    where, name, getattr(self, name)))
+        if not 0 <= self.burnin < self.n:
+            raise SpecError(
+                "{0}.burnin: must be at least 0 and below n ({1}), not {2}; "
+                "a chain that is all burn-in keeps nothing".format(
+                    where, self.n, self.burnin))
+        return self
+
+    def as_dict(self):
+        default = MCMCSpec()
+        return {name: getattr(self, name) for name in self.KEYS
+                if getattr(self, name) != getattr(default, name)
+                and getattr(self, name) is not None}
+
+    def __str__(self):
+        start = ("from the maximum-likelihood fit" if self.start == 'fit'
+                 else "from a {0}-iteration pilot at the guess".format(
+                     self.pilot_n))
+        return ("{0} x {1} {2} iterations ({3} burn-in), {4}, {5} prior"
+                .format(self.chains, self.n, self.sampler, self.burnin, start,
+                        self.prior))
+
+
+@dataclass(frozen=True)
 class FitSpec:
     """ A whole fit, as data.
 
@@ -484,6 +674,12 @@ class FitSpec:
           shared and the concentrations are not.
         :param mechanism: A :py:class:`MechanismSpec`.
         :param search: A :py:class:`SearchSpec`.
+        :param likelihood:
+          A :py:class:`LikelihoodSpec`: root-finding settings, for fitting
+          and sampling alike.
+        :param mcmc:
+          A :py:class:`MCMCSpec`, read by ``hjcfit sample`` and ignored by
+          ``hjcfit fit``.
         :param title: One line for the person reading the result.
 
         Read one with :py:meth:`from_toml`, write one with
@@ -495,8 +691,10 @@ class FitSpec:
     mechanism: MechanismSpec = field(default_factory=MechanismSpec)
     search: SearchSpec = field(default_factory=SearchSpec)
     title: str = ''
+    likelihood: LikelihoodSpec = field(default_factory=LikelihoodSpec)
+    mcmc: MCMCSpec = field(default_factory=MCMCSpec)
 
-    KEYS = ('data', 'mechanism', 'search', 'title')
+    KEYS = ('data', 'mechanism', 'search', 'title', 'likelihood', 'mcmc')
 
     # -- reading -----------------------------------------------------------
 
@@ -525,6 +723,8 @@ class FitSpec:
             mechanism=MechanismSpec.from_dict(d.get('mechanism') or {}),
             search=SearchSpec.from_dict(d.get('search') or {}),
             title=str(d.get('title', '')),
+            likelihood=LikelihoodSpec.from_dict(d.get('likelihood') or {}),
+            mcmc=MCMCSpec.from_dict(d.get('mcmc') or {}),
         ).validate(where)
 
     @classmethod
@@ -550,6 +750,8 @@ class FitSpec:
             record.validate("data[{0}]".format(i))
         self.mechanism.validate()
         self.search.validate()
+        self.likelihood.validate()
+        self.mcmc.validate()
         # Two records at the same concentration are not an error -- two patches
         # at one concentration is an ordinary experiment, and the reproduction
         # of Colquhoun, Hatton & Hawkes (2003) fits three concentrations of
@@ -572,6 +774,10 @@ class FitSpec:
         d['data'] = [r.as_dict() for r in self.data]
         d['mechanism'] = self.mechanism.as_dict()
         d['search'] = self.search.as_dict()
+        for name in ('likelihood', 'mcmc'):
+            table = getattr(self, name).as_dict()
+            if table:
+                d[name] = table
         return d
 
     def to_toml(self):
@@ -589,8 +795,10 @@ class FitSpec:
             lines.append('[[data]]')
             lines.extend(_toml_table(record.as_dict()))
             lines.append('')
-        for name in ('mechanism', 'search'):
+        for name in ('mechanism', 'search', 'likelihood', 'mcmc'):
             table = getattr(self, name).as_dict()
+            if not table and name in ('likelihood', 'mcmc'):
+                continue
             lines.append('[{0}]'.format(name))
             lines.extend(_toml_table(table, name))
             lines.append('')
@@ -631,6 +839,12 @@ class FitSpec:
             self.search.method,
             'logarithms' if self.search.log_params else 'rate constants',
             self.search.maxfev))
+        solver = self.likelihood.solver()
+        if solver:
+            lines.append('  likelihood: {0}'.format(", ".join(
+                '{0} = {1:g}'.format(k, v) for k, v in solver.items())))
+        if self.mcmc.as_dict():
+            lines.append('  sampling: {0}'.format(self.mcmc))
         return "\n".join(lines)
 
 
@@ -773,4 +987,22 @@ beta2 = 15000.0
 method = "simplex"     # HJCFIT's own; "scipy" is Nelder-Mead with restarts
 log_params = true      # search the logarithms: faster, and cannot go negative
 maxfev = 20000
+
+# Root-finding settings of the likelihood, for fit and sample alike. Left out,
+# each keeps its default. A published value is reproduced only with the
+# settings it was computed with.
+# [likelihood]
+# nmax = 2
+# xtol = 1e-12
+# rtol = 1e-12
+
+# For `hjcfit sample`: the posterior distribution of the free rates, by Markov
+# chain Monte Carlo (Epstein et al. 2016). `hjcfit fit` ignores this section.
+# [mcmc]
+# start = "fit"        # start at the maximum-likelihood fit; "guess" runs the
+#                      # paper's pilot sampler from the guess instead
+# n = 20000            # iterations per chain
+# burnin = 5000        # of which tuning, not kept
+# chains = 4           # run in parallel
+# prior = "uniform"    # between each rate's limits; or "loguniform"
 '''

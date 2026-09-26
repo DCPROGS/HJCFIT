@@ -18,6 +18,7 @@ the result.
     hjcfit template -o my-fit.toml     a specification to edit
     hjcfit check my-fit.toml           say what it would do; run nothing
     hjcfit fit my-fit.toml -o out.json run it, and keep the result
+    hjcfit sample my-fit.toml -o post  sample the posterior of the rates
 
 ``examples/fit_template.ipynb`` is the same thing as a notebook, over
 ``examples/CH82.toml``.
@@ -185,6 +186,11 @@ The specification
    :members: from_dict, validate
 
 .. autoclass:: SearchSpec
+
+.. autoclass:: LikelihoodSpec
+   :members: solver
+
+.. autoclass:: MCMCSpec
    :members: from_dict, validate
 
 .. autoexception:: SpecError
@@ -215,6 +221,14 @@ Carrying it out
 
 .. autofunction:: write_result
 
+.. autofunction:: sample
+
+.. autoclass:: SampleOutcome
+
+.. autofunction:: samples_as_dict
+
+.. autofunction:: write_samples
+
 .. autoexception:: RunnerError
 
 The command
@@ -230,5 +244,5 @@ environment on Windows.
 
 Exit status is 0 on success, 1 on anything the command can explain -- one line
 beginning with ``hjcfit:`` -- and 2 from ``fit`` when the search did not
-converge. The estimates are still printed in that case; it is the status that
+converge, or from ``sample`` when the chains disagree (split-R-hat above 1.1). The estimates are still printed in that case; it is the status that
 says so, because that is what a script reads.
