@@ -102,6 +102,12 @@ The fitter
 
 .. autodata:: FAILURE_COST
 
+.. autodata:: SOLVER_OPTIONS
+
+``HJCFitter(..., solver=dict(nmax=2, xtol=1e-12))`` passes them to every
+record's likelihood. Options left out keep the defaults of
+:py:class:`~HJCFIT.likelihood.Log10Likelihood`.
+
 The result
 """"""""""
 
