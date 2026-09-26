@@ -122,3 +122,38 @@ many independent draws they are worth.
 .. autofunction:: significant_lags
 
 .. autofunction:: autocorrelation
+
+The Gaussian approximation
+""""""""""""""""""""""""""
+
+Maximum-likelihood standard errors come from the curvature of the log
+likelihood at its maximum. The estimate is taken to be normally distributed
+about the maximum, with covariance equal to the inverse of the negative
+Hessian. :py:func:`gaussian_approximation` computes that distribution at any
+mode: a fit's estimate, or the best sample of a chain. Overlaid on the
+marginals a sampler finds, it shows where standard errors would misstate the
+uncertainty. For the AChR data in Epstein et al. (2016, Fig. 7), that happens
+for the monoliganded opening and shutting rates of site B.
+
+.. code-block:: python
+
+    from HJCFIT.likelihood.mcmc import gaussian_approximation
+
+    mode, _ = chain.mode()
+    approx = gaussian_approximation(posterior, mode)
+    approx.sd, approx.correlation      # standard errors and correlations
+    approx.relative_error              # how well the Hessian is determined
+
+.. autofunction:: gaussian_approximation
+
+.. autoclass:: GaussianApproximation
+   :members: sd, correlation, relative_error, marginal_pdf, sample
+
+.. autofunction:: hessian
+
+A Hessian needs a record that determines every rate. On the CH82 sample
+record, a single concentration fitted with eight free rates, one direction is
+so flat that the likelihood's own numerical noise decides its curvature.
+``relative_error`` is then large, and at small steps the point may not even
+appear to be a maximum. That is a statement about identifiability, not about
+the differentiation: fitting several concentrations at once removes it.
